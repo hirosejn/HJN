@@ -34,21 +34,21 @@ HJN.chart = HJN.chartD = null;
 HJN.detailDateTime = new Date();
 HJN.file;
 
-HJN.ETPS = 	{ name:'end time, tps',　label:'end:%Nms', 
+HJN.ETPS = 	{ key: 'eTps', name:'end time, tps',　label:'end:%Nms', 
 	renderer: 'line',
-	N:　0, scale:　0, color: 'rgba(127,127,  0, 0.1)', disabled: true };
-HJN.ETAT = 	{ name:'[Y2軸] end time, tat',　label:'%Ntps', 
+	N:　0, scale:　0, color: 'rgba(127,127,  0, 0.1)' };
+HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time, tat',　label:'%Ntps', 
 	renderer: 'scatterplot',
-	N:　1, scale:　1, color: 'rgba(127,  0,  0, 0.3)', disabled: true };
-HJN.STAT = 	{ name:'[Y2軸] start time, tat',　label:'start:%Nms',
+	N:　1, scale:　1, color: 'rgba(127,  0,  0, 0.3)' };
+HJN.STAT = 	{ key: 'sTat', name:'[Y2軸] start time, tat',　label:'start:%Nms',
 	renderer: 'scatterplot',
-	N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)', disabled: true };
-HJN.CONC = 	{ name:'多重度（詳細）',　label:'conc:%N',
+	N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)' };
+HJN.CONC = 	{ key: 'conc', name:'多重度（詳細）',　label:'conc:%N',
 	renderer: 'area',		// mulitのとき area はseries内で１系列だけ
-	N:　3, scale:　0, color: 'rgba(  0,  0,127, 0.3)', disabled: true };
-HJN.CTPS = 	{ name:'多重度（秒間最大）', label:'conc(max):%N',
+	N:　3, scale:　0, color: 'rgba(  0,  0,127, 0.3)' };
+HJN.CTPS = 	{ key: 'cTps', name:'多重度（秒間最大）', label:'conc(max):%N',
 	renderer: 'scatterplot',	// bar / scatterplot
-	N:　4, scale:　0, color: 'rgba(  0,  0,127, 0.1)', disabled: false };
+	N:　4, scale:　0, color: 'rgba(  0,  0,127, 0.1)' };
 
 HJN.seriesConfig = [HJN.ETPS, 
 					HJN.ETAT,

@@ -13,8 +13,8 @@ ol, ul { list-style: none; list-style-type: none; }
 
 
 nav		{ float: left; width: 200px; }
-header	{position: relative; z-index: 95; height: 100px; overflow: hidden; background: white; }
-body	{font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
+header	{ position: relative; z-index: 95; height: 100px; overflow: hidden; background: white; }
+body	{ font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
 			font-size: 12px; margin: 10px;}
 footer	{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
 fieldset{ border: 1px #cccccc dotted; }
@@ -22,10 +22,10 @@ section	{ position: relative; margin-left: 200px; padding: 10px 0px; }
 input	{ border-width:1px; font-size: 12px; }
 textarea{ font-size: smaller; }
 
-.item.active{ background: rgba(0, 0, 0, 0.2) !important;
-			  border: rgba(0, 0, 0, 0.2) !important; }
+.item.active{ background: rgba(0,0,0,0.2) !important;
+			  border: rgba(0,0,0,0.2) !important; }
 .tatLine	{ position: absolute;	box-sizing: content-box; display: block; 
-	margin-top: -3.5px; height: 8px; border-radius: 4px; background: rgba(192, 192, 192, 0.4); }
+	margin-top: -3.5px; height: 8px; border-radius: 4px; background: rgba(192,192,192,0.4); }
 .column		{ display: inline-block; }
 .menuField 	{ width: 190px; padding: 0px; margin: 0px; }
 
@@ -64,3 +64,5 @@ textarea{ font-size: smaller; }
 #chart_legend.line,#chartDetail_legend.line { position: relative; color: #333; }
 #chart_legend,	  #chartDetail_legend		{ position: relative; background: white; color: inherit; } 
 #chart_HoverValue,#chartDetail_HoverValue	{ position: relative; z-index: 97; background: white; color: inherit;　}
+
+.dygraph-annotation { color: rgba(0,0,0,1.0) !important; background-color: rgba(256,256,256,0.2); }

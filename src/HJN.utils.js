@@ -66,33 +66,38 @@ HJN.ChartRegist = function(){
 	var seriesSet = HJN.seriesSet = arguments[1];
 	
 	// グラフのインスタンスを作成する
-	var ETPS = { disabled: false, renderer: 'line' },
-		ETAT = { disabled: true, renderer: 'scatterplot' },
-		STAT = { disabled: true, renderer: 'scatterplot' },
-		CONC = { disabled: true, renderer: 'area' },
-		CTPS = { disabled: false, renderer: 'scatterplot' };	// bar,scatterplot
+	var ETPS = { process: true,  disabled: false, renderer: 'line' },
+		ETAT = { process: false, disabled: true, renderer: 'scatterplot' },
+		STAT = { process: false, disabled: true, renderer: 'scatterplot' },
+		CONC = { process: false, disabled: true, renderer: 'area' },
+		CTPS = { process: true,  disabled: false, renderer: 'scatterplot' };	// bar,scatterplot
 		config = { SERIESES : [ETPS, ETAT, STAT, CONC, CTPS], height : 0.2,
-				isSlider: false, isLegend: false, isHover: true, isHoverDetail:false }
+				isSlider: false, isLegend: true, isHover: true, isHoverDetail:false }
 	HJN.chart = new HJN(chartName, config);
+	HJNdy.chart = new HJNdy("chartSec", config);
 	
-	var ETPS_D = { disabled: true, renderer: 'line' },
-		ETAT_D = { disabled: false, renderer: 'scatterplot' },
-		STAT_D = { disabled: false, renderer: 'scatterplot' },
-		CONC_D = { disabled: false, renderer: 'area' },
-		CTPS_D = { disabled: false, renderer: 'bar' };	// bar,scatterplot
-		config_D = { SERIESES : [ETPS_D, ETAT_D, STAT_D, CONC_D, CTPS_D], height : 0.35,
+	var ETPS_D = { process: true, disabled: true, renderer: 'line' },
+		ETAT_D = { process: true, disabled: false, renderer: 'scatterplot' },
+		STAT_D = { process: true, disabled: false, renderer: 'scatterplot' },
+		CONC_D = { process: true, disabled: false, renderer: 'area' },
+		CTPS_D = { process: true, disabled: false, renderer: 'bar' };	// bar,scatterplot
+		config_D = { SERIESES : [ETPS_D, ETAT_D, STAT_D, CONC_D, CTPS_D], height : 0.2,
 				isSlider: true, isLegend: true, isHover: true, isHoverDetail: true }
 	HJN.chartD = new HJN(chartName+'Detail', config_D);
-
+	HJNdy.chartD = new HJNdy("chartDetail", config_D);
+	
 	HJN.DropField(dropFieldName);	// ドロップフィールドに、処理を登録する
 	
 	// グラフを初期表示する
 	// 上段
 	HJN.chart.init(seriesSet);
+	HJNdy.chart.init(seriesSet);
 	// 下段(非同期）
 	HJN.setZeroTimeout( function(){
-		HJN.chartD.init( HJN.ChartRegistDetail( seriesSet[HJN.CTPS.N] ))
+		HJN.chartD.init( HJN.ChartRegistDetail( seriesSet[HJN.CTPS.N] ));
+		HJNdy.chartD.init( HJN.ChartRegistDetail( seriesSet[HJN.CTPS.N] ));
 		HJN.chart.showBaloon();	// 上段のBaloonを描画する
+		HJNdy.chart.showBaloon();	// 上段のBaloonを描画する
 	}　);
 }
 
@@ -139,6 +144,7 @@ HJN.DropField = function (dropFieldName) {	// 第一引数　ファイルのド�
 		        		HJN.seriesSet = HJN.CreateSeries(tatESeries);
 		        		// 上段グラフを描画する
 		        		HJN.chart.update(HJN.seriesSet);
+		        		HJNdy.chart.update(HJN.seriesSet);
 		        		/** 下段用データの展開とグラフ描画（非同期処理） **/
 		        		HJN.plots = [];
 		        		HJN.setZeroTimeout(function(){
@@ -147,8 +153,10 @@ HJN.DropField = function (dropFieldName) {	// 第一引数　ファイルのド�
 		        									HJN.seriesSet[HJN.CTPS.N] );
 			        		// 下段グラフを描画する
 		        			HJN.chartD.update(seriesSetDetail);
+		        			HJNdy.chartD.update(seriesSetDetail);
 		        			// 上段のBaloonを描画する(上段update時にはplots登録されていないので）
 			        		HJN.chart.showBaloon();
+			        		HJNdy.chart.showBaloon();
 		        			HJN.ShowLogText("render graphs");	// 情報表示
 		        		});
 			        }
@@ -546,6 +554,7 @@ HJN.PlotCheckRadio = function(i) {
 	HJN.seriesSetDetail = HJN.CreateSeries( HJN.GetSliderRangedEtat() );
 	// 下段データを登録描画する
 	HJN.chartD.update(HJN.seriesSetDetail);
+	HJNdy.chartD.update(HJN.seriesSetDetail);
 	// Baloonを再描画する
 	HJN.PlotShowBaloon();
 	// concのとき指定時刻の処理中ログを、concData エリアに出力する
@@ -596,7 +605,9 @@ HJN.PlotLoad = function(textareaId) {
 　* ************************************ */
 HJN.PlotShowBaloon =　function(){
 	HJN.chart.showBaloon();
+	HJNdy.chart.showBaloon();
 	HJN.chartD.showBaloon();
+	HJNdy.chartD.showBaloon();
 }
 
 
@@ -641,6 +652,7 @@ HJN.setDetailRange = function(){
 		HJN.seriesSetDetail = HJN.CreateSeries( HJN.GetSliderRangedEtat() );
 		// 下段グラフを描画する
 		HJN.prototype.update.call(HJN.chartD, HJN.seriesSetDetail);
+		HJNdy.prototype.update.call(HJNdy.chartD, HJN.seriesSetDetail);
 	}, 750);	// 750ms 値の変更がなかった時に、処理を開始する
 }
 

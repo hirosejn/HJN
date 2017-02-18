@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>tat log diver</title>
 <link type="text/css" rel="stylesheet" href="../libs/rickshaw.min.css">
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
 <link type="text/css" rel="stylesheet" href="./HJN.css">
 </head>
 
@@ -20,13 +21,15 @@
 </nav>
 
 <section id="chart_container">
+	<div id="chartSec"
+			 style="position: relative; height:100px; width:100%"></div>
 	<div id="chart_y0"></div>
 	<div id="chart_y1"></div>
 	<div id="chart_graph"></div>
 	
 	<fieldset id="CheckedTime" >
 		<fieldset class="menuField"
-				 style="position: absolute; top: 0px; left: -200px; hight:40px">
+				 style="position: absolute; top: 0px; left: -200px; height:40px">
 			<legend>baloon plots</legend>
 			<button id="copyButton" onclick="HJN.PlotCopy('baloonData')"
 				title="チェックもしは選択されていない時刻アイコンを削除し、&#13;&#10;時刻アイコンの情報を、JSON形式のテキストでクリップボードにコピーします">copy</button>
@@ -62,8 +65,11 @@
 		<div id="chartDetail_legend"></div>
 
 		<div id="chartDetail_HoverValue" class="rickshaw_legend"></div>
+		<div id="chart_legend"></div>
 	</div>
 
+	<div id="chartDetail"
+			 style="position: relative; height:100px; width:100%"></div>
 	<div id="chartDetail_slider"></div>
 	
 	<div id="chartDetail_y0"></div>
@@ -74,8 +80,10 @@
 <script src="../libs/jquery.min.js"></script>
 <script src="../libs/d3.v3.min.js"></script>
 <script src="../libs/rickshaw.js"></script>
+<script src="../libs/dygraph.js"></script>
 
 <script src="./HJN.js"></script>
+<script src="./HJNdy.js"></script>
 <script src="./HJN.utils.js"></script>
 <script>
 	window.addEventListener("DOMContentLoaded",function(eve){
