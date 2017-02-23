@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>tat log diver</title>
-<link type="text/css" rel="stylesheet" href="../libs/rickshaw.min.css">
 <link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
 <link type="text/css" rel="stylesheet" href="./HJN.css">
 </head>
@@ -12,7 +11,7 @@
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
 <nav>
 	<header>
-		<h2>TAT log diver (v0.1.24)</h2>
+		<h2>TAT log diver (v0.2.19)</h2>
 	</header>
 	<iframe id="fileInfo" class="flexText"></iframe>
 	<input type="text" id="dateParser" 
@@ -21,15 +20,11 @@
 </nav>
 
 <section id="chart_container">
-	<div id="chartSec"
-			 style="position: relative; height:100px; width:100%"></div>
-	<div id="chart_y0"></div>
-	<div id="chart_y1"></div>
-	<div id="chart_graph"></div>
+	<div id="chart" style="position: relative; width:100%"></div>
 	
 	<fieldset id="CheckedTime" >
-		<fieldset class="menuField"
-				 style="position: absolute; top: 0px; left: -200px; height:40px">
+		<legend id="chart_labels"></legend>
+		<fieldset class="menuField">
 			<legend>baloon plots</legend>
 			<button id="copyButton" onclick="HJN.PlotCopy('baloonData')"
 				title="チェックもしは選択されていない時刻アイコンを削除し、&#13;&#10;時刻アイコンの情報を、JSON形式のテキストでクリップボードにコピーします">copy</button>
@@ -38,9 +33,10 @@
 			<textarea id="baloonData" ></textarea>
 		</fieldset>
 
-		<legend>2017-01-10</legend>
+
 		<div id="CheckedPlots" class="check_radio"></div>
 	</fieldset>
+
 </section>
 
 <section id="chartDetail_container">
@@ -55,7 +51,7 @@
 					title="指定された期間のログレコードをクリップボードにコピーします">copy<BR>data </button>
 			<textarea id="sliderData"></textarea>
 		</fieldset>
-		<fieldset class="menuField">
+		<fieldset id="concTrans" class="menuField">
 			<legend title="最後にクリックした[多重度(詳細)]プロットのCSVを表示しています">concurrent transactions</legend>
 			<button onclick="HJN.CopyToClipboard('concData')" 
 					title="[多重度(詳細)]のCSVをクリップボードにコピーします" >copy</button>
@@ -63,27 +59,13 @@
 		</fieldset>
 
 		<div id="chartDetail_legend"></div>
-
-		<div id="chartDetail_HoverValue" class="rickshaw_legend"></div>
-		<div id="chart_legend"></div>
 	</div>
 
-	<div id="chartDetail"
-			 style="position: relative; height:100px; width:100%"></div>
-	<div id="chartDetail_slider"></div>
-	
-	<div id="chartDetail_y0"></div>
-	<div id="chartDetail_y1"></div>
-	<div id="chartDetail_graph"></div>
+	<div id="chartDetail" style="position: relative; width:100%"></div>
 </section>
 
-<script src="../libs/jquery.min.js"></script>
-<script src="../libs/d3.v3.min.js"></script>
-<script src="../libs/rickshaw.js"></script>
 <script src="../libs/dygraph.js"></script>
-
 <script src="./HJN.js"></script>
-<script src="./HJNdy.js"></script>
 <script src="./HJN.utils.js"></script>
 <script>
 	window.addEventListener("DOMContentLoaded",function(eve){

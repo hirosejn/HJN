@@ -32,21 +32,17 @@ textarea{ font-size: smaller; }
 .menuField button 	{ padding:0px;　left: 2px; width: 36px; margin-right: 152px;}
 .menuField textarea	{ left:40px; width:142px; height: 20px; resize:both;　font-size: 10px;
 						padding: 2px;　border: 1px #cccccc solid;}
-.baloon 	{ font-family: Arial, sans-serif;	font-size: 12px; opacity: 0.5; 
-			  position: absolute;	white-space: nowrap; }
-.checked 	{ opacity: 1.0; font-weight: bold; }
-.selected	{ opacity: 1.0; background-color: silver; }
+
+.dygraph-annotation { color: rgba(0,0,0,0.8) !important; background-color: rgba(256,256,256,0.2); 
+			font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; }
 
 #dateParser	{ position: absolute; z-index: 99; top: 80px; }
 #fileInfo	{ position: absolute; z-index: 99; top: 100px; width: 160px; height: 110px; }
-	
-#chart_slider,	#chartDetail_slider	{ position: relative; z-index: 80; margin-bottom:15px;}
-#chart_graph,	#chartDetail_graph	{ position: relative; z-index: 60; }
-#chart_y0,		#chartDetail_y0		{ position: absolute; }
-#chart_y1,		#chartDetail_y1		{ position: absolute; right: 0px; }
 
+#plotsArea	{ top: 20px; }
 #baloonData		{ position: absolute; z-index: 98; top:11px; }
-#CheckedTime	{ position: relative; left:0px; top: 3px; margin: 0px; padding:4px;}
+#CheckedTime	{ position: relative; top: 3px; margin: 0px; padding:4px;}
+#CheckedTime .menuField { position: absolute; top: 0px; left: -200px; height:40px; }
 .check_radio div {float: left;}
 .check_radio input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
 .check_radio label	{ position:relative; cursor: pointer; left:-5px; 
@@ -54,15 +50,9 @@ textarea{ font-size: smaller; }
 .check_radio input[type=radio] { display:none;　}
 .check_radio input[type=radio]:checked + .label { background-color: silver;　}
 
-
-#chart_LH, #chartDetail_LH	{ position: absolute; z-index: 70; left: -200px; top: 0px; width: 200px;}
+#chartDetail_LH	{ position: absolute; z-index: 70; left: -200px; top: 0px; width: 200px;}
 #DetailDateTime	{ border: none; width:188px; }
 #sliderRange	{ position: relative; top:10px; margin-bottom:10px;}
 #sliderData		{ position: absolute; z-index: 97; top: 46px; }
+#concTrans		{ height: 40px; }
 #concData		{ position: absolute; z-index: 96; top:105px; }
-
-#chart_legend.line,#chartDetail_legend.line { position: relative; color: #333; }
-#chart_legend,	  #chartDetail_legend		{ position: relative; background: white; color: inherit; } 
-#chart_HoverValue,#chartDetail_HoverValue	{ position: relative; z-index: 97; background: white; color: inherit;　}
-
-.dygraph-annotation { color: rgba(0,0,0,1.0) !important; background-color: rgba(256,256,256,0.2); }
