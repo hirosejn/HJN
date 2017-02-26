@@ -11,12 +11,12 @@
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
 <nav>
 	<header>
-		<h2>TAT log diver (v0.2.19)</h2>
+		<h2>TAT log diver (v0.2.26)</h2>
 	</header>
 	<iframe id="fileInfo" class="flexText"></iframe>
-	<input type="text" id="dateParser" 
-		placeholder="%Y%m%d %H:%M:%S.%L" value="%Y%m%d %H:%M:%S.%L" size="23"
-		title="CSVの先頭カラムの時刻のフォーマットを指定する">
+	<!-- input type="text" id="dateParser" 
+		placeholder="" value="" size="23"
+		title="CSVの先頭カラムの時刻のフォーマットを指定する" -->
 </nav>
 
 <section id="chart_container">
@@ -47,7 +47,7 @@
 					value="2016-12-10T13:00:00" max="9999-12-31T23:59:99" readonly>
 			±<input type="number" id="DetailTimeRange" min="0" step="1"
 					value="1" style="width:50px;">sec
-			<button onclick="HJN.CopyToClipboard('sliderData')" 
+			<button onclick="HJN.GetSliderRangedEtatText('sliderData')" 
 					title="指定された期間のログレコードをクリップボードにコピーします">copy<BR>data </button>
 			<textarea id="sliderData"></textarea>
 		</fieldset>
@@ -69,17 +69,16 @@
 <script src="./HJN.utils.js"></script>
 <script>
 	window.addEventListener("DOMContentLoaded",function(eve){
-			var startTime = new Date();	// 処理時間計測の初期化
-			HJN.ShowLogTextInit();
 			// 初期表示データ指定
+			HJN.ShowLogTextInit();	// 処理時間計測の初期化
 			var tatESeries = HJN.CreateSampleTatLog();	// arg0：生成データ数
 			var seriesSet = HJN.CreateSeries(tatESeries);
 	
 			//チャートを作成する
 			HJN.ChartRegist("chart", seriesSet);
-	
-			HJN.ShowLogText("Total : " + (new Date() - startTime) + "ms", false);
-			HJN.ShowLogText("<BR>サンプルを表示しました<BR><mark>右上段のグラフ領域に、CSVファイルをドラッグドロップして下さい</mark><BR>",true);
+			HJN.ShowLogText("<BR>サンプルを表示しました<BR>" + 
+					"<mark>右上段のグラフ領域に、CSVファイルをドラッグ＆ドロップして下さい</mark><BR>", "msg");
+			HJN.ShowLogText("上段表示", "elaps");		// 処理時間ログ出力
 	});
 </script>
 

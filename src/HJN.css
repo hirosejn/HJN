@@ -43,6 +43,8 @@ textarea{ font-size: smaller; }
 #baloonData		{ position: absolute; z-index: 98; top:11px; }
 #CheckedTime	{ position: relative; top: 3px; margin: 0px; padding:4px;}
 #CheckedTime .menuField { position: absolute; top: 0px; left: -200px; height:40px; }
+#chart_labels label { display:inline-block; width:80px; }
+#chartDetail_legend label { display:inline-block; width:190px; }
 .check_radio div {float: left;}
 .check_radio input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
 .check_radio label	{ position:relative; cursor: pointer; left:-5px; 
@@ -56,3 +58,4 @@ textarea{ font-size: smaller; }
 #sliderData		{ position: absolute; z-index: 97; top: 46px; }
 #concTrans		{ height: 40px; }
 #concData		{ position: absolute; z-index: 96; top:105px; }
+#chart_labels .datetime{ display:inline-block; width:170px; }
