@@ -3,85 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <title>tat log diver</title>
-<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
-<link type="text/css" rel="stylesheet" href="./HJN.css">
 </head>
 
 <body>
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
-<nav>
-	<header>
-		<h2>TAT log diver (v0.2.26)</h2>
-	</header>
-	<iframe id="fileInfo" class="flexText"></iframe>
-	<!-- input type="text" id="dateParser" 
-		placeholder="" value="" size="23"
-		title="CSVの先頭カラムの時刻のフォーマットを指定する" -->
-</nav>
+<nav><header><h2>TAT log diver (v0.3.06)</h2></header></nav>
 
 <section id="chart_container">
-	<div id="chart" style="position: relative; width:100%"></div>
-	
+	<div id="chart_menu" class="menuBar"></div>
+	<div id="chart" style="position: relative;"></div>
 	<fieldset id="CheckedTime" >
 		<legend id="chart_labels"></legend>
-		<fieldset class="menuField">
-			<legend>baloon plots</legend>
-			<button id="copyButton" onclick="HJN.PlotCopy('baloonData')"
-				title="チェックもしは選択されていない時刻アイコンを削除し、&#13;&#10;時刻アイコンの情報を、JSON形式のテキストでクリップボードにコピーします">copy</button>
-			<button id="loadButton" onclick="HJN.PlotLoad('baloonData')"
-				title="時刻アイコンを、右のテキストエリアのJSONデータの内容に差し替えます">load</button>
-			<textarea id="baloonData" ></textarea>
-		</fieldset>
-
-
 		<div id="CheckedPlots" class="check_radio"></div>
 	</fieldset>
-
 </section>
-
 <section id="chartDetail_container">
-	<div id="chartDetail_LH">
-		<fieldset class="menuField" id="sliderRange" onchange="HJN.setDetailRange()">
-			<legend title="Slider領域および下段グラフの表示条件">slider</legend>
-			<input type="datetime-local" id="DetailDateTime" step="1"
-					value="2016-12-10T13:00:00" max="9999-12-31T23:59:99" readonly>
-			±<input type="number" id="DetailTimeRange" min="0" step="1"
-					value="1" style="width:50px;">sec
-			<button onclick="HJN.GetSliderRangedEtatText('sliderData')" 
-					title="指定された期間のログレコードをクリップボードにコピーします">copy<BR>data </button>
-			<textarea id="sliderData"></textarea>
-		</fieldset>
-		<fieldset id="concTrans" class="menuField">
-			<legend title="最後にクリックした[多重度(詳細)]プロットのCSVを表示しています">concurrent transactions</legend>
-			<button onclick="HJN.CopyToClipboard('concData')" 
-					title="[多重度(詳細)]のCSVをクリップボードにコピーします" >copy</button>
-			<textarea id="concData"></textarea>
-		</fieldset>
-
-		<div id="chartDetail_legend"></div>
-	</div>
-
-	<div id="chartDetail" style="position: relative; width:100%"></div>
+	<div id="chartDetail_menu" class="menuBar"></div>
+	<div id="chartDetail" style="position: relative;"></div>
 </section>
-
-<script src="../libs/dygraph.js"></script>
-<script src="./HJN.js"></script>
-<script src="./HJN.utils.js"></script>
-<script>
-	window.addEventListener("DOMContentLoaded",function(eve){
-			// 初期表示データ指定
-			HJN.ShowLogTextInit();	// 処理時間計測の初期化
-			var tatESeries = HJN.CreateSampleTatLog();	// arg0：生成データ数
-			var seriesSet = HJN.CreateSeries(tatESeries);
-	
-			//チャートを作成する
-			HJN.ChartRegist("chart", seriesSet);
-			HJN.ShowLogText("<BR>サンプルを表示しました<BR>" + 
-					"<mark>右上段のグラフ領域に、CSVファイルをドラッグ＆ドロップして下さい</mark><BR>", "msg");
-			HJN.ShowLogText("上段表示", "elaps");		// 処理時間ログ出力
-	});
-</script>
 
 </body>
-<footer><small>&copy; copyright 2017 Junichiroh Hirose</small></footer>
+<footer>
+	<small>&copy; copyright 2017 Junichiroh Hirose</small>
+	<iframe id="fileInfo" class="flexText"></iframe>
+</footer>
+
+<script>
+window.addEventListener("DOMContentLoaded",function(eve){
+	// 初期表示データ指定
+	HJN.ShowLogTextInit();	// 処理時間計測の初期化
+	var tatESeries = HJN.CreateSampleTatLog();	// arg0：生成データ数
+	var seriesSet = HJN.CreateSeries(tatESeries);
+	//チャートを作成する
+	HJN.ChartRegist("chart", seriesSet);
+	HJN.ShowLogText("<BR>サンプルを表示しました<BR>" + 
+		"<mark>右上段のグラフ領域に、CSVファイルをドラッグ＆ドロップして下さい</mark><BR>", "msg");
+	HJN.ShowLogText("上段表示", "elaps");		// 処理時間ログ出力
+});
+</script>
+
+<script src="./HJN.js"></script>
+<script src="./HJN.utils.js"></script>
+<link type="text/css" rel="stylesheet" href="./HJN.css">
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+<script src="../libs/dygraph.js"></script>
 </html>
