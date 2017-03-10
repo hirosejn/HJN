@@ -1,21 +1,4 @@
-/*
- TODO:	CONC　original data ダウンロード
-  		dygraph生成をinit時に変更	-> データなしではnewできなさそう
-		±1secのとき下段表示を3秒間を2秒間に変更
-		秒指定のとき秒内でCONCが最大の時刻を取得する
-		大量(100万）のときCONC計算でリソース不足になる -> が怪しい
-済
-	20170220	下段グラフの表示対象指定機能追加
-	20170226	Legend表示位置を中央に移動、ラベル幅指定
-	20170301	canvas画像ダウンロード機能追加
-	20170302	メニューbar追加、全件CSVダウンロード機能追加
-	20170303	TATLOGダウンロード機能追加
-	20170304	clearボタン追加	
-		
-*/
 /** *****1*********2*********3*********4*********5*********6*********7****** **/
-
-
 /* ************************************ 
  * HJN
  * ************************************ */
@@ -39,8 +22,8 @@ HJN.STAT = 	{ key: 'sTat', name:'[Y2軸] start time, tat',　label:'start:%Nms',
 		N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)', renderer: 'scatterplot' };
 HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time, tat',　label:'%Nms', 
 		N:　3, scale:　1, color: 'rgba(127,  0,  0, 0.3)', renderer: 'scatterplot' };
-HJN.ETPS = 	{ key: 'eTps', name:'end time, tps',　label:'end:%Ntps', 
-		N:　4, scale:　0, color: 'rgba(127,127,  0, 0.1)', renderer: 'line' };
+HJN.ETPS = 	{ key: 'eTps', name:'[Y2軸] end time, tps',　label:'end:%Ntps', 
+		N:　4, scale:　1, color: 'rgba(127,127,  0, 0.3)', renderer: 'line' };
 
 
 HJN.seriesConfig = [HJN.CONC, HJN.CTPS,	HJN.STAT, HJN.ETAT, HJN.ETPS];
@@ -51,6 +34,7 @@ HJN.plots = []; //{	label:"", ckBox:true, radio:true, n:4, x:0, y:0, range:1};
 
 HJN.logText = [];
 HJN.timestamp = new Date();
+HJN.logtime = new Date();
 
 /* コンストラクタ */
 function HJN(chartIdName, config, globalName) {
@@ -166,15 +150,15 @@ HJN.prototype.update =　function(){
 		x = [],
 		row = [],
 		minX = 0;
-	// xy[] に処理対象データ配列を指定する
+	// xy[] に処理対象seriesを指定する
 	for (var i = 0; i < this.SERIESES.length; i++){
 		xy[i] = this.seriesSet[this.SERIESES[i].N];
 		idx[i] = 0;
 	}
-	// dygraph表示時間帯を設定する
+	// dygraph表示時間帯を設定する（上段グラフは全期間が処理対象）
 	var xRangeMin = Number.MIN_VALUE,
 		xRangeMax = Number.MAX_VALUE;
-	if (HJN.chartD === this) {　// 詳細のとき		// ミリ秒
+	if (HJN.chartD === this) {　// 詳細（下段グラフ）のとき画面で指定された期間を設定する	// ミリ秒
 		xRangeMin = +HJN.detailDateTime - HJN.detailDateTimeRange * 1000,
 		xRangeMax = +HJN.detailDateTime + ( HJN.detailDateTimeRange + 1.0 ) * 1000;
 	}	
@@ -185,7 +169,12 @@ HJN.prototype.update =　function(){
 		row = [];
 		xy.forEach(function(e, i){
 				x[i] = (idx[i] < e.length) ? e[idx[i]].x : Number.MAX_VALUE; });
-		minX = Math.min.apply(null, x);
+
+		minX = x[0];	// minX = Math.min.apply(null, x);
+		for (var i = 1; i < x.length; i++) {
+			if (x[i] < minX) minX = x[i];
+		}
+		
 		row.push(minX);	// ミリ秒
 		xy.forEach(function(e, i, a){
 			if (e.length <= idx[i]) {
@@ -201,6 +190,7 @@ HJN.prototype.update =　function(){
 			this.dyData.push(row);
 		}
 	}
+	HJN.ShowLogText("[7:dygraph data created] " + this.dyData.length + " rows","calc");
 
 	// グラフの設定
 	var visibility = [];
@@ -238,7 +228,7 @@ HJN.prototype.update =　function(){
 				axes: {
 					x: {axisLabelFormatter: axisLabelFormatter,
 						axisLabelWidth: 80 },
-					y: {axisLabelWidth: 20},
+					y: {axisLabelWidth: 30},
 					y2:{drawGrid: true,
 						independentTicks: true,
 						gridLinePattern: [1,2]	}
@@ -250,7 +240,7 @@ HJN.prototype.update =　function(){
 				strokeWidth: 2,
 				pointSize: 3,
 				// ylabel: 'Primary y-axis',
-				y2label: 'ms',
+				y2label: this === HJN.chart ? '' : 'ms',
 				// rollPeriod: 7,
 				// errorBars: true,
 				// showRangeSelector: true
@@ -278,14 +268,19 @@ HJN.prototype.update =　function(){
 	function axisLabelFormatter(d, gran, opts) {
         return Dygraph.dateAxisLabelFormatter(new Date(d), gran, opts);
     }
+	HJN.ShowLogText("[8:dygraph showen] ","calc");
 	
 	// 再描画する
 	this.showBalloon();
+	HJN.ShowLogText("[9:baloon showen] ","calc");
 		
 	
 	/** updateメソッド内部関数宣言 **/
 	// 点がハイライトになったときの描画処理（内部関数宣言）
 	function　drawHighlightPointCallback(g, name, ctx, cx, cy, color, r, idx) {
+		// file dropのとき、新グラフデータに更新後に、旧グラフのidx値が引き渡されたとき　処理しない #12
+		if (g.rawData_.length - 1 < idx) return;
+
 		// CONCのとき、TRANSの線を引く
 		if (name === HJN.CONC.key ) {
 			// 以前に選択した線を消す
@@ -423,7 +418,7 @@ HJN.prototype.addLegend =　function(){
 		htmlText = '<form name="' + formName + '">';
 	for (var i = 0; i < this.SERIESES.length; i++) {
 		var ckBox = this.SERIESES[i].visiblity ? 'checked="checked"' : '';
-		htmlText +=	'<label style="background:' + this.SERIESES[i].color + ';">' +
+		htmlText +=	'<label class="legend" style="background:' + this.SERIESES[i].color + ';">' +
 					'<input type="checkbox" ' +
 					'name="' + this.SERIESES[i].key  + '"' +
 					'onclick="' + this.globalName + '.setVisibility('+ i + ');" ' +
@@ -466,45 +461,53 @@ HJN.prototype.addMenu =　function(){
 	// メニュー用のエレメントを取得する
 	var divMenuId = this.chartIdName + "_menu";
 	var divMenu = document.getElementById(divMenuId);
-	// menu用divがないとき、chartと同じレイヤに追加する
+	// menu用divがないとき、chartの直前に追加する　 #13
 	if (!divMenu){
 		var div = document.createElement('div');
 		div.id = divMenuId;
-		div.className = "menuIcon";
-	    divMenu = this.chartId.parentNode.appendChild(div);
+		div.className = "menuBar";
+	    divMenu = this.chartId.parentNode.insertBefore(div, this.chartId);
 	}
 	// メニューを追加する
 	var	g = this.globalName,
-		menuSaveConfig = {
+		menuOpenCsv = {	// getInputTag
+				menuLabel: 	"Open csv data file",
+				funcName:	g + ".menuOpenCsv",
+				menuId:		divMenuId + "_OpenCsv " },
+		menuSaveConfig = {	// getATag
 				menuLabel: 	"save config(.json)",
 				funcName:	g + ".menuSaveConfig",
 				menuId:		divMenuId + "_SaveCongig",
 				fileName:	"hjnconfig.json" },
-		menuLoadConfig = {
+		menuLoadConfig = {	// getATag
 				menuLabel: 	"load config(.json)",
 				funcName:	g + ".menuLoadConfig",
 				menuId:		divMenuId + "_LoadCongig",
 				fileName:	"hjnconfig.json" },
-		menuDownloadImg = {
+		menuDownloadImg = {	// getATag
 				menuLabel: 	"download graph image(.png)",
 				funcName:	g + ".menuDownloadImg",
 				menuId:		divMenuId + "_DownloadImg",
 				fileName:	"graph.png" },
-		menuDownloadCsv = {
+		menuDownloadCsv = {	// getATag
 				menuLabel: 	"download graph data(.csv)", 
 				funcName:	g + ".menuDownloadCsv",
 				menuId:		divMenuId + "_DownloadCsv",
 				fileName:	"graph.csv" },
-		menuDownloadLog = {
+		menuDownloadLog = {	// getATag
 				menuLabel: 	"download graph log rows(.csv)",
 				funcName:	g + ".menuDownloadLog",
 				menuId:		divMenuId + "_DownloadLog",
 				fileName:	"tatlog.csv" },
-		menuDownloadConc = {
+		menuDownloadConc = {	// getATag
 				menuLabel: 	"download conc log rows(.csv)",
 				funcName:	g + ".menuDownloadConc",
 				menuId:		divMenuId + "_DownloadConc",
-				fileName:	"conclog.csv" };
+				fileName:	"conclog.csv" },
+		menuHelpAbout = {	// getAlertTag
+				menuLabel: 	"about TAT log diver",
+				menuId:		divMenuId + "_HelpAbout",
+				strFuncName:"HJN.Copyright()" };
 
 	
 	var ul = document.createElement('ul');		// 要素の作成
@@ -513,6 +516,7 @@ HJN.prototype.addMenu =　function(){
 			'<li class="menu_lv1">' +
 				'<a href="#" class="init-bottom">File</a>' +
 				'<ul class="menu_lv2">' +
+					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
 					'<li>' + getATag(menuSaveConfig) + '</li>' +
 					'<li>' + getATag(menuLoadConfig) + '</li>' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
@@ -528,25 +532,54 @@ HJN.prototype.addMenu =　function(){
 				'</ul>' +
 			'</li>' +
 			'<li class="menu_lv1"></li>' +
+			'<li class="menu_lv1"></li>' +
 			'<li class="menu_lv1">' +
 				'<a href="#" class="init-bottom">Help</a>' +
-				'<ul class="menu_lv2">' +
-					'<li><a href="#">Child Menu</a></li>' +
+				'<ul class="menu_lv2" style="width: 100%;">' +
+				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
+				'<li><a href="#">Child Menu</a></li>' +
 				'</ul>' +
 			'</li>' ;
 	divMenu.appendChild(ul);
 
-	// ダウンロード用<A>タグを編集する（内部関数宣言）
+	// File Open用 イベントリスナー登録
+	document.getElementById(menuOpenCsv.menuId)
+			.addEventListener('change', this.menuOpenCsv.bind(this), false);
+	// File Open用<input>タグ編集（内部関数宣言）
+	function getInputTag(arg){
+		// '<a><label>Child Menu<input type="file" id="xxx" multiple /></label></a>
+		return '' +
+		'<a><label>' + arg.menuLabel +
+		'<input type="file" id="'+ arg.menuId + '"  multiple />' + 
+			'</label></a>';
+	}
+	
+	// ダウンロード用<A>タグ編集（内部関数宣言）
 	function getATag(arg){
-		// '<a href="#">Child Menu</a>'
+		// '<a id="xxx" href="#">Child Menu</a>'
 		return '' + 
 		'<a id="' + arg.menuId + '" href="#" ' + //class="menuBar" ' + 
 			'download="' + arg.fileName + '" ' +
 			'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '" + arg.fileName + "'" +')" ' +
 			'>' + arg.menuLabel + '</a>';
 	}
+
+	// Alert用<A>タグ編集（内部関数宣言）
+	function getAlertTag(arg){
+		// '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
+		return '' + 
+		'<a id="' + arg.menuId + '"' +
+			' onclick="alert(' + arg.strFuncName + ")" + '"' + '><label>' + arg.menuLabel + '</label></a>';
+	}
+
 }
 
+//メニュー機能：CSVデータファイルを開く
+HJN.prototype.menuOpenCsv =　function(evt){
+	var file_list = evt.target.files;
+    // 指定されたファイルを処理する
+    HJN.FileReader(file_list);
+}
 //メニュー機能：画面設定をJSON形式のセーブファイルとしてダウンロードする
 HJN.prototype.menuSaveConfig =　function(menuId, fileName){
 	// plotsをjsonに変換する

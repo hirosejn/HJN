@@ -7,25 +7,22 @@
 
 <body>
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
-<nav><header><h2>TAT log diver (v0.3.06)</h2></header></nav>
+<nav><header>TAT log diver (v0.3.06)
+<div class="statusbar"><iframe id="fileInfo" class="flexText"></iframe></div>
+</header></nav>
 
-<section id="chart_container">
-	<div id="chart_menu" class="menuBar"></div>
-	<div id="chart" style="position: relative;"></div>
-	<fieldset id="CheckedTime" >
-		<legend id="chart_labels"></legend>
-		<div id="CheckedPlots" class="check_radio"></div>
-	</fieldset>
-</section>
-<section id="chartDetail_container">
-	<div id="chartDetail_menu" class="menuBar"></div>
-	<div id="chartDetail" style="position: relative;"></div>
-</section>
+<div id="chart"></div>
+<fieldset id="CheckedTime" >
+	<legend id="chart_labels"></legend>
+	<div id="CheckedPlots" class="check_radio"></div>
+</fieldset>
+
+
+<div id="chartDetail"></div>
 
 </body>
 <footer>
 	<small>&copy; copyright 2017 Junichiroh Hirose</small>
-	<iframe id="fileInfo" class="flexText"></iframe>
 </footer>
 
 <script>

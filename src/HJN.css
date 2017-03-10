@@ -9,29 +9,30 @@ body { line-height: 1; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100
 ol, ul { list-style: none; list-style-type: none; }
 
 /* */
-
-header	{ position: relative; }
 body	{ font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
 			font-size: 12px; margin: 10px;}
 fieldset{ border: 1px #cccccc dotted; }
-section	{ position: relative; padding: 10px 0px; }
 input	{ border-width: 1px; font-size: 12px; }
 textarea{ font-size: smaller; }
+.statusbar	{ overflow: auto; resize: both; position: absolute; z-index: 99;
+			top: 0px; left: 200px; height: 20px; width: 200px; background: #fff; }
+.statusbar > iframe { overflow: hidden; width: 95%; height: 90%; }
 
 /* menu bar用設定　*/
 .menuIcon	{ position: absolute; z-index: 80;}
-.menu 		{ height: 14px; position: relative; width: 100%; margin: 0 auto; }
-.menu > li 	{ height: 14px; line-height: 14px; width: 25%; /* グローバルナビ4つの場合 */
+.menu 		{ height: 14px; position: relative; width: 100%; margin: 0 auto; z-index: 80;}
+.menu > li 	{ height: 14px; line-height: 14px; width: 20%; /* グローバルナビ4つの場合 25% */
 			 background: rgb(29, 33, 19); float: left; }
-li.menu_lv1 ul.menu_lv2	 { top: 14px; position: absolute; width: 200px; 
+li.menu_lv1 ul.menu_lv2	 { top: 14px; position: absolute; width: 220px; 
     background: #072A24; -webkit-transition: all .2s ease; transition: all .2s ease; }
 li.menu_lv1:hover ul.menu_lv2 { top: 14px; visibility: visible; opacity: 1; }
-.menu > li a { -webkit-padding-start: 28px; display: block; color: #fff; }
+.menu > li a { -webkit-padding-start: 28px; display: block; color: #fff; text-decoration: none; }
 .menu > li a:hover { color: #999; }
 ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
 .menu > li:hover { background: #072A24; -webkit-transition: all .5s; transition: all .5s; }
 .menu_lv2 li { border-top: 1px solid #111; }
 .menu_lv2 li a:hover { background: #111; }
+.menu_lv2 > li input[type="file"] { display:none; } /* File Open用 */
 /* 下矢印 */
 .init-bottom:after { content: ''; display: inline-block; width: 6px; height: 6px; margin: 0 0 0 15px;
 	border-right: 1px solid #fff; border-bottom: 1px solid #fff;
@@ -41,8 +42,9 @@ ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
 .menu:after { clear: both; }
 .menu 		{ *zoom: 1; }
 .menu > li.menu_lv1 { position: relative; }
+.legend	{ display:inline-block; width:100%; }
 
-/* */
+/* dygraph用設定 */
 .item.active{ background: rgba(0,0,0,0.2) !important;
 			  border: rgba(0,0,0,0.2) !important; }
 .tatLine	{ position: absolute;	box-sizing: content-box; display: block; 
@@ -53,9 +55,8 @@ ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
 
 #plotsArea	{ top: 20px; }
 #CheckedTime	{ position: relative; top: 3px; margin: 0px; padding:4px;}
-#chart_labels label { display:inline-block; width:80px; }
-#chart_labels .datetime{ display:inline-block; width:170px; }
-#chartDetail_legend label { display:inline-block; width:100%; }
+#chart_labels label 		{ display:inline-block; width:80px; }
+#chart_labels .datetime		{ display:inline-block; width:170px; }
 .check_radio div {float: left;}
 .check_radio input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
 .check_radio label	{ position:relative; cursor: pointer; left:-5px; 
@@ -64,4 +65,3 @@ ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
 .check_radio input[type=radio]:checked + .label { background-color: silver;　}
 
 footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
-#fileInfo	{ z-index: 99; width: 300px; height: 30px; }

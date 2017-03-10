@@ -30,6 +30,7 @@ if (!Array.prototype.findIndex) {
  * 	初期表示用サンプルデータ(終了時刻のTAT（応答時間）時系列データ)を自動生成する
  * ************************************ */
 HJN.CreateSampleTatLog = function(num, response, freq){
+	HJN.ShowLogText("----- create data -----------------------------","calc");
 	// 第一引数：	生成データ数（デフォルト:100、50*100*100)
 	var num = num || 10*100; //50*100*100;
 	// 第二引数：　 応答時間振れ幅（秒）（デフォルト:200ミリ秒)
@@ -52,7 +53,7 @@ HJN.CreateSampleTatLog = function(num, response, freq){
 						) / 1e+6;
 		eTat.push( { x: d , y: y} );
 	}
-	HJN.ShowLogText("get     " + eTat.length + " plots [tat/endT]","calc");
+	HJN.ShowLogText("got     " + eTat.length + " plots [tat/endT]","calc");
 	return eTat;
 }
 
@@ -72,7 +73,7 @@ HJN.ChartRegist = function(){
 		ETAT = { process: false, visiblity: false, renderer: 'scatterplot' },
 		ETPS = { process: true,  visiblity: true,  renderer: 'line' },
 		config = { SERIESES : [CONC, CTPS, STAT, ETAT, ETPS], 
-						height : 0.35, isVisiblity: false };
+						height : 0.40, isVisiblity: true };
 	HJN.chart = new HJN(chartName, config, "HJN.chart");
 	
 	var CONC_D = { process: true, visiblity: true,  renderer: 'area' },
@@ -81,7 +82,7 @@ HJN.ChartRegist = function(){
 		ETAT_D = { process: true, visiblity: true,  renderer: 'scatterplot' },
 		ETPS_D = { process: true, visiblity: false, renderer: 'line' },
 		config_D = { SERIESES : [CONC_D, CTPS_D, STAT_D, ETAT_D, ETPS_D],
-						height : 0.4, isVisiblity: true };
+						height : 0.40, isVisiblity: true };
 	HJN.chartD = new HJN(chartName + "Detail", config_D, "HJN.chartD");
 	// ドロップフィールドに、処理を登録する(注：dygraphはイベントリスナーを登録しないとクリック時にエラーが出る）
 	HJN.DropField(dropFieldName);
@@ -111,63 +112,68 @@ HJN.DropField = function (dropFieldName) {	// 第一引数　ファイルのド�
 	});
 	
 	/** ドロップ時に実行されるイベント **/
-	element.addEventListener("drop" , function (e){
-		var data_transfer = e.dataTransfer;		// DataTransfer オブジェクトを取得する
-		var type_list = data_transfer.types;	// コンテンツタイプのリストを取得する
-		var file_list = data_transfer.files;	// ファイルのリストを取得する
-		if(!type_list) return;
-	
-		var num = type_list.length;
-		for(var i=0; i < num; i++){	// データを順番に取得する
-			try{
-				// ファイルを取得する
-				HJN.file = file_list[i];
-				// ログ出力用にファイル名（サイズ）を編集する
-				var textArray =	"<BR><mark><b>" + HJN.file.name + "</b></mark> ["+ HJN.file.size + "byte]<BR>";
-				// ファイルの読み込みに成功したら、その内容をドロップエリアに追記して表示する
-				var reader = new FileReader();
-				reader.onloadend = function(evt) {
-			        if (evt.target.readyState === FileReader.DONE) { // DONE == 2
-			        	/** ファイルの先頭2行をログ表示する **/
-			        	HJN.file = evt.target.result;
-			        	textArray += HJN.DropField.topLines(HJN.file, 2);
-		        		HJN.ShowLogTextInit();		// 情報表示　:　初期化
-		        		HJN.ShowLogText(textArray, "msg");	// 情報表示　：　ドロップファイル情報
-		        		/** 上段用データの展開とグラフ描画 **/
-		        		// CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...]
-		        		var tatESeries = HJN.DropField.getTatLogArray(HJN.file);
-		        		// eTatから上段用 時系列分析データ(seriesSet)を展開する
-		        		HJN.seriesSet = HJN.CreateSeries(tatESeries);
-		        		// 上段グラフを描画する
-		        		HJN.chart.update(HJN.seriesSet);
-		    			HJN.ShowLogText("上段表示", "elaps");
-
-		        		/** 下段用データの展開とグラフ描画（非同期処理） **/
-		        		HJN.plots = [];
-		        		HJN.setZeroTimeout(function(){
-			        		// 下段用 時系列分析データ(seriesSet)を展開する
-			        		var seriesSetDetail = HJN.ChartRegistDetail(
-		        									HJN.seriesSet[HJN.CTPS.N] );
-			        		// 下段グラフを描画する
-		        			HJN.chartD.update(seriesSetDetail);
-		        			// 上段のBalloonを描画する(上段update時にはplots登録されていないので）
-			        		HJN.chart.showBalloon();
-			    			HJN.ShowLogText("下段表示", "elaps");
-		        		});
-			        }
-			    };
-				// ファイルにArrayBufferで参照を取得する（loadイベントを起こす）
-			    reader.readAsArrayBuffer(HJN.file);
-			}catch(e){
-				// 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
-				var msg = "The " + i + "th dropped object is not a file";
-				HJN.ShowText( ["<mark>"+msg+"</mark>"] );
-				console.error("[%o]%o",msg,e );
-			}
-		}
-		e.preventDefault();		// デフォルトのドロップ機能を無効化
+	element.addEventListener("drop", function (e){
+			var data_transfer = e.dataTransfer;		// DataTransfer オブジェクトを取得する
+			if(!data_transfer.types) return;		// ファイルのコンテンツタイプを取得できたことを確認する
+			var file_list = data_transfer.files;	// ファイルのリストを取得する
+			HJN.FileReader(file_list);
+			e.preventDefault();		// デフォルトのドロップ機能を無効化
 	});
 }
+/**  イベントで指定されたファイルを処理する  #15 **/
+HJN.FileReader = function (file_list){
+	var num = file_list.length;
+	for(var i=0; i < num; i++){	// データを順番に取得する
+		try{
+			// ファイルを取得する
+			HJN.file = file_list[i];
+			// ログ出力用にファイル名（サイズ）を編集する
+			var textArray =	"<BR><mark><b>" + HJN.file.name + "</b></mark> " +
+							"["+ HJN.file.size + "byte] " + 
+							HJN.file.lastModifiedDate.toLocaleString() +"<BR>";
+			// ファイルの読み込みに成功したら、その内容をドロップエリアに追記して表示する
+			var reader = new FileReader();
+			reader.onloadend = function(evt) {
+		        if (evt.target.readyState === FileReader.DONE) { // DONE == 2
+		        	/** ファイルの先頭2行をログ表示する **/
+		        	HJN.file = evt.target.result;
+		        	textArray += HJN.DropField.topLines(HJN.file, 2);
+	        		HJN.ShowLogTextInit();		// 情報表示　:　初期化
+	        		HJN.ShowLogText(textArray, "msg");	// 情報表示　：　ドロップファイル情報
+	        		/** 上段用データの展開とグラフ描画 **/
+	        		// CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...]
+	        		var tatESeries = HJN.DropField.getTatLogArray(HJN.file);
+	        		// eTatから上段用 時系列分析データ(seriesSet)を展開する
+	        		HJN.seriesSet = HJN.CreateSeries(tatESeries);
+	        		// 上段グラフを描画する
+	        		HJN.chart.update(HJN.seriesSet);
+	    			HJN.ShowLogText("上段表示", "elaps");
+
+	        		/** 下段用データの展開とグラフ描画（非同期処理） **/
+	        		HJN.plots = [];
+	        		HJN.setZeroTimeout(function(){
+		        		// 下段用 時系列分析データ(seriesSet)を展開する
+		        		var seriesSetDetail = HJN.ChartRegistDetail(
+	        									HJN.seriesSet[HJN.CTPS.N] );
+		        		// 下段グラフを描画する
+	        			HJN.chartD.update(seriesSetDetail);
+	        			// 上段のBalloonを描画する(上段update時にはplots登録されていないので）
+		        		HJN.chart.showBalloon();
+		    			HJN.ShowLogText("下段表示", "elaps");
+	        		});
+		        }
+		    };
+			// ファイルにArrayBufferで参照を取得する（loadイベントを起こす）
+		    reader.readAsArrayBuffer(HJN.file);
+		}catch(e){
+			// 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
+			var msg = "The " + i + "th dropped object is not a file";
+			HJN.ShowText( ["<mark>"+msg+"</mark>"] );
+			console.error("[%o]%o",msg,e );
+		}
+	}
+}
+
 /**  指定ファイルの先頭ｎ行を、改行文字<BR>のテキストに変換してリターンする **/
 HJN.DropField.topLines = function(data, n) {
 	try{
@@ -189,7 +195,9 @@ HJN.DropField.topLines = function(data, n) {
 }
 /** CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置, len:レコード長},...]に展開する **/
 HJN.DropField.getTatLogArray　=　function(file) {	// arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
-	var array2D = [],
+	HJN.ShowLogText("----- read file -----------------------------","calc");
+	var tatUnit = 1000.0;	// CSVのTATが秒単位のとき1000、ミリ秒単位の時1
+	var eTat = [],
 		separator = /,|\t/,		// 区切り文字（カンマ、タブ）を正規表現で指定
 		buf = new Uint8Array(file),
 		cols;
@@ -198,15 +206,18 @@ HJN.DropField.getTatLogArray　=　function(file) {	// arg0:csvﾌｧｲﾙの�
 		to = buf.indexOf(13, from),	// 改行コードまで
 		len = to - from,
 		line = "",
-		d = 0;
+		d = 0,
+		i = 0;	// timelog用
 	// 以降最終行まで処理する
 	while (to > 0) {
-		try {
-			line = String.fromCharCode.apply(null, new Uint8Array(file, from, len));
+		try {	// 1024byteの範囲で日付、値を探す
+			HJN.LogTime(i++, line);	// 一定時刻毎に進捗を出力する
+			line = String.fromCharCode.apply(null, new Uint8Array(file, from, Math.min(len, 1024)));
 			cols = line.split(separator);
 			d = +parseDate(cols[0]);	// ミリ秒
-			if(0 < d){
-				array2D.push( { x: d, y: parseFloat(cols[1]), pos: from, len: line.length} );
+			if(0 < d){ // CSVのTATの単位補正
+				eTat.push( { x: d, y: parseFloat(cols[1]) * tatUnit,
+								pos: from, len: line.length} );
 			}
 		} catch (e) { /* 改行だけレコードをスキップ */ }
 		from = to + 2;
@@ -219,11 +230,13 @@ HJN.DropField.getTatLogArray　=　function(file) {	// arg0:csvﾌｧｲﾙの�
 						 new Uint8Array(file, from, buf.length - from));
 		cols = line.split(separator);
 		d = +parseDate(cols[0]);	// ミリ秒
-		if(0 < d){
-			array2D.push( { x: d, y: parseFloat(cols[1]), pos: from, len: line.length } );
+		if(0 < d){ // CSVのTATの単位補正
+			eTat.push( { x: d, y: parseFloat(cols[1]) * tatUnit,
+							pos: from, len: line.length } );
 		}
 	} catch (e) { /* 改行だけのレコードをスキップする */ }
-	return array2D;
+	HJN.ShowLogText("[0:file readed & got eTat]---------------","calc");
+	return eTat;
 	
 	// 文字列を時刻（ミリ秒）に変換（HJN.DropField.getTatLogArray内部関数）
 	function parseDate(str){	// YYYYMMDD hh:mm:ss.ppp
@@ -234,7 +247,7 @@ HJN.DropField.getTatLogArray　=　function(file) {	// arg0:csvﾌｧｲﾙの�
 			min = parseInt( str.substr(12, 2), 10),
 			sec = parseInt( str.substr(15, 2), 10),
 			p   = ("0" + str.match(/\.[0-9]*/)[0]) * 1000.0,	// 秒以下のミリ秒
-			dateNum = +(new Date( y, m, d, h, m, sec )) + p;
+			dateNum = +(new Date( y, m, d, h, min, sec )) + p;	// #14
 		return dateNum;
 	}
 }
@@ -243,46 +256,51 @@ HJN.DropField.getTatLogArray　=　function(file) {	// arg0:csvﾌｧｲﾙの�
 /** ************************************ 
  * 終了時刻のTAT時系列データから、描画用時系列データ配列を作成する
  * ************************************ */
+//第一引数： ETAT	
+//戻り値：　	描画用時系列データ配列[CONC,　CTPS, STAT, ETAT, ETPS]
+//
+// CONC　多重度の時系列データ
+//	[{x:多重度変化時刻(ミリ秒),y:多重度数,　trans:[実行中のeTAT(マージ未）]　}]
+// CTPS　秒間多重度の時系列データ
+//	[{x:時刻(ミリ秒),		y:多重処理数（最大値）, concRef:[実行中のeTAT(マージ未）] }]
+//　STAT　開始時刻のTAT（応答時間）時系列データ
+//	[{x:開始時刻(ミリ秒),	y:レスポンス（ミリ秒）　	}]
+//　ETAT　終了時刻のTAT（応答時間）時系列データ	 
+//	[{x:終了時刻(ミリ秒),	y:レスポンス(ミリ秒), pos:レコード位置,　len:レコード長}]
+//　ETPS　秒間終了件数の時系列データ
+//	[{x:時刻(ミリ秒),		y:終了件数	}]
+//			
+//時刻（秒）は、JulianDayからの経過秒数
 HJN.CreateSeries = function(){
-	// 第一引数： ETAT	
-	// 戻り値：　	描画用時系列データ配列[CONC,　CTPS, STAT, ETAT, ETPS]
-	//
-	//	CONC = [{x:多重度変化時刻(ミリ秒),y:多重度数,　trans:[実行中のeTAT(マージ未）]　}]
-	//			CONC(多重度)時系列データ
-	//	CTPS = [{x:時刻(ミリ秒),		y:多重処理数（最大値） }]
-	//			CONC(多重度)時系列データ
-	//	STAT = [{x:開始時刻(ミリ秒),	y:レスポンス（ミリ秒）　	}]
-	//			 開始時刻のTAT（応答時間）時系列データ
-	//	ETAT = [{x:終了時刻(ミリ秒), y:レスポンス(ミリ秒), pos:レコード位置,　len:レコード長}]
-	//			終了時刻のTAT（応答時間）時系列データ
-	//	ETPS = [{x:時刻(ミリ秒),		y:終了件数	}]
-	//			秒間終了件数の時系列データ
-	//  時刻（秒）は、JulianDayからの経過秒数
-	
 	// 時系列データを初期化する
 	var cycle = 1000.0; // 処理件数を計測する間隔（ミリ秒）
 	var conc = [], cTps = [], sTat = [], eTat = arguments[0], eTps = [];
 	var seriesSet = [conc, cTps, sTat, eTat, eTps];	// 注）this.SERIESES と同じ順番にすること 
 	// 集計対象データがないとき
 	if(eTat.length === 0) return seriesSet;
+
+	/** eTatをソートする **/
+	// 開始時刻でソートする
+	eTat.sort( function(a, b){ return a.x - b.x; } );
+	HJN.ShowLogText("[1:eTat sorten ] " + eTat.length + " plots","calc");
+
 	
 	/** sTat（開始時間）時系列データを作成する,同時に入力eTatを補正する **/
-	if(typeof eTat[0].pos === "undefined"){
+	if(typeof eTat[0].pos === "undefined"){	// 自動生成データのとき
 		eTat.forEach( function(e, i, eTat){
 			// 処理時間=0 のとき、1マイクロ秒とみなす(有効桁0.2マイクロ秒に切上される）
 			if(e.y === 0){ e.y = 0.001; e.x += e.y; }	// ミリ秒
 			sTat.push( {x: e.x-e.y, y: e.y} );
 		} );	// sTatにeTatデータを登録する
-	}else{
+	}else{									// File読み込みのとき
 		eTat.forEach( function(e, i, eTat){
 			if(e.y === 0){ e.y = 0.001; e.x += e.y; }	// ミリ秒
 			sTat.push( {x: e.x-e.y, y: e.y, pos: e.pos, len: e.len} );
 		} );		
 	}
 	// 開始時刻でソートする
-	eTat.sort( function(a, b){ return (a.x > b.x ? 1 : -1); } );
-	sTat.sort( function(a, b){ return (a.x > b.x ? 1 : -1); } );
-	HJN.ShowLogText("[tat/startT] " + sTat.length + " plots","calc");
+	sTat.sort( function(a, b){ return a.x - b.x; } );
+	HJN.ShowLogText("[2:sTat created] " + sTat.length + " plots","calc");
 
 	
 	/** eTPS(時間あたり処理件数)時系列データを作成する **/
@@ -302,7 +320,7 @@ HJN.CreateSeries = function(){
 		}
 	}
 	eTps.push( { x: dFrom, y: num } );
-	HJN.ShowLogText("[end tran/s] " + eTps.length + " plots","calc");
+	HJN.ShowLogText("[3:eTps created] " + eTps.length + " plots","calc");
 
 	
 	/** CONC(多重度)時系列データを作成する **/
@@ -315,9 +333,12 @@ HJN.CreateSeries = function(){
 		concTmp.push( {x: c.x,     y: -1, trans: [c]} );  
 	});
 	// 変化した時刻（開始or終了）でソートする
-	concTmp.sort( function(a, b){ return (a.x > b.x ? 1 : -1); } );
-	HJN.ShowLogText("[conc/T0] "+ conc.length + " plots","calc");
-	var concNum = 0, tList = [], cc = {x: 0, y: 0, trans: []};
+	concTmp.sort( function(a, b){ return a.x - b.x; } );
+	HJN.ShowLogText("[4-1:concTmp sorten ] "+ concTmp.length + " plots","calc");
+	
+	var concNum = 0,
+		tList = [], 
+		cc = {x: 0, y: 0, trans: []};
 	concTmp.forEach( function(c, i, concTmp){
 		// 取引一覧を更新する(1なら追加、else(-1)なら削除)
 		if(c.y === 1){
@@ -341,7 +362,7 @@ HJN.CreateSeries = function(){
 		}
 
 	} );
-	HJN.ShowLogText("[conc/T] "+ conc.length + " plots","calc");
+	HJN.ShowLogText("[4-2:conc/sum & set trans] "+ conc.length + " plots","calc");
 	
 	
 	/** cTPS秒間同時処理件数（concurrent transactions/sec）時系列データを作成する **/
@@ -372,7 +393,7 @@ HJN.CreateSeries = function(){
 		concRef.push(conc[conc.length-1].trans);
 	}
 	cTps.push( { x: XSec + cycle, y: YNext, concRef: concRef } );
-	HJN.ShowLogText("[conc/s] " + cTps.length + " plots","calc");
+	HJN.ShowLogText("[5:cTps created] " + cTps.length + " plots","calc");
 	
 	return seriesSet;
 	
@@ -433,6 +454,7 @@ HJN.ChartRegistDetail = function(cTps){
 	HJN.seriesSetDetail = HJN.CreateSeries( HJN.GetSliderRangedEtat() );
 	// plotsアイコン用 HJN.plotsに、下段表示したplotを登録する
 	HJN.PlotAdd(HJN.CTPS.N, cTps[maxYIndex].x, cTps[maxYIndex].y);
+	HJN.ShowLogText("[6:Plot added] " + HJN.plots.length + " plots","calc");
 
 	return HJN.seriesSetDetail;
 }
@@ -450,7 +472,8 @@ HJN.GetSliderRangedEtat = function() {
 		toI   = cTps.findIndex(function(e){ return (dt + range) <= e.x; });
 	if(toI === -1) toI = cTps.length - 1;
 	// 抽出したfromからtoの間の両端のcTpsに含まれるconcRefを一つのアレイにコンカチする
-	var concFrom = [],	concTo = [];
+	var concFrom = [],
+		concTo = [];
 	for(var i = fromI; i <= toI; i++){
 		cTps[i].concRef.forEach(
 				function(c){ Array.prototype.push.apply(concFrom, c); });
@@ -462,20 +485,32 @@ HJN.GetSliderRangedEtat = function() {
 		if (concTo.length) break;
 	}
 	
-	// eTatの範囲を抽出する時刻(from to)を得る
-	var	eFromTime　= Math.min.apply(null, concFrom.map(
-					function(c){ return c.x - c.y; })),
-		eToTime   = Math.max.apply(null, concTo.map(
-					function(c){ return c.x; }));
+	// eTatの範囲を抽出する時刻(eFromTime eToTime)を得る
+	var	t = 0, e = {},
+		eFromTime = Number.MAX_VALUE,
+		eToTime = Number.MIN_VALUE;
+	// concFromのうち 開始時刻(x-y)が最小となる、時刻(eFromTime)を求める
+	for (var i = 0, l = concFrom.length; i < l; i++) {
+		e = concFrom[i];
+		t = e.x - e.y;
+		if (eFromTime > t ) eFromTime = t;
+	}
+	// concToのうち 終了時刻(x)が最大となる、時刻(eToTime)を求める
+	for (var i = 0, l = concTo.length; i < l; i++) {
+		t = concTo[i].x;
+		if (eToTime < t ) eToTime = t;
+	}
+	
 	// eTatをsliceするインデックス(from to)を得る
 	var eFrom = eTat.findIndex(
-					function(e){ return e.x - e.y == eFromTime; }),
-		eTo   = eFrom + 1 + eTat.slice(eFrom).findIndex(
-					function(e){ return e.x == eToTime; });
+					function(e){ return e.x - e.y === eFromTime; }),
+		eTo   = eFrom + 1000 + eTat.slice(eFrom).findIndex(	// ミリ秒
+					function(e){ return e.x === eToTime; });
 //	console.log("fromI %o,toI %o,eFromTime %o,eToTime %o,eFrom %o,eTo %o,eTat %o",
 //		fromI,toI,eFromTime,eToTime,eFrom,eTo,HJN.seriesSet[HJN.ETAT.N].slice(eFrom,eTo));
 	var eTatDetail = HJN.seriesSet[HJN.ETAT.N].slice(eFrom,eTo); 
-
+	HJN.ShowLogText("[0:HJN.GetSliderRangedEtat] From:" + eFrom + " To:" + eTo,"calc");
+	
 	return eTatDetail;	// 詳細グラフ用eTatを返却する
 }
 
@@ -485,12 +520,14 @@ HJN.GetSliderRangedEtat = function() {
  * ************************************ */
 /**  plotsクリック時の処理 **/
 HJN.PointClickCallback = function(p) {
+	HJN.ShowLogText("[0:PointClickCallback]start---------------","calc");
 	var hover = HJN.hoverXY, // { x: , pts:, row:, seriesName: };
 		n = HJN.seriesConfig.findIndex(function(e){	return e.key === p.name; }),
 		x = p.xval,	// ミリ秒
 		y = p.yval;
 	// グラフの日時で、詳細グラフを再作成する
 	HJN.SetSliderRange(Math.floor(x * 1000) / 1000);	// 秒単位に丸める　//　ミリ秒
+	HJN.ShowLogText("[0:PointClickCallback](n,x,y)=("+ n + "," + x + "," + y + ")","calc");
 	HJN.seriesSetDetail = HJN.CreateSeries( HJN.GetSliderRangedEtat() );
 	//HJN.chartD.update(HJN.seriesSetDetail);	// 下段データを登録描画する
 	HJN.chartD.graph.ready(function(){ HJN.chartD.update(HJN.seriesSetDetail); });
@@ -643,7 +680,7 @@ HJN.setZeroTimeout = (function(global) {
     var timeouts = [], 
     	messageName = "zero-timeout-message";
     function handleMessage(event) {
-        if (event.source == global && event.data == messageName) {
+        if (event.source === global && event.data === messageName) {
             if (event.stopPropagation)  event.stopPropagation();
             if (timeouts.length) timeouts.shift()();
         }
@@ -665,6 +702,18 @@ HJN.setZeroTimeout = (function(global) {
 /** ************************************ 
  * テキスト領域関連
  * ************************************ */
+/** 経過時間でログ出力する **/
+HJN.LogTime　=　function(i, text) {
+	var ts = new Date(),
+		freq = 60000;	// 1分毎
+	if (freq < ts - HJN.logtime){
+		var t = HJN.DateToString(ts, "hh:mm:ss.sss");
+		console.log(t + "[" + i + "]~~~~" + text);
+		HJN.logtime = ts;
+	}
+}
+
+
 /** ログテキストを初期化する **/
 HJN.ShowLogTextInit　=　function() {
 	HJN.timestamp = new Date();
@@ -672,14 +721,20 @@ HJN.ShowLogTextInit　=　function() {
 }
 /** ログテキストをテキストアレイに追記し、表示する **/
 HJN.ShowLogText　=　function(text, mode) {
-	if (mode === "calc") return;	// 性能検証用
-	if (mode !== "msg"){			// 処理時間出力モード
+//	if (mode === "calc") return;	// 性能検証用
+	// "msg"指定のときは経過時間を取らずに、ログのみ出力する
+	if (mode !== "msg"){
+		// 処理時間情報を追加する
 		var lastTimestamp = HJN.timestamp;
 		HJN.timestamp = new Date();
 		text = (Math.round( this.timestamp - lastTimestamp ) / 1000.0) + "s " + text;
+		// 数値のカンマ編集（小数部もカンマが入る）
+		text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+		text = HJN.DateToString(HJN.timestamp, "hh:mm:ss.sss     ") + text;
 	}
 	HJN.logText.push(text);
 	HJN.ShowText(HJN.logText);
+	if(true) console.log(text);
 }
 /** 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する **/
 HJN.ShowText　=　function(textArray) {
@@ -703,9 +758,16 @@ HJN.ShowIHtmlBody　=　function(elementId, iHtmlBody){
     iframe.contentWindow.document.close();
 }
 
+/** 第一引数のID名のiframeに、第二引数のテキストを表示する **/
+HJN.Copyright　=　function(){
+	str = 	"&copy; copyright 2017 Junichiroh Hirose\n" +
+			"https://github.com/hirosejn/HJN"
+	return str;
+}
+
 /** ************************************ 
  * 指定されたtextareaを使って、クリップボードにコピーする
- * ************************************ */
+ * ************************************ 
 HJN.CopyToClipboard　= function(elementId)　{	// arg0:textareaのID名
 	var area = document.getElementById(elementId);
     area.select();
@@ -741,3 +803,4 @@ HJN.GetSliderRangedEtatText = function(elementId) {
 		HJN.CopyToClipboard(elementId);
 	});
 }
+*/
