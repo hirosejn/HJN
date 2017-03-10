@@ -1,52 +1,62 @@
 @CHARSET "UTF-8";
-<--	div[id^="chart"]{border: 1px solid black; background-color: silver; } --> 
-<--  ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7***** -->
-html, body, h1, h2, h3, h4, ul, ol, dl, li, dt, dd, p, div, span, img, a, table, tr, th, td {
-margin: 0; padding: 0; border: 0;
-font-weight: normal; font-size: 100%;
-vertical-align:baseline;
--webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
-}
+/*   ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7***** */
+/* リセットCSS　*/
+html, body, h1, h2, h3, h4, ul, ol, dl, li, dt, dd, p, div, span, img, a, table, tr, th, td, selector {
+margin: 0; padding: 0; border: 0; font-weight: normal; font-size: 100%; vertical-align:baseline;
+-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 article, header, footer, aside, figure, figcaption, nav, section { display:block; }
 body { line-height: 1; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
 ol, ul { list-style: none; list-style-type: none; }
 
-
-nav		{ float: left; width: 200px; }
-header	{position: relative; z-index: 95; height: 100px; overflow: hidden; background: white; }
-body	{font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
+/* */
+body	{ font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
 			font-size: 12px; margin: 10px;}
-footer	{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
 fieldset{ border: 1px #cccccc dotted; }
-section	{ position: relative; margin-left: 200px; padding: 10px 0px; }
-input	{ border-width:1px; font-size: 12px; }
+input	{ border-width: 1px; font-size: 12px; }
 textarea{ font-size: smaller; }
+.statusbar	{ overflow: auto; resize: both; position: absolute; z-index: 99;
+			top: 0px; left: 200px; height: 20px; width: 200px; background: #fff; }
+.statusbar > iframe { overflow: hidden; width: 95%; height: 90%; }
 
-.item.active{ background: rgba(0, 0, 0, 0.2) !important;
-			  border: rgba(0, 0, 0, 0.2) !important; }
+/* menu bar用設定　*/
+.menuIcon	{ position: absolute; z-index: 80;}
+.menu 		{ height: 14px; position: relative; width: 100%; margin: 0 auto; z-index: 80;}
+.menu > li 	{ height: 14px; line-height: 14px; width: 20%; /* グローバルナビ4つの場合 25% */
+			 background: rgb(29, 33, 19); float: left; }
+li.menu_lv1 ul.menu_lv2	 { top: 14px; position: absolute; width: 220px; 
+    background: #072A24; -webkit-transition: all .2s ease; transition: all .2s ease; }
+li.menu_lv1:hover ul.menu_lv2 { top: 14px; visibility: visible; opacity: 1; }
+.menu > li a { -webkit-padding-start: 28px; display: block; color: #fff; text-decoration: none; }
+.menu > li a:hover { color: #999; }
+ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
+.menu > li:hover { background: #072A24; -webkit-transition: all .5s; transition: all .5s; }
+.menu_lv2 li { border-top: 1px solid #111; }
+.menu_lv2 li a:hover { background: #111; }
+.menu_lv2 > li input[type="file"] { display:none; } /* File Open用 */
+/* 下矢印 */
+.init-bottom:after { content: ''; display: inline-block; width: 6px; height: 6px; margin: 0 0 0 15px;
+	border-right: 1px solid #fff; border-bottom: 1px solid #fff;
+    -webkit-transform: rotate(45deg); -ms-transform: rotate(45deg); transform: rotate(45deg); }
+/* floatクリア */
+.menu:before, .menu:after { content: " "; display: table; }
+.menu:after { clear: both; }
+.menu 		{ *zoom: 1; }
+.menu > li.menu_lv1 { position: relative; }
+.legend	{ display:inline-block; width:100%; }
+
+/* dygraph用設定 */
+.item.active{ background: rgba(0,0,0,0.2) !important;
+			  border: rgba(0,0,0,0.2) !important; }
 .tatLine	{ position: absolute;	box-sizing: content-box; display: block; 
-	margin-top: -3.5px; height: 8px; border-radius: 4px; background: rgba(192, 192, 192, 0.4); }
+	margin-top: -3.5px; height: 8px; border-radius: 4px; background: rgba(192,192,192,0.4); }
 .column		{ display: inline-block; }
-.menuField 	{ width: 190px; padding: 0px; margin: 0px; }
+.dygraph-annotation { color: rgba(0,0,0,0.8) !important; background-color: rgba(256,256,256,0.2); 
+			font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; }
 
-.menuField button 	{ padding:0px;　left: 2px; width: 36px; margin-right: 152px;}
-.menuField textarea	{ left:40px; width:142px; height: 20px; resize:both;　font-size: 10px;
-						padding: 2px;　border: 1px #cccccc solid;}
-.baloon 	{ font-family: Arial, sans-serif;	font-size: 12px; opacity: 0.5; 
-			  position: absolute;	white-space: nowrap; }
-.checked 	{ opacity: 1.0; font-weight: bold; }
-.selected	{ opacity: 1.0; background-color: silver; }
-
-#dateParser	{ position: absolute; z-index: 99; top: 80px; }
-#fileInfo	{ position: absolute; z-index: 99; top: 100px; width: 160px; height: 110px; }
-	
-#chart_slider,	#chartDetail_slider	{ position: relative; z-index: 80; margin-bottom:15px;}
-#chart_graph,	#chartDetail_graph	{ position: relative; z-index: 60; }
-#chart_y0,		#chartDetail_y0		{ position: absolute; }
-#chart_y1,		#chartDetail_y1		{ position: absolute; right: 0px; }
-
-#baloonData		{ position: absolute; z-index: 98; top:11px; }
-#CheckedTime	{ position: relative; left:0px; top: 3px; margin: 0px; padding:4px;}
+#plotsArea	{ top: 20px; }
+#CheckedTime	{ position: relative; top: 3px; margin: 0px; padding:4px;}
+#chart_labels label 		{ display:inline-block; width:80px; }
+#chart_labels .datetime		{ display:inline-block; width:170px; }
 .check_radio div {float: left;}
 .check_radio input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
 .check_radio label	{ position:relative; cursor: pointer; left:-5px; 
@@ -54,13 +64,4 @@ textarea{ font-size: smaller; }
 .check_radio input[type=radio] { display:none;　}
 .check_radio input[type=radio]:checked + .label { background-color: silver;　}
 
-
-#chart_LH, #chartDetail_LH	{ position: absolute; z-index: 70; left: -200px; top: 0px; width: 200px;}
-#DetailDateTime	{ border: none; width:188px; }
-#sliderRange	{ position: relative; top:10px; margin-bottom:10px;}
-#sliderData		{ position: absolute; z-index: 97; top: 46px; }
-#concData		{ position: absolute; z-index: 96; top:105px; }
-
-#chart_legend.line,#chartDetail_legend.line { position: relative; color: #333; }
-#chart_legend,	  #chartDetail_legend		{ position: relative; background: white; color: inherit; } 
-#chart_HoverValue,#chartDetail_HoverValue	{ position: relative; z-index: 97; background: white; color: inherit;　}
+footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}

@@ -3,96 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <title>tat log diver</title>
-<link type="text/css" rel="stylesheet" href="../libs/rickshaw.min.css">
-<link type="text/css" rel="stylesheet" href="./HJN.css">
 </head>
 
 <body>
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
-<nav>
-	<header>
-		<h2>TAT log diver (v0.1.24)</h2>
-	</header>
-	<iframe id="fileInfo" class="flexText"></iframe>
-	<input type="text" id="dateParser" 
-		placeholder="%Y%m%d %H:%M:%S.%L" value="%Y%m%d %H:%M:%S.%L" size="23"
-		title="CSVの先頭カラムの時刻のフォーマットを指定する">
-</nav>
+<nav><header>TAT log diver (v0.3.11)
+<div class="statusbar"><iframe id="fileInfo" class="flexText"></iframe></div>
+</header></nav>
 
-<section id="chart_container">
-	<div id="chart_y0"></div>
-	<div id="chart_y1"></div>
-	<div id="chart_graph"></div>
-	
-	<fieldset id="CheckedTime" >
-		<fieldset class="menuField"
-				 style="position: absolute; top: 0px; left: -200px; hight:40px">
-			<legend>baloon plots</legend>
-			<button id="copyButton" onclick="HJN.PlotCopy('baloonData')"
-				title="チェックもしは選択されていない時刻アイコンを削除し、&#13;&#10;時刻アイコンの情報を、JSON形式のテキストでクリップボードにコピーします">copy</button>
-			<button id="loadButton" onclick="HJN.PlotLoad('baloonData')"
-				title="時刻アイコンを、右のテキストエリアのJSONデータの内容に差し替えます">load</button>
-			<textarea id="baloonData" ></textarea>
-		</fieldset>
+<div id="chart"></div>
+<fieldset id="CheckedTime" >
+	<legend id="chart_labels"></legend>
+	<div id="CheckedPlots" class="check_radio"></div>
+</fieldset>
 
-		<legend>2017-01-10</legend>
-		<div id="CheckedPlots" class="check_radio"></div>
-	</fieldset>
-</section>
 
-<section id="chartDetail_container">
-	<div id="chartDetail_LH">
-		<fieldset class="menuField" id="sliderRange" onchange="HJN.setDetailRange()">
-			<legend title="Slider領域および下段グラフの表示条件">slider</legend>
-			<input type="datetime-local" id="DetailDateTime" step="1"
-					value="2016-12-10T13:00:00" max="9999-12-31T23:59:99" readonly>
-			±<input type="number" id="DetailTimeRange" min="0" step="1"
-					value="1" style="width:50px;">sec
-			<button onclick="HJN.CopyToClipboard('sliderData')" 
-					title="指定された期間のログレコードをクリップボードにコピーします">copy<BR>data </button>
-			<textarea id="sliderData"></textarea>
-		</fieldset>
-		<fieldset class="menuField">
-			<legend title="最後にクリックした[多重度(詳細)]プロットのCSVを表示しています">concurrent transactions</legend>
-			<button onclick="HJN.CopyToClipboard('concData')" 
-					title="[多重度(詳細)]のCSVをクリップボードにコピーします" >copy</button>
-			<textarea id="concData"></textarea>
-		</fieldset>
+<div id="chartDetail"></div>
 
-		<div id="chartDetail_legend"></div>
+</body>
+<footer>
+	<small>&copy; copyright 2017 Junichiroh Hirose</small>
+</footer>
 
-		<div id="chartDetail_HoverValue" class="rickshaw_legend"></div>
-	</div>
-
-	<div id="chartDetail_slider"></div>
-	
-	<div id="chartDetail_y0"></div>
-	<div id="chartDetail_y1"></div>
-	<div id="chartDetail_graph"></div>
-</section>
-
-<script src="../libs/jquery.min.js"></script>
-<script src="../libs/d3.v3.min.js"></script>
-<script src="../libs/rickshaw.js"></script>
+<script>
+window.addEventListener("DOMContentLoaded",function(eve){
+	// 初期表示データ指定
+	HJN.ShowLogTextInit();	// 処理時間計測の初期化
+	var tatESeries = HJN.CreateSampleTatLog();	// arg0：生成データ数
+	var seriesSet = HJN.CreateSeries(tatESeries);
+	//チャートを作成する
+	HJN.ChartRegist("chart", seriesSet);
+	HJN.ShowLogText("<BR>サンプルを表示しました<BR>" + 
+		"<mark>右上段のグラフ領域に、CSVファイルをドラッグ＆ドロップして下さい</mark><BR>", "msg");
+	HJN.ShowLogText("上段表示", "elaps");		// 処理時間ログ出力
+});
+</script>
 
 <script src="./HJN.js"></script>
 <script src="./HJN.utils.js"></script>
-<script>
-	window.addEventListener("DOMContentLoaded",function(eve){
-			var startTime = new Date();	// 処理時間計測の初期化
-			HJN.ShowLogTextInit();
-			// 初期表示データ指定
-			var tatESeries = HJN.CreateSampleTatLog();	// arg0：生成データ数
-			var seriesSet = HJN.CreateSeries(tatESeries);
-	
-			//チャートを作成する
-			HJN.ChartRegist("chart", seriesSet);
-	
-			HJN.ShowLogText("Total : " + (new Date() - startTime) + "ms", false);
-			HJN.ShowLogText("<BR>サンプルを表示しました<BR><mark>右上段のグラフ領域に、CSVファイルをドラッグドロップして下さい</mark><BR>",true);
-	});
-</script>
-
-</body>
-<footer><small>&copy; copyright 2017 Junichiroh Hirose</small></footer>
+<link type="text/css" rel="stylesheet" href="./HJN.css">
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+<script src="../libs/dygraph.js"></script>
 </html>
