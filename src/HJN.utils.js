@@ -339,7 +339,7 @@ HJN.GetSliderRangedEtat = function() {
 	var dt = Math.floor(HJN.detailDateTime * 1000) / 1000,		// 中央時刻	// ミリ秒
 		range =  HJN.detailDateTimeRange * 1000;	// 幅（ミリ秒）
 	
-	var eTatDetail = HJN.seriesSet[HJN.ETAT.N].tatMap.search(dt - range,　dt + 2* range);	// #18
+	var eTatDetail = HJN.seriesSet[HJN.ETAT.N].tatMap.search(dt - range,　dt + 1000 * range);	// #18
 	HJN.ShowLogText("[0:HJN.GetSliderRangedEtat] ","calc");
 	
 	return eTatDetail;	// 詳細グラフ用eTatを返却する
@@ -388,9 +388,12 @@ HJN.PointDblClickCallback = function(p) {
 
 /**  クリック時のHoverからHJN.plotsを設定する **/
 HJN.PlotAdd　=　function(n, x, y) { // arg: HJN.hoverXY マウスクリック時の値
+	// 各plotを非選択状態とする
 	HJN.plots.forEach(function(e,i,a){e.radio = false;});
+	// ラベルフォーマットの設定
 	var format = (n === HJN.ETPS.N || n === HJN.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.sss";
-		label = HJN.D2S(x, format) + " " +
+	// plotを追加する
+	var label = HJN.D2S(x, format) + " " +
 				HJN.seriesConfig[n].label.replace("%N",HJN.N2S(y)),
 		tagInput =  document.getElementById("DetailTimeRange"),
 		range　= tagInput ? +tagInput.value : 1,	// 幅
@@ -399,10 +402,35 @@ HJN.PlotAdd　=　function(n, x, y) { // arg: HJN.hoverXY マウスクリック�
 	if(i < 0){ // 既存に無いとき追加する
 		HJN.plots.push(	{label: label, ckBox:false,
 						 radio:true, n: n, x: x, y: y, range: range });
+		// CTPSのとき秒内最大CONCも追加する
+		if (n === HJN.CTPS.N){
+			var conc = HJN.chartD.seriesSet[HJN.CONC.N],	// PlotAddは下段集計後に呼ばれる
+				i = binarySearch(x, conc, function(e){ return e.x; }),
+				toX = x + 1000, // ミリ秒
+				maxTime = 0,
+				concMax = 0;
+			for (; conc[i].x < toX; i++){
+				if (concMax < conc[i].y){
+					maxTime = conc[i].x;
+					concMax = conc[i].y;
+				}
+			}
+			if(x < maxTime){	// 補正すべき時刻が求まったときCONCを追加する
+				n = HJN.CONC.N;
+				x = maxTime;
+				format = "hh:mm:ss.sss";
+				label = HJN.D2S(x, format) + " " +
+						HJN.seriesConfig[n].label.replace("%N",HJN.N2S(y)),
+				HJN.plots.push(	{label: label, ckBox:false,
+					 radio:true, n: n, x: x, y: y, range: range });
+			}
+		}
+
 		HJN.plots.sort(
 				function(a, b) { return a.x - b.x });
 		i = HJN.plots.findIndex(
 				function(p){ return(p.n === n && p.x === x); });
+		
 	}else{ // 既存Plotsにある時、選択状態とする
 		var ckBox = HJN.plots[i].ckBox;
 		HJN.plots.splice(i, 1,
@@ -411,6 +439,22 @@ HJN.PlotAdd　=　function(n, x, y) { // arg: HJN.hoverXY マウスクリック�
 	}
 	HJN.PlotRender();
 	return i;	//　plots内のplotの位置
+	
+	// 内部関数：配列二分木検索
+	function binarySearch(val, arr, func, low, high) {
+		func = func || function(val){ return val.valueOf(); };
+		low = low || 0;
+		high = high || arr.length - 1;
+		var	middle;
+		while( low <= high ){
+			middle = Math.floor(low + high) / 2 | 0;
+			valMiddle = func(arr[middle]);
+			if(valMiddle === val) return middle;
+			else if(val < valMiddle) high = middle - 1;
+			else low = middle + 1;
+		}
+		return low; // 通常は-1だけど完全一致しない場合を想定
+	}
 }
 /**  HJN.plotsを再表示する **/
 HJN.PlotRender = function() {
@@ -476,11 +520,7 @@ HJN.PlotClear = function() {
 	// グラフ内の吹き出しを再表示する
 	HJN.PlotShowBalloon();
 }
-
-
-/** ************************************
-　* Balloonを再描画する *
-　* ************************************ */
+/** Balloonを再描画する **/
 HJN.PlotShowBalloon =　function(){
 	HJN.chart.showBalloon();
 	HJN.chartD.showBalloon();
