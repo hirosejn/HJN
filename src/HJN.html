@@ -7,35 +7,25 @@
 
 <body>
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
-<nav><header>TAT log diver (v0.3.11)
-<div class="statusbar"><iframe id="fileInfo" class="flexText"></iframe></div>
+<nav><header>TAT log diver (v0.3.21)
+<div class="statusbar">
+	<iframe id="fileInfo"></iframe>
+</div>
 </header></nav>
 
 <div id="chart"></div>
-<fieldset id="CheckedTime" >
-	<legend id="chart_labels"></legend>
-	<div id="CheckedPlots" class="check_radio"></div>
+<fieldset>
+	<legend id="chartLabels"></legend>
+	<div id="chartPlots"></div>
 </fieldset>
-
-
 <div id="chartDetail"></div>
-
 </body>
-<footer>
-	<small>&copy; copyright 2017 Junichiroh Hirose</small>
-</footer>
+
+<footer><small>&copy; copyright 2017 Junichiroh Hirose</small></footer>
 
 <script>
 window.addEventListener("DOMContentLoaded",function(eve){
-	// 初期表示データ指定
-	HJN.ShowLogTextInit();	// 処理時間計測の初期化
-	var tatESeries = HJN.CreateSampleTatLog();	// arg0：生成データ数
-	var seriesSet = HJN.CreateSeries(tatESeries);
-	//チャートを作成する
-	HJN.ChartRegist("chart", seriesSet);
-	HJN.ShowLogText("<BR>サンプルを表示しました<BR>" + 
-		"<mark>右上段のグラフ領域に、CSVファイルをドラッグ＆ドロップして下さい</mark><BR>", "msg");
-	HJN.ShowLogText("上段表示", "elaps");		// 処理時間ログ出力
+	HJN.ChartRegist("chart");		//チャートを作成する
 });
 </script>
 
