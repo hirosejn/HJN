@@ -233,7 +233,6 @@ HJN.prototype.createSeries =　function(eTat){
 
 	// cTpsのxからindexを引くMapを作成する　#18
 //	cTps.xMap = new HJN.util.MappedArray(cTps, "x");
-	HJN.ShowLogText("[5-2:cTpsMap created] ","calc");
 	eTat.tatMap = new HJN.util.MappedETat(eTat);
 	HJN.ShowLogText("[5-2:cTpsMap created] ","calc");
 
@@ -353,7 +352,7 @@ HJN.prototype.update =　function(seriesSet){
 			file: this.dyData 
 		});
 	}else{
-		//　グラフがないときは新規作成する
+		//　グラフが無いときは新規作成する
 		this.graph = new Dygraph(
 			this.chartId,
 			this.dyData,
