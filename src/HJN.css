@@ -54,14 +54,13 @@ ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
 			font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; }
 
 #plotsArea	{ top: 20px; }
-#CheckedTime	{ position: relative; top: 3px; margin: 0px; padding:4px;}
-#chart_labels label 		{ display:inline-block; width:80px; }
-#chart_labels .datetime		{ display:inline-block; width:170px; }
-.check_radio div {float: left;}
-.check_radio input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
-.check_radio label	{ position:relative; cursor: pointer; left:-5px; 
+#chartLabels label 		{ display:inline-block; width:80px; }
+#chartLabels .datetime		{ display:inline-block; width:170px; }
+#chartPlots div {float: left;}
+#chartPlots input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
+#chartPlots label	{ position:relative; cursor: pointer; left:-5px; 
 						padding: 0px 5px; border-radius: 5px;　}
-.check_radio input[type=radio] { display:none;　}
-.check_radio input[type=radio]:checked + .label { background-color: silver;　}
+#chartPlots input[type=radio] { display:none;　}
+#chartPlots input[type=radio]:checked + .label { background-color: silver;　}
 
 footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
