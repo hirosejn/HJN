@@ -4,7 +4,7 @@
  * ************************************ */
 "use strict";
 /* クラス変数 */
-HJN.ver = "v0.3.21";
+HJN.ver = "v0.3.26";
 
 HJN.util　= {};	//　utils登録変数
 HJN.chart = HJN.chartD = null;
@@ -73,7 +73,8 @@ function HJN(chartIdName, config, globalName) {
 	for (var i = 0, j = 0; i < config.SERIESES.length; i++){
 		if (config.SERIESES[i].process === true) {
 			this.SERIESES[j] = 
-				{ key:'', name:'',　visiblity:false, renderer:'', order:0, scale:0, color:'' };
+				{ key:'', name:'',　visiblity:false,
+				  renderer:'', order:0, scale:0, color:'' };
 			// 定数(HJN.seriesConfig)指定項目を設定する
 			for (var attr in HJN.seriesConfig[i]){
 				this.SERIESES[j][attr]= HJN.seriesConfig[i][attr];
@@ -705,7 +706,8 @@ HJN.prototype.addMenu =　function(){
 		return '' + 
 		'<a id="' + arg.menuId + '" href="#" ' + //class="menuBar" ' + 
 			'download="' + arg.fileName + '" ' +
-			'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '" + arg.fileName + "'" +')" ' +
+			'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '" +
+													 arg.fileName + "'" +')" ' +
 			'>' + arg.menuLabel + '</a>';
 	}
 
@@ -714,7 +716,8 @@ HJN.prototype.addMenu =　function(){
 		// '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
 		return '' + 
 		'<a id="' + arg.menuId + '"' +
-			' onclick="alert(' + arg.strFuncName + ")" + '"' + '><label>' + arg.menuLabel + '</label></a>';
+			' onclick="alert(' + arg.strFuncName + ")" + '"' + '>'+
+			'<label>' + arg.menuLabel + '</label></a>';
 	}
 
 }
@@ -813,7 +816,8 @@ HJN.prototype.menuDownloadLog =　function(menuId, fileName){
 			// ファイルの該当行を Uint8Arrayに登録する
 			eTat.forEach(function(e){
 				buff.set(new Uint8Array(HJN.filesArrayBuffer[HJN.filesIdx], e.pos,
-								Math.min(e.len + 2, HJN.filesArrayBuffer[HJN.filesIdx].byteLength - e.pos)), offset);
+					Math.min(e.len + 2, HJN.filesArrayBuffer[HJN.filesIdx].byteLength - e.pos)),
+					offset);
 				offset += (e.len + 2);
 			});
 			// 未使用作業領域を削除する
@@ -854,7 +858,9 @@ HJN.prototype.menuDownloadConc =　function(menuId, fileName){
 				// ファイルの該当行を Uint8Arrayに登録する
 				trans.forEach(function(e){
 					buff.set(new Uint8Array(HJN.filesArrayBuffer[HJN.filesIdx], e.pos,
-									Math.min(e.len + 2, HJN.filesArrayBuffer[HJN.filesIdx].byteLength - e.pos)), offset);
+									Math.min(e.len + 2,
+											HJN.filesArrayBuffer[HJN.filesIdx].byteLength - e.pos)),
+									offset);
 					offset += (e.len + 2);
 				});
 				// 未使用作業領域を削除する
@@ -866,7 +872,8 @@ HJN.prototype.menuDownloadConc =　function(menuId, fileName){
 
 		
 	} else {	// CONCが選択されていないとき
-		var msg = "抽出対象データがありません。空データがダウンロードされます\r\nconc：多重度（詳細）の点を選択した状態で行ってください" 
+		var msg = "抽出対象データがありません。空データがダウンロードされます\r\n" +
+					"conc：多重度（詳細）の点を選択した状態で行ってください";
 		alert(msg);
 		this.menuDownloadBlob(this.menuBuffToBlob(msg), menuId, fileName);
 	}
