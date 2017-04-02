@@ -1,0 +1,82 @@
+﻿<!doctype html>
+<section>
+sandbox menu2のボタンをmenu1に差し替え
+<font size="40px" color="red">×　📎✖☒🍔三
+</font>
+
+<!-- http://chipspd.hatenadiary.jp/entry/hamburger-icon-css　-->
+<div class="hm_wrap">
+	<input id="hm_menu_01" type="checkbox" name="hm_menu" class="hm_menu_check"/>
+	<label for="hm_menu_01" class="hm_btn"><span></span><span></span><span></span></label>
+	<h2 class="hm_title">CSSだけでハンバーガーメニューを実装する方法</h2>
+		<nav class="hm_menu_wrap">
+			<ul class="hm_list">
+				<li><a href="#">テキスト</a></li>
+				<li><a href="#">テキスト</a></li>
+				<li><a href="#">テキスト</a></li>
+				<li><a href="#">テキスト</a></li>
+			</ul>
+		</nav>
+</div>
+
+
+<style>
+/* ▽▽ハンバーガーメニュー▽▽------------------------------------------------------- */
+.hm_menu_check { display: none; }/* チェックボックスを隠す */
+.hm_wrap { display: inline-block; position :fixed;
+	top :0; left :0; width :100%; padding :10px; background :#fff; }
+.hm_title {/* ハンバーガーメニューオープン時の見出し */
+	position: relative;	display: inline-block; color: #999;
+	float: left; font-weight: 100; line-height: 30px; margin: 0 0 0 15px; opacity: 0;
+	-webkit-transform: translate3d(0, -15px, 0); transform: translate3d(0, -15px, 0);
+	-webkit-transition: -webkit-transform 0.6s, opacity 0.5s; transition: transform 0.6s, opacity 0.5s;
+	z-index: 2; }
+ 
+/* ▽▽メニューボタン▽▽ */
+.hm_btn, .hm_btn span { display: inline-block; box-sizing: border-box; transition: all .4s; }
+.hm_btn {  position: relative; display: block; cursor: pointer; float: left; z-index: 2;
+	width: 36px; height: 36px; background-color: #fff; 
+	border: 1px solid #ccc; box-shadow:	1px 1px 1px #ccc; border-radius: 4px;}
+.hm_btn span { height: 4px; border-radius: 2px;
+	position: absolute; left: 6px; width: 63%; background-color: #848484; }
+.hm_btn span:nth-of-type(1) { top:  7px; }
+.hm_btn span:nth-of-type(2) { top: 15px; }
+.hm_btn span:nth-of-type(3) {	top: 23px; }
+
+	
+/* ▽▽開いたメニューの背景▽▽ */
+.hm_menu_wrap {	position: absolute; width :100%; height :10000px; background: #fff;
+	left: -100%; top: 0; -webkit-transition: left 0.4s; transition: left 0.4s; }
+/* ▽▽開閉時のアニメーション▽▽ */
+.hm_menu_check:checked ~ .hm_title {
+	opacity: 1; -webkit-transform: none; -ms-transform: none; transform: none; }
+.hm_menu_check:checked ~ .hm_btn span:nth-of-type(1) {
+	-webkit-transform: translateY(8px) rotate(45deg);
+	transform: translateY(8px) rotate(45deg);
+}
+.hm_menu_check:checked ~ .hm_btn span:nth-of-type(2) {
+	opacity: 0;
+}
+.hm_menu_check:checked ~ .hm_btn span:nth-of-type(3) {
+	-webkit-transform: translateY(-8px) rotate(-45deg);
+	transform: translateY(-8px) rotate(-45deg);
+}
+
+.hm_menu_check:checked ~ .hm_menu_wrap { left: 0; }
+ 
+ /* ▽▽メニュー内のリストスタイル▽▽ */
+.hm_list { list-style-type: none; margin: 50px 0 0; padding: 0; }
+.hm_list li a {	position: relative; color: #777;
+	display: block; overflow: hidden; padding: 8px 22px;
+	text-decoration: none; z-index: 1; }
+.hm_list li a::before {/* aタグマウスオーバー時の背景 */
+	position: absolute; content: ''; background: #eee;
+	top: 0; right: 0; bottom: 100%; left: 0; z-index: -1; }
+.hm_list li a:hover::before { bottom: 0; }
+.hm_list li a:hover::after {　opacity: 0.5;
+	-webkit-transform: translate3d(0, 0, 0);　transform: translate3d(0, 0, 0);　}
+------------------------------------------------------- */
+</style>
+
+<footer><small>&copy; copyright 2017 Junichiroh Hirose</small></footer>
+</html>

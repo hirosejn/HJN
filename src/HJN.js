@@ -375,7 +375,7 @@ HJN.prototype.update =　function(seriesSet){
 						gridLinePattern: [1,2]	}
 				},
 				includeZero: true,
-				axisLabelFontSize: 10,
+//				axisLabelFontSize: 10,
 				axisLineColor: 'rgba(0, 0, 0, 0.2)',
 				gridLineColor: 'rgba(0, 0, 0, 0.2)',
 				strokeWidth: 2,
@@ -470,8 +470,6 @@ HJN.prototype.update =　function(seriesSet){
 			plots.forEach(function(p,i){
 				ctx.lineTo(p.x, p.y);
 			});
-			// ctx.fillStyle = color;
-			// ctx.fillRect(tXs, tY-2, tXe-tXs, 4);
 			ctx.stroke();
 		}
 
@@ -656,41 +654,76 @@ HJN.prototype.addMenu =　function(){
 				strFuncName:"HJN.Copyright()" };
 
 	
-	var ul = document.createElement('ul');		// 要素の作成
-	ul.className = "menu";
-	ul.innerHTML =
+	var accordion = document.createElement('div');		// 要素の作成
+	accordion.className = "accordion";
+	if (HJN.chart.chartId === this.chartId){
+		accordion.innerHTML =
+			// File Menu
 			'<li class="menu_lv1">' +
-				'<a href="#" class="init-bottom">File</a>' +
+				'<label for="ac-' + this.chartIdName + '0">File</label>' +
+				'<input id="ac-' + this.chartIdName + '0" type="radio" name="accordion">' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
 					'<li>' + getATag(menuSaveConfig) + '</li>' +
 					'<li>' + getATag(menuLoadConfig) + '</li>' +
+				'</ul>' +
+			'</li>' +
+			// Help Menu
+			'<li class="menu_lv1">' +
+				'<label for="ac-' + this.chartIdName + '3">Help</label>' +
+				'<input id="ac-' + this.chartIdName + '3" type="radio" name="accordion">' +
+				'<ul class="menu_lv2" style="width: 100%;">' +
+				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
+				'<li><a href="#">Child Menu</a></li>' +
+				'</ul>' +
+			'</li>' +
+			// Edit Menu
+			'<li class="menu_lv1">' +
+				'<label for="ac-' + this.chartIdName + '1">Edit ' + this.chartIdName + '</label>' +
+				'<input id="ac-' + this.chartIdName + '1" type="radio" name="accordion">' +
+				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
 					'<li>' + getATag(menuDownloadCsv) + '</li>' +
 					'<li>' + getATag(menuDownloadLog) + '</li>' +
 					'<li>' + getATag(menuDownloadConc) + '</li>' +
 				'</ul>' +
 			'</li>' +
+			// View Menu
 			'<li class="menu_lv1">' +
-				'<a href="#" class="init-bottom">View</a>' +
+				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
+				'<input id="ac-' + this.chartIdName + '2" type="radio" name="accordion">' +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +
-			'</li>' +
-			'<li class="menu_lv1"></li>' +
-			'<li class="menu_lv1"></li>' +
-			'<li class="menu_lv1">' +
-				'<a href="#" class="init-bottom">Help</a>' +
-				'<ul class="menu_lv2" style="width: 100%;">' +
-				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
-				'<li><a href="#">Child Menu</a></li>' +
-				'</ul>' +
 			'</li>' ;
-	divMenu.appendChild(ul);
+		divMenu.appendChild(accordion);
 
-	// File Open用 イベントリスナー登録
-	document.getElementById(menuOpenCsv.menuId)
-			.addEventListener('change', this.menuOpenCsv.bind(this), false);
+		// File Open用 イベントリスナー登録
+		document.getElementById(menuOpenCsv.menuId)
+				.addEventListener('change', this.menuOpenCsv.bind(this), false);
+	}else{
+		accordion.innerHTML =
+			// Edit Menu
+			'<li class="menu_lv1">' +
+			'<label for="ac-' + this.chartIdName + '1">Edit ' + this.chartIdName + '</label>' +
+				'<input id="ac-' + this.chartIdName + '1" type="radio" name="accordion">' +
+				'<ul class="menu_lv2">' +
+					'<li>' + getATag(menuDownloadImg) + '</li>' +
+					'<li>' + getATag(menuDownloadCsv) + '</li>' +
+					'<li>' + getATag(menuDownloadLog) + '</li>' +
+					'<li>' + getATag(menuDownloadConc) + '</li>' +
+				'</ul>' +
+			'</li>' +
+			// View Menu
+			'<li class="menu_lv1">' +
+				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
+				'<input id="ac-' + this.chartIdName + '2" type="radio" name="accordion">' +
+				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
+					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
+				'</ul>' +
+			'</li>';
+		divMenu.appendChild(accordion);
+	}
 	// File Open用<input>タグ編集（内部関数宣言）
 	function getInputTag(arg){
 		// '<a><label>Child Menu<input type="file" id="xxx" multiple /></label></a>

@@ -10,7 +10,8 @@ ol, ul { list-style: none; list-style-type: none; }
 
 /* */
 body	{ font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
-			font-size: 12px; margin: 10px;}
+			font-size: 12px; margin: 0;}
+nav 	{ height: 36px }
 fieldset{ border: 1px #cccccc dotted; }
 input	{ border-width: 1px; font-size: 12px; }
 textarea{ font-size: smaller; }
@@ -18,31 +19,51 @@ textarea{ font-size: smaller; }
 			top: 0px; left: 200px; height: 20px; width: 200px; background: #fff; }
 .statusbar > iframe { overflow: hidden; width: 95%; height: 90%; }
 
-/* menu bar用設定　*/
-.menuIcon	{ position: absolute; z-index: 80;}
-.menu 		{ height: 14px; position: relative; width: 100%; margin: 0 auto; z-index: 80;}
-.menu > li 	{ height: 14px; line-height: 14px; width: 20%; /* グローバルナビ4つの場合 25% */
-			 background: rgb(29, 33, 19); float: left; }
-li.menu_lv1 ul.menu_lv2	 { top: 14px; position: absolute; width: 220px; 
-    background: #072A24; -webkit-transition: all .2s ease; transition: all .2s ease; }
-li.menu_lv1:hover ul.menu_lv2 { top: 14px; visibility: visible; opacity: 1; }
-.menu > li a { -webkit-padding-start: 28px; display: block; color: #fff; text-decoration: none; }
-.menu > li a:hover { color: #999; }
-ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
-.menu > li:hover { background: #072A24; -webkit-transition: all .5s; transition: all .5s; }
-.menu_lv2 li { border-top: 1px solid #111; }
-.menu_lv2 li a:hover { background: #111; }
-.menu_lv2 > li input[type="file"] { display:none; } /* File Open用 */
-/* 下矢印 */
-.init-bottom:after { content: ''; display: inline-block; width: 6px; height: 6px; margin: 0 0 0 15px;
-	border-right: 1px solid #fff; border-bottom: 1px solid #fff;
-    -webkit-transform: rotate(45deg); -ms-transform: rotate(45deg); transform: rotate(45deg); }
-/* floatクリア */
-.menu:before, .menu:after { content: " "; display: table; }
-.menu:after { clear: both; }
-.menu 		{ *zoom: 1; }
-.menu > li.menu_lv1 { position: relative; }
-.legend	{ display:inline-block; width:100%; }
+/* ハンバーガーメニュー */
+.hm_wrap { position :fixed; display: inline-block; visibility: hidden; z-index: 96;
+	top :0; right :0; width :300px; height:100%; padding :0; background :#fff; }
+/* ハンバーガーボタン */
+.hm_btn, .hm_btn span { display: inline-block; box-sizing: border-box;
+	transition: all 0.4s; visibility: visible; }
+.hm_btn { position: relative; display: block; cursor: pointer; z-index: 98;
+	width: 36px; height: 36px; background-color: #fff; float: right;
+	border: 1px solid #ccc; box-shadow:	1px 1px 1px #ccc; border-radius: 4px;}
+.hm_btn span { top: 15px; height: 4px; border-radius: 2px;
+	position: absolute; left: 6px; width: 63%; background-color: #848484; }
+.hm_btn span::before, .hm_btn span::after {
+	position: absolute; width: 21px; height: 4px; background: #848484;
+	display: block; content: ''; transition: transform 0.4s; }
+.hm_btn span::before { top: -8px; }
+.hm_btn span::after { top: 8px; bottom: 0; }
+.hm_menu_check:checked ~ .hm_btn span {	background: #fff; }
+.hm_menu_check:checked ~ .hm_btn span::before { transform: translateY(8px) rotate(-45deg); }
+.hm_menu_check:checked ~ .hm_btn span::after { transform: translateY(-8px) rotate(45deg); }
+/* メニュー 全体 */
+.hm_title { /* ハンバーガーメニューオープン時の見出し */
+	position: relative;	display: inline-block;  visibility: visible; color: #999;
+	float: left; line-height: 18px; margin: 0 0 0 15px; opacity: 0; z-index: 98;
+	transform: translate3d(0, -15px, 0); transition: transform 0.4s, opacity 0.5s;
+	word-wrap: break-word; width: 200px; }
+.hm_menu_check:checked ~ .hm_title { transform: none;  opacity: 1; }
+.hm_menu_wrap {	position: absolute;  visibility: visible; width :100%; height :100%;
+	background: #fff; opacity: 0.9;	top: 0; right: -100%; transition: right 0.4s; 
+	padding: 36px 0 0;}
+.hm_menu_check:checked ~ .hm_menu_wrap { right: 0; }
+ /* アコーデオンメニュー */
+.accordion { list-style-type: none; margin: 0; padding: 0; }
+.menu_lv1 { margin: 0 10px; }
+.menu_lv1 input { display: none; }
+.menu_lv1 .legend > input { display: inline; cursor: pointer; }
+.menu_lv1 .legend {cursor: pointer; display:inline-block; width:100%; padding: 8px ; }
+.menu_lv1 > label, .menu_lv1 > a { display: block; cursor: pointer;
+	padding: 10px; border-bottom: 1px solid #fff; background: #eee; }
+.menu_lv1 > input:checked + .menu_lv2 { height: auto; padding: 10px;  }
+.menu_lv1 > label:hover, .menu_lv1 a:hover { background: rgba(0,0,0,0.2); }
+
+ /* 詳細メニューリスト */
+.menu_lv2 { transition: 0.2s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
+.menu_lv2 li a { position: relative; display: block; overflow: hidden; padding: 8px 22px;
+	text-decoration: none; color: #000; }
 
 /* dygraph用設定 */
 .item.active{ background: rgba(0,0,0,0.2) !important;
@@ -51,7 +72,7 @@ ul.menu_lv2	{ visibility: hidden; opacity: 0; z-index: 1; }
 	margin-top: -3.5px; height: 8px; border-radius: 4px; background: rgba(192,192,192,0.4); }
 .column		{ display: inline-block; }
 .dygraph-annotation { color: rgba(0,0,0,0.8) !important; background-color: rgba(256,256,256,0.2); 
-			font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; }
+	font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; width: 20px !important;}
 
 #plotsArea	{ top: 20px; }
 #chartLabels label 		{ display:inline-block; width:80px; }
