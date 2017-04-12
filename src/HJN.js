@@ -58,7 +58,10 @@ function HJN(chartIdName, config, globalName) {
 						height: 0.35, isVisiblity: true };
 	}
 	this.globalName = globalName || "HJN.chartD";	// arg2
-	
+
+	// FileReaderを設定する
+	this.fileReader = HJN.util.FileReader(); // #24
+
 	// グラフ定義領域の宣言
 	this.chartId = document.getElementById(this.chartIdName);
 	this.dyData = [];
@@ -366,7 +369,7 @@ HJN.prototype.update =　function(seriesSet){
 				legendFormatter: this.legendFormatter,
 				axes: {
 					x: {axisLabelFormatter: axisLabelFormatter,
-						axisLabelWidth: 80 },
+						axisLabelWidth: 100 },
 					y: {axisLabelWidth: 30,
 						logscale: false	},
 					y2:{drawGrid: true,
@@ -432,7 +435,7 @@ HJN.prototype.update =　function(seriesSet){
 			// 指定時刻に動いているeTatの一覧(trans)を得る
 			var	g = this,	// {dygraph} HJN.chartD.graph
 				x = g.rawData_[idx][0],	// クリックした 点(CONC)のx　の値
-				trans = this.HJN.seriesSet[HJN.ETAT.N].tatMap.search(x);	// #18
+				trans = this.HJN.seriesSet[HJN.ETAT.N].tatMap.search(x, x, 1000);	// #18
 
 			// 同時処理の線を引く
 			var	tXs = 0,
@@ -577,7 +580,7 @@ HJN.prototype.legendFormatter　= function(data) {
 	// legend: 'always'指定のとき、マウスがグラフ外にあると dataに値が設定されていなことを考慮
 	var html = (typeof data.x === "undefined") 
 				? ''
-				: HJN.DateToString(new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.sss");
+				: HJN.DateToString(new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.ppp");
 	html = '<label class="datetime">' + html + '</label>';
 	data.series.forEach(function(series) {
 		if (!series.isVisible) return;
@@ -656,16 +659,17 @@ HJN.prototype.addMenu =　function(){
 	
 	var accordion = document.createElement('div');		// 要素の作成
 	accordion.className = "accordion";
-	if (HJN.chart.chartId === this.chartId){
+	if (HJN.chart.chartId === this.chartId){	//　上段グラフ用機能のメニュー追加
 		accordion.innerHTML =
 			// File Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '0">File</label>' +
-				'<input id="ac-' + this.chartIdName + '0" type="radio" name="accordion">' +
+				'<input id="ac-' + this.chartIdName + '0" type="radio" name="accordion" checked="checked">' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
 					'<li>' + getATag(menuSaveConfig) + '</li>' +
 					'<li>' + getATag(menuLoadConfig) + '</li>' +
+					this.fileReader.getConfigHtml() +	// #24
 				'</ul>' +
 			'</li>' +
 			// Help Menu
@@ -677,9 +681,9 @@ HJN.prototype.addMenu =　function(){
 				'<li><a href="#">Child Menu</a></li>' +
 				'</ul>' +
 			'</li>' +
-			// Edit Menu
+			// Download Menu
 			'<li class="menu_lv1">' +
-				'<label for="ac-' + this.chartIdName + '1">Edit ' + this.chartIdName + '</label>' +
+				'<label for="ac-' + this.chartIdName + '1">Download upper chart</label>' +
 				'<input id="ac-' + this.chartIdName + '1" type="radio" name="accordion">' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
@@ -701,11 +705,11 @@ HJN.prototype.addMenu =　function(){
 		// File Open用 イベントリスナー登録
 		document.getElementById(menuOpenCsv.menuId)
 				.addEventListener('change', this.menuOpenCsv.bind(this), false);
-	}else{
+	}else{									// 下段用グラフ機能のメニュー追加
 		accordion.innerHTML =
-			// Edit Menu
+			// Download Menu
 			'<li class="menu_lv1">' +
-			'<label for="ac-' + this.chartIdName + '1">Edit ' + this.chartIdName + '</label>' +
+			'<label for="ac-' + this.chartIdName + '1">Download ' + this.chartIdName + '</label>' +
 				'<input id="ac-' + this.chartIdName + '1" type="radio" name="accordion">' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
@@ -837,7 +841,7 @@ HJN.prototype.menuDownloadLog =　function(menuId, fileName){
 			// 生成データをCSVに編集する
 			var eTatCsv = "";
 			eTat.forEach(function(e){
-				eTatCsv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.sss") +
+				eTatCsv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") +
 							"," + e.y + "\r\n"; 
 			});
 			// ダウンロードする
@@ -878,7 +882,7 @@ HJN.prototype.menuDownloadConc =　function(menuId, fileName){
 				// 生成データをCSVに編集する
 				var csv = "";
 				trans.forEach(function(e){
-					csv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.sss") +
+					csv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") +
 								"," + e.y + "\r\n"; 
 				});
 				// ダウンロードする

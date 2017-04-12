@@ -52,7 +52,7 @@ textarea{ font-size: smaller; }
  /* アコーデオンメニュー */
 .accordion { list-style-type: none; margin: 0; padding: 0; }
 .menu_lv1 { margin: 0 10px; }
-.menu_lv1 input { display: none; }
+.menu_lv1 > input { display: none; }
 .menu_lv1 .legend > input { display: inline; cursor: pointer; }
 .menu_lv1 .legend {cursor: pointer; display:inline-block; width:100%; padding: 8px ; }
 .menu_lv1 > label, .menu_lv1 > a { display: block; cursor: pointer;
@@ -63,7 +63,10 @@ textarea{ font-size: smaller; }
  /* 詳細メニューリスト */
 .menu_lv2 { transition: 0.2s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
 .menu_lv2 li a { position: relative; display: block; overflow: hidden; padding: 8px 22px;
-	text-decoration: none; color: #000; }
+	text-decoration: none; color: #000; border: groove #fff;}
+.menu_lv2 > li input[type="file"] { display: none; } /* File Open用 */
+.menu_lv2 ol { display: block; padding-left: 20px; } /* CSV Config用 */
+.menu_lv2 ol input, .menu_lv2 ol label { cursor: pointer; height: 12px; }
 
 /* dygraph用設定 */
 .item.active{ background: rgba(0,0,0,0.2) !important;
