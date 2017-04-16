@@ -18,14 +18,14 @@ HJN.filesIdx = 0;
 HJN.filesArrayBuffer = [];
 
 HJN.CONC = 	{ key: 'conc', name:'多重度（詳細）',　label:'conc:%N',
-		N:　0, scale:　0, color: 'rgba(  0,  0,127, 0.3)', renderer: 'area' };
-										// mulitのとき area はseries内で１系列だけ
+		N:　0, scale:　0, color: 'rgba(  0,  0,127, 0.3)', renderer: 'area',
+		tpsN: 1};	// #7							// mulitのとき area はseries内で１系列だけ
 HJN.CTPS = 	{ key: 'cTps', name:'多重度（秒間最大）', label:'conc(max):%N',
-		N:　1, scale:　0, color: 'rgba(  0,  0,127, 0.1)', renderer: 'scatterplot' };	
-										// bar / scatterplot
+		N:　1, scale:　0, color: 'rgba(  0,  0,127, 0.1)', renderer: 'scatterplot',
+		detailN: 0};							// bar / scatterplot
 HJN.STAT = 	{ key: 'sTat', name:'[Y2軸] start time',　label:'start:%Nms',
 		N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)', renderer: 'scatterplot' };
-HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time',　label:'%Nms', 
+HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time',　label:'end:%Nms', 
 		N:　3, scale:　1, color: 'rgba(127,  0,  0, 0.3)', renderer: 'scatterplot' };
 HJN.ETPS = 	{ key: 'eTps', name:'[Y2軸] end trans / sec',　label:'end:%Ntps', 
 		N:　4, scale:　1, color: 'rgba(  0, 127, 127, 0.3)', renderer: 'line' };
@@ -418,7 +418,7 @@ HJN.prototype.update =　function(seriesSet){
 	
 	// 再描画する
 	this.showBalloon();
-	HJN.ShowLogText("[9:baloon showen] ","calc");
+	HJN.ShowLogText("[9:balloon showen] ","calc");
 		
 	
 	/** updateメソッド内部関数宣言 **/
@@ -428,7 +428,7 @@ HJN.prototype.update =　function(seriesSet){
 		if (!g.rawData_ || g.rawData_.length - 1 < idx) return;
 
 		// CONC/STAT/ETAT のとき、TRANSの線を引く
-		if (name === HJN.CONC.key || name === HJN.STAT.key || name === HJN.ETAT.key ) {
+		if (name === HJN.CONC.key ){//}|| name === HJN.STAT.key || name === HJN.ETAT.key ) { // #17
 			// 以前に選択した線を消す
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -531,10 +531,11 @@ HJN.prototype.showBalloon =　function(){
 
 	var ann = {	series: "", xval: 0, shortText: "", text: "" },
 		anns = [];
-	
+	// 表示時間帯を求める
 	var	ctps = this.seriesSet[HJN.CTPS.N],
 		minX = ctps[0].x,
 		maxX = ctps[ctps.length - 1].x;
+	// アノテーションをdygparhに追加する
 	HJN.plots.forEach(function(e, i){
 		if(minX <= e.x && e.x <= maxX){
 			ann = {	series: HJN.seriesConfig[e.n].key,
@@ -542,8 +543,18 @@ HJN.prototype.showBalloon =　function(){
 					shortText: e.y, 
 					text: e.label };
 			anns.push(ann);
+			// 詳細Plot＆詳細グラフデータが無いとき、詳細Plot内のTPS Plotを追加する	#7
+			if("tpsPlot" in e){		// 詳細plotのとき
+				if(this.SERIESES.findIndex(function(s,i){return s.N === e.n; }) < 0){	// 詳細グラフデータが無いとき
+					ann = {	series: HJN.seriesConfig[e.tpsPlot.n].key,
+							xval: e.tpsPlot.x,	// ミリ秒
+							shortText: e.tpsPlot.y, 
+							text: e.tpsPlot.label };
+					anns.push(ann);
+				}
+			}
 		}
-	});
+	}, this);
 	// dygraphの残描画処理が完了してからアノテーションをセットする
 	this.graph.ready(function(){
 		this.setAnnotations(anns);	
@@ -657,14 +668,17 @@ HJN.prototype.addMenu =　function(){
 				strFuncName:"HJN.Copyright()" };
 
 	
-	var accordion = document.createElement('div');		// 要素の作成
-	accordion.className = "accordion";
+	var accordion = document.createElement('div'),		// 要素の作成
+		isAccordion = true,	// true:アコーディオン型  false:折りたたみ型 　#21
+		typeStr = isAccordion 	? ' type="checkbox" name="accordion" '
+								: ' type="radio" name="accordion" ';
+	
 	if (HJN.chart.chartId === this.chartId){	//　上段グラフ用機能のメニュー追加
 		accordion.innerHTML =
 			// File Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '0">File</label>' +
-				'<input id="ac-' + this.chartIdName + '0" type="radio" name="accordion" checked="checked">' +
+				'<input id="ac-' + this.chartIdName + '0"' + typeStr + 'checked="checked">' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
 					'<li>' + getATag(menuSaveConfig) + '</li>' +
@@ -675,7 +689,7 @@ HJN.prototype.addMenu =　function(){
 			// Help Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '3">Help</label>' +
-				'<input id="ac-' + this.chartIdName + '3" type="radio" name="accordion">' +
+				'<input id="ac-' + this.chartIdName + '3"' + typeStr + '>' +
 				'<ul class="menu_lv2" style="width: 100%;">' +
 				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
 				'<li><a href="#">Child Menu</a></li>' +
@@ -684,7 +698,7 @@ HJN.prototype.addMenu =　function(){
 			// Download Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '1">Download upper chart</label>' +
-				'<input id="ac-' + this.chartIdName + '1" type="radio" name="accordion">' +
+				'<input id="ac-' + this.chartIdName + '1"' + typeStr + '>' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
 					'<li>' + getATag(menuDownloadCsv) + '</li>' +
@@ -695,7 +709,7 @@ HJN.prototype.addMenu =　function(){
 			// View Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '2" type="radio" name="accordion">' +
+				'<input id="ac-' + this.chartIdName + '2"' + typeStr + '>' +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +
@@ -710,7 +724,7 @@ HJN.prototype.addMenu =　function(){
 			// Download Menu
 			'<li class="menu_lv1">' +
 			'<label for="ac-' + this.chartIdName + '1">Download ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '1" type="radio" name="accordion">' +
+				'<input id="ac-' + this.chartIdName + '1"' + typeStr + '">' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
 					'<li>' + getATag(menuDownloadCsv) + '</li>' +
@@ -721,7 +735,7 @@ HJN.prototype.addMenu =　function(){
 			// View Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '2" type="radio" name="accordion">' +
+				'<input id="ac-' + this.chartIdName + '2"' + typeStr + '">' +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +

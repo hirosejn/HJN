@@ -1,0 +1,176 @@
+<!doctype html>
+<head><meta charset="UTF-8"><title>sandbox</title>
+
+<link type="text/css" rel="stylesheet" href="../src/HJN.css">
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+
+<style>
+ol {margin:0; width:300px; font-size:12px; vertical-align:middle;}
+</style>
+
+</head>
+<body>
+<nav><header>sandbox bin</header></nav>
+<!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
+----
+<div id="res"></div>
+----<BR>
+<pre><code class=”prettyprint” >
+</code></pre>
+<textarea id="res_text" rows="50" cols="150"></textarea><BR>
+
+----
+
+<script>
+HJN = {};
+HJN.util = {};
+
+HJN.util.BinaryNumber = (function() {
+	/* constructor */
+	function BinaryNumber(arg){ 
+		if(!(this instanceof BinaryNumber)) return new BinaryNumber(arg);
+
+		this._xx = "";
+	}
+
+	/* static member */
+	var proto = BinaryNumber.prototype = {
+			_yy : "yy"
+	};
+	/* class method */
+	// 実行プラットフォームのエンディアンがLittleであるか評価する
+	BinaryNumber.isLittleEndian = function() {
+			// 参考　https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
+			var buf = new ArrayBuffer(2);
+			new DataView(buf).setInt16(0, 256, false);	// true: bufに、リトルエンディアン指定で書き込む
+			return (new Int16Array(buf)[0]);		// プラットフォームのエンディアンを使用するInt16Array　と比較する
+	};
+
+	/* private */
+
+	/* public */
+	proto.isLittleEndian = function() {
+			// 参考　https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
+			var buf = new ArrayBuffer(4);
+			new DataView(buf).setUint32(0, 1, true);	// true: bufに、リトルエンディアン指定で書き込む
+			return (new Uint32Array(buf)[0] === 1);		// プラットフォームのエンディアンと比較する
+	};
+
+	proto.uint8 = function(byteOffset, num) {
+		var buf = new ArrayBuffer(4);
+		new DataView(buf).setUint8(byteOffset, num);	// 1byte内にはエンディアン指定なし
+		return (new Uint32Array(buf)[0]);
+	};
+	
+	proto.uint16 = function(byteOffset, num, isLil) {
+		var buf = new ArrayBuffer(4);
+		new DataView(buf).setUint16(byteOffset, num, isLil);	// true: bufに、リトルエンディアン指定で書き込む
+		return (new Uint32Array(buf)[0]);
+	};
+	
+	proto.uint32 = function(byteOffset, num, isLil) {
+		var buf = new ArrayBuffer(4);
+		new DataView(buf).setUint32(byteOffset, num, isLil);	// true: bufに、リトルエンディアン指定で書き込む
+		return (new Uint32Array(buf)[0]);
+	};
+
+	
+	proto.varBuff = function(len){
+		var buf4lil = new ArrayBuffer(4),
+			dv4lil  = new DataView(buf4lil);
+			arr4lil = new Uint8Array(buf4lil);
+		dv4lil.setUint8(0, 2);	// 0000 0010
+		dv4lil.setUint8(1, 1);	// 			0000 0001
+		dv4lil.setUint8(2, 1);	// 						0000 0001
+		dv4lil.setUint8(3, 1);	// 									0000 0001
+
+		// 愚直に計算
+		// little (Long)
+		var str = "<td>" + (new Uint32Array(buf4lil)[0]) + "</td>" ;
+		// little
+		for(var i = len, ans = 0; 0 < i; i--){
+			ans *= 256;
+			ans += (new Uint8Array(buf4lil)[i-1]);
+		}
+		str += " <td> [" + len + "] lil: " + ans + "</td>";
+		// big
+		for(var i = 0, ans = 0; i < len ; i++){
+			ans *= 256;
+			ans += (new Uint8Array(buf4lil)[i]);
+		}
+		str += "<td> [" + i + "] big: " + ans + "</td>";
+
+		// 短いコーディング
+		// 指定長のbuffer		
+		var buf = arr4lil.slice(0, len).buffer,
+			arr = new Uint8Array(buf);
+		// little
+//		ans = arr.reduce(function(a, b, i){ return a + b*(256**i); });
+		ans = arr.reduceRight(function(a, b){ return a*256 + b; });
+		str += "<td> [" + i + "] little: " + ans + "</td>";
+
+		// big
+		ans = arr.reduce(function(a, b){ return a*256 + b; });
+		str += "<td> [" + i + "] big: " + ans + "</td>";
+
+		return str;
+	}
+	
+	/* new */
+	return BinaryNumber;
+}());
+
+</script>
+
+<script>
+var div_res = document.getElementById("res");
+var text_res = document.getElementById("res_text");
+
+var	obj = HJN.util.BinaryNumber(),
+//res = obj.isLittleEndian();
+res = "unit8 <br>"
+	+ obj.uint8(0, 1) + "<br>"
+	+ obj.uint8(1, 1) + "<br>"
+	+ obj.uint8(2, 1) + "<br>"
+	+ obj.uint8(3, 1) + "<br>"
+	+ "unit16 <br>"
+	+ obj.uint16(0, 1, true) + "<br>"
+	+ obj.uint16(1, 1, true) + "<br>"
+	+ obj.uint16(2, 1, true) + "<br>"
+	// + obj.uint16(2, 1, true) + "<br>" バイト位置＋unixNNのエリアが、bufを超えるのでエラーとなる
+	+ "unit32 <br>"
+	+ obj.uint32(0, 1, true) + "<br>"
+	+ obj.uint32(0, 128, true) + "<br>"
+	+ obj.uint32(0, 32768, true) + "<br>" 
+	+ obj.uint32(0, 8388608, true) + "<br>"
+	+ obj.uint32(0, 2147483648, true) + "<br>"
+	+ "<br>"
+	
+	+ "unit16 false<br>"
+	+ obj.uint16(0, 1, false) + "<br>"
+	+ obj.uint16(2, 1, false) + "<br>"
+
+	+ "unit32 false<br>"
+	+ obj.uint32(0, 1, false) + "<br>"
+	+ obj.uint32(0, 256, false) + "<br>" 
+	+ obj.uint32(0, 65536, false) + "<br>"
+	+ obj.uint32(0, 16777216, false) + "<br>"
+	+ obj.uint32(0, 2147483648, false) + "<br>"
+	
+	+ "<br>" + "<br>" + "<br>"
+
+	+ "<table>"
+	+ "<tr>" + obj.varBuff(1) + "</tr>"
+	+ "<tr>" + obj.varBuff(2) + "</tr>"
+	+ "<tr>" + obj.varBuff(3) + "</tr>"
+	+ "<tr>" + obj.varBuff(4) + "</tr>"
+	+ "</table>"
+
+	;
+
+//console.log(res);
+div_res.innerHTML = res;
+text_res.innerHTML = res;
+</script>
+
+</body>
