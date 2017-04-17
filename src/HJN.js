@@ -364,6 +364,7 @@ HJN.prototype.update =　function(seriesSet){
 				height: this.resize(),
 				labels: this.labels,
 				legend: 'always', //'follow', // 
+				showLabelsOnHighlight: false,	// 効果不明
 				labelsDiv: document.getElementById(HJN.chartName + 'Labels'),
 				labelsSeparateLines: false,
 				legendFormatter: this.legendFormatter,
@@ -671,14 +672,15 @@ HJN.prototype.addMenu =　function(){
 	var accordion = document.createElement('div'),		// 要素の作成
 		isAccordion = true,	// true:アコーディオン型  false:折りたたみ型 　#21
 		typeStr = isAccordion 	? ' type="checkbox" name="accordion" '
-								: ' type="radio" name="accordion" ';
+								: ' type="radio" name="accordion" ',
+		checkedStr = ' checked="checked" ';
 	
 	if (HJN.chart.chartId === this.chartId){	//　上段グラフ用機能のメニュー追加
 		accordion.innerHTML =
 			// File Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '0">File</label>' +
-				'<input id="ac-' + this.chartIdName + '0"' + typeStr + 'checked="checked">' +
+				'<input id="ac-' + this.chartIdName + '0"' + typeStr + '>' +
 				'<ul class="menu_lv2">' +
 					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
 					'<li>' + getATag(menuSaveConfig) + '</li>' +
@@ -709,7 +711,7 @@ HJN.prototype.addMenu =　function(){
 			// View Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '2"' + typeStr + '>' +
+				'<input id="ac-' + this.chartIdName + '2"' + typeStr + checkedStr + '>' +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +
@@ -735,7 +737,7 @@ HJN.prototype.addMenu =　function(){
 			// View Menu
 			'<li class="menu_lv1">' +
 				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '2"' + typeStr + '">' +
+				'<input id="ac-' + this.chartIdName + '2"' + typeStr + checkedStr + '">' +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +

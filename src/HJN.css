@@ -21,7 +21,7 @@ textarea{ font-size: smaller; }
 
 /* ハンバーガーメニュー */
 .hm_wrap { position :fixed; display: inline-block; visibility: hidden; z-index: 96;
-	top :0; right :0; width :300px; height:100%; padding :0; background :#fff; }
+	top :0; right :0; width :305px; height:100%; padding :0; background :#fff; }
 /* ハンバーガーボタン */
 .hm_btn, .hm_btn span { display: inline-block; box-sizing: border-box;
 	transition: all 0.4s; visibility: visible; }

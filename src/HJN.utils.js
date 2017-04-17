@@ -1,11 +1,17 @@
 /** ie11 互換用  **/
 if(!Uint8Array.prototype.indexOf){
 	Uint8Array.prototype.indexOf = function(target,index){
+		index = (index === undefined) ? 0 : index;	// #29
         for(var i = index, last = index + 4096; i < last; i++){ // 暫定：1レコード4KBまでチェック
             if(this[i] === target) return i; 
         }
         return -1;
     }
+}
+if (!Uint8Array.prototype.slice) {	// #29
+	Uint8Array.prototype.slice = function(begin, end) {
+		return this.subarray(begin, end);
+	}
 }
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 if (!Array.prototype.findIndex) {
@@ -790,10 +796,10 @@ HJN.util.MappedArray = (function() {
 		if(!getKey || getKey === ""){
 			// getKey指定がないとき、配列の値
 			_getKey = function(e){ return e.valueOf(); };
-		}else if ( (toString.call(getKey) === toString.call("")) && (getKey !== "")){
+		}else if ((typeof(getKey) === "string") && (getKey !== "")){	// #29
 			// getKeyが文字列のとき、配列内オブジェクトのgetKey要素の値
 			_getKey = function(e){ return e[getKey]; };
-		}else if (toString.call(getKey) === toString.call(function(){}) ){
+		}else if (typeof(getKey) === "function" ){	// #29
 			// getKeyが関数のとき、配列内オブジェクトに関数を適用した戻り値
 			_getKey = getKey;
 		}else{	// 以外のときエラーログを出力し、getKey指定なしと同様、配列の値
@@ -1044,9 +1050,9 @@ HJN.util.FileReader = (function() {
 			.name("TIME_POS")
 				.number("TIME_POS", "Positon(byte): from", null, "1", 'style="width:40px;"')
 				.number("TIME_LEN", "length", null, null, 'style="width:40px;"').n()
-			.name("TIME_FORM").label(null,"Format: ")
+			.name("TIME_FORM").label(null,"Format:")
 				.radio("TIME_FORM_YMD", null, null, true)
-					.text("TIME_YMD", null, null, null, 'size="22" placeholder="YYYYMMDD hh.mm.ss.ppp"').n()
+					.text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYYMMDD hh.mm.ss.ppp"').n()
 				.nDown()
 				.radio("TIME_FORM_TEXT", "(num)", "text")
 				.radio("TIME_FORM_LONG", null, "long").n()
