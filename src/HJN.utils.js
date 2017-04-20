@@ -6,12 +6,12 @@ if(!Uint8Array.prototype.indexOf){
             if(this[i] === target) return i; 
         }
         return -1;
-    }
+    };
 }
 if (!Uint8Array.prototype.slice) {	// #29
 	Uint8Array.prototype.slice = function(begin, end) {
 		return this.subarray(begin, end);
-	}
+	};
 }
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 if (!Array.prototype.findIndex) {
@@ -383,7 +383,7 @@ HJN.PlotAdd　=　function(n, x, y) { // arg: シリーズ番号、HJN.hoverXY �
 				 radio:true, n: n, x: x, y: y, range: range };
 		if (n === HJN.CTPS.N){	// CTPSのとき秒内最大CONCとして登録する
 			var conc = HJN.chartD.seriesSet[HJN.CONC.N],	// PlotAddは下段集計後に呼ばれる
-				i = binarySearch(x, conc, function(e){ return e.x; }),
+				i = HJN.util.binarySearch(x, conc, function(e){ return e.x; }),
 				toX = x + 1000, // ミリ秒
 				maxTime = 0,
 				concMax = 0;
@@ -422,23 +422,8 @@ HJN.PlotAdd　=　function(n, x, y) { // arg: シリーズ番号、HJN.hoverXY �
 	}
 	HJN.PlotRender();
 	return i;	//　plots内のplotの位置
-	
-	// 内部関数：配列二分木検索
-	function binarySearch(val, arr, func, low, high) {
-		func = func || function(val){ return val.valueOf(); };
-		low = low || 0;
-		high = high || arr.length - 1;
-		var	middle;
-		while( low <= high ){
-			middle = Math.floor(low + high) / 2 | 0;
-			valMiddle = func(arr[middle]);
-			if(valMiddle === val) return middle;
-			else if(val < valMiddle) high = middle - 1;
-			else low = middle + 1;
-		}
-		return low; // 通常は-1だけど完全一致しない場合を想定
-	}
 }
+
 /**  HJN.plotsを再表示する **/
 HJN.PlotRender = function() {
 	var divCheckedPlots =  document.getElementById(HJN.chartName + "Plots");
@@ -449,8 +434,8 @@ HJN.PlotRender = function() {
 
 	var div = document.createElement('div');		// 要素の作成
 	// 表示幅秒指定フィールドを追加する
-	div.innerHTML = '±<input type="number" id="DetailTimeRange" min="0" step="1"' +
-					'value="1" style="width:50px;　"  onchange="HJN.setDetailRange()">sec';
+	div.innerHTML = '± <input type="number" id="DetailTimeRange" min="0" step="1"' +
+					'value="1" style="width:50px;　"  onchange="HJN.setDetailRange()">sec　　';
 
 	// クリアボタンを追加する
 	div.innerHTML +='<button id="clearButton" ' +
@@ -657,6 +642,25 @@ HJN.GetSliderRangedEtatText = function(elementId) {
 	});
 }
 */
+
+
+/**  配列二分木検索 **/
+HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
+	func = func || function(val){ return val.valueOf(); };
+	low = low || 0;
+	high = high || arr.length - 1;
+	var	middle;
+	while( low <= high ){
+		middle = Math.floor(low + high) / 2 | 0;
+		valMiddle = func(arr[middle]);
+		if(valMiddle === val) return middle;
+		else if(val < valMiddle) high = middle - 1;
+		else low = middle + 1;
+	}
+	return isEqual ? -1 : low; // 完全一致しない場合の戻り値
+}
+
+
 
 /** ************************************ 
  * 期間指定eTat取得用Map　#18
@@ -880,6 +884,7 @@ HJN.util.MappedArray = (function() {
 	
 	return MappedArray;
 }());
+
 
 /** ************************************ 
  * 日時、TATフォーマット指定機能追加 #24

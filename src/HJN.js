@@ -64,6 +64,7 @@ function HJN(chartIdName, config, globalName) {
 
 	// グラフ定義領域の宣言
 	this.chartId = document.getElementById(this.chartIdName);
+	this.logdata = document.getElementById("logdata");
 	this.dyData = [];
 	this.dySeries = {};
 
@@ -427,17 +428,50 @@ HJN.prototype.update =　function(seriesSet){
 	function　drawHighlightPointCallback(g, name, ctx, cx, cy, color, r, idx) {
 		// file dropのとき、新グラフデータに更新後に、旧グラフのidx値が引き渡されたとき　処理しない #12
 		if (!g.rawData_ || g.rawData_.length - 1 < idx) return;
+		var	g = this,	// {dygraph} HJN.chartD.graph
+			x = g.rawData_[idx][0],	// クリックした 点(CONC)のx　の値
+			eTat = this.HJN.seriesSet[HJN.ETAT.N];
 
-		// CONC/STAT/ETAT のとき、TRANSの線を引く
-		if (name === HJN.CONC.key ){//}|| name === HJN.STAT.key || name === HJN.ETAT.key ) { // #17
+		// ETAT,STATのときlogレコードを表示する #28
+		if (name === HJN.STAT.key || name === HJN.ETAT.key ) {
+			// 終了時刻(eTatX)を求める
+			if (name === HJN.STAT.key){	// STATのとき 終了時刻＝x:開始時刻＋y:処理時間
+				var sTatColNo = this.layout_.setNames.findIndex(
+						function(e,i){return e === HJN.STAT.key}) + 1,
+					eTatX = x + g.rawData_[idx][sTatColNo];
+			} else {					// ETATのときx:終了時刻
+				var eTatX = x;
+			}
+			// 終了時刻(eTatX)からeTatの配列位置(n)を検索する
+			var n = HJN.util.binarySearch(eTatX, eTat, 
+						function(e){ return e.x; },	0, eTat.length - 1, true);
+			// ログデータを表示する
+			if(0 <= n){
+				var e = eTat[n],
+					logHtml = "";
+				if(typeof e.pos === "undefined"){	// 生成データのとき
+					// 生成データをCSVのログデータとして編集する
+					logHtml =  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") + ",　" + e.y;
+				}else{	// ファイル読込のとき
+					// ファイルの該当行を Uint8Arrayに登録する
+					var buff = new Uint8Array(e.len + 2),
+						file = HJN.filesArrayBuffer[HJN.filesIdx];
+					buff.set(new Uint8Array(file, e.pos,
+						Math.min(e.len + 2, file.byteLength - e.pos)));
+					// ログデータを編集する 
+					logHtml = String.fromCharCode.apply(null, buff);
+				}
+				// ログデータを表示する
+				logdata.innerHTML = logHtml;
+			}
+		}
+		
+		// CONCのとき同時処理の線を引く
+		if (name === HJN.CONC.key ){	// #17
+			// 指定時刻に動いているeTatの一覧(trans)を得る
+			var trans = eTat.tatMap.search(x, x, 1000);	// #18
 			// 以前に選択した線を消す
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-			// 指定時刻に動いているeTatの一覧(trans)を得る
-			var	g = this,	// {dygraph} HJN.chartD.graph
-				x = g.rawData_[idx][0],	// クリックした 点(CONC)のx　の値
-				trans = this.HJN.seriesSet[HJN.ETAT.N].tatMap.search(x, x, 1000);	// #18
-
 			// 同時処理の線を引く
 			var	tXs = 0,
 				tXe = 0,
@@ -455,6 +489,7 @@ HJN.prototype.update =　function(seriesSet){
 			}
 			ctx.stroke();
 		}
+
 		// 選択点の点と数値を表示する
 		var val = ( 0 <= idx && name ) ? g.rawData_[idx][g.setIndexByName_[name]] : '';
 		drawPoint(ctx, cx, cy, r, color, val);
@@ -814,7 +849,6 @@ HJN.prototype.menuLoadConfig =　function(menuId, fileName){
 	    	clas1 = Object.prototype.toString.call(obj);
 	    return clas0 === clas1;
 	}
-
 }
 
 

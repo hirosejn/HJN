@@ -78,12 +78,12 @@ textarea{ font-size: smaller; }
 	font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; width: 20px !important;}
 
 #plotsArea	{ top: 20px; }
-#chartLabels label 		{ display:inline-block; width:80px; }
-#chartLabels .datetime		{ display:inline-block; width:170px; }
+#chartLabels label 		{ display:inline-block; width:70px; }
+#chartLabels .datetime		{ display:inline-block; width:300px; }
 #chartPlots div {float: left;}
 #chartPlots input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
 #chartPlots label	{ position:relative; cursor: pointer; left:-5px; 
-						padding: 0px 5px; border-radius: 5px;　}
+						padding: 0px 5px; border-radius: 5px; }
 #chartPlots input[type=radio] { display:none;　}
 #chartPlots input[type=radio]:checked + .label { background-color: silver;　}
 
