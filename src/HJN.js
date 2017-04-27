@@ -62,6 +62,8 @@ function HJN(chartIdName, config, globalName) {
 	this.fileReader = HJN.util.FileReader(); // #24
 
 	// グラフ定義領域の宣言
+	this.windowId = document.getElementById("hjn_chart");
+	this.menuId = document.getElementById("hm_menu_01");
 	this.chartId = document.getElementById(this.chartIdName);
 	this.logdata = document.getElementById("logdata");
 	this.dyData = [];
@@ -158,13 +160,22 @@ HJN.prototype.init =　function(){
 		this.graph.destroy();
 	}
 	//ウィンドウ枠に合わせて描画領域をリサイズするイベントを登録し、リサイズする
-	window.addEventListener("resize" , this.resize.bind(this) );
+	window.addEventListener("resize", this.resize.bind(this));
+	window.addEventListener("orientationchange", this.resize.bind(this));	// tablet 回転　#22
+	this.menuId.addEventListener("change", this.resize.bind(this));	// メニュ－の開閉  #31
+
 }
 
-//ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動だが、高さは指定なので）
+//ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動、高さは指定）
 HJN.prototype.resize = function() {
+	// 幅（メニューの状態に合わせて計算） #31
+	var width = window.innerWidth - (this.menuId.checked ? this.menuId.parentNode.clientWidth : 0);
+	this.windowId.style.width　= width + "px";
+	// 高さ（ウィンドウサイズの比率(this.height)をかけて算出）
 	var height = Math.floor(window.innerHeight * this.height);
-	this.chartId.setAttribute("style", "height:" + height + "px");
+	this.chartId.style.height = height + "px";
+	
+	if(this.graph) this.graph.resize(width, height);
 	return height;
 }
 
@@ -711,17 +722,11 @@ HJN.prototype.addMenu =　function(){
 
 	
 	var accordion = document.createElement('div'),		// 要素の作成
-		isAccordion = true,	// true:アコーディオン型  false:折りたたみ型 　#21
-		typeStr = isAccordion 	? ' type="checkbox" name="accordion" '
-								: ' type="radio" name="accordion" ',
-		checkedStr = ' checked="checked" ';
-	
+		idName = this.chartIdName;
 	if (HJN.chart.chartId === this.chartId){	//　上段グラフ用機能のメニュー追加
 		accordion.innerHTML =
 			// File Menu
-			'<li class="menu_lv1">' +
-				'<label for="ac-' + this.chartIdName + '0">File</label>' +
-				'<input id="ac-' + this.chartIdName + '0"' + typeStr + '>' +
+			'<li class="menu_lv1">' + getAccordionTag(this, 0, "File") +
 				'<ul class="menu_lv2">' +
 					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
 					'<li>' + getATag(menuSaveConfig) + '</li>' +
@@ -730,18 +735,14 @@ HJN.prototype.addMenu =　function(){
 				'</ul>' +
 			'</li>' +
 			// Help Menu
-			'<li class="menu_lv1">' +
-				'<label for="ac-' + this.chartIdName + '3">Help</label>' +
-				'<input id="ac-' + this.chartIdName + '3"' + typeStr + '>' +
+			'<li class="menu_lv1">' + getAccordionTag(this, 3, "Help") +
 				'<ul class="menu_lv2" style="width: 100%;">' +
 				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
 				'<li><a href="#">Child Menu</a></li>' +
 				'</ul>' +
 			'</li>' +
 			// Download Menu
-			'<li class="menu_lv1">' +
-				'<label for="ac-' + this.chartIdName + '1">Download upper chart</label>' +
-				'<input id="ac-' + this.chartIdName + '1"' + typeStr + '>' +
+			'<li class="menu_lv1">' + getAccordionTag(this, 1, "Download upper chart") +
 				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
 					'<li>' + getATag(menuDownloadCsv) + '</li>' +
@@ -750,9 +751,7 @@ HJN.prototype.addMenu =　function(){
 				'</ul>' +
 			'</li>' +
 			// View Menu
-			'<li class="menu_lv1">' +
-				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '2"' + typeStr + checkedStr + '>' +
+			'<li class="menu_lv1">'	+ getAccordionTag(this, 2, "View " + idName, true) +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +
@@ -765,9 +764,7 @@ HJN.prototype.addMenu =　function(){
 	}else{									// 下段用グラフ機能のメニュー追加
 		accordion.innerHTML =
 			// Download Menu
-			'<li class="menu_lv1">' +
-			'<label for="ac-' + this.chartIdName + '1">Download ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '1"' + typeStr + '">' +
+			'<li class="menu_lv1">' + getAccordionTag(this, 1, "Download " + idName) +
 				'<ul class="menu_lv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
 					'<li>' + getATag(menuDownloadCsv) + '</li>' +
@@ -776,9 +773,7 @@ HJN.prototype.addMenu =　function(){
 				'</ul>' +
 			'</li>' +
 			// View Menu
-			'<li class="menu_lv1">' +
-				'<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
-				'<input id="ac-' + this.chartIdName + '2"' + typeStr + checkedStr + '">' +
+			'<li class="menu_lv1">' + getAccordionTag(this, 2, "View " + idName, true) +
 				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 					'<li><div id="hogehoge">' + getDetailTimeRangeTag() + '</div></li>' +
@@ -786,6 +781,20 @@ HJN.prototype.addMenu =　function(){
 			'</li>';
 		divMenu.appendChild(accordion);
 	}
+	// アコーディオンラベル用<input><label>タグ編集（内部関数宣言） #31
+	function getAccordionTag(that, id, labelText, isChecked){
+		// '<input id="ac-' + this.chartIdName + '2"' + typeStr + checkedStr + '">' +
+		// '<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
+		var	isAccordion = true,	// true:アコーディオン型  false:折りたたみ型 　#21
+			typeStr = isAccordion 	? ' type="checkbox" name="accordion" '
+									: ' type="radio" name="accordion" ',
+			checkedStr = ' checked="checked" ';
+		return '' +
+		'<input id="ac-' + that.chartIdName + id + '"' +
+									typeStr + (isChecked ? checkedStr : '') + '">' +
+		'<label for="ac-' + that.chartIdName + id + '">' + labelText + '</label>';
+	}
+	
 	// File Open用<input>タグ編集（内部関数宣言）
 	function getInputTag(arg){
 		// '<a><label>Child Menu<input type="file" id="xxx" multiple /></label></a>

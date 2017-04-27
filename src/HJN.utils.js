@@ -24,6 +24,17 @@ if (!Array.prototype.findIndex) {
 		return -1;
 	};
 }
+// https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+if (!Array.prototype.find) {
+	Array.prototype.find = function(predicate) {
+		var list = Object(this), length = list.length >>> 0, thisArg = arguments[1], value;
+		for (var i = 0; i < length; i++) {
+			value = list[i];
+			if (predicate.call(thisArg, value, i, list)) { return value; }
+		}
+		return undefined;
+	};
+}
 /** *****1*********2*********3*********4*********5*********6*********7****** **/
 
 
