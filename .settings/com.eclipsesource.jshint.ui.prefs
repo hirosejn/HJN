@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+excluded=//*.css\:libs//*
+included=libs//*.js\:src//*.js
+projectSpecificOptions=true

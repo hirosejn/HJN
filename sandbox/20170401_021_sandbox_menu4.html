@@ -1,0 +1,235 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tat log diver</title>
+</head>
+
+<body>
+<!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+<style>/* 見た目確認用に既存グラフをiframeで表示する  https://teratail.com/questions/25185　*/
+	html, body { height:100%; }
+	#container { height: 99%; padding: 0; }
+	iframe { width: 100%; height: 100%; border:0 solid #CCC; }
+</style>
+<div id="container"><iframe src="../src/HJN.html"></iframe></div>
+
+
+<!-- http://chipspd.hatenadiary.jp/entry/hamburger-icon-css　-->
+<div class="hm_wrap">
+	<input id="hm_menu_01" type="checkbox" class="hm_menu_check"/>
+	<label for="hm_menu_01" class="hm_btn"><span></span></label>
+	<h2 class="hm_title">&copy; 2017 Junichiroh Hirose</h2>
+		<nav class="hm_menu_wrap">
+			<div class="accordion">
+				<div class="menu_lv1">
+					<label for="ac-cap01">1</label>
+					<input id="ac-cap01" type="radio" name="accordion" checked>
+					<div class="menu_lv2">
+						<p>コンテンツ1</p>
+						<p>コンテンツ1</p>
+					</div>
+		
+					<label for="ac-cap02">2</label>
+					<input id="ac-cap02" type="radio" name="accordion">
+					<div class="menu_lv2">
+						<p>コンテンツ2</p>
+					</div>
+		
+					<label for="ac-cap03">3</label>
+					<input id="ac-cap03" type="radio" name="accordion">
+					<div class="menu_lv2">
+						<p>コンテンツ3</p>
+					</div>
+				<!--menu_lv1--></div>
+				<li class="menu_lv1">
+					<!--  a href="#" class="init-bottom">File</a -->
+					<label for="ac-cap10">File</label>
+					<input id="ac-cap10" type="radio" name="accordion">
+					<ul class="menu_lv2">
+						<li><a><label>Open csv data file<input type="file" id="chart_menu_OpenCsv " multiple=""></label></a></li>
+						<li><a id="chart_menu_SaveCongig" href="#" download="hjnconfig.json" onclick="HJN.chart.menuSaveConfig('chart_menu_SaveCongig', 'hjnconfig.json')">save config(.json)</a></li>
+						<li><a id="chart_menu_LoadCongig" href="#" download="hjnconfig.json" onclick="HJN.chart.menuLoadConfig('chart_menu_LoadCongig', 'hjnconfig.json')">load config(.json)</a></li>
+						<li><a id="chart_menu_DownloadImg" href="#" download="graph.png" onclick="HJN.chart.menuDownloadImg('chart_menu_DownloadImg', 'graph.png')">download graph image(.png)</a></li>
+						<li><a id="chart_menu_DownloadCsv" href="#" download="graph.csv" onclick="HJN.chart.menuDownloadCsv('chart_menu_DownloadCsv', 'graph.csv')">download graph data(.csv)</a></li>
+						<li><a id="chart_menu_DownloadLog" href="#" download="tatlog.csv" onclick="HJN.chart.menuDownloadLog('chart_menu_DownloadLog', 'tatlog.csv')">download graph log rows(.csv)</a></li>
+						<li><a id="chart_menu_DownloadConc" href="#" download="conclog.csv" onclick="HJN.chart.menuDownloadConc('chart_menu_DownloadConc', 'conclog.csv')">download conc log rows(.csv)</a></li>
+					</ul>
+				</li>
+				<li class="menu_lv1">
+					<!-- a href="#" class="init-bottom">View</a  -->
+					<label for="ac-cap11">View</label>
+					<input id="ac-cap11" type="radio" name="accordion">
+					<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">
+						<li><div id="chart_legend"><form name="chart_LegendForm">
+							<label class="legend" style="background:rgba(  0,  0,127, 0.1);"><input type="checkbox" name="cTps" onclick="HJN.chart.setVisibility(0);" checked="checked">多重度（秒間最大）</label><br>
+							<label class="legend" style="background:rgba(  0, 127, 127, 0.3);"><input type="checkbox" name="eTps" onclick="HJN.chart.setVisibility(1);" checked="checked">[Y2軸] end trans / sec</label><br>
+						</form></div></li>
+					</ul>
+				</li>
+				<li class="menu_lv1"></li>
+				<li class="menu_lv1"></li>
+				<li class="menu_lv1">
+					<!--  a href="#" class="init-bottom">Help</a  -->
+					<label for="ac-cap12">Help</label>
+					<input id="ac-cap12" type="radio" name="accordion">
+						<ul class="menu_lv2" style="width: 100%;">
+							<li><a id="chart_menu_HelpAbout" onclick="alert(HJN.Copyright())"><label>about TAT log diver</label></a></li>
+							<li><a href="#">Child Menu</a></li>
+					</ul>
+				</li>
+
+				<li class="menu_lv1">
+					<!--  a href="#" class="init-bottom">File</a -->
+					<label for="ac-cap20">File</label>
+					<input id="ac-cap20" type="radio" name="accordion">
+					<ul class="menu_lv2">
+						<li><a><label>Open csv data file
+							<input type="file" id="chartDetail_menu_OpenCsv " multiple=""></label>
+						</a></li>
+						<li><a id="chartDetail_menu_SaveCongig" href="#" download="hjnconfig.json" onclick="HJN.chartD.menuSaveConfig('chartDetail_menu_SaveCongig', 'hjnconfig.json')">save config(.json)</a></li>
+						<li><a id="chartDetail_menu_LoadCongig" href="#" download="hjnconfig.json" onclick="HJN.chartD.menuLoadConfig('chartDetail_menu_LoadCongig', 'hjnconfig.json')">load config(.json)</a></li>
+						<li><a id="chartDetail_menu_DownloadImg" href="#" download="graph.png" onclick="HJN.chartD.menuDownloadImg('chartDetail_menu_DownloadImg', 'graph.png')">download graph image(.png)</a></li>
+						<li><a id="chartDetail_menu_DownloadCsv" href="#" download="graph.csv" onclick="HJN.chartD.menuDownloadCsv('chartDetail_menu_DownloadCsv', 'graph.csv')">download graph data(.csv)</a></li>
+						<li><a id="chartDetail_menu_DownloadLog" href="#" download="tatlog.csv" onclick="HJN.chartD.menuDownloadLog('chartDetail_menu_DownloadLog', 'tatlog.csv')">download graph log rows(.csv)</a></li>
+						<li><a id="chartDetail_menu_DownloadConc" href="#" download="conclog.csv" onclick="HJN.chartD.menuDownloadConc('chartDetail_menu_DownloadConc', 'conclog.csv')">download conc log rows(.csv)</a></li>
+					</ul>
+				</li>
+				<li class="menu_lv1">
+					<!-- a href="#" class="init-bottom">View</a  -->
+					<label for="ac-cap21">View</label>
+					<input id="ac-cap21" type="radio" name="accordion">
+					<ul class="menu_lv2" style="background: rgba(255,255,255,0.5)";>
+						<li><div id="chartDetail_legend" ><form name="chartDetail_LegendForm">
+							<label class="legend" style="background:rgba(  0,  0,127, 0.3);">
+								<input type="checkbox" name="conc" onclick="HJN.chartD.setVisibility(0);" checked="checked">多重度（詳細）
+							</label><br>
+							<label class="legend" style="background:rgba(  0,  0,127, 0.1);"><input type="checkbox" name="cTps" onclick="HJN.chartD.setVisibility(1);" checked="checked">多重度（秒間最大）</label><br>
+							<label class="legend" style="background:rgba(127, 127, 0, 0.3);"><input type="checkbox" name="sTat" onclick="HJN.chartD.setVisibility(2);" checked="checked">[Y2軸] start time</label><br>
+							<label class="legend" style="background:rgba(127,  0,  0, 0.3);"><input type="checkbox" name="eTat" onclick="HJN.chartD.setVisibility(3);" checked="checked">[Y2軸] end time</label><br>
+							<label class="legend" style="background:rgba(  0, 127, 127, 0.3);"><input type="checkbox" name="eTps" onclick="HJN.chartD.setVisibility(4);">[Y2軸] end trans / sec</label><br>
+						</form></div></li>
+					</ul>
+				</li>
+				<li class="menu_lv1"></li>
+				<li class="menu_lv1"></li>
+				<li class="menu_lv1">
+					<!--  a href="#" class="init-bottom">Help</a  -->
+					<label for="ac-cap22">Help</label>
+					<input id="ac-cap22" type="radio" name="accordion">
+					<ul class="menu_lv2" style="width: 100%;">
+						<li><a id="chart_menu_HelpAbout" onclick="alert(HJN.Copyright())"><label>about TAT log diver</label></a></li>
+						<li><a href="#">Child Menu</a></li>
+					</ul>
+				</li>
+
+			<!--accordion--></div>
+			<ul class="menu_lv2">
+				<li><a href="#">上段File</a></li>
+				<li><a href="#">上段View</a></li>
+				<li><a href="#">下段File</a></li>
+				<li><a href="#">下段View</a></li>
+				<li><a href="#">Help</a></li>
+			</ul>
+
+		</nav>
+</div>
+
+
+<style>
+/* リセットCSS　*/
+html, body, h1, h2, h3, h4, ul, ol, dl, li, dt, dd, p, div, span, img, a, table, tr, th, td, selector {
+margin: 0; padding: 0; border: 0; font-weight: normal; font-size: 100%; vertical-align:baseline;
+-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+article, header, footer, aside, figure, figcaption, nav, section { display:block; }
+body { line-height: 1; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
+ol, ul { list-style: none; list-style-type: none; }
+
+/* */
+body	{ font-family:"メイリオ","Meiriyo","ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","sans-serif";
+			font-size: 12px; margin: 0;}
+fieldset{ border: 1px #cccccc dotted; }
+input	{ border-width: 1px; font-size: 12px; }
+textarea{ font-size: smaller; }
+.statusbar	{ overflow: auto; resize: both; position: absolute; z-index: 99;
+			top: 0px; left: 200px; height: 20px; width: 200px; background: #fff; }
+.statusbar > iframe { overflow: hidden; width: 95%; height: 90%; }
+
+/* ハンバーガーメニュー */
+.hm_wrap { position :fixed; display: inline-block; visibility: hidden; 
+	top :0; right :0; width :300px; height:100%; padding :0; background :#fff; }
+/* ハンバーガーボタン */
+.hm_btn, .hm_btn span { display: inline-block; box-sizing: border-box;
+	transition: all 0.4s; visibility: visible; }
+.hm_btn { position: relative; display: block; cursor: pointer; z-index: 2;
+	width: 36px; height: 36px; background-color: #fff; float: right;
+	border: 1px solid #ccc; box-shadow:	1px 1px 1px #ccc; border-radius: 4px;}
+.hm_btn span { top: 15px; height: 4px; border-radius: 2px;
+	position: absolute; left: 6px; width: 63%; background-color: #848484; }
+.hm_btn span::before, .hm_btn span::after {
+	position: absolute; width: 21px; height: 4px; background: #848484;
+	display: block; content: ''; transition: transform 0.4s; }
+.hm_btn span::before { top: -8px; }
+.hm_btn span::after { top: 8px; bottom: 0; }
+.hm_menu_check:checked ~ .hm_btn span {	background: #fff; }
+.hm_menu_check:checked ~ .hm_btn span::before { transform: translateY(8px) rotate(-45deg); }
+.hm_menu_check:checked ~ .hm_btn span::after { transform: translateY(-8px) rotate(45deg); }
+/* メニュー 全体 */
+.hm_title { /* ハンバーガーメニューオープン時の見出し */
+	position: relative;	display: inline-block;  visibility: visible; color: #999;
+	float: left; line-height: 30px; margin: 0 0 0 15px; opacity: 0;
+	transform: translate3d(0, -15px, 0); transition: transform 0.4s, opacity 0.5s;
+	z-index: 2; }
+.hm_menu_check:checked ~ .hm_title { transform: none;  opacity: 1; }
+.hm_menu_wrap {	position: absolute;  visibility: visible; width :100%; height :100%;
+	background: #fff; opacity: 0.9;	top: 0; right: -100%; transition: right 0.4s; }
+.hm_menu_check:checked ~ .hm_menu_wrap { right: 0; }
+ /* アコーデオンメニュー */
+.accordion { min-width: 300px; list-style-type: none; margin: 36px 0 0; padding: 0; }
+.menu_lv1 { margin: 0 10px; }
+.menu_lv1 input { display: none; }
+.menu_lv1 .legend > input { display: inline; cursor: pointer; }
+.menu_lv1 .legend {cursor: pointer; display:inline-block; width:100%; padding: 8px ; }
+
+.menu_lv1 > label, .menu_lv1 > a { display: block; cursor: pointer;
+	padding: 10px; border-bottom: 1px solid #fff; background: #eee; }
+.menu_lv1 > label:hover, .menu_lv1 > a:hover  { background: #ccc; }
+.menu_lv1 > input:checked + .menu_lv2 { height: auto; padding: 10px;  }
+ /* 詳細メニューリスト */
+.menu_lv2 { transition: 0.2s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
+.menu_lv2 li a { position: relative; display: block; overflow: hidden; padding: 8px 22px;
+	text-decoration: none; z-index: 1; color: #000; }
+.menu_lv2 li a::before {/* aタグマウスオーバー時の背景 */
+	position: absolute; content: ''; background: "red";
+	top: 0; right: 0; bottom: 100%; left: 0; z-index: -1; }
+.menu_lv2 li a:hover::before { bottom: 0; }
+.menu_lv2 li a:hover::after {　opacity: 0.5; transform: translate3d(0, 0, 0);　}
+/* 下矢印 */
+.init-bottom:after { content: ''; display: inline-block; width: 6px; height: 6px; margin: 0 0 0 15px;
+	border-right: 1px solid #fff; border-bottom: 1px solid #fff; transform: rotate(45deg); }
+
+/* dygraph用設定 */
+.item.active{ background: rgba(0,0,0,0.2) !important;
+			  border: rgba(0,0,0,0.2) !important; }
+.tatLine	{ position: absolute;	box-sizing: content-box; display: block; 
+	margin-top: -3.5px; height: 8px; border-radius: 4px; background: rgba(192,192,192,0.4); }
+.column		{ display: inline-block; }
+.dygraph-annotation { color: rgba(0,0,0,0.8) !important; background-color: rgba(256,256,256,0.2); 
+			font-family: Arial, sans-serif;	font-size: 10px; white-space: nowrap; }
+
+#plotsArea	{ top: 20px; }
+#chartLabels label 		{ display:inline-block; width:80px; }
+#chartLabels .datetime		{ display:inline-block; width:170px; }
+#chartPlots div {float: left;}
+#chartPlots input[type=checkbox] {vertical-align:middle; margin: 1px 0px 1px 5px;}
+#chartPlots label	{ position:relative; cursor: pointer; left:-5px; 
+						padding: 0px 5px; border-radius: 5px;　}
+#chartPlots input[type=radio] { display:none;　}
+#chartPlots input[type=radio]:checked + .label { background-color: silver;　}
+
+footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
+</style>
+
+</body>
+</html>

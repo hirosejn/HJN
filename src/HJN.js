@@ -2,7 +2,6 @@
 /* ************************************ 
  * HJN
  * ************************************ */
-"use strict";
 /* クラス変数 */
 HJN.ver = "v0.3.26";
 
@@ -11,26 +10,23 @@ HJN.chart = HJN.chartD = null;
 HJN.chartName = "chart";
 
 HJN.detailDateTime = new Date();	// 下段表示時刻
-HJN.detailDateTimeRange = 1.0;		// 下段表示範囲（秒）
+HJN.detailRangePlus = 1.0;		// 下段表示範囲（＋秒）
+HJN.detailRangeMinus = 1.0;		// 下段表示範囲（－秒）
 
 HJN.files;
 HJN.filesIdx = 0;
 HJN.filesArrayBuffer = [];
 
 HJN.CONC = 	{ key: 'conc', name:'多重度（詳細）',　label:'conc:%N',
-		N:　0, scale:　0, color: 'rgba(  0,  0,127, 0.3)', renderer: 'area' };
-										// mulitのとき area はseries内で１系列だけ
+		N:　0, scale:　0, color: 'rgba(  0,  0,127, 0.3)', tpsN: 1};	// #7
 HJN.CTPS = 	{ key: 'cTps', name:'多重度（秒間最大）', label:'conc(max):%N',
-		N:　1, scale:　0, color: 'rgba(  0,  0,127, 0.1)', renderer: 'scatterplot' };	
-										// bar / scatterplot
+		N:　1, scale:　0, color: 'rgba(  0,  0,127, 0.1)', detailN: 0};
 HJN.STAT = 	{ key: 'sTat', name:'[Y2軸] start time',　label:'start:%Nms',
-		N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)', renderer: 'scatterplot' };
-HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time',　label:'%Nms', 
-		N:　3, scale:　1, color: 'rgba(127,  0,  0, 0.3)', renderer: 'scatterplot' };
+		N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)' };
+HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time',　label:'end:%Nms', 
+		N:　3, scale:　1, color: 'rgba(127,  0,  0, 0.3)' };
 HJN.ETPS = 	{ key: 'eTps', name:'[Y2軸] end trans / sec',　label:'end:%Ntps', 
-		N:　4, scale:　1, color: 'rgba(  0, 127, 127, 0.3)', renderer: 'line' };
-
-
+		N:　4, scale:　1, color: 'rgba(  0, 127, 127, 0.3)' };
 HJN.seriesConfig = [HJN.CONC, HJN.CTPS,	HJN.STAT, HJN.ETAT, HJN.ETPS];
 
 HJN.hoverXY = { series: null, x: null, y: null };	// マウスクリック時の値取得用
@@ -42,30 +38,50 @@ HJN.timer = {};
 HJN.logText = [];
 HJN.timestamp = new Date();
 HJN.logtime = new Date();
+HJN.lineViewer = document.getElementById("lineViewer");
 
 /* コンストラクタ */
-function HJN(chartIdName, config, globalName) {
+function HJN(chartIdName, globalName, config) {
+	"use strict";
 	/* メンバ変数 */
 	this.seriesSet = [];
 	this.chartIdName = chartIdName;		// arg0 "chart","chartDetail"
-	if(!config) {						// arg1
-		var CONC = { process: false, visiblity: true, renderer: 'area' },
-			CTPS = { process: true,  visiblity: false,renderer: 'scatterplot' },　// bar,scatterplot
-			STAT = { process: false, visiblity: true, renderer: 'scatterplot' },
-			ETAT = { process: false, visiblity: true, renderer: 'scatterplot' },
-			ETPS = { process: true,  visiblity: true, renderer: 'line' },
-			config = { SERIESES: [CONC, CTPS, STAT, ETAT, ETPS],
-						height: 0.35, isVisiblity: true };
+	this.globalName = globalName || "HJN.chartD";	// arg1
+	if(!config) {						//arg2
+		if (globalName === "HJN.chart"){
+			var CONC = { process: false, visiblity: false, renderer: 'area' },
+				CTPS = { process: true,  visiblity: true,  renderer: 'scatterplot' },	
+				STAT = { process: false, visiblity: false, renderer: 'scatterplot' },
+				ETAT = { process: false, visiblity: false, renderer: 'scatterplot' },
+				ETPS = { process: true,  visiblity: true,  renderer: 'line' };
+			config = { SERIESES : [CONC, CTPS, STAT, ETAT, ETPS],
+											height : 0.40, isVisiblity: true };
+		} else {	// "HJN.chartD"用設定
+			var CONC_D = { process: true, visiblity: true,  renderer: 'area' },
+				CTPS_D = { process: true, visiblity: true,  renderer: 'bar' },
+				STAT_D = { process: true, visiblity: true,  renderer: 'scatterplot' },
+				ETAT_D = { process: true, visiblity: true,  renderer: 'scatterplot' },
+				ETPS_D = { process: true, visiblity: false, renderer: 'line' };
+			config = { SERIESES : [CONC_D, CTPS_D, STAT_D, ETAT_D, ETPS_D],
+											height : 0.40, isVisiblity: true };
+		}
 	}
-	this.globalName = globalName || "HJN.chartD";	// arg2
-	
+
+	// FileReaderを設定する
+	this.fileReader = HJN.util.FileReader(); // #24
+
 	// グラフ定義領域の宣言
+	this.windowId = document.getElementById("hjn_chart");
+	this.menuId = document.getElementById("hjnBoxBuger");
+	this.menuPlaceOnId = document.getElementById("hjnBoxPlaceOn");
 	this.chartId = document.getElementById(this.chartIdName);
 	this.dyData = [];
 	this.dySeries = {};
 
 	this.scale　= [null, null];
 	this.graph = null;
+	
+	this.cash = null;	// キャッシュオブジェクト
 
 	// グラフの設定(処理対象データの設定のみ this.SERIESES[] に取り込む）
 	this.SERIESES = [];
@@ -80,7 +96,8 @@ function HJN(chartIdName, config, globalName) {
 				this.SERIESES[j][attr]= HJN.seriesConfig[i][attr];
 			}
 			// 引数(config)指定項目を設定する
-			this.SERIESES[j]["visiblity"] = config.SERIESES[i].visiblity;
+			this.SERIESES[j].visiblity = config.SERIESES[i].visiblity;
+			this.SERIESES[j].renderer = config.SERIESES[i].renderer;
 
 			var renderer = config.SERIESES[i].renderer;
 			if (renderer === 'scatterplot' ) {
@@ -104,11 +121,11 @@ function HJN(chartIdName, config, globalName) {
 						stepPlot: true,
 						fillGraph: true };
 			}
-			this.dySeries[this.SERIESES[j].key]["color"] = this.SERIESES[j].color;
+			this.dySeries[this.SERIESES[j].key].color = this.SERIESES[j].color;
 
 			
 			if (this.SERIESES[j].scale === 1 ) {
-				this.dySeries[this.SERIESES[j].key]["axis"] = 'y2';
+				this.dySeries[this.SERIESES[j].key].axis = 'y2';
 			}			
 
 			this.labels.push(this.SERIESES[j].key);
@@ -141,7 +158,58 @@ function HJN(chartIdName, config, globalName) {
  * @parm {array.<number,number,Uint8array>} eTat 終了時刻(ms),処理時間(sec),（任意）ログレコード等
  * @return {array} this.seriesSet グラフ用データ構造体
  */
+//グラフを初期化する
+HJN.prototype.init =　function(){
+	"use strict";
+	// メニューを作成する
+	this.addMenu();
+	// 凡例を作成する
+	if (this.isVisiblity) this.addLegend();
+	// 既にグラフがあるときは削除する
+	if (this.graph){
+		this.graph.HJN = null;	// （注：循環参照対策
+		this.graph.destroy();
+	}
+	//ウィンドウ枠に合わせて描画領域をリサイズするイベントを登録し、リサイズする
+	window.addEventListener("resize", this.resize.bind(this));
+	window.addEventListener("orientationchange", this.resize.bind(this));	// tablet 回転　#22
+	var resizes = document.getElementsByClassName("hjnResize");
+	for ( var i = 0; i < resizes.length; i++) {
+		resizes[i].addEventListener("change", this.resize.bind(this));	// メニュ－の開閉  #31
+	}
+};
+
+//ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動、高さは指定）
+HJN.prototype.resize = function() {
+	"use strict";
+	// 幅（メニューの状態に合わせて計算） #31
+	var dWidth = 0;
+	if (this.menuId.checked && 	!this.menuPlaceOnId.checked){
+		dWidth = this.menuId.parentNode.clientWidth;
+	}
+	var width = window.innerWidth - dWidth;
+	this.windowId.style.width　= width + "px";
+	// 高さ（ウィンドウサイズの比率(this.height)をかけて算出）
+	var height = Math.floor(window.innerHeight * this.height);
+	this.chartId.style.height = height + "px";
+	
+	if(this.graph) this.graph.resize(width, height);
+	return height;
+};
+
+// seriesSetを取り込む　#30
+HJN.prototype.setSeriesSet =　function(seriesSet){
+	"use strict";
+	this.seriesSet = seriesSet;
+	// this.conc, this.cTps, this.sTat, this.eTat, this.eTps を登録する
+	HJN.seriesConfig.forEach(function(e){
+				this[e.key] = seriesSet[e.N];
+			},this);
+};
+
+// eTatから、this.seriesSetを作成し、返却値とする
 HJN.prototype.createSeries =　function(eTat){
+	"use strict";
 	// 時系列データを初期化する
 	var cycle = 1000.0; // 処理件数を計測する間隔（ミリ秒）
 	var conc = [], cTps = [], sTat = [], eTps = [];
@@ -158,7 +226,7 @@ HJN.prototype.createSeries =　function(eTat){
 	var dFrom = Math.floor(eTat[0].x / cycle) * cycle,
 		dTo = dFrom + cycle,
 		num = 1;
-	eTat.forEach (function(e, i, a) {
+	eTat.forEach (function(e) {
 		if (e.x < dTo){
 			num += 1;
 		} else{
@@ -183,7 +251,7 @@ HJN.prototype.createSeries =　function(eTat){
 	// 開始時刻でソートする
 	sTat.sort( function(a, b){ return a.x - b.x; } );
 	// eTatにsTatの位置を設定する
-	sTat.forEach( function(s, i, sTat){
+	sTat.forEach( function(s, i){
 		eTat[s.eTatIdx].sTatIdx = i;
 	});
 	HJN.ShowLogText("[2:sTat created] " + sTat.length + " plots","calc");
@@ -199,21 +267,21 @@ HJN.prototype.createSeries =　function(eTat){
 	});
 	// concを変化した時刻（開始or終了）でソートする
 	conc.sort( function(a, b){ return a.x - b.x; } );
-	HJN.ShowLogText("[4-1:conc/created&sorten ] "+ conc.length + " plots","calc");
+	//HJN.ShowLogText("[4-1:conc/created&sorten ] "+ conc.length + " plots","calc");
 	// concに同時取引数を設定する
 	var concNum = 0;
 	conc.forEach( function(c){
 		concNum += c.y;		// 同時取引数を集計する(c.y に、開始なら1、終了なら(-1)が設定されている)
 		c.y= concNum;
 	} );
-	HJN.ShowLogText("[4-2:conc/sum&set] "+ concNum + " ","calc");
+	HJN.ShowLogText("[4:conc created] "+ conc.length + " plots","calc");
 	
 	
 	/** cTPS秒間同時処理件数（concurrent transactions/sec）時系列データを作成する #18　**/
 	var	XSec =  floorTime(conc[0].x, cycle),	// ミリ秒
 		YMax = conc[0].y,
 		YNext = conc[0].y;
-	conc.forEach( function(c, i, conc) {
+	conc.forEach( function(c) {
 		if( floorTime(c.x, cycle) === XSec ){	// c.xは ミリ秒
 			YMax = Math.max(YMax, c.y);
 		}else{
@@ -230,67 +298,38 @@ HJN.prototype.createSeries =　function(eTat){
 	cTps.push( { x: XSec, y: YMax} );
 	cTps.push( { x: XSec + cycle, y: YNext} );
 
-	HJN.ShowLogText("[5-1:cTps created] " + cTps.length + " plots","calc");
+	//HJN.ShowLogText("[5-1:cTps created] " + cTps.length + " plots","calc");
 
 	// cTpsのxからindexを引くMapを作成する　#18
-//	cTps.xMap = new HJN.util.MappedArray(cTps, "x");
 	eTat.tatMap = new HJN.util.MappedETat(eTat);
-	HJN.ShowLogText("[5-2:cTpsMap created] ","calc");
+	eTat.cash = HJN.util.Cash();
+	HJN.ShowLogText("[5:cTps created] " + cTps.length + " plots","calc");
 
 	// 集計結果を設定する
-	this.seriesSet = seriesSet;
+	this.setSeriesSet(seriesSet);
 	return this.seriesSet; 
 	
 	// 時刻を指定ミリ秒間隔で切り捨てる（内部関数）
 	function floorTime(t, cycle){
 		return Math.floor(Math.floor(t / cycle) * cycle);
 	}
-}
-
-
-//グラフを初期表示する
-HJN.prototype.init =　function(seriesSet){
-	seriesSet = seriesSet || this.seriesSet;
-	
-	// メニューを作成する
-	this.addMenu();
-	
-	// 凡例を作成する
-	if (this.isVisiblity) this.addLegend();
-
-	// 既にグラフがあるときは削除する
-	if (this.graph) this.graph.destroy();
-
-	// 指定データを取り込む
-	this.seriesSet = seriesSet;
-	// データを表示する
-	this.update(this.seriesSet);
-
-	//ウィンドウ枠に合わせて描画領域をリサイズするイベントを登録し、リサイズする
-	window.addEventListener("resize" , this.resize.bind(this) );
-}
-
-
-// ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動だが、高さは指定なので）
-HJN.prototype.resize = function() {
-	var height = Math.floor(window.innerHeight * this.height);
-	this.chartId.setAttribute("style", "height:" + height + "px");
-	return height;
-}
+};
 
 
 // データを変更し描画する
 HJN.prototype.update =　function(seriesSet){
+	"use strict";
 	// 指定データがあるとき取り込む
-	if(seriesSet) this.seriesSet　= seriesSet;
+	if(seriesSet) this.setSeriesSet(seriesSet);
 	// dygraph用表示データを作成する
-	var xy = [],
-		idx = [],
-		x = [],
-		row = [],
-		minX = 0;
+	var xy = [],	// グラフデータ({x:,y:}ペアの配列）の一覧（グラフ１本が配列要素）
+		idx = [],	// グラフデータの処理中配列位置を保有する配列
+		x = [],		// グラフデータの処理中配列のｘ(時刻)の値を保有する配列
+		row = [],	// dygraph１レコードワーク配列：（[x,y0,y1...]の配列）の一レコード分を保持する配列
+		minX = 0,
+		i = 0;		// グラフ番号用ワーク
 	// xy[] に処理対象seriesを指定する
-	for (var i = 0; i < this.SERIESES.length; i++){
+	for (i = 0; i < this.SERIESES.length; i++){
 		xy[i] = this.seriesSet[this.SERIESES[i].N];
 		idx[i] = 0;
 	}
@@ -298,37 +337,70 @@ HJN.prototype.update =　function(seriesSet){
 	var xRangeMin = Number.MIN_VALUE,
 		xRangeMax = Number.MAX_VALUE;
 	if (HJN.chartD === this) {　// 詳細（下段グラフ）のとき画面で指定された期間を設定する	// ミリ秒
-		xRangeMin = +HJN.detailDateTime - HJN.detailDateTimeRange * 1000,
-		xRangeMax = +HJN.detailDateTime + ( HJN.detailDateTimeRange + 1.0 ) * 1000;
-	}	
+		xRangeMin = +HJN.detailDateTime - HJN.detailRangeMinus * 1000;
+		xRangeMax = +HJN.detailDateTime + HJN.detailRangePlus * 1000;
+	}
+
+	// dygraph用arrayを空にする
+	this.dyData = [];
+
+	// 指定範囲の先頭が秒単位の端数のとき、dygraph用arrayに、先頭ワークデータを登録する	#3
+	var xVal = Math.floor(xRangeMin / 1000) * 1000;
+	if(Number.MIN_VALUE < xRangeMin && xRangeMin !== xVal){ // 範囲指定（＝下段）
+		var firstRow = [xRangeMin];	// 先頭はx（時刻）
+		xy.forEach(function(xyData, i){
+			// 秒間最大値系のyは最大値or０を、他はnullを設定する
+			var yVal = null;
+			if (this.SERIESES[i].key === HJN.CTPS.key){
+				// 始端時刻を含む秒の値（最大値）を、始端時刻にセットする
+				var j = HJN.util.binarySearch(xVal, xyData, function(e){ return e.x; } );
+				yVal = ( 0 <= j ) ? xyData[j].y : 0;
+			}
+			firstRow.push(yVal);
+		}, this);
+		this.dyData.push(firstRow);
+	}
 	
 	// dygraph用arrayに表示データを登録する
-	this.dyData = [];
 	while ( xy.some(function(e, i){ return (idx[i] < e.length); }) ) {
+		// dygraph１レコードワーク配列 を空にする
 		row = [];
+		// dygraph１レコードワーク配列 の先頭に、次に追加するｘ（時刻＝各ｘｙ処理位置が持つｘの最小値）を設定する
 		xy.forEach(function(e, i){
-				x[i] = (idx[i] < e.length) ? e[idx[i]].x : Number.MAX_VALUE; });
-
+				x[i] = (idx[i] < e.length) ? e[idx[i]].x : Number.MAX_VALUE;
+			});
 		minX = x[0];	// minX = Math.min.apply(null, x);
-		for (var i = 1; i < x.length; i++) {
+		for (i = 1; i < x.length; i++) {
 			if (x[i] < minX) minX = x[i];
 		}
-		
 		row.push(minX);	// ミリ秒
-		xy.forEach(function(e, i, a){
+		// dygraph１レコードワーク配列 の２番目以降に、各ｘｙのｘを設定する
+		xy.forEach(function(e, i){
 			if (e.length <= idx[i]) {
-				row.push(null);
+				row.push(null);		// 末尾を過ぎたｘｙのyはnull
 			} else if (e[idx[i]].x === minX) {
+				// ｘｙのｘ(e[idx[i]].x)が、出力するｘ(minX)と同じとき、ｙを設定し、ｘｙの処理位置(idx[i])を次に進める
 				row.push(e[idx[i]].y);
 				idx[i]++;
 			} else {
-				row.push(null);
+				row.push(null);		// xと　ｘｙのｘが異なる場合 null
 			}
 		});
+		// dygraph用arrayに、編集したdygraph１レコードワーク配列　を登録する
 		if (xRangeMin <= minX && minX <= xRangeMax) {
 			this.dyData.push(row);
 		}
 	}
+	// 指定範囲の先頭が秒単位の端数のとき、dygraph用arrayに、末尾ワークデータを登録する	#3
+	if(xRangeMax < Number.MAX_VALUE &&	// 範囲指定（＝下段）
+			xRangeMax !== Math.floor(xRangeMax / 1000) * 1000){
+		var lastRow = [xRangeMax];	// 先頭はx（時刻）
+		xy.forEach(function(e, i){	// 秒間最大値系のyは始端：最大値、終端：０を、他はnullを設定
+			lastRow.push( (this.SERIESES[i].key === HJN.CTPS.key) ? 0 : null );
+		}, this);
+		this.dyData.push(lastRow);
+	}
+	
 	HJN.ShowLogText("[7:dygraph data created] " + this.dyData.length + " rows","calc");
 
 	// グラフの設定
@@ -336,12 +408,12 @@ HJN.prototype.update =　function(seriesSet){
 	if (this.isVisiblity) {
 		// visiblity指定できるとき画面の表示指定を取り込む
 		var	inputs =  document[this.chartIdName + "_LegendForm"];
-		for (var i = 0; i < this.SERIESES.length; i++) {
+		for (i = 0; i < this.SERIESES.length; i++) {
 			visibility.push(inputs[this.SERIESES[i].key].checked);
 		}
 	} else {
 		// visiblity指定できないとき、デフォルト設定を取り込む
-		for (var i = 0; i < this.SERIESES.length; i++) {
+		for (i = 0; i < this.SERIESES.length; i++) {
 			visibility.push(this.SERIESES[i].visiblity);
 		}
 	}
@@ -361,12 +433,13 @@ HJN.prototype.update =　function(seriesSet){
 				height: this.resize(),
 				labels: this.labels,
 				legend: 'always', //'follow', // 
+				showLabelsOnHighlight: false,	// 効果不明
 				labelsDiv: document.getElementById(HJN.chartName + 'Labels'),
 				labelsSeparateLines: false,
-				legendFormatter: this.legendFormatter,
+				// legendFormatter: this.legendFormatter,		// コメントアウトでlegendが非表示
 				axes: {
 					x: {axisLabelFormatter: axisLabelFormatter,
-						axisLabelWidth: 80 },
+						axisLabelWidth: 100 },
 					y: {axisLabelWidth: 30,
 						logscale: false	},
 					y2:{drawGrid: true,
@@ -375,7 +448,7 @@ HJN.prototype.update =　function(seriesSet){
 						gridLinePattern: [1,2]	}
 				},
 				includeZero: true,
-				axisLabelFontSize: 10,
+				// axisLabelFontSize: 10,
 				axisLineColor: 'rgba(0, 0, 0, 0.2)',
 				gridLineColor: 'rgba(0, 0, 0, 0.2)',
 				strokeWidth: 2,
@@ -415,42 +488,70 @@ HJN.prototype.update =　function(seriesSet){
 	
 	// 再描画する
 	this.showBalloon();
-	HJN.ShowLogText("[9:baloon showen] ","calc");
+	HJN.ShowLogText("[9:balloon showen] ","calc");
 		
 	
 	/** updateメソッド内部関数宣言 **/
-	// 点がハイライトになったときの描画処理（内部関数宣言）
+	// 点がハイライトになったときの描画処理（内部関数宣言）　 g:{dygraph} HJN.chartD.graph
 	function　drawHighlightPointCallback(g, name, ctx, cx, cy, color, r, idx) {
 		// file dropのとき、新グラフデータに更新後に、旧グラフのidx値が引き渡されたとき　処理しない #12
 		if (!g.rawData_ || g.rawData_.length - 1 < idx) return;
+		var	x = g.rawData_[idx][0],	// クリックした 点(CONC)のx　の値
+			eTat = HJN.chart.eTat,
+			sTat = HJN.chart.sTat,
+			n = 0;
 
-		// CONC/STAT/ETAT のとき、TRANSの線を引く
-		if (name === HJN.CONC.key || name === HJN.STAT.key || name === HJN.ETAT.key ) {
+		// ETAT,STATのときlogレコードを表示する #28
+		if (name === HJN.STAT.key || name === HJN.ETAT.key ) {
+			// eTatの配列位置をを求める
+			if (name === HJN.ETAT.key){
+				// ETATのとき、終了時刻(x)からeTatの配列位置(n)を検索する
+				n = HJN.util.binarySearch(x, eTat, function(e){ return e.x; });
+			} else {
+				// STATのとき、開始時刻(x)からsTatの配列位置(sTatN)を検索し、sTatからeTatの配列位置を取得する
+				var sTatN = HJN.util.binarySearch(x, sTat, function(e){ return e.x; });
+				n = sTat[sTatN].eTatIdx;
+			}
+			// ログデータを表示し、線を引く
+			if(0 <= n){
+				var e = eTat[n],
+					logHtml = "";
+				if(typeof e.pos === "undefined"){	// 生成データのとき
+					// 生成データをCSVのログデータとして編集する
+					logHtml =  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") + ",　" + e.y;
+				}else{	// ファイル読込のとき
+					// ファイルの該当行を Uint8Arrayに登録する
+					var buff = new Uint8Array(e.len + 2),
+						file = HJN.filesArrayBuffer[HJN.filesIdx];
+					buff.set(new Uint8Array(file, e.pos,
+						Math.min(e.len + 2, file.byteLength - e.pos)));
+					// ログデータを編集する 
+					logHtml = String.fromCharCode.apply(null, buff);
+				}
+				// ログデータを表示する
+				HJN.lineViewer.innerHTML = logHtml;
+				// 線を引く #30
+				drawTatLine(ctx, e.x, e.y, 2, color);
+				ctx.stroke();
+			}
+		}
+		
+		// CONCのとき同時処理の線を引く
+		if (name === HJN.CONC.key ){	// #17
+			// 指定時刻に動いているeTatの一覧(trans)を得る
+			var trans = eTat.tatMap.search(x, x, 1000);	// #18
 			// 以前に選択した線を消す
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-			// 指定時刻に動いているeTatの一覧(trans)を得る
-			var	g = this,	// {dygraph} HJN.chartD.graph
-				x = g.rawData_[idx][0],	// クリックした 点(CONC)のx　の値
-				trans = this.HJN.seriesSet[HJN.ETAT.N].tatMap.search(x);	// #18
-
 			// 同時処理の線を引く
-			var	tXs = 0,
-				tXe = 0,
-				tY  = 0;
 			if ( 0 <= i && 0 < trans.length){
 				// TRANS分の線を引く
 				trans.forEach(function(e){
-					tXs = g.toDomXCoord(e.x - e.y);	// ミリ秒
-					tXe = g.toDomXCoord(e.x);	// ミリ秒
-					tY  = g.toDomYCoord(e.y, 1);	//　第二軸:1
-					drawLine(ctx, [{x: tXs, y: tY}, {x: tXe, y: tY}], r, HJN.CONC.color);
-					drawPoint(ctx, tXs, tY, r, HJN.STAT.color);
-					drawPoint(ctx, tXe, tY, r, HJN.ETAT.color);
+					drawTatLine(ctx, e.x, e.y, 1, HJN.CONC.color);
 				});
 			}
 			ctx.stroke();
 		}
+
 		// 選択点の点と数値を表示する
 		var val = ( 0 <= idx && name ) ? g.rawData_[idx][g.setIndexByName_[name]] : '';
 		drawPoint(ctx, cx, cy, r, color, val);
@@ -459,6 +560,17 @@ HJN.prototype.update =　function(seriesSet){
 					1, "rgba(127,127,127,0.5)", [1,2]);
 		
 		/** drawHighlightPointCallback 内部関数宣言 **/
+		// TAT線を表示する（内部関数）
+		function drawTatLine(ctx, x, y, heigth, color) {
+			// isXend指定の始点(false)／終点（true)に合わせて、線の座標を求める
+			var tXs = g.toDomXCoord(x - y),	// ミリ秒
+				tXe = g.toDomXCoord(x),	// ミリ秒
+				tY  = g.toDomYCoord(y, 1);	//　第二軸:1
+			drawLine(ctx, [{x: tXs, y: tY}, {x: tXe, y: tY}], heigth, color);
+			drawPoint(ctx, tXs, tY, r, HJN.STAT.color);
+			drawPoint(ctx, tXe, tY, r, HJN.ETAT.color);
+		}
+		
 		// 線を表示する（内部関数）
 		function drawLine(ctx, plots, r, color, lineDashSegments) {
 			ctx.beginPath();
@@ -467,11 +579,9 @@ HJN.prototype.update =　function(seriesSet){
 			ctx.strokeStyle = color;
 			if (lineDashSegments) ctx.setLineDash(lineDashSegments); // lineDashは[num]
 			ctx.moveTo(plots[0].x, plots[0].y);
-			plots.forEach(function(p,i){
+			plots.forEach(function(p){
 				ctx.lineTo(p.x, p.y);
 			});
-			// ctx.fillStyle = color;
-			// ctx.fillRect(tXs, tY-2, tXe-tXs, 4);
 			ctx.stroke();
 		}
 
@@ -506,19 +616,19 @@ HJN.prototype.update =　function(seriesSet){
 	}
 
 	// アノテーション（グラフ中の吹出し）をクリックしたときの処理(内部関数宣言）
-	function annotationClickHandler(annotation, p, dygraph, event){
-		HJN.PointClickCallback(p);
+	function annotationClickHandler(){	// annotation, p, dygraph, event
+		HJN.PointClickCallback(arguments[1]);
 	}
 
 	// アノテーション（グラフ中の吹出し）をダブルクリックしたときの処理(内部関数宣言）
-	function annotationDblClickHandler(annotation, p, dygraph, event){
+	function annotationDblClickHandler(){	// annotation, p, dygraph, event
 		// 指定ポイントを削除する
-		HJN.PointDblClickCallback(p);
+		HJN.PointDblClickCallback(arguments[1]);
 	}
 
 	// グラフをクリックしたときの処理(内部関数宣言）
 	// function clickCallback(e, x, pts) {}
-}
+};
 
 
 /** ************************************ 
@@ -526,39 +636,53 @@ HJN.prototype.update =　function(seriesSet){
  * ************************************ */
 // Balloonを再描画する
 HJN.prototype.showBalloon =　function(){
-	if (this.seriesSet[HJN.CTPS.N].length === 0) return;	// ctpsが空の時何もしない
+	"use strict";
+	if (this.cTps.length === 0) return;	// ctpsが空の時何もしない
 
 	var ann = {	series: "", xval: 0, shortText: "", text: "" },
 		anns = [];
-	
-	var	ctps = this.seriesSet[HJN.CTPS.N],
+	// 表示時間帯を求める
+	var	ctps = this.cTps,
 		minX = ctps[0].x,
 		maxX = ctps[ctps.length - 1].x;
-	HJN.plots.forEach(function(e, i){
+	// アノテーションをdygparhに追加する
+	HJN.plots.forEach(function(e){
 		if(minX <= e.x && e.x <= maxX){
 			ann = {	series: HJN.seriesConfig[e.n].key,
 					xval: e.x,	// ミリ秒
 					shortText: e.y, 
 					text: e.label };
 			anns.push(ann);
+			// 詳細Plot＆詳細グラフデータが無いとき、詳細Plot内のTPS Plotを追加する	#7
+			if("tpsPlot" in e){		// 詳細plotのとき
+				if(this.SERIESES.findIndex(function(s){return s.N === e.n; }) < 0){	// 詳細グラフデータが無いとき
+					ann = {	series: HJN.seriesConfig[e.tpsPlot.n].key,
+							xval: e.tpsPlot.x,	// ミリ秒
+							shortText: e.tpsPlot.y, 
+							text: e.tpsPlot.label };
+					anns.push(ann);
+				}
+			}
 		}
-	});
+	}, this);
 	// dygraphの残描画処理が完了してからアノテーションをセットする
 	this.graph.ready(function(){
 		this.setAnnotations(anns);	
 	});
-}
+};
 
 //legendの表示指定をグラフに反映する
 HJN.prototype.setVisibility =　function(i){
+	"use strict";
 	var formName = this.chartIdName + "_LegendForm",
 		ck = document[formName].elements[i].checked;
 	this.graph.setVisibility(i, ck);
-}
+};
 
 
 // legendを追加する
 HJN.prototype.addLegend =　function(){
+	"use strict";
 	var	divLegend =  document.getElementById(this.chartIdName + "_legend"),
 		formName = this.chartIdName + "_LegendForm",
 		htmlText = '<form name="' + formName + '">';
@@ -573,13 +697,13 @@ HJN.prototype.addLegend =　function(){
 	}
 	htmlText += '</form>';
 	divLegend.innerHTML = htmlText;
-}
+};
 // legendの編集処理(dygraph登録処理用関数） 
 HJN.prototype.legendFormatter　= function(data) {
+	"use strict";
 	// legend: 'always'指定のとき、マウスがグラフ外にあると dataに値が設定されていなことを考慮
-	var html = (typeof data.x === "undefined") 
-				? ''
-				: HJN.DateToString(new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.sss");
+	var html = (typeof data.x === "undefined") ? ''
+				: HJN.DateToString(new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.ppp");
 	html = '<label class="datetime">' + html + '</label>';
 	data.series.forEach(function(series) {
 		if (!series.isVisible) return;
@@ -597,13 +721,14 @@ HJN.prototype.legendFormatter　= function(data) {
 		var i = HJN.seriesConfig.findIndex(function(e){	return (e.key === key);	});
 		return 'style="background:' + HJN.seriesConfig[i].color + ';';
 	}
-}
+};
 
 /** ************************************ 
  * メニュー関連機能
  * ************************************ */
 // メニューを追加する
 HJN.prototype.addMenu =　function(){
+	"use strict";
 	// メニュー用のエレメントを取得する
 	var divMenuId = this.chartIdName + "_menu";
 	var divMenu = document.getElementById(divMenuId);
@@ -651,46 +776,89 @@ HJN.prototype.addMenu =　function(){
 				menuId:		divMenuId + "_DownloadConc",
 				fileName:	"conclog.csv" },
 		menuHelpAbout = {	// getAlertTag
-				menuLabel: 	"about TAT log diver",
-				menuId:		divMenuId + "_HelpAbout",
-				strFuncName:"HJN.Copyright()" };
+						menuLabel: 	"about TAT log diver",
+						menuId:		divMenuId + "_HelpAbout",
+						strFuncName:"HJN.Copyright()" },
+		menuHowToUse = {	// getAlertTag
+				menuLabel: 	"How to use TAT log diver",
+				menuId:		divMenuId + "_HelpHowToUse",
+				strFuncName:"HJN.HowToUse()" };
 
 	
-	var ul = document.createElement('ul');		// 要素の作成
-	ul.className = "menu";
-	ul.innerHTML =
-			'<li class="menu_lv1">' +
-				'<a href="#" class="init-bottom">File</a>' +
-				'<ul class="menu_lv2">' +
+	var accordion = document.createElement('div'),		// 要素の作成
+		idName = this.chartIdName;
+	if (HJN.chart.chartId === this.chartId){	//　上段グラフ用機能のメニュー追加
+		accordion.innerHTML =
+			// File Menu
+			'<li class="hjnMenuLv1">' + getAccordionTag(this, 0, "File") +
+				'<ul class="hjnMenuLv2">' +
 					'<li>' + getInputTag(menuOpenCsv) + '</li>' +
-					'<li>' + getATag(menuSaveConfig) + '</li>' +
+					this.fileReader.getConfigHtml() +	// #24
+					'<li>' + getATag(menuSaveConfig) + '</li>' +	// ToDo
 					'<li>' + getATag(menuLoadConfig) + '</li>' +
+				'</ul>' +
+			'</li>' +
+			// Help Menu
+			'<li class="hjnMenuLv1">' + getAccordionTag(this, 3, "Help") +
+				'<ul class="hjnMenuLv2" style="width: 100%;">' +
+				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
+				'<li>' + getAlertTag(menuHowToUse) + '</li>' +
+				'</ul>' +
+			'</li>' +
+			// Download Menu
+			'<li class="hjnMenuLv1">' + getAccordionTag(this, 1, "Download upper chart") +
+				'<ul class="hjnMenuLv2">' +
 					'<li>' + getATag(menuDownloadImg) + '</li>' +
 					'<li>' + getATag(menuDownloadCsv) + '</li>' +
 					'<li>' + getATag(menuDownloadLog) + '</li>' +
 					'<li>' + getATag(menuDownloadConc) + '</li>' +
 				'</ul>' +
 			'</li>' +
-			'<li class="menu_lv1">' +
-				'<a href="#" class="init-bottom">View</a>' +
-				'<ul class="menu_lv2" style="background: rgba(255,255,255,0.5);">' +
+			// View Menu
+			'<li class="hjnMenuLv1">'	+ getAccordionTag(this, 2, "View " + idName, true) +
+				'<ul class="hjnMenuLv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +
-			'</li>' +
-			'<li class="menu_lv1"></li>' +
-			'<li class="menu_lv1"></li>' +
-			'<li class="menu_lv1">' +
-				'<a href="#" class="init-bottom">Help</a>' +
-				'<ul class="menu_lv2" style="width: 100%;">' +
-				'<li>' + getAlertTag(menuHelpAbout) + '</li>' +
-				'<li><a href="#">Child Menu</a></li>' +
-				'</ul>' +
 			'</li>' ;
-	divMenu.appendChild(ul);
+		divMenu.appendChild(accordion);
 
-	// File Open用 イベントリスナー登録
-	document.getElementById(menuOpenCsv.menuId)
-			.addEventListener('change', this.menuOpenCsv.bind(this), false);
+		// File Open用 イベントリスナー登録
+		document.getElementById(menuOpenCsv.menuId)
+				.addEventListener('change', this.menuOpenCsv.bind(this), false);
+	}else{									// 下段用グラフ機能のメニュー追加
+		accordion.innerHTML =
+			// Download Menu
+			'<li class="hjnMenuLv1">' + getAccordionTag(this, 1, "Download " + idName) +
+				'<ul class="hjnMenuLv2">' +
+					'<li>' + getATag(menuDownloadImg) + '</li>' +
+					'<li>' + getATag(menuDownloadCsv) + '</li>' +
+					'<li>' + getATag(menuDownloadLog) + '</li>' +
+					'<li>' + getATag(menuDownloadConc) + '</li>' +
+				'</ul>' +
+			'</li>' +
+			// View Menu
+			'<li class="hjnMenuLv1">' + getAccordionTag(this, 2, "View " + idName, true) +
+				'<ul class="hjnMenuLv2" style="background: rgba(255,255,255,0.5);">' +
+					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
+					'<li><div id="detailTimeRange">' + getDetailTimeRangeTag() + '</div></li>' +
+				'</ul>' +
+			'</li>';
+		divMenu.appendChild(accordion);
+	}
+	// アコーディオンラベル用<input><label>タグ編集（内部関数宣言） #31
+	function getAccordionTag(that, id, labelText, isChecked){
+		// '<input id="ac-' + this.chartIdName + '2"' + typeStr + checkedStr + '">' +
+		// '<label for="ac-' + this.chartIdName + '2">View ' + this.chartIdName + '</label>' +
+		var	isAccordion = true,	// true:アコーディオン型  false:折りたたみ型 　#21
+			typeStr = isAccordion 	? ' type="checkbox" name="accordion" '
+									: ' type="radio" name="accordion" ',
+			checkedStr = ' checked="checked" ';
+		return '' +
+		'<input id="ac-' + that.chartIdName + id + '"' +
+									typeStr + (isChecked ? checkedStr : '') + '">' +
+		'<label for="ac-' + that.chartIdName + id + '">' + labelText + '</label>';
+	}
+	
 	// File Open用<input>タグ編集（内部関数宣言）
 	function getInputTag(arg){
 		// '<a><label>Child Menu<input type="file" id="xxx" multiple /></label></a>
@@ -720,25 +888,38 @@ HJN.prototype.addMenu =　function(){
 			'<label>' + arg.menuLabel + '</label></a>';
 	}
 
-}
+	// 下段表示幅指定用<div>タグ編集
+	function getDetailTimeRangeTag(){
+		var initPlus  = 1,
+			initMinus = 2;	// #3
+		return 'Range: ' +
+		'- <input type="number" id="DetailRangeMinus" min="0" step="1"' +
+		'value="' + initPlus  + '" style="width:50px;　"  onchange="HJN.setDetailRange()">sec　' +
+		'+ <input type="number" id="DetailRangePlus" min="0" step="1"' +
+		'value="' + initMinus + '" style="width:50px;　"  onchange="HJN.setDetailRange()">sec　　';
+	}
+};
 
 //メニュー機能：CSVデータファイルを開く
 HJN.prototype.menuOpenCsv =　function(evt){
+	"use strict";
 	var file_list = evt.target.files;
     // 指定されたファイルを処理する
     HJN.FileReader(file_list);
-}
+};
 //メニュー機能：画面設定をJSON形式のセーブファイルとしてダウンロードする
 HJN.prototype.menuSaveConfig =　function(menuId, fileName){
+	"use strict";
 	// plotsをjsonに変換する
 	var json = JSON.stringify(HJN.plots);
 	// ダウンロードする
 	this.menuDownloadBlob(this.menuBuffToBlob(json), menuId, fileName);
-}
+};
 //メニュー機能：JSON形式の画面設定ファイルをロードし画面表示に反映する
-HJN.prototype.menuLoadConfig =　function(menuId, fileName){
+HJN.prototype.menuLoadConfig =　function(){	// menuId, fileName
+	"use strict";
 	/** 未実装ここから **/
-	var msg = "この機能は未実装です\r\画面の一部のHTMLがダウンロードされます" 
+	var msg = "この機能は未実装です\r\画面の一部のHTMLがダウンロードされます"; 
 		alert(msg);
 	// ファイルからjsonを読み込む
 	var json = JSON.stringify(HJN.plots); // document.getElementById(textareaId).value
@@ -747,9 +928,9 @@ HJN.prototype.menuLoadConfig =　function(menuId, fileName){
 	var plots = [],
 		obj = JSON.parse(json);
 	if( isSameType( [], obj) ){
-		obj.forEach(function(e,i,a){
+		obj.forEach(function(e){
 			if( isSameType( 0, e.x) ) plots.push(e);
-		})
+		});
 	}
 	if( 0 < plots.length) HJN.plots = plots;
 	HJN.PlotRender();
@@ -761,12 +942,12 @@ HJN.prototype.menuLoadConfig =　function(menuId, fileName){
 	    	clas1 = Object.prototype.toString.call(obj);
 	    return clas0 === clas1;
 	}
-
-}
+};
 
 
 //　メニュー機能：canvas画像をファイルとしてダウンロードする
 HJN.prototype.menuDownloadImg =　function(menuId, fileName){
+	"use strict";
 	var type = 'image/png';	
 	// canvas から DataURL で画像を出力
 	var canvas = this.chartId.getElementsByTagName('canvas')[0],
@@ -780,31 +961,33 @@ HJN.prototype.menuDownloadImg =　function(menuId, fileName){
 	}
 	// Uint8Array ビューのバッファーを抜き出し、それを元に Blob を作る
 	var blob = new Blob([buffer.buffer], {type: type});
-	var url = window.URL.createObjectURL(blob);
+//	var url = window.URL.createObjectURL(blob);
 
 	// ダウンロードする
 	this.menuDownloadBlob(blob, menuId, fileName);
-}
+};
 
 // メニュー機能：グラフ全データをCSVファイルとしてダウンロードする
 HJN.prototype.menuDownloadCsv =　function(menuId, fileName){
+	"use strict";
 	var bom = new Uint8Array([0xEF, 0xBB, 0xBF]),	// Excel対応UTF8のBOMコード指定
 		csv = this.labels.join(',');					// csvヘッダ行の作成
 	this.dyData.forEach(function(e){ csv += "\r\n" + e.join(',');	});	// csvデータ展開
     var blob = new Blob([ bom, csv ], { "type" : "text/csv" });　// blob変換
 	// ダウンロードする
 	this.menuDownloadBlob(blob, menuId, fileName);
-}
+};
 
 //メニュー機能：グラフ全データの編集元に該当するTATログの該当行をCSVファイルとしてダウンロードする
 HJN.prototype.menuDownloadLog =　function(menuId, fileName){
-	var eTat = this.seriesSet[HJN.ETAT.N];
+	"use strict";
+	var eTat = this.eTat;
 	if(0 < eTat.length){	// 出力対象データがあるとき
 		if(typeof eTat[0].pos === "undefined"){	// 生成データのとき
 			// 生成データをCSVに編集する
 			var eTatCsv = "";
 			eTat.forEach(function(e){
-				eTatCsv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.sss") +
+				eTatCsv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") +
 							"," + e.y + "\r\n"; 
 			});
 			// ダウンロードする
@@ -830,22 +1013,22 @@ HJN.prototype.menuDownloadLog =　function(menuId, fileName){
 		// ダウンロードする
 		this.menuDownloadBlob(this.menuBuffToBlob(str), menuId, fileName);
 	}
-}
+};
 
 //メニュー機能：plotsでconcが選択されているとき、同時処理に該当するTATログの該当行をCSVファイルとしてダウンロードする
 HJN.prototype.menuDownloadConc =　function(menuId, fileName){
-	var plot = HJN.plots.find(function(e){return e.radio});
+	"use strict";
+	var plot = HJN.plots.find(function(e){return e.radio; });
 	if (plot.n === HJN.CONC.N || plot.n === HJN.STAT.N || plot.n === HJN.ETAT.N) {	// CONC|STAT|ETATが選択されているとき
-		var	conc = HJN.seriesSet[HJN.CONC.N];
-		var trans = this.seriesSet[HJN.ETAT.N].tatMap.search(plot.x);	// #18
+		var trans = this.eTat.tatMap.search(plot.x);	// #18
 		
-		if ( 0 <= i && 0 < trans.length){	// 出力テキストを編集する
+		if ( 0 < trans.length){	// 出力テキストを編集する
 			if(typeof trans[0].pos === "undefined"){
 				// 初期表示データのとき、CSVを編集する
 				// 生成データをCSVに編集する
 				var csv = "";
 				trans.forEach(function(e){
-					csv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.sss") +
+					csv +=  HJN.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") +
 								"," + e.y + "\r\n"; 
 				});
 				// ダウンロードする
@@ -877,16 +1060,18 @@ HJN.prototype.menuDownloadConc =　function(menuId, fileName){
 		alert(msg);
 		this.menuDownloadBlob(this.menuBuffToBlob(msg), menuId, fileName);
 	}
-}
+};
 
 
 //メニュー共通機能：BinaryString, UintXXArray, ArrayBuffer をBlobに変換する
 HJN.prototype.menuBuffToBlob =　function(arrayBuffer){
+	"use strict";
 	return new Blob([arrayBuffer], {type: "application/octet-stream"});
-}
+};
 
 // メニュー共通機能：指定blobをファイルとしてダウンロードする
 HJN.prototype.menuDownloadBlob =　function(blob, menuId, fileName){
+	"use strict";
     if (window.navigator.msSaveBlob) {	// ie11以降のとき
         window.navigator.msSaveBlob(blob, fileName); 
         // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
@@ -894,4 +1079,4 @@ HJN.prototype.menuDownloadBlob =　function(blob, menuId, fileName){
     } else {	// Chrome, FireFoxのとき
         document.getElementById(menuId).href = window.URL.createObjectURL(blob);
     }
-}
+};

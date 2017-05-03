@@ -7,21 +7,37 @@
 
 <body>
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
-<nav><header>TAT log diver (v0.3.26)
+<nav><header>
 <div class="statusbar">
 	<iframe id="fileInfo"></iframe>
 </div>
+<div class="hjnBurgerTray">
+	<input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked"/>
+	<label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>
+	<div class="hjnBurgerTitle">
+		<input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize"/>
+		<label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>
+		<p>TAT log diver(v0.4.24)<BR>&copy;2017 Junichiroh Hirose</p>
+	</div>
+		<div class="hjnBurgerWrap">
+		<div class="hjnAccordion">
+			<div id="chart_menu"></div>
+			<div id="chartDetail_menu"></div>
+			<div id="chartLabels"></div>
+			<div id="chartPlots"></div>
+		</div>
+		</div>
+</div>
 </header></nav>
 
-<div id="chart"></div>
-<fieldset>
-	<legend id="chartLabels"></legend>
-	<div id="chartPlots"></div>
-</fieldset>
-<div id="chartDetail"></div>
+<div id="hjn_chart">
+	<div id="chart"></div>
+	<div id="chartDetail"></div>
+	<fieldset><div id="lineViewer">logdata</div></fieldset>
+</div>
 </body>
 
-<footer><small>&copy; copyright 2017 Junichiroh Hirose</small></footer>
+<footer><small></small></footer>
 
 <script>
 window.addEventListener("DOMContentLoaded",function(eve){

@@ -1,0 +1,256 @@
+<!doctype html>
+<head><meta charset="UTF-8"><title>sandbox</title>
+
+<link type="text/css" rel="stylesheet" href="../src/HJN.css">
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+
+<style>
+ol {margin:0; width:300px; font-size:12px; vertical-align:middle;}
+</style>
+
+</head>
+<body>
+<nav><header>sandbox コンフィグ画面</header></nav>
+<!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
+----
+<div id="output"></div>
+----
+<div id="config_html"></div>
+----<BR>
+<pre><code class=”prettyprint” >
+</code></pre>
+<textarea id="config_html_text" rows="50" cols="150"></textarea><BR>
+
+----
+
+<script>
+HJN = {};
+HJN.util = {};
+HJN.util.Config = (function() {
+	/* constructor */
+	function Config(prefix, ol){ 
+		if(!(this instanceof Config)) return new Config(prefix, ol);
+		this._pre = (prefix || '') + "_";			// 各フィールド、要素の名称のプレフィックス
+		this._ols = ol ? '<' + ol + '>' : '<ol>'; 	// リストに使用する要素（初期値 ol )
+		this._ole = ol ? '</' + ol + '>' : '</ol>';
+		this._html = this._ols;	// config設定画面のHtml
+		this._nameHtml = '';	// HTMLタグの name属性指定
+		this._name = '';		// radioのConfig.get用
+	}
+
+	/* static member */
+	var proto = Config.prototype = {
+			_config : {}	// config設定コンテナ
+	};
+	/* class method */
+	// configのkey(prefix+nameかid)に画面から指定された値を設定する
+	Config.on = function(t) {	// HTML要素の値が変更した時に呼ばれる処理
+		
+		var radio1 = document.getElementById("r1"),
+		output = document.getElementById("output");
+		console.log(t);
+		output.innerHTML = "type[" + t.type + "] name[" + t.name + "] id[" + t.id + "] value[" + t.value + "]";
+
+		
+		if (t.type === "radio") {	// radioのとき、nameに対して、選択されたid(文字列)を登録
+			this.prototype._config[t.name] = t.id;
+		} else {					// text,numberのとき、idに対して、value(入力値)を登録
+			this.prototype._config[t.id] = t.value;
+		}
+	};
+
+	/* private */
+
+	/* public */
+	proto.getHtml = function() {	// config設定用HTMLテキストを出力する
+		return this._html + this._ole;
+	};
+	proto.get = function(key) {	// key(name(radioのとき)もしくはid)の設定値を取得する
+		return this._config[this._pre + key];
+	};
+	proto.set = function(key, val) {	// keyに値を設定する
+		this.value[this._pre + key] = val;
+	};
+	
+	proto.n = function () {	// 改行 
+		this._html += this._ole + this._ols;
+		return this;
+	};
+	proto.nDown = function () {	// ネスト一つ下げ 
+		this._html += this._ols;
+		return this;
+	};
+	proto.nUp = function () {	// ネスト一つ上げ 
+		this._html += this._ole;
+		return this;
+	};
+
+	proto.name = function (str) {	// nameを変更する（radio等の先頭で指定）
+		this._nameHtml = str ? 'name="' + this._pre + str + '" ' : '';
+		this._name = str;
+		return this;
+	};
+	proto.label = function (id, str, attribute) {	// ラベル要素 (idは関連付けるformのid属性)
+		this._html += '<label ' +
+						(id ? 'for="' + this._pre + id + '" ' : '') +
+						(attribute || '') + '>' +
+						(str || '') +
+						'<label>\n';
+		return this;
+	};
+	proto.labeledForm = function (id, type, typedAttribute, 	// ラベル付された各種入力フォーム
+								pLabel, sLabel, val, attribute, check) {
+		this._html += '<label>' +
+					(pLabel ? pLabel : '') +
+					'<input type="' + type + '" ' +
+						(typedAttribute || '') + 
+						this._nameHtml +
+						'id="' + this._pre + id + '" ' +
+						'onchange="HJN.util.Config.on(this);" ' +
+						(val ? 'value="' + val + '" ' : '') +
+						(attribute || '') + 
+						(check ? ' checked="checked;"' : '') +
+					'>' +
+					(sLabel ? sLabel : '') +
+					'<label>\n';
+		// デフォルト指定があるとき configにデフォルト値を設定する
+		if (type === "radio" && check) {	// radioのとき、nameに対して、選択されたid(文字列)を登録
+			proto._config[this._pre + this._name] = id;
+		} else {	// text,numberのとき、idに対して、val(入力値)を登録
+			proto._config[this._pre + id] = val;
+		}
+		return this;
+	};
+	proto.number = function (id, pLabel, sLabel, val, attribute) {	// テキストボックス要素で、文字列を設定
+		proto.labeledForm.call(this, id, "number", "", 
+								pLabel, sLabel, val, attribute);
+		return this;
+	};
+	proto.text = function (id, pLabel, sLabel, val, attribute) {	// テキストボックス要素で、数値を設定
+		proto.labeledForm.call(this, id, "text", "", 
+								pLabel, sLabel, val, attribute);
+		return this;
+	};
+	proto.radio = function (id, pLabel, sLabel, check, attribute) {	// ラジオボタン要素で、選択肢の一つを設定
+		proto.labeledForm.call(this, id, "radio", (check ? 'checked="checked;"' : ''),
+								pLabel, sLabel, "", attribute, check);
+		return this;
+	};
+
+	/* new */
+	return Config;
+}());
+
+
+HJN.util.FileReader = (function() {
+	/* constructor */
+	function FileReader(arg){ 
+		if(!(this instanceof FileReader)) return new FileReader(arg);
+
+		// コンストラクタ内部関数：keyを定義する
+		var def = function(key, val, func) {
+					key["val"] = val || key;	// keyに該当する値（デフォルト：keyと同じ文字列）
+					key["func"] = func || null;	// key値が利用されたときに実行する処理
+					return key;
+				};
+		// 名称と挙動の定義
+		var _r1 = def("r1");
+
+		
+		
+		this._config = HJN.util.Config("m")	// config設定画面定義
+			.label(null,"----- Configration of file format --------").n()
+			.name("LF").label(null, "[Line feed code]").n()
+				.radio("LF_FIX", null, "Fixed Length")
+					.number("LF_FIX_V",  null, "byte","80",'style="width:60px;"').n()
+				.radio(def("LF_WIN",  13), null, "Windows:CR(13)+LF(10)", true).n()
+				.radio(def("LF_UNIX", 10), null, "Unix/Linux:LF(10)").n()
+				.radio(def("LF_ZOS",  15), null, "zOS:NEL(15)").n()
+				.radio(def("LF_MAC",  13), null, "Mac:CR(13)").n()
+				.radio("LF_ELSE", null, "other charcode")
+					.number("LF_ELSE_V", "(", ")", "10", 'style="width:40px;"').n()
+			.name("SEP").label(null,"[CSV delimiter]").n()
+				.radio(def("SEP_COMMA", ','), null, "comma", true)
+				.radio(def("SEP_TAB", ','),   null,"tab")
+				.radio("SEP_ELSE", null, "other")
+					.text("SEP_ELSE_V", '"', '"', ',', 'size="2" placeholder=","').n()
+			.name("TIME").label(null, "[Time stamp field]").n()
+				.number("TIME_POS_S", "from", "th byte ", "1", 'style="width:40px;"')
+				.number("TIME_POS_C", "of ", "th column", "1", 'style="width:40px;"').n()
+				.radio("TIME_YMD", null, "text")
+					.text("TIME_YMD_V", '"', '"', "", 'size="22" placeholder="YYYY/MM/DD hh.mm.ss.sss"').n()
+				.radio("TIME_JU", null, "Julius date [unit:", true)
+					.name("TIME_JU_UNIT")
+						.radio(def("TIME_JU_UNIT_MS", 1), null, "msec", true)
+						.radio(def("TIME_JU_UNIT_SEC", 1000), null, "sec]").n()
+					.nDown()
+					.name("TIME_JU_FORM")
+						.radio("TIME_JU_FORM_ALLCOL", null, "full number column").n()
+						.radio("TIME_JU_FORM_NUM").
+							number("TIME_JU_FORM_NUM_V", null, "bytes number", "4", 'style="width:40px;"').n()
+						.radio("TIME_JU_FORM_LONG", null, "long(4byte)").n()
+					.nUp()
+			.name("TAT").label(null,"[TAT(Turnaround time) field]").n()
+				.number("TAT_POS_S", "from", "th byte ", "1", 'style="width:40px;"')
+				.number("TAT_POS_C", "of ", "th column", "1", 'style="width:40px;"').n()
+				.nDown().label(null, "* Set [1]th column for fixed format").nUp().n()
+			.name("TAT_UNIT").label(null, "unit:")
+				.radio(def("TAT_UNIT_MS", 1), null, "msec")
+				.radio(def("TAT_UNIT_SEC", 1000), null, "sec", true).n()
+			.name("TAT_FORM")
+				.radio("TAT_FORM_COL", null, "Column value",true).n()
+				.radio("TAT_FORM_NUM")
+					.number("TAT_FORM_NUM_V", null, "bytes number", "4", 'style="width:40px;"').n()
+				.radio("TAT_FORM_LONG", null, "long(4byte)").n()
+				.radio("TAT_FORM_ELSE", null, "other[char]")
+					.text("TAT_FORM_ELSE_V", '"', '"', ',', 'size="2" placeholder=","').n()
+			;
+	}
+
+	/* static member */
+	var proto = FileReader.prototype = {
+			_keyConfig : {},	// configで使用する値の定義
+	};
+	/* class method */
+	// configのkey(prefix+nameかid)に画面から指定された値を設定する
+	FileReader.on = function(t) {	// HTML要素の値が変更した時に呼ばれる処理
+		if (t.type === "radio") {	// radioのとき、nameに対して、選択されたid(文字列)を登録
+			this.prototype._config[t.name] = t.id;
+		} else {					// text,numberのとき、idに対して、value(入力値)を登録
+			this.prototype._config[t.id] = t.value;
+		}
+	};
+
+	/* private */
+
+	/* public */
+	proto.get = function(key) {	// key(name(radioのとき)もしくはid)の設定値を取得する
+		return this._config.get(key);
+	};
+	proto.getConfig = function() {	//　設定値を保有するオブジェクトを出力する
+		return this._config._config;
+	};
+	proto.getConfigHtml = function() {	// HTML（config設定用）テキストを出力する
+		return this._config.getHtml();
+	};
+
+	
+	/* new */
+	return FileReader;
+}());
+
+var fileReader = HJN.util.FileReader();
+html = fileReader.getConfigHtml()
+</script>
+
+<script>
+var output = document.getElementById("output");
+var config_html = document.getElementById("config_html");
+var config_html_text = document.getElementById("config_html_text");
+
+config_html.innerHTML = html;
+config_html_text.innerHTML = html;
+
+</script>
+
+</body>
