@@ -11,12 +11,16 @@
 <div class="statusbar">
 	<iframe id="fileInfo"></iframe>
 </div>
-<div class="hm_wrap">
-	<input id="hm_menu_01" type="checkbox" class="hm_menu_check"  checked="checked"/>
-	<label for="hm_menu_01" class="hm_btn"><span></span></label>
-	<div class="hm_title">TAT log diver(v0.4.24)<BR>&copy;2017 Junichiroh Hirose</div>
-		<div class="hm_menu_wrap">
-		<div class="accordion">
+<div class="hjnBurgerTray">
+	<input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked"/>
+	<label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>
+	<div class="hjnBurgerTitle">
+		<input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize"/>
+		<label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>
+		<p>TAT log diver(v0.4.24)<BR>&copy;2017 Junichiroh Hirose</p>
+	</div>
+		<div class="hjnBurgerWrap">
+		<div class="hjnAccordion">
 			<div id="chart_menu"></div>
 			<div id="chartDetail_menu"></div>
 			<div id="chartLabels"></div>
@@ -29,7 +33,7 @@
 <div id="hjn_chart">
 	<div id="chart"></div>
 	<div id="chartDetail"></div>
-	<fieldset><div id="logdata">logdata</div></fieldset>
+	<fieldset><div id="lineViewer">logdata</div></fieldset>
 </div>
 </body>
 

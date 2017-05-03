@@ -1,7 +1,7 @@
 # HJN
 TAT log Diver
 
-HJN TAT log Diver v0.03 uses Dygraphs
+HJN TAT log Diver v0.03- uses Dygraphs
 
 * Dygraphs
 http://dygraphs.com/

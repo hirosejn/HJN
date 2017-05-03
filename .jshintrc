@@ -1,0 +1,27 @@
+{
+	"eqeqeq"	: true, 	// ==、!=の使用禁止
+	"indent"	: 4, 		// インデント幅が指定数であること
+	"immed"		: true, 	// 即時関数パターンが、カッコで囲われているか
+	"latedef"	: "nofunc",	// 変数を定義前に使うことを禁止（関数を除く）
+	"laxcomma"	: true, 	// 前置カンマ禁止
+	"maxlen"	: 120, 		// 一行の最大の長さを指定
+	"strict"	: true, 	// "use strict";の強制
+	"trailing"	: true, 	// 行末スペース禁止
+	"unused" 	: true, 	// 宣言したきり使っていない変数を検出  
+	"undef" 	: true, 	// 未定義変数の禁止=グローバル変数へのアクセスを禁止
+
+	// チェックしない設定
+	"loopfunc"	: false,	// ループの中で関数（許可）
+
+	// Relaxing Options - 危険性を認識した上で設定すること
+	"expr"		: true, 	// x || (x = 1); とかができるようにする
+	"loopfunc"	: true, 	// ループ内で関数式を許容する
+
+	// Environments
+	"browser"	: true, 	// ブラウザ用のやつは許可
+	"devel"		: true,  	// consoleやalertを許可
+	"globals": {
+		"HJN"	: true,
+		"Dygraph": true
+	}
+}
