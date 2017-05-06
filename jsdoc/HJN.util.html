@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: util</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: util</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="HJN.html">HJN</a>.</span>util</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="HJN.util.binarySearch.html">binarySearch</a></dt>
+            <dd></dd>
+        
+            <dt><a href="HJN.util.Cash.html">Cash</a></dt>
+            <dd></dd>
+        
+            <dt><a href="HJN.util.Config.html">Config</a></dt>
+            <dd></dd>
+        
+            <dt><a href="HJN.util.FileReader.html">FileReader</a></dt>
+            <dd></dd>
+        
+            <dt><a href="HJN.util.MappedArray.html">MappedArray</a></dt>
+            <dd></dd>
+        
+            <dt><a href="HJN.util.MappedETat.html">MappedETat</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line820">line 820</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Copyright">
+    <span class="type-signature">(static) </span>Copyright<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span>
+    
+	
+	<div class="description">
+	    著作権表記文字を取得する
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<table class="params"><tbody>
+	<tr>
+	    <td>
+	        Type
+	    </td>
+	    <td>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </td>
+	    <td>
+			
+			<div class="param-desc">
+			    str - 著作権表記文字
+			</div>
+			
+	    </td>
+	</tr>
+</tbody></table>
+
+
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line558">line 558</a>
+    </dir>
+    
+
+    <h4 class="name" id=".D2S">
+    <span class="type-signature">(static) </span>D2S<span class="signature">(ds, str)</span><span class="type-signature"> &rarr; {String}</span>
+    
+	
+	<div class="description">
+	    日時(ミリ秒：Ｘ軸用）から、指定フォーマットの文字列を得る
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ds</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stromg</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp　（戻り値で上書きされる）</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<table class="params"><tbody>
+	<tr>
+	    <td>
+	        Type
+	    </td>
+	    <td>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </td>
+	    <td>
+			
+			<div class="param-desc">
+			    str - 編集後文字列
+			</div>
+			
+	    </td>
+	</tr>
+</tbody></table>
+
+
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line537">line 537</a>
+    </dir>
+    
+
+    <h4 class="name" id=".DateToString">
+    <span class="type-signature">(static) </span>DateToString<span class="signature">(dt, str)</span><span class="type-signature"> &rarr; {String}</span>
+    
+	
+	<div class="description">
+	    日時(JS Date)から、指定フォーマットの文字列を得る
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Date型（内部実装はミリ秒単位）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stromg</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp　（戻り値で上書きされる）</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<table class="params"><tbody>
+	<tr>
+	    <td>
+	        Type
+	    </td>
+	    <td>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </td>
+	    <td>
+			
+			<div class="param-desc">
+			    str - 編集後文字列
+			</div>
+			
+	    </td>
+	</tr>
+</tbody></table>
+
+
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line830">line 830</a>
+    </dir>
+    
+
+    <h4 class="name" id=".HowToUse">
+    <span class="type-signature">(static) </span>HowToUse<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span>
+    
+	
+	<div class="description">
+	    使い方を記載したHTMLを取得する
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<table class="params"><tbody>
+	<tr>
+	    <td>
+	        Type
+	    </td>
+	    <td>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </td>
+	    <td>
+			
+			<div class="param-desc">
+			    html　- 使い方を記載したHTML（未実装）
+			</div>
+			
+	    </td>
+	</tr>
+</tbody></table>
+
+
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line743">line 743</a>
+    </dir>
+    
+
+    <h4 class="name" id=".LogTime">
+    <span class="type-signature">(static) </span>LogTime<span class="signature">(i, text)</span><span class="type-signature"></span>
+    
+	
+	<div class="description">
+	    ログ出力：　一定時間（１分）に一度しか出力しない（ループ用）
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>i</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ログ出力用番号（カウンタに使用）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ログ出力文字列</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line568">line 568</a>
+    </dir>
+    
+
+    <h4 class="name" id=".N2S">
+    <span class="type-signature">(static) </span>N2S<span class="signature">(y)</span><span class="type-signature"> &rarr; {String}</span>
+    
+	
+	<div class="description">
+	    数値(Ｙ軸用）から、誤差のない表示用文字列を得る（hover、legendなどでY軸の値を使うときに使用する）
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<table class="params"><tbody>
+	<tr>
+	    <td>
+	        Type
+	    </td>
+	    <td>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </td>
+	    <td>
+			
+			<div class="param-desc">
+			    str - 編集後文字列<a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat">https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat</a>
+			</div>
+			
+	    </td>
+	</tr>
+</tbody></table>
+
+
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line714">line 714</a>
+    </dir>
+    
+
+    <h4 class="name" id=".setZeroTimeout">
+    <span class="type-signature">(static) </span>setZeroTimeout<span class="signature">(global)</span><span class="type-signature"></span>
+    
+	
+	<div class="description">
+	    非同期化 内部関数
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>global</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">非同期化して実行する関数<p>参考<a href="https://jsfiddle.net/kou/j73tLum4/8/">https://jsfiddle.net/kou/j73tLum4/8/</a><a href="https://gist.github.com/mathiasbynens/579895">https://gist.github.com/mathiasbynens/579895</a><a href="http://dbaron.org/log/20100309-faster-timeouts">http://dbaron.org/log/20100309-faster-timeouts</a></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line803">line 803</a>
+    </dir>
+    
+
+    <h4 class="name" id=".ShowIHtmlBody">
+    <span class="type-signature">(static) </span>ShowIHtmlBody<span class="signature">(elementId, iHtmlBody)</span><span class="type-signature"></span>
+    
+	
+	<div class="description">
+	    ログ出力：　第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>elementId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">iframeのID名</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>iHtmlBody</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ログ（HTML化）</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line769">line 769</a>
+    </dir>
+    
+
+    <h4 class="name" id=".ShowLogText">
+    <span class="type-signature">(static) </span>ShowLogText<span class="signature">(text, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    
+	
+	<div class="description">
+	    ログ出力：　ログテキストをテキストアレイに追記し、表示する
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">ログ出力文字列</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line758">line 758</a>
+    </dir>
+    
+
+    <h4 class="name" id=".ShowLogTextInit">
+    <span class="type-signature">(static) </span>ShowLogTextInit<span class="signature">(text, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    
+	
+	<div class="description">
+	    ログ出力：　ログテキストを初期化する
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">ログ出力文字列</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line790">line 790</a>
+    </dir>
+    
+
+    <h4 class="name" id=".ShowText">
+    <span class="type-signature">(static) </span>ShowText<span class="signature">(textArray)</span><span class="type-signature"></span>
+    
+	
+	<div class="description">
+	    ログ出力：　第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
+	</div>
+	
+
+    </h4>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>textArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">出力するログ（配列１行がログ１件）</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun May 07 2017 07:36:15 GMT+0900 (東京 (標準時))
+    <br>&copy 2017 Junichiroh Hirose
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

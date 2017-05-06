@@ -1,0 +1,16 @@
+{
+    "source": {
+        "include": ["\\2014WIN7\GoogleDrive\JavaScript\HJN\src"]
+    },
+    "opts": {
+        "template": "\\2014WIN7\GoogleDrive\JavaScript\jsdoc3\jsdoc3-jsdoc-dd905a2\templates\default_HJNcustom",
+        "destination": "\\2014WIN7\GoogleDrive\JavaScript\HJN\jsdoc",
+        "recurese": true,
+        "private": false
+    },
+    "templates": {
+        "default": {
+            "useLongnameInNav": true
+        }
+    }
+}
