@@ -31,7 +31,7 @@
         <h2>
             <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>MappedArray</h2>
         
-            <div class="class-description">配列に格納されているオブジェクトのx値をキーとするマップ <p>参考 <a href="http://qiita.com/alucky0707/items/10052866719ba5c5f5d7">http://qiita.com/alucky0707/items/10052866719ba5c5f5d7</a></div>
+            <div class="class-description">配列に格納されているオブジェクトのx値をキーとするマップ           <p>           参考 <a href="http://qiita.com/alucky0707/items/10052866719ba5c5f5d7">http://qiita.com/alucky0707/items/10052866719ba5c5f5d7</a></div>
         
     
 </header>
@@ -47,20 +47,20 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1030">line 1030</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1114">line 1114</a>
     </dir>
     
 
     <h4 class="name" id="MappedArray">
     <span class="type-signature"></span>new MappedArray<span class="signature">(arr, getKey<span class="signature-attributes">opt</span>, isMappedMap<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {object}</span>
+    </h4>
     
-	
+    
 	<div class="description">
-	    配列に格納されているオブジェクトのx値で、配列位置を高速検索
+		配列に格納されているオブジェクトのx値で、配列位置を高速検索
 	</div>
 	
-
-    </h4>
+    
     
 
 
@@ -74,71 +74,49 @@
     <h5>Parameters:</h5>
     
 
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
     
-
-        <tr>
+		
+        <ul class="params"><li>
             
                 <td class="name"><code>arr</code></td>
             
 
-            <td class="type">
+            <span class="type">
             
                 
 <span class="param-type">Array</span>
 
 
             
-            </td>
+            </span>
 
             
-                <td class="attributes">
+                <span class="attributes">
                 
 
                 
 
                 
-                </td>
+                </span>
             
 
             
-                <td class="default">
+                <span class="default">
                 
-                </td>
+                </span>
             
 
-            <td class="description last">インデクスをつける対象の配列</td>
-        </tr>
+            <div class="description last">インデクスをつける対象の配列</div>
+        </li></ul>
 
     
-
-        <tr>
+		
+        <ul class="params"><li>
             
                 <td class="name"><code>getKey</code></td>
             
 
-            <td class="type">
+            <span class="type">
             
                 
 <span class="param-type">String</span>
@@ -148,71 +126,69 @@
 
 
             
-            </td>
+            </span>
 
             
-                <td class="attributes">
+                <span class="attributes">
                 
-                    &lt;optional><br>
-                
-
+                    &lt;optional>
                 
 
                 
-                </td>
+
+                
+                </span>
             
 
             
-                <td class="default">
+                <span class="default">
                 
                     ""
                 
-                </td>
+                </span>
             
 
-            <td class="description last">MappedArrayのKey値の取得方法<p>String指定のとき（デフォルト""を含む）、配列要素の値(valueOf)<p>注： 0,00,"0"は同値、1,01,"1"は同値 Stringのとき、 配列要素が持つ指定要素の値<p>functionのとき、配列要素に指定関数を適用した戻り値<p>関数の引数：(配列要素オブジェクト、配列のインデックス、作成中のMappedArrayへの参照）</td>
-        </tr>
+            <div class="description last">MappedArrayのKey値の取得方法           <p>           String指定のとき（デフォルト""を含む）、配列要素の値(valueOf)           <p>           注： 0,00,"0"は同値、1,01,"1"は同値 Stringのとき、 配列要素が持つ指定要素の値           <p>           functionのとき、配列要素に指定関数を適用した戻り値           <p>           関数の引数：(配列要素オブジェクト、配列のインデックス、作成中のMappedArrayへの参照）</div>
+        </li></ul>
 
     
-
-        <tr>
+		
+        <ul class="params"><li>
             
                 <td class="name"><code>isMappedMap</code></td>
             
 
-            <td class="type">
+            <span class="type">
             
                 
 <span class="param-type">Boolean</span>
 
 
             
-            </td>
+            </span>
 
             
-                <td class="attributes">
+                <span class="attributes">
                 
-                    &lt;optional><br>
-                
-
+                    &lt;optional>
                 
 
                 
-                </td>
+
+                
+                </span>
             
 
             
-                <td class="default">
+                <span class="default">
                 
-                </td>
+                </span>
             
 
-            <td class="description last">getKeyが2段Map用の配列を返却する</td>
-        </tr>
+            <div class="description last">getKeyが2段Map用の配列を返却する</div>
+        </li></ul>
 
     
-    </tbody>
-</table>
 
 
 
@@ -233,30 +209,21 @@
         
 
 
-<table class="params"><tbody>
-	<tr>
-	    <td>
-	        Type
-	    </td>
-	    <td>
+	<ul class="params"><li>
+	    <span>
 	    	
 	        
 <span class="param-type">object</span>
 
 
 			
-	    </td>
-	    <td>
-			
-			<div class="param-desc">
-			    Index - arrに対するインデックス（連想配列名で検索）
-			</div>
-			
-	    </td>
-	</tr>
-</tbody></table>
-
-
+	    </span>
+		
+		<div class="param-desc">
+		    Index - arrに対するインデックス（連想配列名で検索）
+		</div>
+		
+	</li></ul>
 
     
 
@@ -329,20 +296,20 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1109">line 1109</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1204">line 1204</a>
     </dir>
     
 
     <h4 class="name" id=".proto.has">
     <span class="type-signature">(static) </span>proto.has<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
     
-	
+    
 	<div class="description">
-	    値の存在チェック
+		値の存在チェック
 	</div>
 	
-
-    </h4>
+    
     
 
 
@@ -413,20 +380,20 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1115">line 1115</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1213">line 1213</a>
     </dir>
     
 
     <h4 class="name" id=".proto.indexes">
     <span class="type-signature">(static) </span>proto.indexes<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
     
-	
+    
 	<div class="description">
-	    該当位置を配列で返す
+		該当位置を配列で返す
 	</div>
 	
-
-    </h4>
+    
     
 
 
@@ -497,20 +464,20 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1131">line 1131</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1235">line 1235</a>
     </dir>
     
 
     <h4 class="name" id=".proto.indexOf">
     <span class="type-signature">(static) </span>proto.indexOf<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
     
-	
+    
 	<div class="description">
-	    Array.prototype.indexOf() 同等
+		Array.prototype.indexOf() 同等
 	</div>
 	
-
-    </h4>
+    
     
 
 
@@ -581,20 +548,20 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1139">line 1139</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1246">line 1246</a>
     </dir>
     
 
     <h4 class="name" id=".proto.lastIndexOf">
     <span class="type-signature">(static) </span>proto.lastIndexOf<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
     
-	
+    
 	<div class="description">
-	    Array.prototype.lastIndexOf() 同等
+		Array.prototype.lastIndexOf() 同等
 	</div>
 	
-
-    </h4>
+    
     
 
 
@@ -665,20 +632,20 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1121">line 1121</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1222">line 1222</a>
     </dir>
     
 
     <h4 class="name" id=".proto.search">
     <span class="type-signature">(static) </span>proto.search<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
     
-	
+    
 	<div class="description">
-	    該当する要素を配列で返す
+		該当する要素を配列で返す
 	</div>
 	
-
-    </h4>
+    
     
 
 
@@ -764,7 +731,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun May 07 2017 07:36:15 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon May 08 2017 03:38:34 GMT+0900 (東京 (標準時))
     <br>&copy 2017 Junichiroh Hirose
 </footer>
 

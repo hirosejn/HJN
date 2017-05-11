@@ -67,15 +67,20 @@ if (!Array.prototype.find) {
 		return undefined;
 	};
 }
-/*  *****1*********2*********3*********4*********5*********6*********7******* */
+/* *****1*********2*********3*********4*********5*********6*********7******* */
 
 /**
  * 初期表示用サンプルデータ(終了時刻のTAT（応答時間）時系列データ)を自動生成する※
- * @param {Number} [num=10000] - 生成データ数（デフォルト:100、50*100*100) 
- * @param {Number} [response=1500] - 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
- * @param {Blob} [freq=10] -　データ発生頻度の目安（tps)
- * @return {ETAT} - 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(JulianDayからの経過時間(秒)), y:レスポンス(秒)}]
-*/
+ * 
+ * @param {Number}
+ *            [num=10000] - 生成データ数（デフォルト:100、50*100*100)
+ * @param {Number}
+ *            [response=1500] - 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
+ * @param {Blob}
+ *            [freq=10] - データ発生頻度の目安（tps)
+ * @return {ETAT} - 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(JulianDayからの経過時間(秒)),
+ *         y:レスポンス(秒)}]
+ */
 HJN.init.CreateSampleTatLog = function(num, response, freq){
 	"use strict";
 	HJN.util.ShowLogText("----- create data -----------------------------","calc");
@@ -104,8 +109,11 @@ HJN.init.CreateSampleTatLog = function(num, response, freq){
 
 /**
  * HTMLから呼ばれるサンプル実装
- * @param {string} [chartName=HJN.chartName="chart"] - グラフを作成するHTMLタグ名
- * @return {ETAT} - 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(JulianDayからの経過時間(秒)), y:レスポンス(秒)}]
+ * 
+ * @param {string}
+ *            [chartName=HJN.chartName="chart"] - グラフを作成するHTMLタグ名
+ * @return {ETAT} - 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(JulianDayからの経過時間(秒)),
+ *         y:レスポンス(秒)}]
  * @example window.addEventListener("DOMContentLoaded",function(eve){
  *          HJN.init.ChartRegist("chart"); });
  */
@@ -144,14 +152,16 @@ HJN.init.ChartRegist = function(chartName){
 
 /**
  * HJN.init.DropField: HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
- * @param {string} dropFieldName - ファイルのドロップイベントを受けるフィールド名
+ * 
+ * @param {string}
+ *            dropFieldName - ファイルのドロップイベントを受けるフィールド名
  */
 HJN.init.DropField = function (dropFieldName) {
 	"use strict";
 	// 第一引数で指定された名前の ID 属性のエレメントを取得する
 	var element = document.getElementById(dropFieldName);
 	
-	// ドラッグ操作中に実行されるイベント（マウスカーソルが要素内に滞在中） 
+	// ドラッグ操作中に実行されるイベント（マウスカーソルが要素内に滞在中）
 	element.addEventListener("dragover" , function (e){
 		e.preventDefault();   // ドロップを許可し受け入れを表明
 	});
@@ -166,9 +176,11 @@ HJN.init.DropField = function (dropFieldName) {
 	});
 };
 
-/** 
+/**
  * HJN.init.FileReader: 指定されたファイルを読込んで処理する
- * @param {Object} files - ファイルハンドラ
+ * 
+ * @param {Object}
+ *            files - ファイルハンドラ
  */
 HJN.init.FileReader = function (files){  // #15
 	"use strict";
@@ -197,13 +209,13 @@ HJN.init.FileReader = function (files){  // #15
 	        		HJN.util.ShowLogText(textArray, "msg");	// 情報表示 ： ドロップファイル情報
 	        		
 	        		/** 上段用データの展開とグラフ描画 * */
-	        		// CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...]　 全件展開する
+	        		// CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
 	        		var tatESeries = getTatLogArray(　HJN.filesArrayBuffer[HJN.filesIdx] );
 	        		// 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
 	        		HJN.chart.update(HJN.chart.createSeries(tatESeries));
 	    			HJN.util.ShowLogText("上段表示", "elaps");
 
-	        		// 下段用データの展開とグラフ描画（非同期処理） 
+	        		// 下段用データの展開とグラフ描画（非同期処理）
 	        		HJN.plots = [];
 	        		HJN.util.setZeroTimeout(function(){
 		        		// 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
@@ -227,7 +239,7 @@ HJN.init.FileReader = function (files){  // #15
 		}
 	}
 
-	// 内部関数：　 指定ファイルの先頭ｎ行を、改行文字&lt;BR> のテキストに変換してリターンする 
+	// 内部関数： 指定ファイルの先頭ｎ行を、改行文字&lt;BR> のテキストに変換してリターンする
 	function　topLines(file, n) {
 	    "use strict";
 	    var fileInfo = "",
@@ -245,7 +257,8 @@ HJN.init.FileReader = function (files){  // #15
 	    return fileInfo;
 	}
 
-   // 内部関数：　 CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置, len:レコード長},...]に展開する 
+   // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置,
+    // len:レコード長},...]に展開する
 	function　getTatLogArray(file) { // arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
 	    "use strict";
 	    HJN.util.ShowLogText("----- read file -----------------------------","calc");
@@ -276,9 +289,11 @@ HJN.init.FileReader = function (files){  // #15
 
 
 
-/** 
- * 詳細グラフ用機能：　表示対象期間のcTpsから、eTps範囲を取得し、詳細Seriesを生成する。併せてPlotsを登録する。
- * @param {xMs} cTps - 日時（ミリ秒単位）
+/**
+ * 詳細グラフ用機能： 表示対象期間のcTpsから、eTps範囲を取得し、詳細Seriesを生成する。併せてPlotsを登録する。
+ * 
+ * @param {xMs}
+ *            cTps - 日時（ミリ秒単位）
  * @return {seriesSet} - dygraph用時系列データ配列
  */
 HJN.init.ChartRegistDetail = function(cTps){
@@ -304,8 +319,9 @@ HJN.init.ChartRegistDetail = function(cTps){
 
 	return HJN.chartD.seriesSet;
 };
-/** 
- * 詳細グラフ用機能：　sliderRangeで指定された範囲のeTatを返却する
+/**
+ * 詳細グラフ用機能： sliderRangeで指定された範囲のeTatを返却する
+ * 
  * @return {ETAT} - 詳細グラフ用eTat
  */
 HJN.init.GetSliderRangedEtat = function() {
@@ -336,7 +352,7 @@ HJN.init.GetSliderRangedEtat = function() {
 	return eTatDetail;	// 詳細グラフ用eTatを返却する
 };
 /**
- * 詳細グラフ用機能：　表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）
+ * 詳細グラフ用機能： 表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）
  */
 HJN.init.setDetailRange = function(){
     "use strict";
@@ -353,9 +369,11 @@ HJN.init.setDetailRange = function(){
             HJN.Graph.prototype.update.call(HJN.chartD, HJN.chartD.seriesSet);
         }, 750);    // 750ms 値の変更がなかった時に、処理を開始する
 };
-/** 
- * 詳細グラフ用機能：　指定日時を秒単位に丸めて、FORMのslider Rangeに設定する
- * @param {xMs} date - 日時（ミリ秒単位）
+/**
+ * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する
+ * 
+ * @param {xMs}
+ *            date - 日時（ミリ秒単位）
  */
 HJN.init.SetSliderRange　=　function(date) {
     "use strict";
@@ -365,9 +383,11 @@ HJN.init.SetSliderRange　=　function(date) {
 
 
 
-/** 
- * Plot関連機能：　point/baloonクリック時の処理（詳細グラフの描画と、Plotの更新）
- * @param {Objcet} point - dygraph の point
+/**
+ * Plot関連機能： point/baloonクリック時の処理（詳細グラフの描画と、Plotの更新）
+ * 
+ * @param {Objcet}
+ *            point - dygraph の point
  */
 HJN.Plot.PointClickCallback = function(point) {
 	"use strict";
@@ -387,9 +407,11 @@ HJN.Plot.PointClickCallback = function(point) {
 	HJN.Plot.ShowBalloon();
 };
 
-/** 
- * Plot関連機能：　point/baloonダブルクリック時の処理（Plotを削除する）
- * @param {object} plot - dygraph の point
+/**
+ * Plot関連機能： point/baloonダブルクリック時の処理（Plotを削除する）
+ * 
+ * @param {object}
+ *            plot - dygraph の point
  */
 HJN.Plot.PointDblClickCallback = function(point) {
 	"use strict";
@@ -407,11 +429,15 @@ HJN.Plot.PointDblClickCallback = function(point) {
 	HJN.Plot.ShowBalloon();
 };
 
-/** 
- * Plot関連機能：　クリック時のHoverからHJN.plotsを設定する
- * @param {index} n - HJN.hoverXYのシリーズ番号
- * @param {xMs} x - マウスクリック時のxの値（ミリ秒）
- * @param {Number} y - マウスクリック時のyの値
+/**
+ * Plot関連機能： クリック時のHoverからHJN.plotsを設定する
+ * 
+ * @param {index}
+ *            n - HJN.hoverXYのシリーズ番号
+ * @param {xMs}
+ *            x - マウスクリック時のxの値（ミリ秒）
+ * @param {Number}
+ *            y - マウスクリック時のyの値
  * @return {index} i - plots内のplotの位置
  */
 HJN.Plot.Add　=　function(n, x, y) {
@@ -491,8 +517,8 @@ HJN.Plot.Add　=　function(n, x, y) {
 	return i;	// plots内のplotの位置
 };
 
-/** 
- * Plot関連機能：　HJN.plotsを再表示する
+/**
+ * Plot関連機能： HJN.plotsを再表示する
  */
 HJN.Plot.Render = function() {
 	"use strict";
@@ -518,9 +544,11 @@ HJN.Plot.Render = function() {
 	} );
 };
 /**
- * Plot関連機能：　指定Plotを削除し、PlotsとBaloonを再描画する（PlotのChekBox変更時呼出用）
- * @param {index} i - 削除対象plotの、plots内位置
-*/
+ * Plot関連機能： 指定Plotを削除し、PlotsとBaloonを再描画する（PlotのChekBox変更時呼出用）
+ * 
+ * @param {index}
+ *            i - 削除対象plotの、plots内位置
+ */
 HJN.Plot.CheckBox = function(i) {
 	"use strict";
 	HJN.plots.splice(i,1);		// checkされたplotを削除する
@@ -528,9 +556,11 @@ HJN.Plot.CheckBox = function(i) {
 	HJN.Plot.ShowBalloon();		// グラフのBalloonを再描画する
 };
 /**
- * Plot関連機能：　radio選択時に下段グラフを更新する（PlotのChekBox変更時呼出用）
- * @param {index} i - 選択されたplotの、plots内位置
-*/
+ * Plot関連機能： radio選択時に下段グラフを更新する（PlotのChekBox変更時呼出用）
+ * 
+ * @param {index}
+ *            i - 選択されたplotの、plots内位置
+ */
 HJN.Plot.CheckRadio = function(i) {
 	"use strict";
 	// HJN.plotsにradioの状態を反映する
@@ -547,8 +577,8 @@ HJN.Plot.CheckRadio = function(i) {
 	HJN.Plot.ShowBalloon();
 };
 /**
- * Plot関連機能：　Balloonを再描画する
-*/
+ * Plot関連機能： Balloonを再描画する
+ */
 HJN.Plot.ShowBalloon =　function(){
 	"use strict";
 	HJN.chart.showBalloon();
@@ -556,16 +586,19 @@ HJN.Plot.ShowBalloon =　function(){
 };
 
 
-/** 
+/**
  * 日時(JS Date)から、指定フォーマットの文字列を得る
- * @param {Date} dt - Date型（内部実装はミリ秒単位）
- * @param {Stromg} str - フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp　（戻り値で上書きされる）
+ * 
+ * @param {Date}
+ *            dt - Date型（内部実装はミリ秒単位）
+ * @param {Stromg}
+ *            str - フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
  * @return {String} str - 編集後文字列
  */
 HJN.util.DateToString　=　function() {
     "use strict";
     var dt = arguments[0],  // arg0
-        str = arguments[1]; // arg1 
+        str = arguments[1]; // arg1
     
     str = str.replace(/yyyy/, dt.getFullYear() );
     str = str.replace(/MM/, ('0' + (dt.getMonth() + 1) ).slice(-2) );
@@ -577,21 +610,26 @@ HJN.util.DateToString　=　function() {
 
     return str;
 };
-/** 
+/**
  * 日時(ミリ秒：Ｘ軸用）から、指定フォーマットの文字列を得る
- * @param {Number|Date} ds - 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
- * @param {Stromg} str - フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp　（戻り値で上書きされる）
+ * 
+ * @param {Number|Date}
+ *            ds - 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
+ * @param {Stromg}
+ *            str - フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
  * @return {String} str - 編集後文字列
  */
 HJN.util.D2S = function(ds, str){
     "use strict";
     return HJN.util.DateToString(new Date(ds), str);
 };
-/** 
+/**
  * 数値(Ｙ軸用）から、誤差のない表示用文字列を得る（hover、legendなどでY軸の値を使うときに使用する）
- * @param {Number|Date} y - 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
+ * 
+ * @param {Number|Date}
+ *            y - 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
  * @return {String} str - 編集後文字列
- * {@link　https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat}
+ *         {@link　https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat}
  */
 HJN.util.N2S = function(y){
     "use strict";
@@ -601,10 +639,12 @@ HJN.util.N2S = function(y){
 
 /**
  * キャッシュ
+ * 
  * @class
  * @memberof HJN.util
  * @classdesc キャッシュを保持させるオブジェクト
- * @param {Number} [size=10] - キャッシュ最大件数（未対応機能）
+ * @param {Number}
+ *            [size=10] - キャッシュ最大件数（未対応機能）
  */
 HJN.util.Cash = (function() {
 	"use strict";
@@ -625,9 +665,11 @@ HJN.util.Cash = (function() {
 	/* class method */
     /**
      * 第一引数のargumentsを配列に変換する（注：引数が１つ以上あることを前提）
+     * 
      * @function
      * @memberof HJN.util.Cash
-     * @param {Number} args - 引数一覧（arguments）
+     * @param {Number}
+     *            args - 引数一覧（arguments）
      * @return {Array} - 引数の配列
      */
 	Cash._arg2arr = function　(args) {
@@ -635,9 +677,11 @@ HJN.util.Cash = (function() {
 		};
     /**
      * cash判定Keyを取得する(（注：引数を'.'でつないだ文字列をkeyとするので、大きな配列はNG)
+     * 
      * @function
      * @memberof HJN.util.Cash
-     * @param {Number} args - 引数一覧（arguments）
+     * @param {Number}
+     *            args - 引数一覧（arguments）
      * @return {String} - キャッシュキー文字列
      */
 	Cash._getKey = function　(args) {
@@ -650,9 +694,11 @@ HJN.util.Cash = (function() {
 	/* public */
     /**
      * cashオブジェクトを返却する（cashが無いときは undefined、ある場合は使用回数をカウントアップ）
+     * 
      * @function
      * @memberof HJN.util.Cash
-     * @param {Object} arguments - 引数からキー文字列を定める
+     * @param {Object}
+     *            arguments - 引数からキー文字列を定める
      * @return {Number|undefined} - キャッシュデータ（デーがが無い場合は undefined)
      */
 	proto.getCash = function () {
@@ -670,8 +716,11 @@ HJN.util.Cash = (function() {
 		};
     /**
      * オブジェクトをcashする
-     * @param {Object} cashVal - キャッシュするオブジェクト
-     * @param {Object} arguments - 第二引数以降の、引数からキー文字列を定める
+     * 
+     * @param {Object}
+     *            cashVal - キャッシュするオブジェクト
+     * @param {Object}
+     *            arguments - 第二引数以降の、引数からキー文字列を定める
      * @return {Object} - キャッシュデータ（デーがが無い場合は undefined)
      */
 	proto.setCash = function () {
@@ -684,9 +733,13 @@ HJN.util.Cash = (function() {
 		};
 
     /**
-     * レンジキー(form,to)範囲内でキーマッチするcashを返却する（cashが無いときは undefined）、キーは大小比較できる数値であることが前提
-     * @param {Number} from - 抽出するキャッシュキー最小値
-     * @param {Number} to -  抽出するキャッシュキーの最大値
+     * レンジキー(form,to)範囲内でキーマッチするcashを返却する（cashが無いときは
+     * undefined）、キーは大小比較できる数値であることが前提
+     * 
+     * @param {Number}
+     *            from - 抽出するキャッシュキー最小値
+     * @param {Number}
+     *            to - 抽出するキャッシュキーの最大値
      * @return {Object} - キャッシュデータ（デーがが無い場合は undefined)
      */
 	proto.getRangedCash = function (from, to) {
@@ -696,11 +749,14 @@ HJN.util.Cash = (function() {
 			return (range !== undefined) ? this.getCash(range.from,range.to) : undefined;
 		};
     /**
-     * レンジキー(from,to)指定でキャッシュする、キーは大小比較できる数値であることが前提、
-     * from-to期間内の既存のキャッシュは削除する
-     * @param {Object} cashVal - キャッシュするオブジェクト
-     * @param {Number} from - 抽出するキャッシュキー最小値
-     * @param {Number} to -  抽出するキャッシュキーの最大値
+     * レンジキー(from,to)指定でキャッシュする、キーは大小比較できる数値であることが前提、 from-to期間内の既存のキャッシュは削除する
+     * 
+     * @param {Object}
+     *            cashVal - キャッシュするオブジェクト
+     * @param {Number}
+     *            from - 抽出するキャッシュキー最小値
+     * @param {Number}
+     *            to - 抽出するキャッシュキーの最大値
      * @return {Object} - キャッシュデータ（デーがが無い場合は undefined)
      */
 	proto.setRangedCash = function (cashVal, from, to) {
@@ -732,12 +788,14 @@ HJN.util.Cash = (function() {
 
 /**
  * 非同期化 内部関数
+ * 
  * @function
- * @param {function} global - 非同期化して実行する関数
- * &lt;p>参考
- * {@link https://jsfiddle.net/kou/j73tLum4/8/}
- * {@link https://gist.github.com/mathiasbynens/579895}
- * {@link http://dbaron.org/log/20100309-faster-timeouts}
+ * @param {function}
+ *            global - 非同期化して実行する関数
+ *            &lt;p>
+ *            参考 {@link https://jsfiddle.net/kou/j73tLum4/8/}
+ *            {@link https://gist.github.com/mathiasbynens/579895}
+ *            {@link http://dbaron.org/log/20100309-faster-timeouts}
  */
 HJN.util.setZeroTimeout = (function(global) {
 	"use strict";
@@ -764,9 +822,12 @@ HJN.util.setZeroTimeout = (function(global) {
 
 
 /**
- * ログ出力：　一定時間（１分）に一度しか出力しない（ループ用）
- * @param {Number} i - ログ出力用番号（カウンタに使用）
- * @param {String} text - ログ出力文字列
+ * ログ出力： 一定時間（１分）に一度しか出力しない（ループ用）
+ * 
+ * @param {Number}
+ *            i - ログ出力用番号（カウンタに使用）
+ * @param {String}
+ *            text - ログ出力文字列
  */
 HJN.util.LogTime　=　function(i, text) {
 	"use strict";
@@ -779,9 +840,12 @@ HJN.util.LogTime　=　function(i, text) {
 	}
 };
 /**
- * ログ出力：　ログテキストを初期化する
- * @param {String} text - ログ出力文字列
- * @param {String} [type] - ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
+ * ログ出力： ログテキストを初期化する
+ * 
+ * @param {String}
+ *            text - ログ出力文字列
+ * @param {String}
+ *            [type] - ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
  */
 HJN.util.ShowLogTextInit　=　function(text, type) {
 	"use strict";
@@ -790,9 +854,12 @@ HJN.util.ShowLogTextInit　=　function(text, type) {
 	if(text) HJN.util.ShowLogText(text, type);
 };
 /**
- * ログ出力：　ログテキストをテキストアレイに追記し、表示する
- * @param {String} text - ログ出力文字列
- * @param {String} [type] - ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
+ * ログ出力： ログテキストをテキストアレイに追記し、表示する
+ * 
+ * @param {String}
+ *            text - ログ出力文字列
+ * @param {String}
+ *            [type] - ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
  */
 HJN.util.ShowLogText　=　function(text, type) {
 	"use strict";
@@ -812,8 +879,10 @@ HJN.util.ShowLogText　=　function(text, type) {
 	if(true) console.log(text);
 };
 /**
- * ログ出力：　第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
- * @param {String} textArray - 出力するログ（配列１行がログ１件）
+ * ログ出力： 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
+ * 
+ * @param {String}
+ *            textArray - 出力するログ（配列１行がログ１件）
  */
 HJN.util.ShowText　=　function(textArray) {
 	"use strict";
@@ -824,9 +893,12 @@ HJN.util.ShowText　=　function(textArray) {
 	HJN.util.ShowIHtmlBody('fileInfo',　iHtmlBody);
 };
 /**
- * ログ出力：　第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
- * @param {String} elementId - iframeのID名
- * @param {String} iHtmlBody - ログ（HTML化）
+ * ログ出力： 第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
+ * 
+ * @param {String}
+ *            elementId - iframeのID名
+ * @param {String}
+ *            iHtmlBody - ログ（HTML化）
  */
 HJN.util.ShowIHtmlBody　=　function(elementId, iHtmlBody){
 	"use strict";
@@ -843,6 +915,7 @@ HJN.util.ShowIHtmlBody　=　function(elementId, iHtmlBody){
 };
 /**
  * 著作権表記文字を取得する
+ * 
  * @return {String} str - 著作権表記文字
  */
 HJN.util.Copyright　=　function(){
@@ -853,7 +926,8 @@ HJN.util.Copyright　=　function(){
 };
 /**
  * 使い方を記載したHTMLを取得する
- * @return {String} html　- 使い方を記載したHTML（未実装）
+ * 
+ * @return {String} html - 使い方を記載したHTML（未実装）
  */
 HJN.util.HowToUse　=　function(){
 	"use strict";
@@ -861,7 +935,7 @@ HJN.util.HowToUse　=　function(){
 	return str;
 };
 
-/* 
+/*
  * 指定されたtextareaを使って、クリップボードにコピーする ************************************
  * HJN.CopyToClipboard = function(elementId) { // arg0:textareaのID名 "use
  * strict"; var area = document.getElementById(elementId); area.select();
@@ -884,15 +958,21 @@ HJN.util.HowToUse　=　function(){
 
 /**
  * 配列二分木検索
+ * 
  * @class
- * @param {Number} val - 検索する値
- * @param {Array} arr - 検索対象の配列
- * @param {Function} [func=function(val){return val.valueOf();}] - 配列要素に対して、値を取得する関数
- * @param {Index} [low=0] - 配列の検査範囲の下限
- * @param {Index} [high=arr.length-1] - 配列の下限検査範囲の上限
- * @param {Boolean} [isEqual=false] - trueのとき：完全一致しないとき-1を返す、falseのとき、値との差が最も少ない位置
- * @example
- * var i = HJN.util.binarySearch(xVal, xyData, function(e){ return e.x; } );
+ * @param {Number}
+ *            val - 検索する値
+ * @param {Array}
+ *            arr - 検索対象の配列
+ * @param {Function}
+ *            [func=function(val){return val.valueOf();}] - 配列要素に対して、値を取得する関数
+ * @param {Index}
+ *            [low=0] - 配列の検査範囲の下限
+ * @param {Index}
+ *            [high=arr.length-1] - 配列の下限検査範囲の上限
+ * @param {Boolean}
+ *            [isEqual=false] - trueのとき：完全一致しないとき-1を返す、falseのとき、値との差が最も少ない位置
+ * @example i=HJN.util.binarySearch(x,arrXY,function(e){return e.x;});
  */
 HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
 	"use strict";
@@ -925,16 +1005,17 @@ HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
 
 /**
  * 期間指定eTat取得用Map
+ * 
  * @class
  * @name MappedETat
  * @memberof HJN.util
  * @classdesc 指定期間に動いているeTatの一覧を、高速に取得するマップ
- * @param {ETAT} eTat - インデックスを追加するETAT
- * @example
- * eTat.tatMap = new HJN.util.MappedETat(eTat);
- * var trans = eTat.tatMap.search(x, x, 1000);
+ * @param {ETAT}
+ *            eTat - インデックスを追加するETAT
+ * @example eTat.tatMap = new HJN.util.MappedETat(eTat); var trans =
+ *          eTat.tatMap.search(x, x, 1000);
  */
-HJN.util.MappedETat = (function() { //  #18
+HJN.util.MappedETat = (function() { // #18
 	"use strict";
 	/** @static */
 	var proto = MappedETat.prototype = {
@@ -964,8 +1045,10 @@ HJN.util.MappedETat = (function() { //  #18
 	proto._row = function　(label, step) {　return label + step;　};
 
 	/**
-	 * MapKey取得関数
-	 * @private */
+     * MapKey取得関数
+     * 
+     * @private
+     */
 	proto._getKey = function　(e, i) {		// MapedMap用Key配列関数
 		var start = e.x - e.y,		// x,yはミリ秒
 			end = e.x,
@@ -1009,14 +1092,15 @@ HJN.util.MappedETat = (function() { //  #18
 	
 	// public
 	/**
-	 * 指定期間に動いているeTatを検索する
-	 * @function
-	 * @memberof HJN.util.MappedETat
-	 * @parm {Number} from 指定期間(from)
+     * 指定期間に動いているeTatを検索する
+     * 
+     * @function
+     * @memberof HJN.util.MappedETat
+     * @parm {Number} from 指定期間(from)
      * @parm {Number} [to=from] 指定期間(to)
      * @parm {Number} [cap] cap件数となったら抽出を終了する（指定なしの時：全件）
-	 * @return {ETAT} eTatArr 指定期間内のeTat配列
-	 */
+     * @return {ETAT} eTatArr 指定期間内のeTat配列
+     */
 	MappedETat.prototype.search = function (from, to, cap) {
 		to = to || from;	// to省略時は時刻指定(from=to)
 		cap = cap || Number.MAX_VALUE; // 指定なしの時：全件
@@ -1057,21 +1141,29 @@ HJN.util.MappedETat = (function() { //  #18
 
 /**
  * 配列に格納されているオブジェクトのx値で、配列位置を高速検索
+ * 
  * @class
  * @name MappedArray
  * @memberof HJN.util
  * @classdesc 配列に格納されているオブジェクトのx値をキーとするマップ
- *  &lt;p>参考 {@link http://qiita.com/alucky0707/items/10052866719ba5c5f5d7}
- * @param {Array} arr - インデクスをつける対象の配列
- * @param {String|function} [getKey=""] - MappedArrayのKey値の取得方法
- * &lt;p>String指定のとき（デフォルト""を含む）、配列要素の値(valueOf)
- * &lt;p>注： 0,00,"0"は同値、1,01,"1"は同値 Stringのとき、 配列要素が持つ指定要素の値
- * &lt;p>functionのとき、配列要素に指定関数を適用した戻り値
- * &lt;p>関数の引数：(配列要素オブジェクト、配列のインデックス、作成中のMappedArrayへの参照）
- * @param {Boolean} [isMappedMap] - getKeyが2段Map用の配列を返却する
+ *            &lt;p>
+ *            参考 {@link http://qiita.com/alucky0707/items/10052866719ba5c5f5d7}
+ * @param {Array}
+ *            arr - インデクスをつける対象の配列
+ * @param {String|function}
+ *            [getKey=""] - MappedArrayのKey値の取得方法
+ *            &lt;p>
+ *            String指定のとき（デフォルト""を含む）、配列要素の値(valueOf)
+ *            &lt;p>
+ *            注： 0,00,"0"は同値、1,01,"1"は同値 Stringのとき、 配列要素が持つ指定要素の値
+ *            &lt;p>
+ *            functionのとき、配列要素に指定関数を適用した戻り値
+ *            &lt;p>
+ *            関数の引数：(配列要素オブジェクト、配列のインデックス、作成中のMappedArrayへの参照）
+ * @param {Boolean}
+ *            [isMappedMap] - getKeyが2段Map用の配列を返却する
  * @return {object} Index - arrに対するインデックス（連想配列名で検索）
- * @example
- *      _tatMap = new HJN.util.MappedArray(eTat, this._getKey, true);
+ * @example _tatMap = new HJN.util.MappedArray(eTat, this._getKey, true);
  */
 HJN.util.MappedArray = (function() {    // #18
 	"use strict";
@@ -1131,21 +1223,30 @@ HJN.util.MappedArray = (function() {    // #18
 	};
 
 	// public
-	/** 値の存在チェック
-	 * @function
-	 * @memberof HJN.util.MappedArray */
+	/**
+     * 値の存在チェック
+     * 
+     * @function
+     * @memberof HJN.util.MappedArray
+     */
 	proto.has = function (keyValue) {
 		return keyValue in this._map;
 	};
-    /** 該当位置を配列で返す
+    /**
+     * 該当位置を配列で返す
+     * 
      * @function
-     * @memberof HJN.util.MappedArray */
+     * @memberof HJN.util.MappedArray
+     */
 	proto.indexes = function (keyValue) {
 		return this._map[keyValue] || [];
 	};
-	/** 該当する要素を配列で返す
+	/**
+     * 該当する要素を配列で返す
+     * 
      * @function
-     * @memberof HJN.util.MappedArray */
+     * @memberof HJN.util.MappedArray
+     */
 	proto.search = function (keyValue) {	
 		var arr = this._arr;
 		return this.indexes(keyValue).reduce(function(m, i) {
@@ -1153,17 +1254,23 @@ HJN.util.MappedArray = (function() {    // #18
 			return m;
 		}, []);
 	};
-    /** Array.prototype.indexOf() 同等
+    /**
+     * Array.prototype.indexOf() 同等
+     * 
      * @function
-     * @memberof HJN.util.MappedArray */
+     * @memberof HJN.util.MappedArray
+     */
 	proto.indexOf = function (keyValue) {
 		var idxArr = this._map[keyValue],
 			i = idxArr ? idxArr.length : -1;
 		return (0 &lt; i) ? idxArr[0] : -1;
 	};
-    /** Array.prototype.lastIndexOf() 同等
+    /**
+     * Array.prototype.lastIndexOf() 同等
+     * 
      * @function
-     * @memberof HJN.util.MappedArray */
+     * @memberof HJN.util.MappedArray
+     */
 	proto.lastIndexOf = function (keyValue) {
 		var idxArr = this._map[keyValue],
 			i = idxArr ? idxArr.length : -1;
@@ -1176,30 +1283,20 @@ HJN.util.MappedArray = (function() {    // #18
 
 /**
  * 定数設定機能
+ * 
  * @class
  * @name Config
  * @memberof HJN.util
  * @classdesc 定数設定機能（設定HTML作成機能付き）、日時、TATフォーマット指定機能追加用に作成 #24
- * @param {String} [prefix=''] - 定数の名前空間を一位に指定する文字列、指定しない場合グローバル
- * @param {String} [ol='ol'] - インデント(.nDown() .nUp())に使うHTMLタグ
- * @example
- *      this._config = HJN.util.Config("m") // config設定画面定義
- *          .label(null,"----- Configration of file format --------").n()
- *          .n("&lt;br>")
- *          .name("LF").label(null, "[Line feed code]").n()
- *          .radio(v("LF_FIX"), null, "Fixed Length")
- *              .number("LF_FIX.v",  null, "byte","80",'style="width:60px;"').n()
- *          .radio(def("LF_WIN",  13), null, "Windows:CR(13)+LF(10)", true).n()
- *          .n("&lt;br>")
- *          .name("TIME").label(null, "[Timestamp field]").n()
- *          .number("TIME_COL", "", "th column of CSV", "1", 'style="width:40px;"').n()
- *          .name("TIME_FORM").label(null,"Format:")
- *              .radio("TIME_FORM_YMD", null, null, true)
- *                  .text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYYMMDD hh.mm.ss.ppp"').n()
- *              .nDown()
- *              .radio("TIME_FORM_TEXT", "(num)", "text")
- *              .radio("TIME_FORM_LONG", null, "long").n()
- *              .nUp()
+ * @param {String}
+ *            [prefix=''] - 定数の名前空間を一位に指定する文字列、指定しない場合グローバル
+ * @param {String}
+ *            [ol='ol'] - インデント(.nDown() .nUp())に使うHTMLタグ
+ * @example this._config = HJN.util.Config("m") // config設定画面定義
+ *          .label(null,"------").n() // ラベルを表示し、改行
+ *          .name("ENDIAN").label(null,"[endian(long field)]") //key:ENDIAN
+ *          .radio(def("ENDIAN_LIL", true), null, "little", true) //表示ラベルと選択時設定値
+ *          .radio(def("ENDIAN_BIG", false), null, "big");
  */
 HJN.util.Config = (function() { // #24
 	"use strict";
@@ -1219,9 +1316,12 @@ HJN.util.Config = (function() { // #24
 		this._name = '';		// radioのConfig.get用
 	}
 
-	/** HTML要素の値が変更した時に、configに当該要素を登録する
-	 * @function
-     * @memberof HJN.util.Config */
+	/**
+     * HTML要素の値が変更した時に、configに当該要素を登録する
+     * 
+     * @function
+     * @memberof HJN.util.Config
+     */
 	Config.on = function(t) {
 		if (t.type === "radio") {			// radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
 			this.prototype.__config[t.name] = t.id.substr(t.id.indexOf(".") + 1);
@@ -1236,65 +1336,92 @@ HJN.util.Config = (function() { // #24
 	//
 
     // public
-    /** configに登録されているid(=prefix+key)の設定値を取得する
+    /**
+     * configに登録されているid(=prefix+key)の設定値を取得する
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.getObjctById = function(id) {
 		return this.__config[id];
 	};
-    /** configに登録されているkey(prefix補填)の設定値を取得する
+    /**
+     * configに登録されているkey(prefix補填)の設定値を取得する
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.getValueByKey = function(key) { 
 		return this.getObjctById(this._pre + key);
 	};
-    /** config設定用HTMLテキストを取得する
+    /**
+     * config設定用HTMLテキストを取得する
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.getHtml = function() { 
 		return this._html + this._ole;
 	};
-    /** keyに値を設定する
+    /**
+     * keyに値を設定する
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.xset = function(key, val) { 
 		this.value[this._pre + key] = val;
 	};
 	
 	// config作成用 publicメソッド
-    /** 定義＆設定画面作成用機能：　改行
+    /**
+     * 定義＆設定画面作成用機能： 改行
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.n = function (str) {
 		str = str || "";
 		this._html += this._ole + str + this._ols;
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　ネスト一つ下げ
+    /**
+     * 定義＆設定画面作成用機能： ネスト一つ下げ
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.nDown = function () {
 		this._html += this._ols;
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　ネスト一つ上げ
+    /**
+     * 定義＆設定画面作成用機能： ネスト一つ上げ
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.nUp = function () {
 		this._html += this._ole;
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　nameを変更する（radio等の先頭で指定）
+    /**
+     * 定義＆設定画面作成用機能： nameを変更する（radio等の先頭で指定）
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.name = function (str) {
 		this._nameHtml = str ? 'name="' + this._pre + str + '" ' : '';
 		this._name = str;
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　ラベル要素(prefix+keyで関連付けるformのid属性となる)
+    /**
+     * 定義＆設定画面作成用機能： ラベル要素(prefix+keyで関連付けるformのid属性となる)
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.label = function (key, str, attribute) {
 		this._html += '&lt;label ' +
 						(key ? 'for="' + this._pre + key + '" '　: '') +
@@ -1303,9 +1430,12 @@ HJN.util.Config = (function() { // #24
 						'&lt;label>\n';
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　ラベル付された各種入力フォーム
+    /**
+     * 定義＆設定画面作成用機能： ラベル付された各種入力フォーム
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.labeledForm = function (key, type, typedAttribute,
 								pLabel, sLabel, val, attribute, check) {
 		this._html += '&lt;label>' +
@@ -1331,25 +1461,34 @@ HJN.util.Config = (function() { // #24
 		}
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　テキストボックス要素で、文字列を設定
+    /**
+     * 定義＆設定画面作成用機能： テキストボックス要素で、文字列を設定
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.number = function (key, pLabel, sLabel, val, attribute) {
 		proto.labeledForm.call(this, key, "number", "", 
 								pLabel, sLabel, val, attribute);
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　テキストボックス要素で、数値を設定
+    /**
+     * 定義＆設定画面作成用機能： テキストボックス要素で、数値を設定
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.text = function (key, pLabel, sLabel, val, attribute) {
 		proto.labeledForm.call(this, key, "text", "", 
 								pLabel, sLabel, val, attribute);
 		return this;
 	};
-    /** 定義＆設定画面作成用機能：　ラジオボタン要素で、選択肢の一つを設定
+    /**
+     * 定義＆設定画面作成用機能： ラジオボタン要素で、選択肢の一つを設定
+     * 
      * @function
-     * @memberof HJN.util.Config */
+     * @memberof HJN.util.Config
+     */
 	proto.radio = function (key, pLabel, sLabel, check, attribute) {
 		proto.labeledForm.call(this, key, "radio", (check ? 'checked="checked;"' : ''),
 								pLabel, sLabel, "", attribute, check);
@@ -1363,6 +1502,7 @@ HJN.util.Config = (function() { // #24
 
 /**
  * ファイルをパースして読み込む
+ * 
  * @class
  * @name FileReader
  * @memberof HJN.util
@@ -1459,26 +1599,26 @@ HJN.util.FileReader = (function() {
 	/** @private */
 	//
 	// public
-    /** 「ファイルから次の1レコードを取得するutil」 を取得する
+    /**
+     * 「ファイルから次の1レコードを取得するutil」 を取得する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.createGetterOfLine = function(file) {
 	    /**
-	     * ファイルから１レコード取得する
-	     * @class
-	     * @name GetterOfLine
-	     * @memberof HJN.util.FileReader
-	     * @classdesc ファクトリのFileReaderが保持する改行コードを用いて、ファイルから１レコードを取得する
-	     * @example
-	     * try{
-	     *   var getterOfLine = HJN.chart.fileReader.createGetterOfLine(file),
-	     *       fileInfo;
-	     *   for (var i = 0; i &lt; n; i++) {
-	     *     line = getterOfLine.next();
-	     *     fileInfo += line.str + "&lt;BR>";
-	     *   }
-	     * }catch (e) { console.error("[HJN.init.DropField 改行コードの無いファイルは扱えません]%o",e); }
-	     */
+         * ファイルから１レコード取得する
+         * 
+         * @class
+         * @name GetterOfLine
+         * @memberof HJN.util.FileReader
+         * @classdesc ファクトリのFileReaderが保持する改行コードを用いて、ファイルから１レコードを取得する
+         * @example try{ var getterOfLine =
+         *          HJN.chart.fileReader.createGetterOfLine(file), fileInfo;
+         *          for(var i = 0; i &lt; n; i++) { line = getterOfLine.next();
+         *          fileInfo += line.str + "&lt;BR>"; } }catch (e)
+         *          {console.error("改行コードの無いファイルは扱えません]%o",e); }
+         */
 		function GetterOfLine(file, maxLength){ /* constructor */
 				if(!(this instanceof GetterOfLine)) return new GetterOfLine(file, maxLength);
 
@@ -1492,10 +1632,13 @@ HJN.util.FileReader = (function() {
 				this.line = {file: this.file, pos: 0, array: null, str: "", isEoF: false };
 		}
 		// public
-        /** 次の1レコードを取得する
+        /**
+         * 次の1レコードを取得する
+         * 
          * @function
          * @name getValueByKey
-         * @memberof HJN.util.FileReader.GetterOfLine */
+         * @memberof HJN.util.FileReader.GetterOfLine
+         */
 		if (HJN.chart.fileReader.getValueByKey("LF") === "LF_FIX"){	// 固定長のとき
 			GetterOfLine.prototype.next = function () {	// 次の1レコードを取得する
 					if(this.from >= this.maxLength ){	// ファイル末尾のとき
@@ -1536,12 +1679,16 @@ HJN.util.FileReader = (function() {
 		return new GetterOfLine(file);
 	};
 	
-    /** 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
+    /**
+     * 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.createGetterOfXY = function() {
        /**
          * ファイルから１レコード取得する
+         * 
          * @class
          * @name GetterOfXY
          * @memberof HJN.util.FileReader
@@ -1594,9 +1741,12 @@ HJN.util.FileReader = (function() {
 		}
 		
 		// class method
-	    /** 日時をでパースして数値（ミリ秒）を取得する
-	     * @function
-         * @memberof HJN.util.FileReader.GetterOfXY */
+	    /**
+         * 日時をでパースして数値（ミリ秒）を取得する
+         * 
+         * @function
+         * @memberof HJN.util.FileReader.GetterOfXY
+         */
 		GetterOfXY.parseDate = function (str, conf){
 			if(!str) {console.log("GetterOfXY.parseDate:no data cannot parse"); return 0; }
 			conf = conf || {YYYY: 0, MM: 4, DD: 6, hh: 9, mm: 12, ss: 15, ppp: 18};  // YYYYMMDD
@@ -1615,9 +1765,12 @@ HJN.util.FileReader = (function() {
 				dateNum = +(new Date( y, m, d, h, min, sec )) + p;	// #14
 			return dateNum;
 		};
-        /** 数字をパースして数値（ミリ秒）を取得する
+        /**
+         * 数字をパースして数値（ミリ秒）を取得する
+         * 
          * @function
-         * @memberof HJN.util.FileReader.GetterOfXY */
+         * @memberof HJN.util.FileReader.GetterOfXY
+         */
 		GetterOfXY.parseNumber = function (){ // str, unit,
 														// startPos,
 														// length
@@ -1627,8 +1780,11 @@ HJN.util.FileReader = (function() {
 			return +str * (unit || 1);
 		};
 
-		/** Long(4バイトバイナリ）数字をパースして数値（ミリ秒）を取得する
-		 *  @private */
+		/**
+         * Long(4バイトバイナリ）数字をパースして数値（ミリ秒）を取得する
+         * 
+         * @private
+         */
 		GetterOfXY.prototype._parseLong = function (arr){
 			if (4 &lt;= arr.length ) {	// Long(4byte)以上のときLongとして処理する
 				// bufの先頭4byteを、指定バイトオーダ(endian)で、符号無32bit int(unsigned
@@ -1644,9 +1800,12 @@ HJN.util.FileReader = (function() {
 		};
 
 		// public
-        /** レコードからXとYを取得する
+        /**
+         * レコードからXとYを取得する
+         * 
          * @function
-         * @memberof HJN.util.FileReader.GetterOfXY */
+         * @memberof HJN.util.FileReader.GetterOfXY
+         */
 		GetterOfXY.prototype.parse = function (line) {
 			// セパレータでカラム分割する
 			var // err = {x: null, y: null, isError: true},
@@ -1710,33 +1869,48 @@ HJN.util.FileReader = (function() {
 		return new GetterOfXY();
 	};
 	
-    /** configに登録されているid(=prefix+key)の設定値を取得する
+    /**
+     * configに登録されているid(=prefix+key)の設定値を取得する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.getObjctById = function(id) {
 		return this._config.getObjctById(id);
 	};
-    /** configに登録されているkey(prefix補填)の設定値を取得する
+    /**
+     * configに登録されているkey(prefix補填)の設定値を取得する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.getValueByKey = function(key) {
 		return this._config.getValueByKey(key);
 	};
-    /** 設定値を保有するオブジェクトを返却する
+    /**
+     * 設定値を保有するオブジェクトを返却する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.getConfig = function() {
 		return this._config._config;
 	};
-    /** HTML（config設定用）テキストを返却する
+    /**
+     * HTML（config設定用）テキストを返却する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.getConfigHtml = function() {
 		return this._config.getHtml();
 	};
-    /** keyの値に指定された関数（なければ何もしない関数）を返却する
+    /**
+     * keyの値に指定された関数（なければ何もしない関数）を返却する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.getFunction = function(key) {
 		var cKey = this._config.getValueByKey(key);
 		if(!this.__keyConfig[cKey] || !this.__keyConfig[cKey].func){
@@ -1745,9 +1919,12 @@ HJN.util.FileReader = (function() {
 			return this.__keyConfig[cKey].func;	// keyの設定値のfuncが定義されているとき
 		}
 	};
-    /** keyの値に指定されたvalue（なければkey値）を返却する
+    /**
+     * keyの値に指定されたvalue（なければkey値）を返却する
+     * 
      * @function
-     * @memberof HJN.util.FileReader */
+     * @memberof HJN.util.FileReader
+     */
 	proto.getValue = function(key) {
 		var cKey = this._config.getValueByKey(key);
 		if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
@@ -1777,7 +1954,7 @@ HJN.util.FileReader = (function() {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun May 07 2017 07:36:15 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon May 08 2017 03:38:34 GMT+0900 (東京 (標準時))
     <br>&copy 2017 Junichiroh Hirose
 </footer>
 

@@ -40,12 +40,14 @@ html
 } #33 */
 
 a, a:visited, a:active {
-    color: #0095dd;
+    color: #4d4e53;	/* #0095dd; #33 */
     text-decoration: none;
+    border-bottom: 1px dotted #afafaf; /* #33 */
 }
 
 a:hover {
-    text-decoration: underline;
+/*    text-decoration: underline;	*/
+    border-bottom: none; /* #33 */
 }
 
 header
@@ -71,7 +73,7 @@ tt, code, kbd, samp {
 
 #main {
     float: left;
-    width: 70%;
+    width: 75%; /* 70%; #33 */
 }
 
 article dl {
@@ -103,14 +105,18 @@ nav
     display: block;
     float: right;
     margin-top: 28px;
-    width: 30%;
+    width: 25%;  /* 30%; #33 */
     box-sizing: border-box;
     border-left: 1px solid #ccc;
     padding-left: 16px;
+    /* add #33 */
+    position: fixed;
+    top: 0;
+    right: 0;
 }
 
 nav ul {
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', arial, sans-serif;
+/*    font-family: 'Lucida Grande', 'Lucida Sans Unicode', arial, sans-serif; #33 */
     font-size: 100%;
     line-height: 17px;
     padding: 0;
@@ -119,7 +125,7 @@ nav ul {
 }
 
 nav ul a, nav ul a:visited, nav ul a:active {
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+/*     font-family: Consolas, Monaco, 'Andale Mono', monospace; #33 */
     line-height: 18px;
     color: #4D4E53;
 }
@@ -147,7 +153,7 @@ footer {
 
 h1
 {
-    font-family: 'Open Sans Light', sans-serif;
+/*   font-family: 'Open Sans Light', sans-serif; #33  */
     font-size: 48px;
     letter-spacing: -2px;
     margin: 12px 24px 20px;
@@ -174,8 +180,6 @@ h4
     letter-spacing: -0.33px;
     margin-bottom: 12px;
     color: #4d4e53;
-    background: #eef;	/* #33 */
-    padding: 2px 7px;	/* #33 */
 }
 
 h5, .container-overview .subsection-title
@@ -200,11 +204,13 @@ table
     border-spacing: 0;
     border: 0;
     border-collapse: collapse;
+    margin: 10px; /* #33 */
 }
 
 td, th
 {
-    border: 1px solid #ddd;
+/*    border: 1px solid #ddd; */
+    border: 0px solid #ddd; 
     margin: 0px;
     text-align: left;
     vertical-align: top;
@@ -250,7 +256,7 @@ tr > th:last-child { border-right: 1px solid #ddd; }
 }
 
 .name, .signature {
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+/*    font-family: Consolas, Monaco, 'Andale Mono', monospace; #33 */
 }
 
 .details { margin-top: 4px; margin-bottom: 4px; border-left: 2px solid #DDD; }
@@ -265,11 +271,9 @@ tr > th:last-child { border-right: 1px solid #ddd; }
 .details pre.prettyprint { margin: 0 }
 .details .object-value { padding-top: 0; }
 
-.description {
-/*    margin-bottom: 1em; */
-    margin-top: 10px; /* 1em; */
-    font-size: smaller;
-}
+/* .description {
+    margin-bottom: 1em;
+} #33 */
 
 .code-caption
 {
@@ -281,7 +285,7 @@ tr > th:last-child { border-right: 1px solid #ddd; }
 .prettyprint
 {
     border: 1px solid #ddd;
-    width: 80%;
+/*    width: 80%;	#33 */
     overflow: auto;
 }
 
@@ -338,10 +342,14 @@ tr > th:last-child { border-right: 1px solid #ddd; }
   user-select: text;
 }
 
-.params .name, .props .name, .name code {
-    color: #4D4E53;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
-    font-size: 100%;
+/* .params .name, .props .name, .name code { #33 */
+.params .name, .props .name, .name .type .param-type code {
+	
+	color: #4D4E53;
+/*    font-family: Consolas, Monaco, 'Andale Mono', monospace; #33 */
+/*    font-size: 100%; #33  */
+    font-size: 14px;
+    height: 21px; /* #33 */
 }
 
 .params td.description > p:first-child,
@@ -362,7 +370,8 @@ tr > th:last-child { border-right: 1px solid #ddd; }
     color: #454545;
 }
 
-.tag-source { /* #33 */
+/* added #33 */
+.tag-source {
     position: relative;
 	top: 26px;
 	left :0;
@@ -370,4 +379,8 @@ tr > th:last-child { border-right: 1px solid #ddd; }
 	font-style: italic;
     font-size: small;
     margin: 0 10px;
+}
+.params {
+    margin: 0 0 12px;
+    padding-left: 20px;
 }

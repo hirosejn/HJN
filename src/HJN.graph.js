@@ -27,14 +27,18 @@ HJN.CONC = 	{ key: 'conc', name:'多重度（詳細）',　label:'conc:%N',
 		N:　0, scale:　0, color: 'rgba(  0,  0,127, 0.3)', tpsN: 1};	// #7
 HJN.CTPS = 	{ key: 'cTps', name:'多重度（秒間最大）', label:'conc(max):%N',
 		N:　1, scale:　0, color: 'rgba(  0,  0,127, 0.1)', detailN: 0};
-HJN.STAT = 	{ key: 'sTat', name:'[Y2軸] start time',　label:'start:%Nms',
-		N:　2, scale:　1, color: 'rgba(127, 127, 0, 0.3)' };
-HJN.ETAT = 	{ key: 'eTat', name:'[Y2軸] end time',　label:'end:%Nms', 
-		N:　3, scale:　1, color: 'rgba(127,  0,  0, 0.3)' };
-HJN.ETPS = 	{ key: 'eTps', name:'[Y2軸] end trans / sec',　label:'end:%Ntps', 
-		N:　4, scale:　1, color: 'rgba(  0, 127, 127, 0.3)' };
+HJN.ETPS = 	{ key: 'eTps', name:'trans / sec (end) [line]',　label:'end:%Ntps', 
+		N:　2, scale:　0, color: 'rgba(  0, 127, 127, 0.3)' };
+HJN.STAT = 	{ key: 'sTat', name:'response by start time [Y2軸:plot]',　label:'start:%Nms',
+		N:　3, scale:　1, color: 'rgba(127, 127, 0, 0.3)' };
+HJN.ETAT = 	{ key: 'eTat', name:'response by end time   [Y2軸:plot]',　label:'end:%Nms', 
+		N:　4, scale:　1, color: 'rgba(127,  0,  0, 0.3)' };
+HJN.EMPS = 	{ key: 'eMps', name:'max response / sec (end) [Y2軸:line]',　label:'max:%Nms',
+		N:　5, scale:　1, color: 'rgba(127,   0,  64, 0.3)' };
+HJN.EAPS = 	{ key: 'eAps', name:'average response / sec (end) [Y2軸:line]',　label:'ave:%Nms',
+		N:　6, scale:　1, color: 'rgba(127,   0,  64, 0.1)' };
 /** グラフ定数 */
-HJN.seriesConfig = [HJN.CONC, HJN.CTPS,	HJN.STAT, HJN.ETAT, HJN.ETPS];
+HJN.seriesConfig = [HJN.CONC, HJN.CTPS,	HJN.ETPS, HJN.STAT, HJN.ETAT, HJN.EMPS, HJN.EAPS];
 
 HJN.hoverXY = { series: null, x: null, y: null };	// マウスクリック時の値取得用
 HJN.hoverDetail = { dots: [{n:1,x:null,y:null}], args: null };
@@ -48,10 +52,9 @@ HJN.logtime = new Date();
 HJN.lineViewer = document.getElementById("lineViewer");
 
 /**
- * seriesSet: dygraph用時系列データ配列 [{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx:
- * eTatの配列位置 }]
+ * seriesSet: dygraph用時系列データ配列
  * 
- * @typedef {array.<CONC, CTPS, STAT, ETAT, ETPS>} seriesSet
+ * @typedef {array.<CONC, CTPS, ETPS, STAT, ETAT, EMPS, EAPS>} seriesSet
  */
 /**
  * CONC:多重度の時系列データ [{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx: eTatの配列位置 }]
@@ -65,6 +68,11 @@ HJN.lineViewer = document.getElementById("lineViewer");
  * @typedef {array.<xMs, index>} CTPS
  */
 /**
+ * ETPS: 秒間終了件数の時系列データ [{x:秒毎時刻(ms), y:秒内終了件数 }]
+ * 
+ * @typedef {array.<xMs, yInt>} ETPS
+ */
+/**
  * STAT: 開始時刻のTAT（応答時間）時系列データ [{x:開始時刻(ms) ,y:レスポンス(sec), eTatIdx: eTatの配列位置 }]
  * 
  * @typedef {array.<xMs, ySec, index>} STAT
@@ -76,9 +84,14 @@ HJN.lineViewer = document.getElementById("lineViewer");
  * @typedef {array.<xMs, ySec, index, index, number, index>} ETAT
  */
 /**
- * ETPS: 秒間終了件数の時系列データ [{x:秒毎時刻(ms), y:秒内終了件数 }]
+ * EMPS: 秒間最大TAT（応答時間）時系列データ（終了時刻ベース） [{x:秒毎時刻(ms), y:秒内最大レスポンス(sec) }]
  * 
- * @typedef {array.<xMs, yInt>} ETPS
+ * @typedef {array.<xMs, ySec>} SMPS
+ */
+/**
+ * EAPS: 秒間平均TAT（応答時間）時系列データ（終了時刻ベース） [{x:秒毎時刻(ms), y:秒内平均レスポンス(sec) }]
+ * 
+ * @typedef {array.<xMs, ySec>} SMPS
  */
 /**
  * xMs: x軸に用いる時刻(ms)
@@ -130,18 +143,23 @@ HJN.Graph = function (chartIdName, globalName, config) {
 		if (globalName === "HJN.chart"){
 			var CONC = { process: false, visiblity: false, renderer: 'area' },
 				CTPS = { process: true,  visiblity: true,  renderer: 'scatterplot' },	
+				ETPS = { process: true,  visiblity: true,  renderer: 'line' },
 				STAT = { process: false, visiblity: false, renderer: 'scatterplot' },
 				ETAT = { process: false, visiblity: false, renderer: 'scatterplot' },
-				ETPS = { process: true,  visiblity: true,  renderer: 'line' };
-			config = { SERIESES : [CONC, CTPS, STAT, ETAT, ETPS],
+				EMPS = { process: true,  visiblity: true,  renderer: 'line' },
+				EAPS = { process: true,  visiblity: true,  renderer: 'line' };
+
+			config = { SERIESES : [CONC, CTPS, ETPS, STAT, ETAT, EMPS, EAPS],
 											height : 0.40, isVisiblity: true };
 		} else {	// "HJN.chartD"用設定
 			var CONC_D = { process: true, visiblity: true,  renderer: 'area' },
 				CTPS_D = { process: true, visiblity: true,  renderer: 'bar' },
+				ETPS_D = { process: true, visiblity: false, renderer: 'line' },
 				STAT_D = { process: true, visiblity: true,  renderer: 'scatterplot' },
 				ETAT_D = { process: true, visiblity: true,  renderer: 'scatterplot' },
-				ETPS_D = { process: true, visiblity: false, renderer: 'line' };
-			config = { SERIESES : [CONC_D, CTPS_D, STAT_D, ETAT_D, ETPS_D],
+				EMPS_D = { process: true, visiblity: true,  renderer: 'line' },
+				EAPS_D = { process: true, visiblity: false, renderer: 'line' };
+			config = { SERIESES : [CONC_D, CTPS_D, ETPS_D, STAT_D, ETAT_D, EMPS_D, EAPS_D],
 											height : 0.40, isVisiblity: true };
 		}
 	}
@@ -243,7 +261,6 @@ HJN.Graph.prototype.init =　function(){
 	
 	// legendを追加する（内部関数）
 	function　addLegend(that){  // arg0 : this
-	    "use strict";
 	    var chartIdName = that.chartIdName,
 	        serieses = that.SERIESES,
 	        divLegend =  document.getElementById(chartIdName + "_legend"),
@@ -306,23 +323,11 @@ HJN.Graph.prototype.resize = function() {
 HJN.Graph.prototype.setSeriesSet =　function(seriesSet){   // #30
 	"use strict";
 	this.seriesSet = seriesSet;
-	// this.conc, this.cTps, this.sTat, this.eTat, this.eTps を登録する
 	HJN.seriesConfig.forEach(function(e){
 				this[e.key] = seriesSet[e.N];
 			},this);
 };
 
-// 4ETAT 終了時刻のTAT（応答時間）時系列データ
-// [{x:変化時刻(ms) ,y:レスポンス(sec), fileIdx:ファイル配列位置,
-// pos:レコード位置, len:レコード長, sTatIdx: sTatの配列位置 }]
-// 5ETPS 秒間終了件数の時系列データ
-// [{x:秒毎時刻(ms), y:秒内終了件数 }]
-// 3STAT 開始時刻のTAT（応答時間）時系列データ
-// [{x:開始時刻(ms) ,y:レスポンス(sec), eTatIdx: eTatの配列位置 }]
-// 1CONC 多重度の時系列データ
-// [{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx: eTatの配列位置 }]
-// 2CTPS 秒間最大多重度の時系列データ
-// [{x:秒毎時刻(ms), y:秒内最大多重度数, concFromIdx:該当concの先頭配列位置（末尾は次のcTpsから取得） ]
 
 /**
  * 終了時刻のTAT時系列データ(eTat)から、描画用時系列データ配列を作成する
@@ -335,9 +340,9 @@ HJN.Graph.prototype.createSeries =　function(eTat){
 	"use strict";
 	// 時系列データを初期化する
 	var cycle = 1000.0; // 処理件数を計測する間隔（ミリ秒）
-	var conc = [], cTps = [], sTat = [], eTps = [];
-	var seriesSet = [conc, cTps, sTat, eTat, eTps];	// 注）this.SERIESES
-													// と同じ順番にすること
+	var conc = [], cTps = [], eTps = [], sTat = [], eMps = [], eAps = [];
+	// 注）this.SERIESESと同じ順番にすること
+	var seriesSet = [conc, cTps, eTps, sTat, eTat, eMps, eAps];
 	// 集計対象データがないとき
 	if(eTat.length === 0) return seriesSet;
 
@@ -346,22 +351,32 @@ HJN.Graph.prototype.createSeries =　function(eTat){
 	eTat.sort( function(a, b){ return a.x - b.x; } );
 	HJN.util.ShowLogText("[1:eTat sorten ] " + eTat.length + " plots","calc");
 
-	/** eTPS(時間あたり処理件数)時系列データを作成する * */
+	/** eTps(時間あたり処理件数),eMps,eAps(時間あたり最大/平均応答時間)時系列データを作成する * */
 	var dFrom = Math.floor(eTat[0].x / cycle) * cycle,
 		dTo = dFrom + cycle,
-		num = 1;
+		num = 1,
+		maxTat = 0.0,	// #19
+		aveTmp = 0.0;
 	eTat.forEach (function(e) {
 		if (e.x < dTo){
 			num += 1;
+			if(maxTat < e.y) maxTat = e.y;	// #19
+			aveTmp += e.y;
 		} else{
 			eTps.push( { x: dFrom, y: num } );
+			eMps.push( { x: dFrom, y: maxTat } );	// #19
+			eAps.push( { x: dFrom, y: aveTmp / num } );
 			dFrom = Math.floor(e.x / cycle) * cycle;
 			dTo = dFrom + cycle;
 			num = 1;
+			maxTat = 0.0; // #19
+			aveTmp = 0.0;
 		}
 	});
 	eTps.push( { x: dFrom, y: num } );
-	HJN.util.ShowLogText("[3:eTps created] " + eTps.length + " plots","calc");
+	eMps.push( { x: dFrom, y: maxTat } );	// #19
+	eAps.push( { x: dFrom, y: aveTmp / num } );
+	HJN.util.ShowLogText("[3:eTps,eMps,eAps created] " + eTps.length + " plots","calc");
 
 	
 	/** sTat（開始時間）時系列データを作成する,同時に入力eTatを補正する * */
@@ -933,7 +948,7 @@ HJN.Graph.prototype.addMenu =　function(){
 				'</ul>' +
 			'</li>' +
 			// View Menu
-			'<li class="hjnMenuLv1">'	+ getAccordionTag(this, 2, "View " + idName) +
+			'<li class="hjnMenuLv1">'	+ getAccordionTag(this, 2, "View " + idName, true) +
 				'<ul class="hjnMenuLv2" style="background: rgba(255,255,255,0.5);">' +
 					'<li><div id="' + this.chartIdName + '_legend"></div></li>' +
 				'</ul>' +
