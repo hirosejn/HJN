@@ -91,6 +91,288 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".List"><span class="type-signature">(static) </span>List<span class="type-signature"> :array.&lt;String, Boolean, Boolean, <a href="global.html#index">index</a>, <a href="global.html#xMs">xMs</a>, Number, Number, Number></span></h4>
+
+
+
+
+<div class="description">
+    Plotの一覧
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;String, Boolean, Boolean, <a href="global.html#index">index</a>, <a href="global.html#xMs">xMs</a>, Number, Number, Number></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Plot一覧に表示する文字列</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ckBox</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">チェックボックスの選択状態<br>      （選択後すぐに削除されるのでtrueとなることはない）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>radio</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ラジオボタンの選択状態</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#index">index</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">グラフ番号</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#xMs">xMs</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">xの値</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">yの値</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rangeMinus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">表示幅時間マイナス（秒）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rangePlus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">表示幅時間プラス（秒）</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -102,7 +384,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line415">line 415</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line434">line 434</a>
     </dir>
     
 
@@ -112,7 +394,7 @@
     
     
 	<div class="description">
-		Plot関連機能： クリック時のHoverからHJN.plotsを設定する
+		クリック時のHoverからHJN.Plot.Listを設定する
 	</div>
 	
     
@@ -149,7 +431,7 @@
 
             
 
-            <div class="description last">HJN.hoverXYのシリーズ番号</div>
+            <div class="description last">グラフのシリーズ番号</div>
         </li></ul>
 
     
@@ -230,7 +512,7 @@
 	    </span>
 		
 		<div class="param-desc">
-		    i - plots内のplotの位置
+		    i plots内のplotの位置
 		</div>
 		
 	</li></ul>
@@ -283,7 +565,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line524">line 524</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line548">line 548</a>
     </dir>
     
 
@@ -293,7 +575,7 @@
     
     
 	<div class="description">
-		Plot関連機能： 指定Plotを削除し、PlotsとBaloonを再描画する（PlotのChekBox変更時呼出用）
+		PlotのChekBox変更時呼出用関数<br>指定Plotを削除し、PlotsとBaloonを再描画する
 	</div>
 	
     
@@ -396,7 +678,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line536">line 536</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line561">line 561</a>
     </dir>
     
 
@@ -406,7 +688,7 @@
     
     
 	<div class="description">
-		Plot関連機能： radio選択時に下段グラフを更新する（PlotのChekBox変更時呼出用）
+		PlotのRadioボタン変更時呼出用関数<br>radio選択時に下段グラフを更新する
 	</div>
 	
     
@@ -509,7 +791,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line364">line 364</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line383">line 383</a>
     </dir>
     
 
@@ -519,7 +801,7 @@
     
     
 	<div class="description">
-		Plot関連機能： point/baloonクリック時の処理（詳細グラフの描画と、Plotの更新）
+		point/baloonクリック時呼出し用関数<br>詳細グラフを描画し、Plotを更新する
 	</div>
 	
     
@@ -622,7 +904,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line388">line 388</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line407">line 407</a>
     </dir>
     
 
@@ -632,7 +914,7 @@
     
     
 	<div class="description">
-		Plot関連機能： point/baloonダブルクリック時の処理（Plotを削除する）
+		point/baloonダブルクリック時呼出し用関数<br>Plotを削除する
 	</div>
 	
     
@@ -669,7 +951,7 @@
 
             
 
-            <div class="description last">dygraph の point</div>
+            <div class="description last">dygraphのpoint</div>
         </li></ul>
 
     
@@ -735,7 +1017,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line495">line 495</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line518">line 518</a>
     </dir>
     
 
@@ -745,7 +1027,7 @@
     
     
 	<div class="description">
-		Plot関連機能： HJN.plotsを再表示する
+		HJN.Plot.Listを再表示する
 	</div>
 	
     
@@ -819,7 +1101,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line554">line 554</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line579">line 579</a>
     </dir>
     
 
@@ -829,7 +1111,7 @@
     
     
 	<div class="description">
-		Plot関連機能： Balloonを再描画する
+		Balloonを再描画する
 	</div>
 	
     
@@ -912,13 +1194,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.Logger.html">Logger</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon May 08 2017 03:38:34 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon May 15 2017 03:01:35 GMT+0900 (東京 (標準時))
     <br>&copy 2017 Junichiroh Hirose
 </footer>
 

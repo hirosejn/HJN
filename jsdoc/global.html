@@ -104,7 +104,7 @@
 
 
 <div class="description">
-    CONC:多重度の時系列データ [{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx: eTatの配列位置 }]
+    CONC:多重度の時系列データ<br>[{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx: eTatの配列位置 }]
 </div>
 
 
@@ -169,7 +169,7 @@
 
 
 <div class="description">
-    CTPS: 秒間最大多重度の時系列データ [{x:秒毎時刻(ms), y:秒内最大多重度数,concFromIdx:該当concの先頭配列位置（末尾は次のcTpsから取得） ]
+    CTPS: 秒間最大多重度の時系列データ<br>[{x:秒毎時刻(ms), y:秒内最大多重度数, concFromIdx:該当concの先頭配列位置（末尾は次のcTpsから取得） ]
 </div>
 
 
@@ -228,13 +228,143 @@
 
             
                 
+<h4 class="name" id="EAPS">EAPS</h4>
+
+
+
+
+<div class="description">
+    EAPS: 秒間平均TAT（応答時間）時系列データ（終了時刻ベース）<br>[{x:秒毎時刻(ms), y:秒内平均レスポンス(sec) }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#ySec">ySec</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="EMPS">EMPS</h4>
+
+
+
+
+<div class="description">
+    EMPS: 秒間最大TAT（応答時間）時系列データ（終了時刻ベース）<br>[{x:秒毎時刻(ms), y:秒内最大レスポンス(sec) }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#ySec">ySec</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
 <h4 class="name" id="ETAT">ETAT</h4>
 
 
 
 
 <div class="description">
-    ETAT: 終了時刻のTAT（応答時間）時系列データ [{x:変化時刻(ms) ,y:レスポンス(sec), fileIdx:ファイル配列位置,pos:レコード位置, len:レコード長, sTatIdx: sTatの配列位置 }]
+    ETAT: 終了時刻のTAT（応答時間）時系列データ<br>[{x:変化時刻(ms) ,y:レスポンス(sec), fileIdx:ファイル配列位置, pos:レコード位置, len:レコード長, sTatIdx:sTatの配列位置 }]
 </div>
 
 
@@ -299,7 +429,7 @@
 
 
 <div class="description">
-    ETPS: 秒間終了件数の時系列データ [{x:秒毎時刻(ms), y:秒内終了件数 }]
+    ETPS: 秒間終了件数の時系列データ<br>[{x:秒毎時刻(ms), y:秒内終了件数 }]
 </div>
 
 
@@ -429,7 +559,7 @@
 
 
 <div class="description">
-    seriesSet: dygraph用時系列データ配列 [{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx:eTatの配列位置 }]
+    seriesSet: dygraph用時系列データ配列
 </div>
 
 
@@ -438,7 +568,7 @@
     <ul>
         <li>
             
-<span class="param-type">array.&lt;<a href="global.html#CONC">CONC</a>, <a href="global.html#CTPS">CTPS</a>, <a href="global.html#STAT">STAT</a>, <a href="global.html#ETAT">ETAT</a>, <a href="global.html#ETPS">ETPS</a>></span>
+<span class="param-type">array.&lt;<a href="global.html#CONC">CONC</a>, <a href="global.html#CTPS">CTPS</a>, <a href="global.html#ETPS">ETPS</a>, <a href="global.html#STAT">STAT</a>, <a href="global.html#ETAT">ETAT</a>, <a href="global.html#EMPS">EMPS</a>, <a href="global.html#EAPS">EAPS</a>></span>
 
 
         </li>
@@ -494,7 +624,7 @@
 
 
 <div class="description">
-    STAT: 開始時刻のTAT（応答時間）時系列データ [{x:開始時刻(ms) ,y:レスポンス(sec), eTatIdx: eTatの配列位置 }]
+    STAT: 開始時刻のTAT（応答時間）時系列データ<br>[{x:開始時刻(ms) ,y:レスポンス(sec), eTatIdx: eTatの配列位置 }]
 </div>
 
 
@@ -760,13 +890,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.Logger.html">Logger</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon May 08 2017 03:38:34 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon May 15 2017 03:01:35 GMT+0900 (東京 (標準時))
     <br>&copy 2017 Junichiroh Hirose
 </footer>
 
