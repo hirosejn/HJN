@@ -18,7 +18,7 @@ textarea{ font-size: smaller; }
 .g_wrap { width: 100%; height: 100%; }
 .statusbar	{ overflow: auto; resize: both; position: absolute; z-index: 99;
 			top: 0px; left: 200px; height: 20px; width: 200px; background: #fff; }
-.statusbar > iframe { overflow: hidden; width: 95%; height: 90%; }
+.statusbar > iframe { overflow: hidden; width: 95%; height: 100%; }
 footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
 
 /* ハンバーガーメニュー */
@@ -75,7 +75,7 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 .hjnMenuLv1 .legend {cursor: pointer; display:inline-block; width:100%; padding: 8px ; }
 
 .hjnMenuLv1 > label::after { position: absolute; content: ""; border-style: solid;
-	border-color: #fff transparent transparent transparent;
+	border-color: #888 transparent transparent transparent;
 	border-width: 8px 4px 0 4px; right: 40px; transition: 0.4s;}
 .hjnMenuLv1 > input:checked ~ label::after { transform: rotate(90deg); }
 
@@ -89,6 +89,7 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 .hjnMenuLv2 { transition: 0.2s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
 .hjnMenuLv2 li a { position: relative; display: block; overflow: hidden; padding: 8px 22px;
 	text-decoration: none; color: #000; border: groove #fff;}
+.hjnMenuLv2 li a label { display: block; width: 198px; cursor: pointer; }
 .hjnMenuLv2 > li input[type="file"] { display: none; } /* File Open用 */
 .hjnMenuLv2 ol { display: block; padding-left: 5px; } /* CSV Config用 */
 .hjnMenuLv2 ol input, .hjnMenuLv2 ol label { cursor: pointer; height: 12px; }
