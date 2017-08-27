@@ -215,7 +215,7 @@ HJN.init.FileReader = function (files){  // #15
 		}
 	}
 
-	// 内部関数：  指定ファイルの先頭ｎ行を、改行文字<BR> のテキストに変換してリターンする
+	// 内部関数： 指定ファイルの先頭ｎ行を、改行文字<BR> のテキストに変換してリターンする
 	function topLines(file, n) {
 	    var fileInfo = "",
 	        line;
@@ -232,7 +232,8 @@ HJN.init.FileReader = function (files){  // #15
 	    return fileInfo;
 	}
 
-   // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置, len:レコード長},...]に展開する
+   // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置,
+    // len:レコード長},...]に展開する
 	function getTatLogArray(file) { // arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
 	    HJN.util.Logger.ShowLogText("----- read file -----------------------------","calc");
 	    var eTat = [],
@@ -505,7 +506,7 @@ HJN.Plot.Add=function(n, x, y) {
 				concMax = conc[i].y;
 			}
 		}
-		//if(x < maxTime){	// 補正すべき時刻が求まったときCONC,ETATを追加する
+		// if(x < maxTime){ // 補正すべき時刻が求まったときCONC,ETATを追加する
 			x = maxTime;
 			format = "hh:mm:ss.ppp";
 			label = HJN.util.D2S(x, format) + " " +
@@ -514,7 +515,7 @@ HJN.Plot.Add=function(n, x, y) {
 				 radio:true, n: n, x: x, y: y, 
 				 rangePlus: rangePlus , rangeMinus: rangeMinus,
 				 tpsPlot: plot} );	// 詳細plotには、tpsのplot情報も保持する
-		//}
+		// }
 	}
 };
 
@@ -900,7 +901,7 @@ HJN.util.Logger = (function() { // #27
      *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
      */
     Logger.ShowLogText=function(text, type) {
-//        if (type === "calc") return;    // 集計時評価用ログ出力抑止
+// if (type === "calc") return; // 集計時評価用ログ出力抑止
         // "msg"指定のときは経過時間を取らずに、ログのみ出力する
         if (type !== "msg"){
             // 処理時間情報を追加する
@@ -1013,18 +1014,36 @@ HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
 		else low = middle + 1;
 	}
 	// 値が完全一致する要素がなかった場合の戻り値を編集する
-	if (isEqual) return -1;	// 完全一致指定のとき(-1)をリターンする
-	// 完全一致指定でないとき、値との差が最も少ない位置をリターンする
-	if(func(arr[middle]) < val){
-		if (val - func(arr[middle]) < func(arr[high]) - val && high !== middle) {return middle;} // #46
-		else {return high;}
-	}else{
-		if(high < 0)return low; // #46
-		if(high < middle && func(arr[high]) <= val && val < func(arr[middle]))return high;
-		else if (val - func(arr[low]) < func(arr[middle]) - val)return low;
-		else {return middle;}
+	if (isEqual){
+	    return -1;	// 完全一致指定のとき(-1)をリターンする
+	} else {    	// 完全一致指定でないとき、値との差が最も少ない位置をリターンする #46
+    	// low,middle,high を補正する
+    	low = Math.min(Math.max(0, low), arr.length - 1);
+    	high = Math.max(0, Math.min(high, arr.length - 1));
+    	middle = Math.max(low, Math.min(middle, high));
+    	if(high < low){
+    	    var tmp = high;
+    	    high= low;
+    	    low = tmp;
+    	}
+        // low,middle,high のうち、値との差が最も少ない位置をリターンする
+    	if(func(arr[middle]) < val){
+    		if (val - func(arr[middle]) < func(arr[high]) - val) {
+    		    return middle;
+    		} else {
+    		    return high;
+    		}
+    	}else{
+    		if (func(arr[high]) <= val && val < func(arr[middle])){
+    		    return high;
+    		} else if (val - func(arr[low]) < func(arr[middle]) - val){
+    		    return low;
+    		} else {
+    		    return middle;
+    		}
+    	}
+    	return -1;	// 指定範囲外
 	}
-	return -1;	// 指定範囲外
 };
 
 
@@ -1038,8 +1057,8 @@ HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
  * @classdesc 指定期間に動いているeTatの一覧を、高速に取得するマップ
  * @param {ETAT}
  *            eTat インデックスを追加するETAT
- * @example eTat.tatMap = new HJN.util.MappedETat(eTat);
- * 			var trans = eTat.tatMap.search(x, x, 1000);
+ * @example eTat.tatMap = new HJN.util.MappedETat(eTat); var trans =
+ *          eTat.tatMap.search(x, x, 1000);
  */
 HJN.util.MappedETat = (function() { // #18
 	"use strict";
@@ -1575,7 +1594,8 @@ HJN.util.FileReader = (function() {
 
 				
 		// 名称と挙動の定義
-		this._configFileFormat = HJN.util.Config("m")	// File Format Config設定画面定義
+		this._configFileFormat = HJN.util.Config("m")	// File Format
+                                                        // Config設定画面定義
 			.n("<br>")
 			.label(null,"----- Configration of file format --------").n()
 			.n("<br>")
@@ -1765,7 +1785,8 @@ HJN.util.FileReader = (function() {
 				this.confTIME_POS = (c.getValue("TIME_POS") || 1) - 1;	// 時刻(X)の先頭バイト位置
 				this.confTIME_LEN = (c.getValue("TIME_LEN") || 0);		// 時刻(X)のバイト長
 				this.confTIME_FORM = c.getValue("TIME_FORM");			// 時刻(X)の文字フォーマット指定
-				this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp");	// 時刻(X)の #42
+				this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp");	// 時刻(X)の
+                                                                                            // #42
 																							// YMDフォーマット
 				this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
 						YYYY: this.confTIME_YMD.indexOf("YYYY"),
@@ -1810,11 +1831,13 @@ HJN.util.FileReader = (function() {
          */
 		GetterOfXY.parseDate = function (str, conf){
 			if(!str) {console.log("GetterOfXY.parseDate:no data cannot parse"); return 0; }
-			conf = conf || {YYYY: 0, MM: 5, DD: 8, hh: 11, mm: 14, ss: 17, ppp: 20};  // YYYY/MM/DD #42
+			conf = conf || {YYYY: 0, MM: 5, DD: 8, hh: 11, mm: 14, ss: 17, ppp: 20};  // YYYY/MM/DD
+                                                                                        // #42
 																						// hh:mm:dd.ss.ppp
 			var y   = conf.YYYY < 0 ? 1970 : parseInt( str.substr( conf.YYYY, 4), 10),	// デフォルト1970年
 				m   = conf.MM   < 0 ? 0 : parseInt( str.substr( conf.MM, 2), 10) - 1,	// デフォルト1月
-				d   = conf.DD   < 0 ? 2				// 1970/1/1 だと時差でマイナスになることがあるのでデフォルトは2日
+				d   = conf.DD   < 0 ? 2				// 1970/1/1
+                                                    // だと時差でマイナスになることがあるのでデフォルトは2日
 						: parseInt( str.substr( conf.DD, 2), 10),
 				h   = conf.hh   < 0 ? 0 : parseInt( str.substr( conf.hh, 2), 10),
 				min = conf.mm   < 0 ? 0 : parseInt( str.substr( conf.mm, 2), 10),
@@ -1826,8 +1849,9 @@ HJN.util.FileReader = (function() {
 			return dateNum;
 		};
         /**
-         * 数字をパースして数値（ミリ秒）を取得する
-         * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
+         * 数字をパースして数値（ミリ秒）を取得する 例："-1:1:1.2 -> -3661200 ms =
+         * -1*(3600+60+1+0.2)*1000
+         * 
          * @function
          * @memberof HJN.util.FileReader.GetterOfXY
          */
