@@ -901,7 +901,7 @@ HJN.util.Logger = (function() { // #27
      *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
      */
     Logger.ShowLogText=function(text, type) {
-// if (type === "calc") return; // 集計時評価用ログ出力抑止
+        if (type === "calc") return; // 集計時評価用ログ出力抑止
         // "msg"指定のときは経過時間を取らずに、ログのみ出力する
         if (type !== "msg"){
             // 処理時間情報を追加する
@@ -1111,6 +1111,7 @@ HJN.util.MappedETat = (function() { // #18
 					|| end - start < term){						 // 上位BOXを起点
 				term = _conf[i-1].ms;	// ひとつ下位のBOX期間（下から評価したので二段下となることは無い
 				rowLv = Math.floor(end / term) - Math.floor(start / term);
+// if (Math.floor(end / term) === end / term) rowLv--; // #39
 				return [_row(_conf[i-1].label, rowLv),
 						(Math.ceil(e.x / _conf[i-1].ms) - 1) * _conf[i-1].ms];
 			}
@@ -1128,7 +1129,7 @@ HJN.util.MappedETat = (function() { // #18
 				step: e.step, from: e2.ms * e2.step, to: e.ms} );	// 末尾を先頭に追加
 	for (var j = c.length - 1; 0 <= j; j--){	// 降順に追加
 		e = c[j];
-		for (var i = e.step - 1; 0 < i; i--){
+		for (var i = e.step; 0 < i; i--){ // #39
 			proto._abscissa.push( {label: proto._row(e.label, i), ms: e.ms, i: i, 
 								step: e.step, from: e.ms * i, to: e.ms * (i + 1)} );
 		}

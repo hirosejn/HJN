@@ -422,7 +422,8 @@ HJN.Graph.prototype.createSeries = function (eTat) {
 
     /** eTps(時間あたり処理件数),eMps,eAps(時間あたり最大/平均応答時間)時系列データを作成する * */
     var dFrom = Math.floor(eTat[0].x / this.cycle) * this.cycle, dTo = dFrom
-            + this.cycle, num = 1, maxTat = 0.0, // #19
+            + this.cycle, num = 0, // #39
+    maxTat = 0.0, // #19
     aveTmp = 0.0;
     eTat.forEach(function (e) {
         if (e.x < dTo) {
@@ -446,8 +447,8 @@ HJN.Graph.prototype.createSeries = function (eTat) {
             dFrom = Math.floor(e.x / this.cycle) * this.cycle;
             dTo = dFrom + this.cycle;
             num = 1;
-            maxTat = 0.0; // #19
-            aveTmp = 0.0;
+            maxTat = e.y; // #19 #39
+            aveTmp = e.y; // #39
         }
     }, this);
     eTps.push({
@@ -1136,6 +1137,12 @@ HJN.Graph.prototype.addMenu = function () {
                 + this.fileReader.getConfigHtml("Filter") + // #24
                 '<li>' + getFuncTag(menuFilterApply) + '</li>' + '<li>'
                 + getFuncTag(menuFilterClear) + '</li>' + '</ul>' + '</li>' +
+                // View Menu
+                '<li class="hjnMenuLv1" id="menu_View">'
+                + getAccordionTag(this, 3, "View", true)
+                + '<ul class="hjnMenuLv2">' + '<li><div id="'
+                + this.chartIdName + '_legend"></div></li>' + '</ul>' + '</li>'
+                +
                 // Download Menu
                 '<li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(this, 2, "Download")
@@ -1144,12 +1151,7 @@ HJN.Graph.prototype.addMenu = function () {
                 + getATag(menuDownloadCsv, "Upper ") + '</li>' + '<li>'
                 + getATag(menuDownloadLog, "Upper ") + '</li>' + '<li>'
                 + getATag(menuDownloadConc, "Upper ") + '</li>' + '</ul>'
-                + '</li>' +
-                // View Menu
-                '<li class="hjnMenuLv1" id="menu_View">'
-                + getAccordionTag(this, 3, "View", false)
-                + '<ul class="hjnMenuLv2">' + '<li><div id="'
-                + this.chartIdName + '_legend"></div></li>' + '</ul>' + '</li>';
+                + '</li>';
         divMenu.appendChild(accordion);
 
         // File Open用 イベントリスナー登録
