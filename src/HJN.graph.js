@@ -237,7 +237,7 @@ HJN.Graph = function (chartIdName, globalName, config) {
     this.scale = [ null, null ];
     this.graph = null;
     this.cycle = 1000; // ミリ秒
-    this.cTpsCycle = this.cycle;
+    this.cTpsUnit = HJN.Graph.prototype.UNIT_CTPS[0];
 
     this.cash = null; // キャッシュオブジェクト
 
@@ -302,6 +302,52 @@ HJN.Graph = function (chartIdName, globalName, config) {
 
     this.height = config.height;
     this.isVisiblity = config.isVisiblity;
+};
+
+/**
+ * クラス定数
+ */
+HJN.Graph.prototype = {
+    UNIT_RANGE : [ // #48
+    {
+        label : "sec",
+        val : "1000"
+    }, {
+        label : "10sec",
+        val : "10000"
+    }, {
+        label : "min",
+        val : "60000"
+    }, {
+        label : "10min",
+        val : "600000"
+    }, {
+        label : "hour",
+        val : "3600000"
+    }, {
+        label : "6hours",
+        val : "21600000"
+    }, {
+        label : "day",
+        val : "86400000"
+    }, {
+        label : "year",
+        val : "31536000000"
+    } ],
+
+    UNIT_CTPS : [ {
+        label : "/sec",
+        unit : 1000
+    }, {
+        label : "/min",
+        unit : 60000
+    }, {
+        label : "/hour",
+        unit : 3600000
+    }, {
+        label : "/day",
+        unit : 86400000
+    } ]
 };
 
 /**
@@ -531,22 +577,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
     YMax = conc[0].y, YNext = conc[0].y;
     // concの先頭と末尾の時刻(x)の差よりPlot数を求め、Plot数が規定数(8000個)を超えたら、桁上げする #38
     var cTpsMaxPlots = 8000, // 桁上げするPlot数
-    cTpsUnits = [ {
-        label : "/sec",
-        unit : 1000
-    }, // １秒単位
-    {
-        label : "/min",
-        unit : 60000
-    }, // １分単位
-    {
-        label : "/hour",
-        unit : 3600000
-    }, // １時間単位
-    {
-        label : "/day",
-        unit : 86400000
-    } ], // １日単位
+    cTpsUnits = HJN.Graph.prototype.UNIT_CTPS, // #48
     concTerm = conc[conc.length - 1].x - conc[0].x, // ミリ秒
     cTpsIdx = 0;
     while (cTpsIdx < cTpsUnits.length
@@ -554,20 +585,23 @@ HJN.Graph.prototype.createSeries = function (eTat) {
         cTpsIdx++;
     }
     cTpsIdx = (cTpsUnits.length > cTpsIdx) ? cTpsIdx : cTpsUnits.length - 1;
-    this.cTpsCycle = cTpsUnits[cTpsIdx].unit;
+    this.cTpsUnit = cTpsUnits[cTpsIdx];
+    // メニューのViewのcTPSのラベルに単位を追加する
+    var pos = (this === HJN.chart) ? 0 : 1;
+    document.getElementsByName("cTps")[pos].parentNode.lastChild.data = HJN.CTPS.name
+            + this.cTpsUnit.label;
 
     // 規定時間単位の最大同時処理数cTPSを作成する
     conc.forEach(function (c) {
-        if (floorTime(c.x, this.cTpsCycle) === XSec) { // c.xは ミリ秒
+        if (floorTime(c.x, this.cTpsUnit.unit) === XSec) { // c.xは ミリ秒
             YMax = Math.max(YMax, c.y);
         } else {
             cTps.push({
                 x : XSec,
                 y : Math.max(YMax, YNext)
             });
-            for (var t = XSec + this.cTpsCycle; t < floorTime(c.x,
-                    this.cTpsCycle); t += this.cTpsCycle) { // c.xは
-                // ミリ秒
+            for (var t = XSec + this.cTpsUnit.unit; t < floorTime(c.x,
+                    this.cTpsUnit.unit); t += this.cTpsUnit.unit) { // c.xはミリ秒
                 cTps.push({
                     x : t,
                     y : YNext
@@ -575,7 +609,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
                 if (YNext === 0)
                     break;
             }
-            XSec = floorTime(c.x, this.cTpsCycle);
+            XSec = floorTime(c.x, this.cTpsUnit.unit);
             YMax = Math.max(YNext, c.y);
         }
         YNext = c.y;
@@ -585,7 +619,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
         y : YMax
     });
     cTps.push({
-        x : XSec + this.cTpsCycle,
+        x : XSec + this.cTpsUnit.unit,
         y : YNext
     });
 
@@ -634,8 +668,10 @@ HJN.Graph.prototype.update = function (seriesSet) {
     // dygraph表示時間帯を設定する（上段グラフは全期間が処理対象）
     var xRangeMin = Number.MIN_VALUE, xRangeMax = Number.MAX_VALUE;
     if (HJN.chartD === this) { // 詳細（下段グラフ）のとき画面で指定された期間を設定する // ミリ秒
-        xRangeMin = +HJN.detailDateTime - HJN.detailRangeMinus * 1000;
-        xRangeMax = +HJN.detailDateTime + HJN.detailRangePlus * 1000;
+        xRangeMin = +HJN.detailDateTime - HJN.detailRangeMinus
+                * HJN.detailRangeUnit; // #48
+        xRangeMax = +HJN.detailDateTime + HJN.detailRangePlus
+                * HJN.detailRangeUnit; // #48
     }
 
     // dygraph用arrayを空にする
@@ -1244,11 +1280,17 @@ HJN.Graph.prototype.addMenu = function () {
                 + '- <input type="number" id="DetailRangeMinus" min="0" step="1"'
                 + 'value="'
                 + initPlus
-                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()">sec '
+                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
                 + '+ <input type="number" id="DetailRangePlus" min="0" step="1"'
                 + 'value="'
                 + initMinus
-                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()">sec  ';
+                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
+                + '<select id="DetailRangeUnit" onchange="HJN.init.setDetailRange()">' // #48
+                + HJN.Graph.prototype.UNIT_RANGE.reduce(
+                        function (prev, e, i, a) {
+                            return prev + '<option value="' + e.val + '">'
+                                    + e.label + '</option>';
+                        }, '') + '</select>';
     }
 };
 

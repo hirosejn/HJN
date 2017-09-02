@@ -284,7 +284,7 @@ HJN.init.ChartRegistDetail = function(cTps){
 	if(0 <= maxYIdx){	// #26
 		// 秒単位より大きいとき、最大値を含む時刻(秒)に補正する #38
 		var x = cTps[maxYIdx].x;
-		if(HJN.chart.cTpsCycle >= 1000){
+		if(HJN.chart.cTpsUnit.unit >= 1000){
 			var cTpsIdx = HJN.chart.conc.findIndex(function(e,i){return e.y === cTps[maxYIdx].y;});
 			x = HJN.chart.conc[cTpsIdx].x;
 		}
@@ -309,13 +309,16 @@ HJN.init.GetSliderRangedEtat = function() {
 	// 指定時刻（ｄｔ ± range）を得る
 	var rangeTagPlus  = document.getElementById("DetailRangePlus"),
 		rangeTagMinus = document.getElementById("DetailRangeMinus"),
-		rangeCycle = HJN.chart.cTpsCycle / 1000;					// #38
+        rangeTagUnit  = document.getElementById("DetailRangeUnit"), // #48
+		rangeCycle = HJN.chart.cTpsUnit.unit / 1000;					// #38
 	// HJNグローバル変数に退避する
-	HJN.detailRangePlus  = rangeTagPlus ? +rangeTagPlus.value : 1 + rangeCycle;	// 幅（秒）
-	HJN.detailRangeMinus= rangeTagMinus ? +rangeTagMinus.value : rangeCycle;	// 幅（秒）
-	var dt = Math.floor(HJN.detailDateTime * 1000) / 1000,		// 中央時刻 // ミリ秒
-		rangePlus  = HJN.detailRangePlus * 1000,	// 幅（ミリ秒）
-		rangeMinus = HJN.detailRangeMinus * 1000,
+	HJN.detailRangePlus  = rangeTagPlus  ? +rangeTagPlus.value  : 1 + rangeCycle; // 幅（秒）
+	HJN.detailRangeMinus = rangeTagMinus ? +rangeTagMinus.value : rangeCycle; 	  // 幅（秒）
+    HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : 1000; // #48
+	var rangeUnit = HJN.detailRangeUnit, // #48
+	    dt = Math.floor(HJN.detailDateTime * rangeUnit) / rangeUnit, // 中央時刻(ミリ秒)
+		rangePlus  = HJN.detailRangePlus  * rangeUnit,  // 幅（ミリ秒）
+		rangeMinus = HJN.detailRangeMinus * rangeUnit,  // #48
 		from = dt - rangeMinus,
 		to = dt + rangePlus;
 	var eTatDetail = [{x: 0, y: 0.001, sTatIdx: 0}];	// tatMapが無い場合の返却値
@@ -344,6 +347,7 @@ HJN.init.setDetailRange = function(){
             var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
             HJN.Plot.List[i].rangePlus  = document.getElementById("DetailRangePlus").value;
             HJN.Plot.List[i].rangeMinus = document.getElementById("DetailRangeMinus").value;
+            HJN.Plot.List[i].rangeUnit  = document.getElementById("DetailRangeUnit").value; // #48
             // 下段データを登録する
             HJN.chartD.seriesSet = HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat() );
             // 下段グラフを描画する
@@ -377,6 +381,7 @@ HJN.init.SetSliderRange=function(date) {
  * @prop {Number} y yの値
  * @prop {Number} rangeMinus 表示幅時間マイナス（秒）
  * @prop {Number} rangePlus 表示幅時間プラス（秒）
+ * @prop {Number} rangeUnit 表示幅時間 単位（sec:1/min:60/hour:3600/day:86400)
  * 
  */
 HJN.Plot.List = [];
@@ -450,16 +455,18 @@ HJN.Plot.Add=function(n, x, y) {
 	// 幅(range)を取り込む（秒）
 	var	rangePlusTag  =  document.getElementById("DetailRangePlus"),
 		rangeMinusTag =  document.getElementById("DetailRangeMinus"),
-		rangePlus  = rangePlusTag  ? +rangePlusTag.value  : 1,	// 幅
+	    rangeUnitTag  =  document.getElementById("DetailRangeUnit"), // #48
+        rangeUnit  = rangeUnitTag  ? +rangeUnitTag.value : 1000,
+	    rangePlus  = rangePlusTag  ? +rangePlusTag.value  : 1,	// 幅
 		rangeMinus = rangeMinusTag ? +rangeMinusTag.value : 1;
-	// ETAT,STATのとき、TATが幅に含まれるよう、幅(range)を拡大する #30
+	// ETAT,STATのとき、TATが幅に含まれるよう、幅(range)を拡大する #30 #48 TODO
 	if (n === HJN.ETAT.N){
-		rangeMinus = Math.max(rangeMinus,
-							Math.floor(x / 1000) - Math.floor((x - y) / 1000));
+		rangeMinus = Math.max(rangeMinus, 
+		        Math.floor(x / rangeUnit) - Math.floor((x - y) / rangeUnit)); // #48
 		document.getElementById("DetailRangeMinus").value = rangeMinus; 
 	}else if (n === HJN.STAT.N){
 		rangePlus = Math.max(rangePlus,
-				Math.floor((x + y) / 1000)) - Math.floor(x / 1000) ;
+				Math.floor((x + y) / rangeUnit)) - Math.floor(x / rangeUnit) ; // #48
 		document.getElementById("DetailRangePlus").value = rangePlus;
 	}
 	// 既存Poltを検索する
@@ -474,14 +481,15 @@ HJN.Plot.Add=function(n, x, y) {
 		plot.radio = true;
 		plot.rangePlus  = rangePlus;	// 秒
 		plot.rangeMinus = rangeMinus;
+	    plot.rangeUnit  = rangeUnit; // #48
 	}else{		// 既存に無いときPlotを追加する
 		plot = {label: label, ckBox:false,
 				 radio:true, n: n, x: x, y: y, 
-				 rangePlus: rangePlus , rangeMinus: rangeMinus };
+				 rangePlus: rangePlus, rangeMinus: rangeMinus, rangeUnit: rangeUnit };
 		if (n === HJN.CTPS.N){			// CTPSのとき秒内最大CONCとして登録する
-			adjustMaxPlot(HJN.chartD.conc, x, x + HJN.chart.cTpsCycle, y, HJN.CONC.N, plot, rangePlus, rangeMinus);
+			adjustMaxPlot(HJN.chartD.conc, x, x + HJN.chart.cTpsUnit.unit, y, HJN.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
 		}else if (n === HJN.EMPS.N){	// EMPSのとき秒内最大ETATとして登録する
-			adjustMaxPlot(HJN.chartD.eTat, x, x + HJN.chart.cycle, y, HJN.ETAT.N, plot, rangePlus, rangeMinus);
+			adjustMaxPlot(HJN.chartD.eTat, x, x + HJN.chart.cycle, y, HJN.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
 		}else {	// CTPS,EMPS以外の時、選択Plotを追加する
 			HJN.Plot.List.push(plot);
 		}
@@ -496,7 +504,7 @@ HJN.Plot.Add=function(n, x, y) {
 
 	
 	// 内部関数：プロット位置を、指定秒から詳細グラフの最大時刻に変更する #19
-	function adjustMaxPlot(conc, x, toX, y, n, plot, rangePlus, rangeMinus){
+	function adjustMaxPlot(conc, x, toX, y, n, plot, rangePlus, rangeMinus, rangeUnit){
 		var	maxTime = 0,
 			concMax = 0,
 			i = HJN.util.binarySearch(x, conc, function(e){ return e.x; });
@@ -513,7 +521,7 @@ HJN.Plot.Add=function(n, x, y) {
 					HJN.seriesConfig[n].label.replace("%N",HJN.util.N2S(y));
 			HJN.Plot.List.push(	{label: label, ckBox:false,
 				 radio:true, n: n, x: x, y: y, 
-				 rangePlus: rangePlus , rangeMinus: rangeMinus,
+				 rangePlus: rangePlus , rangeMinus: rangeMinus, rangeUnit: rangeUnit,
 				 tpsPlot: plot} );	// 詳細plotには、tpsのplot情報も保持する
 		// }
 	}
@@ -574,6 +582,7 @@ HJN.Plot.CheckRadio = function(i) {
 	HJN.init.SetSliderRange(HJN.Plot.List[i].x);	// 中心時刻に設定する
 	document.getElementById("DetailRangePlus").value = HJN.Plot.List[i].rangePlus;	// 幅を設定する
 	document.getElementById("DetailRangeMinus").value = HJN.Plot.List[i].rangeMinus;
+	document.getElementById("DetailRangeUnit").value = HJN.Plot.List[i].rangeUnit; // #48
 	HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat() );
 	// 下段データを登録描画する
 	HJN.chartD.update(HJN.chartD.seriesSet);
@@ -1111,7 +1120,6 @@ HJN.util.MappedETat = (function() { // #18
 					|| end - start < term){						 // 上位BOXを起点
 				term = _conf[i-1].ms;	// ひとつ下位のBOX期間（下から評価したので二段下となることは無い
 				rowLv = Math.floor(end / term) - Math.floor(start / term);
-// if (Math.floor(end / term) === end / term) rowLv--; // #39
 				return [_row(_conf[i-1].label, rowLv),
 						(Math.ceil(e.x / _conf[i-1].ms) - 1) * _conf[i-1].ms];
 			}
