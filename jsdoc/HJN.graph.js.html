@@ -487,7 +487,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
         return seriesSet;
 
     /** eTatをソートする * */
-    // 開始時刻でソートする
+    // 開始時刻でソートする #35
     eTat.sort(function (a, b) {
         return a.x - b.x;
     });
@@ -910,7 +910,7 @@ HJN.Graph.prototype.update = function (seriesSet) {
         // CONCのとき同時処理の線を引く
         if (name === HJN.CONC.key &amp;&amp; typeof eTat.tatMap != 'undefined') { // #17
             // #41
-            // 指定時刻に動いているeTatの一覧(trans)を得る
+            // 指定時刻に動いているeTatの一覧(trans)を取得する
             var trans = eTat.tatMap.search(x, x, 1000); // #18
             // 以前に選択した線を消す
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -1147,11 +1147,11 @@ HJN.Graph.prototype.addMenu = function () {
         menuId : divMenuId + "_LoadCongig",
         fileName : "hjnconfig.json"
     }, menuFilterApply = { // getFuncTag #34
-        menuLabel : "Apply filter",
+        menuLabel : "Apply filter &amp; reload",
         funcName : g + ".menuFilterApply",
         menuId : divMenuId + "_FilterApply"
     }, menuFilterClear = { // getFuncTag #34
-        menuLabel : "Clear filter",
+        menuLabel : "Clear filter &amp; reload",
         funcName : g + ".menuFilterClear",
         menuId : divMenuId + "_FilterClear"
     }, menuDownloadImg = { // getATag
@@ -1187,35 +1187,37 @@ HJN.Graph.prototype.addMenu = function () {
     // メニューを追加する
     var accordion = document.createElement('div'); // 要素の作成
     if (HJN.chart.chartId === this.chartId) { // 上段グラフ用機能のメニュー追加
-        accordion.innerHTML =
         // File Menu
-        '&lt;li class="hjnMenuLv1">' + getAccordionTag(this, 0, "File")
-                + '&lt;ul class="hjnMenuLv2">' + '&lt;li>' + getInputTag(menuOpenCsv)
-                + '&lt;/li>' + this.fileReader.getConfigHtml("File") + // #24
-                '&lt;li>' + getATag(menuSaveConfig) + '&lt;/li>' + // ToDo
-                '&lt;li>' + getATag(menuLoadConfig) + '&lt;/li>' + '&lt;/ul>' + '&lt;/li>' +
-                // Filter Menu #34
-                '&lt;li class="hjnMenuLv1" id="menu_Filter">'
+        accordion.innerHTML = '&lt;li class="hjnMenuLv1">'
+                + getAccordionTag(this, 0, "File") + '&lt;ul class="hjnMenuLv2">'
+                + '&lt;li>' + getInputTag(menuOpenCsv) + '&lt;/li>' //
+                + this.fileReader.getConfigHtml("File") // #24
+                + '&lt;li>' + getATag(menuSaveConfig) + '&lt;/li>' // ToDo
+                + '&lt;li>' + getATag(menuLoadConfig) + '&lt;/li>' //
+                + '&lt;/ul>' + '&lt;/li>';
+        // Filter Menu #34
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Filter">'
                 + getAccordionTag(this, 1, "Filter")
                 + '&lt;ul class="hjnMenuLv2">'
-                + this.fileReader.getConfigHtml("Filter") + // #24
-                '&lt;li>' + getFuncTag(menuFilterApply) + '&lt;/li>' + '&lt;li>'
-                + getFuncTag(menuFilterClear) + '&lt;/li>' + '&lt;/ul>' + '&lt;/li>' +
-                // View Menu
-                '&lt;li class="hjnMenuLv1" id="menu_View">'
+                + this.fileReader.getConfigHtml("Filter") // #24
+                + '&lt;li>' + getFuncTag(menuFilterApply) + '&lt;/li>' //
+                + '&lt;li>' + getFuncTag(menuFilterClear) + '&lt;/li>' // 
+                + '&lt;/ul>' + '&lt;/li>';
+        // View Menu
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_View">'
                 + getAccordionTag(this, 3, "View", true)
-                + '&lt;ul class="hjnMenuLv2">' + '&lt;li>&lt;div id="'
-                + this.chartIdName + '_legend">&lt;/div>&lt;/li>' + '&lt;/ul>' + '&lt;/li>'
-                +
-                // Download Menu
-                '&lt;li class="hjnMenuLv1" id="menu_Download">'
+                + '&lt;ul class="hjnMenuLv2">' // 
+                + '&lt;li>&lt;div id="' + this.chartIdName + '_legend">&lt;/div>&lt;/li>'
+                + '&lt;/ul>' + '&lt;/li>';
+        // Download Menu
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(this, 2, "Download")
-                + '&lt;ul class="hjnMenuLv2">' + '&lt;li>'
-                + getATag(menuDownloadImg, "Upper ") + '&lt;/li>' + '&lt;li>'
-                + getATag(menuDownloadCsv, "Upper ") + '&lt;/li>' + '&lt;li>'
-                + getATag(menuDownloadLog, "Upper ") + '&lt;/li>' + '&lt;li>'
-                + getATag(menuDownloadConc, "Upper ") + '&lt;/li>' + '&lt;/ul>'
-                + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2">' //
+                + '&lt;li>' + getATag(menuDownloadImg, "Upper ") + '&lt;/li>'
+                + '&lt;li>' + getATag(menuDownloadCsv, "Upper ") + '&lt;/li>'
+                + '&lt;li>' + getATag(menuDownloadLog, "Upper ") + '&lt;/li>'
+                + '&lt;li>' + getATag(menuDownloadConc, "Upper ") + '&lt;/li>'
+                + '&lt;/ul>' + '&lt;/li>';
         divMenu.appendChild(accordion);
 
         // File Open用 イベントリスナー登録
@@ -1225,11 +1227,11 @@ HJN.Graph.prototype.addMenu = function () {
         // Download Menu
         var chartDownloadUl = document.createElement('ul');
         chartDownloadUl.className = "hjnMenuLv2";
-        chartDownloadUl.innerHTML = '&lt;li>'
-                + getATag(menuDownloadImg, "Detail ") + '&lt;/li>' + '&lt;li>'
-                + getATag(menuDownloadCsv, "Detail ") + '&lt;/li>' + '&lt;li>'
-                + getATag(menuDownloadLog, "Detail ") + '&lt;/li>' + '&lt;li>'
-                + getATag(menuDownloadConc, "Detail ") + '&lt;/li>';
+        chartDownloadUl.innerHTML = '' //
+                + '&lt;li>' + getATag(menuDownloadImg, "Detail ") + '&lt;/li>'
+                + '&lt;li>' + getATag(menuDownloadCsv, "Detail ") + '&lt;/li>'
+                + '&lt;li>' + getATag(menuDownloadLog, "Detail ") + '&lt;/li>'
+                + '&lt;li>' + getATag(menuDownloadConc, "Detail ") + '&lt;/li>';
         var chartDownload = document.getElementById("menu_Download");
         chartDownload.appendChild(chartDownloadUl);
 
@@ -1244,14 +1246,18 @@ HJN.Graph.prototype.addMenu = function () {
         // "Bottom detail graph" Menu
         accordion.innerHTML = '&lt;li class="hjnMenuLv1">'
                 + getAccordionTag(this, 4, "Bottom detail graph", true)
-                + '&lt;ul class="hjnMenuLv2">' + '&lt;li>&lt;div id="detailTimeRange">'
-                + getDetailTimeRangeTag() + '&lt;/div>&lt;/li>'
-                + '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' + '&lt;/ul>' + '&lt;/li>' +
-                // Help Menu
-                '&lt;li class="hjnMenuLv1">' + getAccordionTag(this, 5, "Help")
-                + '&lt;ul class="hjnMenuLv2" style="width: 100%;">' + '&lt;li>'
-                + getAlertTag(menuHelpAbout) + '&lt;/li>' + '&lt;li>'
-                + getAlertTag(menuHowToUse) + '&lt;/li>' + '&lt;/ul>' + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2">' //
+                + '&lt;li>&lt;div id="detailTimeRange">' + getDetailTimeRangeTag()
+                + '&lt;/div>&lt;/li>' //
+                + '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' //
+                + '&lt;/ul>' + '&lt;/li>';
+        // Help Menu
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1">'
+                + getAccordionTag(this, 5, "Help")
+                + '&lt;ul class="hjnMenuLv2" style="width: 100%;">' //
+                + '&lt;li>' + getAlertTag(menuHelpAbout) + '&lt;/li>' //
+                + '&lt;li>' + getAlertTag(menuHowToUse) + '&lt;/li>' //
+                + '&lt;/ul>' + '&lt;/li>';
         divMenu.appendChild(accordion);
     }
     // アコーディオンラベル用&lt;input>&lt;label>タグ編集（内部関数宣言） #31
@@ -1259,46 +1265,47 @@ HJN.Graph.prototype.addMenu = function () {
     function getAccordionTag(that, id, labelText, isChecked) {
         var isAccordion = true, // true:アコーディオン型 false:折りたたみ型 #21
         typeStr = isAccordion ? ' type="checkbox" name="accordion" '
-                : ' type="radio" name="accordion" ', checkedStr = ' checked="checked" ';
+                : ' type="radio" name="accordion" ', //
+        checkedStr = ' checked="checked" ';
         return '' + '&lt;input id="ac-' + that.chartIdName + id + '"' + typeStr
                 + (isChecked ? checkedStr : '') + '">' + '&lt;label for="ac-'
                 + that.chartIdName + id + '">' + labelText + '&lt;/label>';
     }
 
     // File Open用&lt;input>タグ編集（内部関数宣言）
+    // '&lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx" multiple/>&lt;/label>&lt;/a>
     function getInputTag(arg) {
-        // '&lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx" multiple
-        // />&lt;/label>&lt;/a>
-        return '' + '&lt;a>&lt;label>' + arg.menuLabel + '&lt;input type="file" id="'
-                + arg.menuId + '"  multiple />' + '&lt;/label>&lt;/a>';
+        return '' + '&lt;a>&lt;label>' + arg.menuLabel //
+                + '&lt;input type="file" id="' + arg.menuId + '"  multiple />'
+                + '&lt;/label>&lt;/a>';
     }
 
     // ダウンロード用&lt;A>タグ編集（内部関数宣言）
+    // '&lt;a id="xxx" href="#">Child Menu&lt;/a>'
     function getATag(arg, preLabel) {
         preLabel = preLabel || "";
-        // '&lt;a id="xxx" href="#">Child Menu&lt;/a>'
-        return '' + '&lt;a id="' + arg.menuId + '" href="#" ' + // class="menuBar"
-        // ' +
-        'download="' + arg.fileName + '" ' + 'onclick="' + arg.funcName + '('
-                + "'" + arg.menuId + "', '" + arg.fileName + "'" + ')" ' + '>'
+        return '' + '&lt;a id="' + arg.menuId + '" href="#" ' // class="menuBar"
+                + 'download="' + arg.fileName + '" ' //
+                + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '"
+                + arg.fileName + "'" + ')" ' + '>' //
                 + preLabel + arg.menuLabel + '&lt;/a>';
     }
 
     // グローバルメソッド呼出用&lt;A>タグ編集（内部関数宣言） #34
+    // '&lt;a id="xxx" href="#">Child Menu&lt;/a>'
     function getFuncTag(arg, preLabel) {
         preLabel = preLabel || "";
-        // '&lt;a id="xxx" href="#">Child Menu&lt;/a>'
-        return '' + '&lt;a id="' + arg.menuId + '" href="#" ' + 'onclick="'
-                + arg.funcName + '()" ' + '>' + preLabel + arg.menuLabel
-                + '&lt;/a>';
+        return '' + '&lt;a id="' + arg.menuId + '" href="#" ' //
+                + 'onclick="' + arg.funcName + '()">' //
+                + preLabel + arg.menuLabel + '&lt;/a>';
     }
 
     // Alert用&lt;A>タグ編集（内部関数宣言）
+    // '&lt;a id="xxx" onclick=Alert("xxx")>Child Menu&lt;/a>'
     function getAlertTag(arg) {
-        // '&lt;a id="xxx" onclick=Alert("xxx")>Child Menu&lt;/a>'
-        return '' + '&lt;a id="' + arg.menuId + '"' + ' onclick="alert('
-                + arg.strFuncName + ")" + '"' + '>' + '&lt;label>' + arg.menuLabel
-                + '&lt;/label>&lt;/a>';
+        return '' + '&lt;a id="' + arg.menuId + '"' //
+                + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
+                + '&lt;label>' + arg.menuLabel + '&lt;/label>&lt;/a>';
     }
 
     // 下段表示幅指定用&lt;div>タグ編集
@@ -1387,22 +1394,48 @@ HJN.Graph.prototype.menuLoadConfig = function () { // menuId, fileName
     }
 };
 /**
- * メニュー機能：指定されたフィルタの条件を反映する
+ * メニュー機能：メニューで指定されたフィルタの条件で再描画する
  * 
  */
 HJN.Graph.prototype.menuFilterApply = function () { // #34
     "use strict";
-    // ToDo
-    HJN.init.FileReader(HJN.files);
+    if (HJN.files === undefined) {
+        // 自動生成データのグラフを表示しているとき
+        HJN.init.ChartShow(HJN.chart.eTatOriginal)
+    } else {
+        // ファイル指定のグラフを表示しているとき
+        HJN.init.FileReader(HJN.files);
+    }
 };
 /**
- * メニュー機能：フィルタ条件を初期値にする
+ * メニュー機能：フィルタ条件を初期値にし、再描画する
  * 
  */
 HJN.Graph.prototype.menuFilterClear = function () { // #34
     "use strict";
-    // ToDo
-    HJN.init.FileReader(HJN.files);
+    // メニュー画面おフィルタ条件に、初期値を設定する
+    setText("m.F_TIME_FROM", null);
+    setText("m.F_TIME_FROM", null);
+    setText("m.F_TIME_TO", null);
+    setText("m.F_TAT_FROM", 0);
+    setText("m.F_TAT_TO", null);
+    setSelector("m.F_TEXT_NON");
+    setText("m.F_TEXT_LEN", null);
+    setText("m.F_TEXT_POS", 1);
+    setText("m.F_TEXT_COL", 3);
+    setText("m.F_TEXT_REG", null);
+    // メニューで指定されたフィルタの条件で再描画する
+    HJN.Graph.prototype.menuFilterApply();
+
+    function setText(id, val) {
+        document.getElementById(id).value = val;
+        document.getElementById(id).onchange();
+    }
+    function setSelector(id) {
+        document.getElementById(id).checked = true;
+        document.getElementById(id).onchange();
+    }
+
 };
 /**
  * メニュー機能：canvas画像をファイルとしてダウンロードする
@@ -1620,13 +1653,13 @@ HJN.Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.Logger.html">Logger</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.Logger.html">Logger</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Sep 02 2017 21:21:56 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Sep 04 2017 01:41:09 GMT+0900 (東京 (標準時))
     <br>&copy 2017 Junichiroh Hirose
 </footer>
 

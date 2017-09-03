@@ -109,21 +109,33 @@ HJN.init.ChartRegist = function(chartName){
 	HJN.init.DropField(dropFieldName+ "Detail");
 
 	// 初期表示データを自動生成する
-	var tatESeries = HJN.init.CreateSampleTatLog();	// arg0：生成データ数
-	
-	// グラフを初期表示する
-	// 上段
-	HJN.chart.update(HJN.chart.createSeries(tatESeries));
-	HJN.util.Logger.ShowLogText("上段表示", "elaps");		// 処理時間ログ出力
+	HJN.chart.eTatOriginal = HJN.init.CreateSampleTatLog();	// arg0：生成データ数
+	// データを表示する
+	HJN.init.ChartShow(HJN.chart.eTatOriginal);
+}
+/**
+ * HJN.init.ChartShow: 終了時刻とtatの配列をグラフ表示する
+ * 
+ * @param {ETAT}
+ *            HJN.chart.eTatOriginal 終了時刻とtatを含む配列
+ */
+HJN.init.ChartShow = function(eTatOriginal){
+    // フィルタしたeTatを取得する #34
+    var eTat = HJN.chart.fileReader.createFilter().filter(eTatOriginal);
+    
+    // グラフを初期表示する
+    // 上段
+    HJN.chart.update(HJN.chart.createSeries(eTat));
+    HJN.util.Logger.ShowLogText("上段表示", "elaps");       // 処理時間ログ出力
 
-	// 下段(非同期）
-	HJN.util.setZeroTimeout( function(){
-		HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
-		HJN.chart.showBalloon();	// 上段のBalloonを描画する
-		HJN.util.Logger.ShowLogText("下段表示", "elaps");
-		HJN.util.Logger.ShowLogText("<mark>サンプルを表示しました</mark>", "msg");
-	});
-};
+    // 下段(非同期）
+    HJN.util.setZeroTimeout( function(){
+        HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
+        HJN.chart.showBalloon();    // 上段のBalloonを描画する
+        HJN.util.Logger.ShowLogText("下段表示", "elaps");
+        HJN.util.Logger.ShowLogText("<mark>サンプルを表示しました</mark>", "msg");
+    });
+}
 
 /**
  * HJN.init.DropField: HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
@@ -186,9 +198,11 @@ HJN.init.FileReader = function (files){  // #15
 	        		
 	        		/** 上段用データの展開とグラフ描画 * */
 	        		// CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
-	        		var tatESeries = getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx] );
+	        		HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx] );
+	        		// フィルタしたeTatを取得する #34
+	        		var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
 	        		// 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
-	        		HJN.chart.update(HJN.chart.createSeries(tatESeries));
+	        		HJN.chart.update(HJN.chart.createSeries(eTat)); 
 	    			HJN.util.Logger.ShowLogText("上段表示", "elaps");
 
 	        		// 下段用データの展開とグラフ描画（非同期処理）
@@ -232,7 +246,7 @@ HJN.init.FileReader = function (files){  // #15
 	    return fileInfo;
 	}
 
-   // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置,
+    // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置,
     // len:レコード長},...]に展開する
 	function getTatLogArray(file) { // arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
 	    HJN.util.Logger.ShowLogText("----- read file -----------------------------","calc");
@@ -302,11 +316,11 @@ HJN.init.ChartRegistDetail = function(cTps){
 /**
  * 詳細グラフ用機能： sliderRangeで指定された範囲のeTatを返却する
  * 
- * @return {ETAT 詳細グラフ用eTat
+ * @return {ETAT} 詳細グラフ用eTat
  */
 HJN.init.GetSliderRangedEtat = function() {
 	"use strict";
-	// 指定時刻（ｄｔ ± range）を得る
+	// 指定時刻（ｄｔ ± range）を取得する
 	var rangeTagPlus  = document.getElementById("DetailRangePlus"),
 		rangeTagMinus = document.getElementById("DetailRangeMinus"),
         rangeTagUnit  = document.getElementById("DetailRangeUnit"), // #48
@@ -600,12 +614,67 @@ HJN.Plot.ShowBalloon =function(){
 
 
 /**
- * 日時(JS Date)から、指定フォーマットの文字列を得る
+ * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
+ * 
+ * @param {String}
+ *            str
+ * @param {Object|String}
+ *            [conf={YYYY: 0, MM: 5, DD: 8, hh: 11, mm: 14, ss: 17, ppp: 20}]
+ *            Object指定のとき：年月日時分秒ミリ秒の先頭位置を示す構造体オブジェクト<br>
+ *            String指定とき：フォーマットを示す文字列<br>
+ *            デフォルト値は、"YYYY/MM/DD hh:mm:ss.ppp"相当
+ * @return {Number} timeNum 日時（１ミリ秒を１とする数値、エラーのときNumber.NaN）
+ */
+HJN.util.S2D = function(str, conf){ // #34
+    "use strict";
+    if(!str) return Number.NaN;
+    
+    // confが"Object"のとき、指定された構造体オブジェクトの条件でパースする（最も高速な処理）
+    if(typeof(conf) === "Object"){
+        return parse(str, conf);
+    }
+    // confが"String"のとき、指定された文字列フォーマットから構造体オブジェクトを作成し、パースする（準高速処理）
+    else if(typeof(conf) === "string"){
+        var config = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
+                YYYY: conf.indexOf("YYYY"),
+                MM: conf.indexOf("MM"),
+                DD: conf.indexOf("DD"),
+                hh: conf.indexOf("hh"),
+                mm: conf.indexOf("mm"),
+                ss: conf.indexOf("ss"),
+                ppp: conf.indexOf("p")};
+        return parse(str, config);
+    }
+    // confが指定されていないとき、デフォルト条件でパースする（汎用処理）
+    else {
+        // デフォルトフォーマット："YYYY/MM/DD hh:mm:dd.ss.ppp" #42
+        var config = {YYYY: 0, MM: 5, DD: 8, hh: 11, mm: 14, ss: 17, ppp: 20};
+        return parse(str, config);
+    }
+
+    // 内部関数：構造体オブジェクトで指定された条件でパースする
+    function parse(str, conf){
+        var y   = (0 <= conf.YYYY) ? parseInt( str.substr( conf.YYYY, 4), 10) : 1970,  // デフォルト1970年
+                m   = (0 <= conf.MM)   ? parseInt( str.substr( conf.MM, 2), 10) - 1 : 0,   // デフォルト1月
+                // 1970/1/1だと時差でマイナスになることがあるので日付のデフォルトは2日
+                d   = (0 <= conf.DD)   ? parseInt( str.substr( conf.DD, 2), 10) : 2,
+                h   = (0 <= conf.hh)   ? parseInt( str.substr( conf.hh, 2), 10) : 0,
+                min = (0 <= conf.mm)   ? parseInt( str.substr( conf.mm, 2), 10) : 0,
+                sec = (0 <= conf.ss)   ? parseInt( str.substr( conf.ss, 2), 10) : 0,
+                // ミリ秒以下を指定すると丸め誤差が生じるため、秒以下のミリ秒は個別に加算
+                p   = (0 <= conf.ppp)  ? ("0." + str.substr( conf.ppp).match(/[0-9]*/)[0]) * 1000.0 : 0;
+        return +(new Date( y, m, d, h, min, sec )) + p;  // #14
+    }
+};
+
+
+/**
+ * 日時(JS Date)から、指定フォーマットの文字列を取得する
  * 
  * @param {Date}
  *            dt Date型（内部実装はミリ秒単位）
- * @param {Stromg}
- *            str フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
+ * @param {String}
+ *            str フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
  * @return {String} str 編集後文字列
  */
 HJN.util.DateToString=function() {
@@ -624,20 +693,21 @@ HJN.util.DateToString=function() {
     return str;
 };
 /**
- * 日時(ミリ秒：Ｘ軸用）から、指定フォーマットの文字列を得る
+ * 日時(ミリ秒：Ｘ軸用）から、指定フォーマットの文字列を取得する
  * 
  * @param {Number|Date}
  *            ds 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
- * @param {Stromg}
- *            str フォーマット ｙｙｙｙ-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
+ * @param {String}
+ *            str フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
  * @return {String} str 編集後文字列
  */
 HJN.util.D2S = function(ds, str){
     "use strict";
     return HJN.util.DateToString(new Date(ds), str);
 };
+
 /**
- * 数値(Ｙ軸用）から、誤差のない表示用文字列を得る<br>
+ * 数値(Ｙ軸用）から、誤差のない表示用文字列を取得する<br>
  * （hover、legendなどでY軸の値を使うときに使用する）
  * 
  * @param {Number|Date}
@@ -1591,8 +1661,7 @@ HJN.util.FileReader = (function() {
 					_keyConf.onFunc = onFunc || null;	// onイベント時に実行する処理（メニューのa属性などで利用）
 					return key;
 				};
-		var v = function(key, fieldId) {	// fieldIdの値を返却値とする(デフォルト： key +
-											// ".v")
+		var v = function(key, fieldId) { // fieldIdの値を返却値とする(デフォルト： key+".v")
 					var _keyConf = proto.__keyConfig[key] = {};
 					_keyConf.value = key;			// getValueByKeyの返却値（デフォルト：keyと同じ文字列）
 					_keyConf.getValue = function () {
@@ -1603,8 +1672,8 @@ HJN.util.FileReader = (function() {
 
 				
 		// 名称と挙動の定義
-		this._configFileFormat = HJN.util.Config("m")	// File Format
-                                                        // Config設定画面定義
+		this._configFileFormat = HJN.util.Config("m")	
+		    // File Format Config設定画面定義
 			.n("<br>")
 			.label(null,"----- Configration of file format --------").n()
 			.n("<br>")
@@ -1658,8 +1727,8 @@ HJN.util.FileReader = (function() {
 				.radio(def("ENDIAN_LIL", true), null, "little", true)
 				.radio(def("ENDIAN_BIG", false), null, "big")
 			;
-
-		this._configFilter = HJN.util.Config("f")	// Filter Config設定画面定義
+		// Filter Config設定画面定義
+		this._configFilter = HJN.util.Config("m")
 			.label(null,"----- Configration of data filter --------").n()
 			.n("<br>")
 			.name("F_TIME").label(null, "[Date filter]").n()
@@ -1669,9 +1738,9 @@ HJN.util.FileReader = (function() {
 				.text("F_TIME_TO", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
 			.n("<br>")
 			.name("F_TAT").label(null,"[Turnaround time(TAT) filter]").n()
-			.label(null,"Include If TAT is between").n()
-				.number("F_TAT_FROM", null, null, "0", 'style="width:40px;"')
-				.number("F_TAT_TO", "and", null, null, 'style="width:40px;"').n()
+			.label(null,"Include if TAT is between").n()
+				.number("F_TAT_FROM", null, null, "0", 'style="width:80px;"')
+				.number("F_TAT_TO", "and", null, null, 'style="width:80px;"').n()
 			.n("<br>")
 			.name("F_TEXT").label(null,"[Text filter]")
 				.radio("F_TEXT_NON", null, "Don't use.", true).n()
@@ -1679,7 +1748,7 @@ HJN.util.FileReader = (function() {
 				.radio("F_TEXT_EXCLUDE", null, "Exclude ").n()
 				.number("F_TEXT_LEN", "if ", " bytes", null, 'style="width:40px;"')
 				.number("F_TEXT_POS", "from the ", "th byte", "1", 'style="width:40px;"').n()
-				.number("F_TEXT_COL", "from head of the", "th column of CSV", "2", 'style="width:40px;"').n()
+				.number("F_TEXT_COL", "from head of the", "th column of CSV", "3", 'style="width:40px;"').n()
 				.text("F_TEXT_REG", "match the regular expression", null, null, 'size="7" placeholder=".*"').n()
 			.n("<br>")
 			;
@@ -1769,6 +1838,92 @@ HJN.util.FileReader = (function() {
 		return new GetterOfLine(file);
 	};
 	
+	
+    /**
+     * eTatのフィルター
+     * 
+     * @function
+     * @memberof HJN.util.FileReader
+     */
+    proto.createFilter = function() { // #34
+       /**
+         * フィルターを取得する
+         * 
+         * @class
+         * @name Filter
+         * @memberof HJN.util.FileReader
+         * @classdesc ファクトリのFileReaderが保持するフィルタ条件を用いるフィルターを取得する
+         */
+        function Filter(){ /* constructor */
+                if(!(this instanceof Filter)) return new Filter();
+
+                var c = HJN.chart.fileReader;
+                
+                this.confF_TIME_FROM = HJN.util.S2D(c.getValue("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
+                this.confF_TIME_TO   = HJN.util.S2D(c.getValue("F_TIME_TO"));      // 時刻(X)の最大値フィルター
+                this.confF_TIME = (isNaN(this.confF_TIME_FROM) && isNaN(this.confF_TIME_TO))
+                                ? false : true; // 時刻(x）フィルター指定の有無
+                
+                this.confF_TAT_FROM = c.getValue("F_TAT_FROM") || 0; // 時間(Y)の最小値フィルター
+                this.confF_TAT_TO   = c.getValue("F_TAT_TO") || Number.MAX_VALUE; // 時間(Y)の最大値フィルター
+                this.confF_TAT = (this.confF_TAT_FROM === 0 && this.confF_TAT_TO === Number.MAX_VALUE)
+                                ? false : true; // 時間(ｙ）フィルター指定の有無
+
+                this.confF_TEXT = c.getValue("F_TEXT") || null; // テキストフィルタの条件（使用しない、Include,Exclude
+                this.confF_TEXT_LEN = c.getValue("F_TEXT_LEN") || null;    // フィルタテキストのバイト長
+                this.confF_TEXT_POS = c.getValue("F_TEXT_POS") || 0;       // フィルタテキストの先頭バイト位置
+                this.confF_TEXT_COL = (c.getValue("F_TEXT_COL") || 3) - 1; // フィルタテキストのカラム位置（先頭：０）
+                this.confF_TEXT_REG = c.getValue("F_TEXT_REG") || "*.";    // フィルタテキストの正規表現
+                
+                this.confF_IS = (this.confF_TIME === true || this.confF_TAT === true || this.confF_TEXT != "F_TEXT_NON")
+                              ? true : false; // フィルタ指定の有無
+        }
+        
+        // class method
+        // private
+        /**
+         * フィルター条件で判定する
+         * 
+         * @function
+         * @memberof HJN.util.FileReader.Filter
+         */
+        Filter.prototype._isIn = function (e) {
+            // フィルタ指定が無いときフィルタしない（最速判定）
+            if (this.confF_IS === false) return true;
+            // 時刻（ｘ）フィルタの判定 （conf指定なしのとき NaNとの比較となりfalseとなる）
+            if (e.x < this.confF_TIME_FROM || this.confF_TIME_TO < e.x ) {
+                return false;
+            }
+            // 時間（ｙ）フィルタの判定
+            if (e.y < this.confF_TAT_FROM || this.confF_TAT_TO < e.y){
+                return false;
+            }
+            // テキストフィルタの判定
+            if (this.confF_TEXT === null || e.pos === undefined) {
+                return true; // フィルタ指定なし or テキスト読み込みでないとき（自動生成データのとき）
+            } else {
+                // TODO テキストフィルタ判定処理の実装：
+                // ファイルの参照を取り直す必要があるのでFilterはGetterOfXY内に戻した方がいい
+            }
+            return true;
+        };
+        
+        // public
+        /**
+         * eTatをフィルターする
+         * 
+         * @function
+         * @memberof HJN.util.FileReader.Filter
+         */
+        Filter.prototype.filter = function (eTat) {
+            if (!eTat) return [];
+            return eTat.filter(this._isIn, this);
+        };
+        
+        return new Filter();
+    };
+
+
     /**
      * 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
      * 
@@ -1794,9 +1949,8 @@ HJN.util.FileReader = (function() {
 				this.confTIME_POS = (c.getValue("TIME_POS") || 1) - 1;	// 時刻(X)の先頭バイト位置
 				this.confTIME_LEN = (c.getValue("TIME_LEN") || 0);		// 時刻(X)のバイト長
 				this.confTIME_FORM = c.getValue("TIME_FORM");			// 時刻(X)の文字フォーマット指定
-				this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp");	// 時刻(X)の
+				this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp");	// 時刻(X)のYMDフォーマット
                                                                                             // #42
-																							// YMDフォーマット
 				this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
 						YYYY: this.confTIME_YMD.indexOf("YYYY"),
 						MM: this.confTIME_YMD.indexOf("MM"),
@@ -1815,51 +1969,23 @@ HJN.util.FileReader = (function() {
 				this.confTAT_LEN = (c.getValue("TAT_LEN") || 0);		// 時間(Y)のバイト長
 				this.confTAT_FORM = c.getValue("TAT_FORM");				// 時間(Y)のフォーマット指定
 				this.confTAT_UNIT = c.getValue("TAT_UNIT") || 1;		// 時間(Y)の数値単位(1/1000)
-				this.confENDIAN =  c.getValue("ENDIAN"); // little
-															// endian:
-															// true、 big
-															// endian:
-															// false
+				this.confENDIAN =  c.getValue("ENDIAN");    // リトルエンディアンはtrue、ビッグエンディアンはfalse
 				this.isLittle = (function(){
-						var buf = new ArrayBuffer(4);				// long用に4バイト取得する
-						new DataView(buf).setUint32(0, 1, true);	// true:
-																	// bufに、リトルエンディアン指定で1を書き込む
-						return (new Uint32Array(buf)[0] === 1);		// プラットフォームのエンディアンを使用するUint32Array
-																	// と比較する
+				        // long用に4バイト取得する
+						var buf = new ArrayBuffer(4);				
+						// true:bufに、リトルエンディアン指定で1を書き込む
+						new DataView(buf).setUint32(0, 1, true);
+						// プラットフォームのエンディアンを使用するUint32Arrayと比較する
+						return (new Uint32Array(buf)[0] === 1);		
 					}());
 				
 				this.dateAndValue = {date: 0, value: 0, isError: false };
 		}
 		
 		// class method
-	    /**
-         * 日時をでパースして数値（ミリ秒）を取得する
-         * 
-         * @function
-         * @memberof HJN.util.FileReader.GetterOfXY
-         */
-		GetterOfXY.parseDate = function (str, conf){
-			if(!str) {console.log("GetterOfXY.parseDate:no data cannot parse"); return 0; }
-			conf = conf || {YYYY: 0, MM: 5, DD: 8, hh: 11, mm: 14, ss: 17, ppp: 20};  // YYYY/MM/DD
-                                                                                        // #42
-																						// hh:mm:dd.ss.ppp
-			var y   = conf.YYYY < 0 ? 1970 : parseInt( str.substr( conf.YYYY, 4), 10),	// デフォルト1970年
-				m   = conf.MM   < 0 ? 0 : parseInt( str.substr( conf.MM, 2), 10) - 1,	// デフォルト1月
-				d   = conf.DD   < 0 ? 2				// 1970/1/1
-                                                    // だと時差でマイナスになることがあるのでデフォルトは2日
-						: parseInt( str.substr( conf.DD, 2), 10),
-				h   = conf.hh   < 0 ? 0 : parseInt( str.substr( conf.hh, 2), 10),
-				min = conf.mm   < 0 ? 0 : parseInt( str.substr( conf.mm, 2), 10),
-				sec = conf.ss   < 0 ? 0 : parseInt( str.substr( conf.ss, 2), 10),
-				p   = conf.ppp  < 0 ? 0 
-						: ("0." + str.substr( conf.ppp).match(/[0-9]*/)[0]) * 1000.0, // 秒以下のミリ秒
-				// ミリ秒以下を指定すると丸め誤差が生じるため、個別に加算
-				dateNum = +(new Date( y, m, d, h, min, sec )) + p;	// #14
-			return dateNum;
-		};
         /**
-         * 数字をパースして数値（ミリ秒）を取得する 例："-1:1:1.2 -> -3661200 ms =
-         * -1*(3600+60+1+0.2)*1000
+         * 数字をパースして数値（ミリ秒）を取得する<br>
+         * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
          * 
          * @function
          * @memberof HJN.util.FileReader.GetterOfXY
@@ -1883,14 +2009,14 @@ HJN.util.FileReader = (function() {
          * @private
          */
 		GetterOfXY.prototype._parseLong = function (arr){
-			if (4 <= arr.length ) {	// Long(4byte)以上のときLongとして処理する
-				// bufの先頭4byteを、指定バイトオーダ(endian)で、符号無32bit int(unsigned
-				// long)として参照する
+			if (4 <= arr.length ) {	// Long(4byte)以上のときunsigned longとして処理する
+				// bufの先頭4byteを、指定バイトオーダ(endian)で、符号無32bit intとして参照
 				return (new DataView(arr.buffer, 0 , 4)).getUint32(0, this.confENDIAN);
-			} else {	// Long(4バイト）より短いとき、Byte単位に処理する
-				if (this.confENDIAN) {	// little endianのとき
+			} else {
+			    // Long(4バイト）より短いとき、Byte単位に処理する
+				if (this.confENDIAN) { // little endianのとき
 					return arr.reduceRight(function(a, b){ return a*256 + b; });
-				} else {	// big endianのとき
+				} else {	           // big endianのとき
 					return arr.reduce(function(a, b){ return a*256 + b; });
 				}
 			}
@@ -1924,7 +2050,7 @@ HJN.util.FileReader = (function() {
 					// フィールドをパースする
 					if (this.isYMD){	// 年月日時分秒の文字列のとき
 						strX = String.fromCharCode.apply(null,arrX);
-						x = GetterOfXY.parseDate(strX, this.paseDateConf);
+						x = HJN.util.S2D(strX, this.paseDateConf);
 					} else if (this.confTIME_FORM === "TIME_FORM_TEXT"){	// テキスト数字のユリウス経過時間のとき
 						strX = String.fromCharCode.apply(null,arrX);
 						x = GetterOfXY.parseNumber(strX);
@@ -1941,11 +2067,12 @@ HJN.util.FileReader = (function() {
 					var arrY = (0 < this.confTAT_LEN) ? line.array.slice(posY, posY + this.confTAT_LEN)
 							: line.array.slice(posY, nextPos);
 					// フィールドをパースする
-					if (this.confTAT_FORM === "TAT_FORM_TEXT"){	// テキスト数字のユリウス経過時間のとき
+					if (this.confTAT_FORM === "TAT_FORM_TEXT"){
+					    // テキスト数字によるユリウス経過時間のとき
 						var strY = String.fromCharCode.apply(null,arrY);
 						y = GetterOfXY.parseNumber(strY);
-					} else{	// TAT_FORM_TEXT === "TAT_FORM_LONG" //
-							// longのユリウス経過時間のとき
+					} else{
+					    // TAT_FORM_TEXT === "TAT_FORM_LONG" 数値によるユリウス経過時間のとき
 						y = this._parseLong(arrY);
 					}
 					// 単位を補正する
@@ -2035,10 +2162,10 @@ HJN.util.FileReader = (function() {
 		}
 	};
 
-	
 	// new
 	return FileReader;
 }());
+
 
 
 /**
