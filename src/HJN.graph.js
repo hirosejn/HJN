@@ -1109,12 +1109,12 @@ HJN.Graph.prototype.addMenu = function () {
         funcName : g + ".menuOpenCsv",
         menuId : divMenuId + "_OpenCsv "
     }, menuSaveConfig = { // getATag
-        menuLabel : "save config(.json)",
+        menuLabel : "save format (.json)",
         funcName : g + ".menuSaveConfig",
         menuId : divMenuId + "_SaveCongig",
         fileName : "hjnconfig.json"
     }, menuLoadConfig = { // getATag
-        menuLabel : "load config(.json)",
+        menuLabel : "load format (.json)",
         funcName : g + ".menuLoadConfig",
         menuId : divMenuId + "_LoadCongig",
         fileName : "hjnconfig.json"
