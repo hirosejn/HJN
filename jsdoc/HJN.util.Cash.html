@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Cash</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: Cash</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>Cash</h2>
+        
+            <div class="class-description">キャッシュを保持させるオブジェクト</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line738">line 738</a>
+    </dir>
+    
+
+    <h4 class="name" id="Cash">
+    <span class="type-signature"></span>new Cash<span class="signature">(size<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		キャッシュ
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>size</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    10
+                
+                </span>
+            
+
+            <div class="description last">キャッシュ最大件数（未対応機能、設定は無視される）</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line765">line 765</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Cash._arg2arr">
+    <span class="type-signature">(static) </span>Cash._arg2arr<span class="signature">(args)</span><span class="type-signature"> &rarr; {Array}</span>
+    </h4>
+    
+    
+	<div class="description">
+		第一引数のargumentsを配列に変換する<br>（注：引数が１つ以上あることを前提）
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">引数一覧（arguments）</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Array</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    引数の配列
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line778">line 778</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Cash._getKey">
+    <span class="type-signature">(static) </span>Cash._getKey<span class="signature">(args)</span><span class="type-signature"> &rarr; {String}</span>
+    </h4>
+    
+    
+	<div class="description">
+		cash判定Keyを取得する<br>（注：引数を'.'でつないだ文字列をkeyとするので、関数名長の上限を超える大きな配列は不可）
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">引数一覧（argumentsオブジェクト）</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    キャッシュキー用の文字列
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line796">line 796</a>
+    </dir>
+    
+
+    <h4 class="name" id=".proto.getCash">
+    <span class="type-signature">(static) </span>proto.getCash<span class="signature">(arguments)</span><span class="type-signature"> &rarr; {Number|undefined}</span>
+    </h4>
+    
+    
+	<div class="description">
+		cashオブジェクトを、cashが無いときはundefinedを返却する<br>cashヒットした場合、cashの使用回数をカウントアップする
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>arguments</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">引数からキー文字列を定める</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    キャッシュデータ（デーがが無い場合は undefined)
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">Graph</a></li><li><a href="HJN.util.binarySearch.html">binarySearch</a></li><li><a href="HJN.util.Cash.html">Cash</a></li><li><a href="HJN.util.Config.html">Config</a></li><li><a href="HJN.util.FileReader.html">FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">GetterOfXY</a></li><li><a href="HJN.util.Logger.html">Logger</a></li><li><a href="HJN.util.MappedArray.html">MappedArray</a></li><li><a href="HJN.util.MappedETat.html">MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">init</a></li><li><a href="HJN.Plot.html">Plot</a></li><li><a href="HJN.util.html">util</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Sep 09 2017 22:35:10 GMT+0900 (東京 (標準時))
+    <br>&copy 2017 Junichiroh Hirose
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

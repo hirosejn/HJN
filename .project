@@ -3,6 +3,7 @@
 	<name>HJN</name>
 	<comment></comment>
 	<projects>
+		<project>dygraphs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -1,0 +1,16 @@
+{
+    "source": {
+        "include": ["W:\\JavaScript\\HJNkashima\\src"]
+    },
+    "opts": {
+        "template": "W:\\JavaScript\\jsdoc3\\jsdoc3-jsdoc-dd905a2\\templates\\default_HJNcustom",
+        "destination": "\\Users\\A\\Google ドライブ\\JavaScript\\HJNkashima\\jsdoc",
+        "recurese": true,
+        "private": false
+    },
+    "templates": {
+        "default": {
+            "useLongnameInNav": true
+        }
+    }
+}
