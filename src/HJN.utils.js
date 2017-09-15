@@ -1735,7 +1735,11 @@ HJN.util.FileReader = (function() {
 			;
 		// Filter Config設定画面定義
 		this._configFilter = HJN.util.Config("m")
-			.label(null,"----- Data filter condition--------").n()
+        .name("F_SYNC").label(null,"Sync") // #50
+            .radio("F_SYNC_UPPER", null, "Upper", true)
+            .radio("F_SYNC_DETAIL", null, "Detail")
+            .radio("F_ASYNC", null, "Async").n()
+		.label(null,"----- Data filter condition--------").n()
 			.n("<br>")
 			.name("F_TIME").label(null, "[Date filter]").n()
 			.label(null,"Include if end time is between").n()

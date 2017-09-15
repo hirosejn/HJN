@@ -808,6 +808,7 @@ HJN.Graph.prototype.update = function (seriesSet) {
             annotationClickHandler : annotationClickHandler,
             annotationDblClickHandler : annotationDblClickHandler,
             // clickCallback: clickCallback,
+            drawCallback : drawCallback, // #50
             highlightSeriesOpts : {
             // strokeWidth: 3,
             // strokeBorderWidth: 1,
@@ -991,6 +992,29 @@ HJN.Graph.prototype.update = function (seriesSet) {
 
     // グラフをクリックしたときの処理(内部関数宣言）
     // function clickCallback(e, x, pts) {}
+
+    // グラフを再描画（初期表示時、ZOOM時含む）したとき処理(内部関数宣言） #50
+    function drawCallback(g, is_initial) {
+        // Filterメニューで指定されている F_SYNC の状態を取得する
+        var syncMode = HJN.chartD.fileReader.getValueByKey("F_SYNC");
+        // "F_SYNC_UPPER"かつ上段グラフ もしくは、"F_SYNC_DETAIL"かつ下段グラフのとき処理する
+        if ((syncMode === "F_SYNC_UPPER" && g.HJN === HJN.chart)
+                || (syncMode === "F_SYNC_DETAIL" && g.HJN === HJN.chartD)) {
+            // ｘ軸の幅をFilterメニューフェールドに反映する
+            setText("m.F_TIME_FROM",
+                    HJN.util.D2S(g.xAxisRange()[0], "yyyy/MM/dd hh:mm:ss.ppp"));
+            setText("m.F_TIME_TO", 
+                    HJN.util.D2S(g.xAxisRange()[1], "yyyy/MM/dd hh:mm:ss.ppp"));
+            // ｙ軸(右)の幅をFilterメニューフェールドに反映する
+            setText("m.F_TAT_FROM", +(g.yAxisRange(1)[0].toPrecision(4)));
+            setText("m.F_TAT_TO"  , +(g.yAxisRange(1)[1].toPrecision(4)));
+        }
+
+        function setText(id, val) {
+            document.getElementById(id).value = val;
+            document.getElementById(id).onchange();
+        }
+    }
 };
 
 /**
