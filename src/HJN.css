@@ -73,7 +73,7 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 .hjnMenuLv1 { position:rerative; margin: 0 10px; }
 .hjnMenuLv1 > input { display: none;}
 .hjnMenuLv1 .legend > input { display: inline; cursor: pointer; }
-.hjnMenuLv1 .legend {cursor: pointer; display:inline-block; width:100%; padding: 8px ; }
+.hjnMenuLv1 .legend {cursor: pointer; display:inline-block; width:100%; padding: 8px 0 8px 8px ; }
 
 .hjnMenuLv1 > label::after { position: absolute; content: ""; border-style: solid;
 	border-color: #888 transparent transparent transparent;
@@ -82,19 +82,30 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 
 .hjnMenuLv1 > label, .hjnMenuLv1 > a { display: block; cursor: pointer;
 	padding: 10px; border-bottom: 1px solid #fff; background: #eee; }
-.hjnMenuLv1 > input:checked ~ .hjnMenuLv2 { height: auto; padding: 10px;  }
-.hjnMenuLv1 > label:hover, .hjnMenuLv1 a:hover { background: rgba(0,0,0,0.2); }
+.hjnMenuLv1 > label:hover,  .hjnMenuLv1 a:hover { background: rgba(0,0,0,0.2); }
+.hjnMenuLv1 > label:active, .hjnMenuLv1 a:active { background: #999; }
+.hjnMenuLv1 > input:checked ~ .hjnMenuLv2 { height: auto; padding: 10px; }
 
-
- /* 詳細メニューリスト */
+/* 詳細メニューリスト  ボタン */
 .hjnMenuLv2 { transition: 0.2s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
-.hjnMenuLv2 li a { position: relative; display: block; overflow: hidden; padding: 8px 22px;
-	text-decoration: none; color: #000; border: groove #fff;}
-.hjnMenuLv2 li a label { display: block; width: 198px; cursor: pointer; }
-.hjnMenuLv2 > li input[type="file"] { display: none; } /* File Open用 */
-.hjnMenuLv2 ol { display: block; padding-left: 5px; } /* CSV Config用 */
-.hjnMenuLv2 ol input, .hjnMenuLv2 ol label { cursor: pointer; height: 12px; }
-.hjnMenuLv2 li:active { background: #999 ; }
+.hjnMenuLv2 li a, .hjnMenuLv2 ol a { position: relative; display: block; overflow: hidden; 
+	text-decoration: none; color: #000; border: outset #fff; cursor: pointer; border-radius: 14px; }
+.hjnMenuLv2 li a:active, .hjnMenuLv2 ol a:active { background: #999; border: inset #fff;}
+.hjnMenuLv2 li label, .hjnMenuLv2 ol label { cursor: pointer; border-radius: 14px; }
+.hjnMenuLv2 li a label, .hjnMenuLv2 ol a label { display: block; width: 198px; padding: 8px 22px;}
+.hjnMenuLv2 li a { padding: 8px 22px; }
+
+.hjnMenuLv2 > ol input[type="file"] { display: none; } /* File Open用 */
+/* 詳細メニューリスト  文字 */
+.hjnMenuLv2 ol { display: block; padding-left: 5px; margin: 2px 0; }
+.hjnMenuLv2 ol label { height: 12px; }
+.hjnMenuLv2 ol input { height: 12px; text-align: right; border-radius: 5px; }
+.hjnMenuLv2 ol input[type="radio"],        .hjnMenuLv2 ol .hjnLabel4Input, .hjnMenuLv2 select  { cursor: pointer; border-radius: 5px; }
+.hjnMenuLv2 ol input[type="radio"]:hover,  .hjnMenuLv2 ol .hjnLabel4Input:hover { background: rgba(0,0,0,0.2); }
+.hjnMenuLv2 ol input[type="radio"]:active, .hjnMenuLv2 ol .hjnLabel4Input:active { background: #999; }
+
+.hjnMenuLv2 ol .hjnLabel4Input { display: inline-block; position: relative; padding-left: 1em; }
+.hjnMenuLv2 ol input[type="radio"] { position: absolute; top: 0; bottom: 0; left: 0; margin: auto; }
 
 /* dygraph用設定 */
 .item.active{ background: rgba(0,0,0,0.2) !important;

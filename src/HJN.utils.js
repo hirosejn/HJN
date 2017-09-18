@@ -1453,6 +1453,7 @@ HJN.util.Config = (function() { // #24
 		this._html = this._ols;	// config設定画面のHtml
 		this._nameHtml = '';	// HTMLタグの name属性指定
 		this._name = '';		// radioのConfig.get用
+		this._onFunctions = {}; // onイベント時に呼び出す関数の設定用 #51
 	}
 
 	/**
@@ -1464,6 +1465,10 @@ HJN.util.Config = (function() { // #24
 	Config.on = function(t) {
 		if (t.type === "radio") {			// radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
 			this.prototype.__config[t.name] = t.id.substr(t.id.indexOf(".") + 1);
+			// on呼出し関数が登録されているとき、登録関数を呼び出す #51
+			if(typeof(HJN.chart.fileReader._configFilter._onFunctions[t.id]) === "function"){ 
+			    HJN.chart.fileReader._configFilter._onFunctions[t.id](); // ToDo:Config("m")から関数を取得する
+			}
 		}else if (t.type === "number") {	// numberのとき、idに対する、value(入力値)を数値として登録
 			this.prototype.__config[t.id] = +t.value;
 		} else {							// textのとき、idに対する、value(入力値)を登録
@@ -1566,7 +1571,7 @@ HJN.util.Config = (function() { // #24
 						(key ? 'for="' + this._pre + key + '" ': '') +
 						(attribute || '') + '>' +
 						(str || '') +
-						'<label>\n';
+						'</label>\n'; // #51
 		return this;
 	};
     /**
@@ -1576,8 +1581,9 @@ HJN.util.Config = (function() { // #24
      * @memberof HJN.util.Config
      */
 	proto.labeledForm = function (key, type, typedAttribute,
-								pLabel, sLabel, val, attribute, check) {
-		this._html += '<label>' +
+								pLabel, sLabel, val, attribute, check, cssClass) {
+	    var classStr = (cssClass) ? ' class="' + cssClass + '"' : ''; // #51
+		this._html += '<label' + classStr + '>' + // #51
 					(pLabel ? pLabel : '') +
 					'<input type="' +type + '" ' +
 						(typedAttribute || '') + 
@@ -1589,7 +1595,7 @@ HJN.util.Config = (function() { // #24
 						(check ? ' checked="checked;"' : '') +
 					'>' +
 					(sLabel ? sLabel : '') +
-					'<label>\n';
+					'</label>\n'; // #51
 		// デフォルト指定があるとき configにデフォルト値を設定する
 		if (type === "radio" && check) {	// radioのとき、nameに対して、選択状態のkeyを登録
 			proto.__config[this._pre + this._name] = key;
@@ -1628,9 +1634,13 @@ HJN.util.Config = (function() { // #24
      * @function
      * @memberof HJN.util.Config
      */
-	proto.radio = function (key, pLabel, sLabel, check, attribute) {
+	proto.radio = function (key, pLabel, sLabel, check, attribute, func) {
 		proto.labeledForm.call(this, key, "radio", (check ? 'checked="checked;"' : ''),
-								pLabel, sLabel, "", attribute, check);
+								pLabel, sLabel, "", attribute, check, "hjnLabel4Input");
+		// 関数登録指定時、attributeを関数名として、指定関数を登録する #51
+		if (func){
+		    this._onFunctions[this._pre + key] = func;
+		}
 		return this;
 	};
 
@@ -1678,7 +1688,7 @@ HJN.util.FileReader = (function() {
 				
 		// 名称と挙動の定義
 		this._configFileFormat = HJN.util.Config("m")	
-		    // File Format Config設定画面定義
+		    // File Format Config設定画面定義 #51
 			.n("<br>")
 			.label(null,"----- File format definition --------").n()
 			.n("<br>")
@@ -1703,16 +1713,15 @@ HJN.util.FileReader = (function() {
 			.name("TIME_POS")
 				.number("TIME_POS", "Position(byte): from", null, "1", 'style="width:40px;"')
 				.number("TIME_LEN", "length", null, null, 'style="width:40px;"').n()
-			.name("TIME_FORM").label(null,"Format:")
-				.radio("TIME_FORM_YMD", null, null, true)
-					.text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
+			.name("TIME_FORM").label(null,"Format:").n()
+                .radio("TIME_FORM_YMD", "text", null, true)
+                    .text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
+                .radio("TIME_FORM_TEXT", "(num)", "text")
+                .radio("TIME_FORM_LONG", null, "long").n()
 				.nDown()
-				.radio("TIME_FORM_TEXT", "(num)", "text")
-				.radio("TIME_FORM_LONG", null, "long").n()
-
-				.name("TIME_UNIT").label(null, "Units of numbers:")
-					.radio(def("TIME_UNIT_MS", 1), null, "msec")
-					.radio(def("TIME_UNIT_SEC", 1000), null, "sec", true)
+                .name("TIME_UNIT").label(null, "Units of numbers:")
+                    .radio(def("TIME_UNIT_MS", 1), null, "msec")
+                    .radio(def("TIME_UNIT_SEC", 1000), null, "sec", true)
 				.nUp()
 			.n("<br>")
 			.name("TAT").label(null,"[Turnaround time(TAT) field]").n()
@@ -1720,25 +1729,28 @@ HJN.util.FileReader = (function() {
 			.name("TAT_POS")
 				.number("TAT_POS", "Position(byte): from", null, "1", 'style="width:40px;"')
 				.number("TAT_LEN", "length", null, null, 'style="width:40px;"').n()
-			.name("TAT_FORM").label(null,"Format: ")
-				.radio("TAT_FORM_TEXT", null, "text", true)
-				.radio("TAT_FORM_LONG", null, "long").n()
-                .nDown()
-				.name("TAT_UNIT").label(null, "Units of numbers:")
+			.name("TAT_UNIT").label(null, "Units of numbers:")
 					.radio(def("TAT_UNIT_MS", 1), null, "msec")
-					.radio(def("TAT_UNIT_SEC", 1000), null, "sec", true)
+					.radio(def("TAT_UNIT_SEC", 1000), null, "sec", true).n()
+            .name("TAT_FORM").label(null,"Format: ")
+                .radio("TAT_FORM_TEXT", null, "text", true)
+                .radio("TAT_FORM_LONG", null, "long").n()
+                .nDown()
+                .name("ENDIAN").label(null, "for long Endian: ")
+    				.radio(def("ENDIAN_LIL", true), null, "little", true)
+    				.radio(def("ENDIAN_BIG", false), null, "big")
 				.nUp()
-			.name("ENDIAN").label(null, "[endian(long field)]")
-				.radio(def("ENDIAN_LIL", true), null, "little", true)
-				.radio(def("ENDIAN_BIG", false), null, "big")
             .n("<br>")
 			;
-		// Filter Config設定画面定義
+		// Filter Config用関数定義(radio用） #51
+		var func_F_SYNC_UPPER = function(){ HJN.Graph.DrawCallback(HJN.chart.graph); },
+		    func_F_SYNC_DETAIL = function(){ HJN.Graph.DrawCallback(HJN.chartD.graph); };
+		// Filter Config設定画面定義 #51
 		this._configFilter = HJN.util.Config("m")
         .name("F_SYNC").label(null,"Sync") // #50
-            .radio("F_SYNC_UPPER", null, "Upper", true)
-            .radio("F_SYNC_DETAIL", null, "Detail")
-            .radio("F_ASYNC", null, "Async").n()
+            .radio("F_SYNC_UPPER", null, "Upper", false ,null, func_F_SYNC_UPPER) // #51
+            .radio("F_SYNC_DETAIL", null, "Detail", false, null, func_F_SYNC_DETAIL)
+            .radio("F_ASYNC", null, "Async", true).n()
 		.label(null,"----- Data filter condition--------").n()
 			.n("<br>")
 			.name("F_TIME").label(null, "[Date filter]").n()
