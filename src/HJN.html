@@ -2,51 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>tat log diver b0.9.09</title>
+<title>tat log diver b0.9.19</title>
 </head>
 
-<!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
 <body>
-	<nav>
-		<header>
-			<div class="statusbar">
-				<iframe id="fileInfo"></iframe>
-			</div>
-			<div class="hjnBurgerTray">
-				<input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize"
-					checked="checked" /> <label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>
-				<div class="hjnBurgerTitle">
-					<input id="hjnBoxPlaceOn" type="checkbox"
-						class="hjnBoxSwitch hjnResize" /> <label for="hjnBoxPlaceOn"
-						class="hjnCtrlBox"><span></span></label>
-					<p>
-						<a href="../jsdoc/index.html" target=”_hirosejnJSDoc3”>TAT log diver</a><BR>
-						<a href="https://github.com/hirosejn/" target=”_hirosejnGit”>&copy;2017 Junichiroh Hirose</a>
-					</p>
-				</div>
-				<div class="hjnBurgerWrap">
-					<div class="hjnAccordion">
-						<div id="chart_menu"></div>
-						<div id="chartDetail_menu"></div>
-						<div id="chartLabels"></div>
-					</div>
-				</div>
-			</div>
-		</header>
-	</nav>
-
-	<div id="hjn_chart">
-		<div id="chart"></div>
-		<div id="chartDetail"></div>
-		<fieldset>
-			<div id="lineViewer">logdata</div>
-		</fieldset>
-	</div>
+	<div id="hjn_chart"></div>
 </body>
-
-<footer>
-	<small></small>
-</footer>
 
 <script>
 window.addEventListener("DOMContentLoaded",function(eve){
@@ -57,6 +18,7 @@ window.addEventListener("DOMContentLoaded",function(eve){
 <script src="../libs/dygraph.min.js"></script>
 <script src="../libs/synchronizer.js"></script>
 <script src="./HJN.graph.js"></script>
+<script src="./HJN.graph-init.js"></script>
 <script src="./HJN.utils.js"></script>
 <link type="text/css" rel="stylesheet" href="./HJN.css">
 <link type="text/css" rel="stylesheet" href="../libs/dygraph.css">

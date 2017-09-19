@@ -1207,11 +1207,11 @@ HJN.Graph.prototype.addMenu = function () {
     }, menuHelpAbout = { // getAlertTag
         menuLabel : "about TAT log diver",
         menuId : divMenuId + "_HelpAbout",
-        strFuncName : "HJN.util.Copyright()"
+        strFuncName : "HJN.init.Copyright()"
     }, menuHowToUse = { // getAlertTag
         menuLabel : "How to use TAT log diver",
         menuId : divMenuId + "_HelpHowToUse",
-        strFuncName : "HJN.util.HowToUse()"
+        strFuncName : "HJN.init.HowToUse()"
     };
 
     // メニューを追加する
@@ -1219,38 +1219,32 @@ HJN.Graph.prototype.addMenu = function () {
     if (HJN.chart.chartId === this.chartId) { // 上段グラフ用機能のメニュー追加
         // File Menu
         accordion.innerHTML = '&lt;li class="hjnMenuLv1">'
-                + getAccordionTag(this, 0, "File") 
-                    + '&lt;ul class="hjnMenuLv2">'
-                    + getInputTag(menuOpenCsv)
-                    + this.fileReader.getConfigHtml("File") // #24
-                    + getATag(menuSaveConfig) + getATag(menuLoadConfig) 
-                    + '&lt;/ul>'
+                + getAccordionTag(this, 0, "File") + '&lt;ul class="hjnMenuLv2">'
+                + getInputTag(menuOpenCsv)
+                + this.fileReader.getConfigHtml("File") // #24
+                + getATag(menuSaveConfig) + getATag(menuLoadConfig) + '&lt;/ul>'
                 + '&lt;/li>';
         // Filter Menu #34
         accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Filter">'
                 + getAccordionTag(this, 1, "Filter")
-                    + '&lt;ul class="hjnMenuLv2">'
-                    + this.fileReader.getConfigHtml("Filter") // #24
-                    + getFuncTag(menuFilterApply) + getFuncTag(menuFilterClear)
-                    + '&lt;/ul>'
-                + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2">'
+                + this.fileReader.getConfigHtml("Filter") // #24
+                + getFuncTag(menuFilterApply) + getFuncTag(menuFilterClear)
+                + '&lt;/ul>' + '&lt;/li>';
         // View Menu
         accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_View">'
                 + getAccordionTag(this, 3, "View", true)
-                    + '&lt;ul class="hjnMenuLv2">' // 
-                        + '&lt;li>&lt;div id="' + this.chartIdName + '_legend">&lt;/div>&lt;/li>'
-                    + '&lt;/ul>' 
-                + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2">' // 
+                + '&lt;li>&lt;div id="' + this.chartIdName + '_legend">&lt;/div>&lt;/li>'
+                + '&lt;/ul>' + '&lt;/li>';
         // Download Menu
         accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(this, 2, "Download")
-                    + '&lt;ul class="hjnMenuLv2">' //
-                    + getATag(menuDownloadImg, "Upper ")
-                    + getATag(menuDownloadCsv, "Upper ")
-                    + getATag(menuDownloadLog, "Upper ")
-                    + getATag(menuDownloadConc, "Upper ") 
-                    + '&lt;/ul>' 
-                + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2">' //
+                + getATag(menuDownloadImg, "Upper ")
+                + getATag(menuDownloadCsv, "Upper ")
+                + getATag(menuDownloadLog, "Upper ")
+                + getATag(menuDownloadConc, "Upper ") + '&lt;/ul>' + '&lt;/li>';
         divMenu.appendChild(accordion);
 
         // File Open用 イベントリスナー登録
@@ -1279,21 +1273,17 @@ HJN.Graph.prototype.addMenu = function () {
         // "Bottom detail graph" Menu
         accordion.innerHTML = '&lt;li class="hjnMenuLv1">'
                 + getAccordionTag(this, 4, "Bottom detail graph", true)
-                    + '&lt;ul class="hjnMenuLv2">' //
-                        + '&lt;ol>&lt;div id="detailTimeRange">' 
-                        + getDetailTimeRangeTag()
-                        + '&lt;/div>&lt;/ol>' // #51
-                    + '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' //
-                    + '&lt;/ul>'
-                + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2">' //
+                + '&lt;ol>&lt;div id="detailTimeRange">' + getDetailTimeRangeTag()
+                + '&lt;/div>&lt;/ol>' // #51
+                + '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' //
+                + '&lt;/ul>' + '&lt;/li>';
         // Help Menu
         accordion.innerHTML += '&lt;li class="hjnMenuLv1">'
                 + getAccordionTag(this, 5, "Help")
-                    + '&lt;ul class="hjnMenuLv2" style="width: 100%;">' //
-                    + getAlertTag(menuHelpAbout)
-                    + getAlertTag(menuHowToUse)
-                    + '&lt;/ul>' 
-                + '&lt;/li>';
+                + '&lt;ul class="hjnMenuLv2" style="width: 100%;">' //
+                + getAlertTag(menuHelpAbout) + getAlertTag(menuHowToUse)
+                + '&lt;/ul>' + '&lt;/li>';
         divMenu.appendChild(accordion);
     }
     // アコーディオンラベル用&lt;input>&lt;label>タグ編集（内部関数宣言） #31
@@ -1303,37 +1293,38 @@ HJN.Graph.prototype.addMenu = function () {
         typeStr = isAccordion ? ' type="checkbox" name="accordion" '
                 : ' type="radio" name="accordion" ', //
         checkedStr = ' checked="checked" ';
-        return ''
-            + '&lt;input id="ac-'  + that.chartIdName + id + '"' + typeStr + (isChecked ? checkedStr : '') + '">' 
-            + '&lt;label for="ac-' + that.chartIdName + id + '">' + labelText + '&lt;/label>';
+        return '' + '&lt;input id="ac-' + that.chartIdName + id + '"' + typeStr
+                + (isChecked ? checkedStr : '') + '">' + '&lt;label for="ac-'
+                + that.chartIdName + id + '">' + labelText + '&lt;/label>';
     }
 
     // File Open用&lt;input>タグ編集（内部関数宣言）
     // '&lt;ol>&lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx"
     // multiple/>&lt;/label>&lt;/a>&lt;/ol>
     function getInputTag(arg) {
-        return '' 
-            + '&lt;ol>&lt;a>&lt;label>' + arg.menuLabel // #51
+        return '' + '&lt;ol>&lt;a>&lt;label class="hjnButton4Input">' + arg.menuLabel // #51
                 + '&lt;input type="file" id="' + arg.menuId + '"  multiple />'
-            + '&lt;/label>&lt;/a>&lt;/ol>';
+                + '&lt;/label>&lt;/a>&lt;/ol>';
     }
 
     // ダウンロード用&lt;A>タグ編集（内部関数宣言）
     // '&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;li/>'
     function getATag(arg, preLabel) {
         preLabel = preLabel || "";
-        return '' 
-            + '&lt;li>&lt;a id="' + arg.menuId + '" href="#" ' // class="menuBar" #51
+        return '' + '&lt;li>&lt;a id="' + arg.menuId + ' "'
+                + 'class="hjnButton4Input" href="#" ' // #51
                 + 'download="' + arg.fileName + '" ' //
-                + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '" + arg.fileName + "'" + ')" ' + '>'
-                + preLabel + arg.menuLabel + '&lt;/a>&lt;/li>';
+                + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '"
+                + arg.fileName + "'" + ')" ' + '>' + preLabel + arg.menuLabel
+                + '&lt;/a>&lt;/li>';
     }
 
     // グローバルメソッド呼出用&lt;A>タグ編集（内部関数宣言） #34
     // '&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;/li>'
     function getFuncTag(arg, preLabel) {
         preLabel = preLabel || "";
-        return '' + '&lt;li>&lt;a id="' + arg.menuId + '" href="#" ' // #51
+        return '' + '&lt;li>&lt;a id="' + arg.menuId + ' "'
+                + 'class="hjnButton4Input" href="#" ' // #51
                 + 'onclick="' + arg.funcName + '()">' //
                 + preLabel + arg.menuLabel + '&lt;/a>&lt;/li>';
     }
@@ -1341,7 +1332,8 @@ HJN.Graph.prototype.addMenu = function () {
     // Alert用&lt;A>タグ編集（内部関数宣言）
     // '&lt;a id="xxx" onclick=Alert("xxx")>Child Menu&lt;/a>'
     function getAlertTag(arg) {
-        return '' + '&lt;ol>&lt;a id="' + arg.menuId + '"' // #51
+        return '' + '&lt;ol>&lt;a id="' + arg.menuId + '"'
+                + 'class="hjnButton4Input" ' // #51
                 + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
                 + '&lt;label>' + arg.menuLabel + '&lt;/label>&lt;/a>&lt;/ol>';
     }
@@ -1358,7 +1350,7 @@ HJN.Graph.prototype.addMenu = function () {
                 + 'value="'
                 + initMinus
                 + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
-                + '&lt;select id="DetailRangeUnit" onchange="HJN.init.setDetailRange()">' // #48
+                + '&lt;select id="DetailRangeUnit" class="hjnLabel4Input" onchange="HJN.init.setDetailRange()">' // #48
                 + HJN.Graph.prototype.UNIT_RANGE.reduce(
                         function (prev, e, i, a) {
                             return prev + '&lt;option value="' + e.val + '">'
@@ -1695,8 +1687,8 @@ HJN.Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Sep 19 2017 00:46:23 GMT+0900 (東京 (標準時))
-    <br>&copy 2017 Junichiroh Hirose
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Sep 19 2017 19:03:14 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
 <script> prettyPrint(); </script>
