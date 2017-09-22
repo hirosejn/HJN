@@ -177,7 +177,7 @@ HJN.init.DropField = function (dropFieldName) {
 HJN.init.FileReader = function (files){  // #15
 	"use strict";
 	HJN.files = files;
-	HJN.filesIdx = 0;
+	HJN.filesIdx = -1;
 	for(var i = 0; i < files.length; i++){	// データを順番に取得する
 		try{
 			// ファイルを取得する
@@ -188,44 +188,9 @@ HJN.init.FileReader = function (files){  // #15
 							file.lastModifiedDate.toLocaleString() +"<BR>";
 			// ファイルの読み込みに成功したら、その内容をドロップエリアに追記して表示する
 			var reader = new FileReader();
-			reader.onloadend = function(evt) {
-		        if (evt.target.readyState === FileReader.DONE) { // DONE == 2
-		        	HJN.filesIdx++;
-		        	/** ファイルの先頭2行をログ表示する * */
-		        	console.log("HJN.filesIdx="  + HJN.filesIdx);
-
-		        	HJN.filesArrayBuffer[HJN.filesIdx] = evt.target.result;
-		        	textArray += topLines(				// 2行展開する
-		        						HJN.filesArrayBuffer[HJN.filesIdx], 2);
-	        		HJN.util.Logger.ShowLogTextInit();		// 情報表示 : 初期化
-	        		HJN.util.Logger.ShowLogText(textArray, "msg");	// 情報表示 ：
-                                                                    // ドロップファイル情報
-	        		
-	        		/** 上段用データの展開とグラフ描画 * */
-	        		// CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
-	        		HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx] );
-	        		// フィルタしたeTatを取得する #34
-	        		var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
-	        		// 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
-	        		HJN.chart.update(HJN.chart.createSeries(eTat)); 
-	    			HJN.util.Logger.ShowLogText("上段表示", "elaps");
-
-	        		// 下段用データの展開とグラフ描画（非同期処理）
-	        		HJN.Plot.List = [];
-	        		HJN.util.setZeroTimeout(function(){
-		        		// 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
-		        		HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
-	        			// 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
-		        		HJN.chart.showBalloon();
-		    			HJN.util.Logger.ShowLogText("下段表示", "elaps");
-		    			HJN.util.Logger.ShowLogText("<BR><mark>"+ HJN.files[0].name +
-		    					"["+ HJN.chart.eTat.length +
-		    					"]を表示しました</mark><BR>", "msg");
-	        		});
-		        }
-		    };
+			reader.onloadend = funcOnloadend; 
 			// ファイルにArrayBufferで参照を取得する（loadイベントを起こす）
-		    reader.readAsArrayBuffer(HJN.files[HJN.filesIdx]);
+		    reader.readAsArrayBuffer(HJN.files[i]);
 		}catch(e){
 			// 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
 			var msg = "The " + i + "th dropped object is not a file";
@@ -233,6 +198,53 @@ HJN.init.FileReader = function (files){  // #15
 			console.error("[%o]%o",msg,e );
 		}
 	}
+
+	// 内部関数：ファイルを読み込みｸﾞﾗﾌを表示する（指定ファイルを読み込んだ後に呼び出される）
+    function funcOnloadend(evt) {
+        if (evt.target.readyState === FileReader.DONE) { // DONE == 2
+            HJN.filesIdx++;
+            // ファイルの先頭2行をログ表示する
+            console.log("HJN.filesIdx="  + HJN.filesIdx + "/" + files.length);
+
+            HJN.filesArrayBuffer[HJN.filesIdx] = evt.target.result;
+            textArray += topLines(              // 2行展開する
+                                HJN.filesArrayBuffer[HJN.filesIdx], 2);
+            HJN.util.Logger.ShowLogTextInit();      // 情報表示 : 初期化
+            HJN.util.Logger.ShowLogText(textArray, "msg");  // 情報表示 ：
+                                                            // ドロップファイル情報
+            // 指定ファイルを読み込む #23
+            // CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
+            if (HJN.filesIdx === 0 && HJN.chart.fileReader.getValue("NEWFILE") === "NEWDATA"){
+                // 最初のファイルかつ新規モードのとき、新たに作成する
+                HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx]);
+            } else { // 2件目以降のファイルのとき、もしくは、追加モード"ADDDATA"のとき、追加する
+                HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx]));
+            }
+            
+            // 全ファイルを読み込んだらグラフを描画する #23
+            if (HJN.filesIdx === HJN.files.length - 1){
+                // フィルタしたeTatを取得する #34
+                var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
+
+                // 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
+                HJN.chart.update(HJN.chart.createSeries(eTat)); 
+                HJN.util.Logger.ShowLogText("上段表示", "elaps");
+
+                // 下段用データの展開とグラフ描画（非同期処理）
+                HJN.Plot.List = [];
+                HJN.util.setZeroTimeout(function(){
+                    // 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
+                    HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
+                    // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
+                    HJN.chart.showBalloon();
+                    HJN.util.Logger.ShowLogText("下段表示", "elaps");
+                    HJN.util.Logger.ShowLogText("<BR><mark>"+ HJN.files[0].name +
+                            "["+ HJN.chart.eTat.length +
+                            "]を表示しました</mark><BR>", "msg");
+                });
+            }
+        }
+    }
 
 	// 内部関数： 指定ファイルの先頭ｎ行を、改行文字<BR> のテキストに変換してリターンする
 	function topLines(file, n) {
@@ -266,8 +278,8 @@ HJN.init.FileReader = function (files){  // #15
 	            HJN.util.Logger.ByInterval(i++, line); // 一定時刻毎に進捗を出力する
 	            xy = getterOfXY.parse(line);
 	            if(!xy.isError){
-	                eTat.push( {x: xy.x, y: xy.y,
-	                    fileIdx: 0, pos: line.pos, len: line.array.byteLength, sTatIdx: 0} );
+	                eTat.push( {x: xy.x, y: xy.y, fileIdx: HJN.filesIdx, // #23
+	                    pos: line.pos, len: line.array.byteLength, sTatIdx: 0} );
 	            }
 	            line = getterOfLine.next(); // #24
 	        } catch (e) {   /* 改行だけレコードをスキップ */
@@ -660,7 +672,10 @@ HJN.util.FileReader = (function() {
 		// 名称と挙動の定義
 		this._configFileFormat = HJN.util.Config("m")	
 		    // File Format Config設定画面定義 #51
-			.n("<br>")
+            .name("NEWFILE").label(null,"wii be ") // #23
+                .radio("NEWDATA", null, "newly", true)
+                .radio("ADDDATA", null, "additionally")
+                .label(null,"registered").n()
 			.label(null,"----- File format definition --------").n()
 			.n("<br>")
 			.name("LF").label(null, "[Line feed code]").n()
