@@ -176,8 +176,6 @@ HJN.init.DropField = function (dropFieldName) {
  */
 HJN.init.FileReader = function (files){  // #15
 	"use strict";
-	HJN.files = files;
-	HJN.filesIdx = -1;
 	for(var i = 0; i < files.length; i++){	// データを順番に取得する
 		try{
 			// ファイルを取得する
@@ -188,9 +186,9 @@ HJN.init.FileReader = function (files){  // #15
 							file.lastModifiedDate.toLocaleString() +"<BR>";
 			// ファイルの読み込みに成功したら、その内容をドロップエリアに追記して表示する
 			var reader = new FileReader();
-			reader.onloadend = funcOnloadend; 
+			reader.onloadend = funcOnloadend.bind(this, files[i], i);
 			// ファイルにArrayBufferで参照を取得する（loadイベントを起こす）
-		    reader.readAsArrayBuffer(HJN.files[i]);
+		    reader.readAsArrayBuffer(files[i]);
 		}catch(e){
 			// 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
 			var msg = "The " + i + "th dropped object is not a file";
@@ -199,30 +197,27 @@ HJN.init.FileReader = function (files){  // #15
 		}
 	}
 
-	// 内部関数：ファイルを読み込みｸﾞﾗﾌを表示する（指定ファイルを読み込んだ後に呼び出される）
-    function funcOnloadend(evt) {
+	// 内部関数：ファイルを読み込みｸﾞﾗﾌを表示する（指定ファイルを読み込んだ後に呼び出される） #23
+    function funcOnloadend(file, i, evt) {
         if (evt.target.readyState === FileReader.DONE) { // DONE == 2
-            HJN.filesIdx++;
+            var filesIdx = HJN.files.length;
             // ファイルの先頭2行をログ表示する
-            console.log("HJN.filesIdx="  + HJN.filesIdx + "/" + files.length);
-
-            HJN.filesArrayBuffer[HJN.filesIdx] = evt.target.result;
-            textArray += topLines(              // 2行展開する
-                                HJN.filesArrayBuffer[HJN.filesIdx], 2);
-            HJN.util.Logger.ShowLogTextInit();      // 情報表示 : 初期化
-            HJN.util.Logger.ShowLogText(textArray, "msg");  // 情報表示 ：
-                                                            // ドロップファイル情報
-            // 指定ファイルを読み込む #23
+            HJN.filesArrayBuffer[filesIdx] = evt.target.result;
+            HJN.util.Logger.ShowLogTextInit();              // 情報表示 : 初期化
+            HJN.util.Logger.ShowLogText(textArray, "msg");  // 情報表示：ドロップファイル情報
+            // 指定ファイルを読み込む
             // CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
-            if (HJN.filesIdx === 0 && HJN.chart.fileReader.getValue("NEWFILE") === "NEWDATA"){
-                // 最初のファイルかつ新規モードのとき、新たに作成する
-                HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx]);
+            if (i === 0 && HJN.chart.fileReader.isNewETAT()){
+                // 新規モードかつ、同時複数ファイル指定時の最初のファイルのとき、新たに作成する
+                HJN.files = [file];
+                HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer, filesIdx);
             } else { // 2件目以降のファイルのとき、もしくは、追加モード"ADDDATA"のとき、追加する
-                HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(getTatLogArray(HJN.filesArrayBuffer[HJN.filesIdx]));
+                HJN.files.push(file);
+                HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(getTatLogArray(HJN.filesArrayBuffer, filesIdx));
             }
             
-            // 全ファイルを読み込んだらグラフを描画する #23
-            if (HJN.filesIdx === HJN.files.length - 1){
+            // 全ファイルを読み込んだらグラフを描画する
+            if (HJN.files[HJN.files.length - 1] === file){ // 指定ファイル群の最後のファイルを処理しているとき
                 // フィルタしたeTatを取得する #34
                 var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
 
@@ -265,9 +260,10 @@ HJN.init.FileReader = function (files){  // #15
 
     // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置,
     // len:レコード長},...]に展開する
-	function getTatLogArray(file) { // arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
+	function getTatLogArray(files, idx) { // arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
 	    HJN.util.Logger.ShowLogText("----- read file -----------------------------","calc");
-	    var eTat = [],
+	    var file = files[idx], // #23
+	        eTat = [],
 	        xy = {date: 0, value: 0, isError: false },
 	        i = 0,  // timelog用
 	        getterOfLine = HJN.chart.fileReader.createGetterOfLine(file),
@@ -278,7 +274,7 @@ HJN.init.FileReader = function (files){  // #15
 	            HJN.util.Logger.ByInterval(i++, line); // 一定時刻毎に進捗を出力する
 	            xy = getterOfXY.parse(line);
 	            if(!xy.isError){
-	                eTat.push( {x: xy.x, y: xy.y, fileIdx: HJN.filesIdx, // #23
+	                eTat.push( {x: xy.x, y: xy.y, fileIdx: idx, // #23
 	                    pos: line.pos, len: line.array.byteLength, sTatIdx: 0} );
 	            }
 	            line = getterOfLine.next(); // #24
@@ -540,21 +536,24 @@ HJN.Plot.Add=function(n, x, y) {
 			concMax = 0,
 			i = HJN.util.binarySearch(x, conc, function(e){ return e.x; });
 		for (; i < conc.length && conc[i].x < toX; i++){	// #26
-			if (concMax < conc[i].y){
-				maxTime = conc[i].x;
-				concMax = conc[i].y;
+			if (concMax <= conc[i].y){
+    				maxTime = conc[i].x;
+    				concMax = conc[i].y;
 			}
 		}
-		// if(x < maxTime){ // 補正すべき時刻が求まったときCONC,ETATを追加する
-			x = maxTime;
-			format = "hh:mm:ss.ppp";
-			label = HJN.util.D2S(x, format) + " " +
-					HJN.seriesConfig[n].label.replace("%N",HJN.util.N2S(y));
-			HJN.Plot.List.push(	{label: label, ckBox:false,
-				 radio:true, n: n, x: x, y: y, 
-				 rangePlus: rangePlus , rangeMinus: rangeMinus, rangeUnit: rangeUnit,
-				 tpsPlot: plot} );	// 詳細plotには、tpsのplot情報も保持する
-		// }
+		if (concMax === y) { // 補正すべき時刻が求まったときCONC,ETATを追加する #23
+            x = maxTime;
+            format = "hh:mm:ss.ppp";
+            label = HJN.util.D2S(x, format) + " " +
+                    HJN.seriesConfig[n].label.replace("%N",HJN.util.N2S(y));
+            HJN.Plot.List.push( {label: label, ckBox:false,
+                 radio:true, n: n, x: x, y: y, 
+                 rangePlus: rangePlus , rangeMinus: rangeMinus, rangeUnit: rangeUnit,
+                 tpsPlot: plot} );  // 詳細plotには、tpsのplot情報も保持する
+        } else { // 補正すべき時刻がない場合、元のPlotを追加する
+            HJN.Plot.List.push(plot);
+        }
+
 	}
 };
 
@@ -672,10 +671,9 @@ HJN.util.FileReader = (function() {
 		// 名称と挙動の定義
 		this._configFileFormat = HJN.util.Config("m")	
 		    // File Format Config設定画面定義 #51
-            .name("NEWFILE").label(null,"wii be ") // #23
+            .name("NEWFILE").label(null,"Registered ") // #23
                 .radio("NEWDATA", null, "newly", true)
-                .radio("ADDDATA", null, "additionally")
-                .label(null,"registered").n()
+                .radio("ADDDATA", null, "additionally").n()
 			.label(null,"----- File format definition --------").n()
 			.n("<br>")
 			.name("LF").label(null, "[Line feed code]").n()
@@ -767,6 +765,17 @@ HJN.util.FileReader = (function() {
 	//
 	// public
     /**
+     * ファイルが新たに指定された時、eTatOriginalを再構築するか否（データを追加する）か
+     * 
+     * @function
+     * @memberof HJN.util.FileReader
+     * @return {boolean} 再構築モードするときtrue、データを追加するときfalse
+     */
+    proto.isNewETAT = function() { // #23
+        return this.getValue("NEWFILE") === "NEWDATA";
+    }
+	
+	/**
      * 「ファイルから次の1レコードを取得するutil」 を取得する
      * 
      * @function

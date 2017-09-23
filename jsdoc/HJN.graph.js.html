@@ -107,8 +107,7 @@ HJN.detailDateTime = new Date(); // 下段表示時刻
 HJN.detailRangePlus = 1.0; // 下段表示範囲（＋秒）
 HJN.detailRangeMinus = 1.0; // 下段表示範囲（－秒）
 
-HJN.files;
-HJN.filesIdx = 0;
+HJN.files = [];
 HJN.filesArrayBuffer = [];
 
 HJN.timer = {};
@@ -120,13 +119,13 @@ HJN.timer = {};
  */
 /**
  * CONC:多重度の時系列データ&lt;br>
- * [{x:変化時刻(ms) ,y:多重度数, sTatIdx:sTatの配列位置, eTatIdx: eTatの配列位置 }]
+ * [{x:変化時刻(ms) ,y:多重度数 }]
  * 
- * @typedef {array.&lt;xMs, yInt, index, index>} CONC
+ * @typedef {array.&lt;xMs, yInt>} CONC
  */
 /**
  * CTPS: 秒間最大多重度の時系列データ&lt;br>
- * [{x:秒毎時刻(ms), y:秒内最大多重度数, concFromIdx:該当concの先頭配列位置（末尾は次のcTpsから取得） ]
+ * [{x:秒毎時刻(ms), y:秒内最大多重度数 }]
  * 
  * @typedef {array.&lt;xMs, index>} CTPS
  */
@@ -508,11 +507,10 @@ HJN.Graph.prototype.createSeries = function (eTat) {
     "use strict";
     // 時系列データを初期化する
     var conc = [], cTps = [], eTps = [], sTat = [], eMps = [], eAps = [];
-    // 注）this.SERIESESと同じ順番にすること
-    var seriesSet = [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
+
     // 集計対象データがないとき
     if (eTat.length === 0)
-        return seriesSet;
+        return [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
 
     /** eTatをソートする * */
     // 開始時刻でソートする #35
@@ -595,35 +593,38 @@ HJN.Graph.prototype.createSeries = function (eTat) {
             "calc");
 
     /** CONC(多重度)時系列データを作成する * */
+    var concTmp = [];
     // eTatから、多重度が変化した時刻の一覧を作成する
     eTat.map(function (e, i) {
         // 開始時刻にカウントアップ情報を追加する
-        conc.push({
+        concTmp.push({
             x : e.x - e.y,
-            y : 1,
-            sTatIdx : e.sTatIdx,
-            eTatIdx : i
+            y : 1
         });
         // 終了時刻をカウントダウン情報を追加する
-        conc.push({
+        concTmp.push({
             x : e.x,
-            y : -1,
-            sTatIdx : e.sTatIdx,
-            eTatIdx : i
+            y : -1
         });
     });
     // concを変化した時刻（開始or終了）でソートする
-    conc.sort(function (a, b) {
+    concTmp.sort(function (a, b) {
         return a.x - b.x;
     });
-    // HJN.util.Logger.ShowLogText("[4-1:conc/created&amp;sorten ] "+ conc.length +
-    // "
-    // plots","calc");
     // concに同時取引数を設定する
     var concNum = 0;
-    conc.forEach(function (c) {
-        concNum += c.y; // 同時取引数を集計する(c.y に、開始なら1、終了なら(-1)が設定されている)
+    concTmp.forEach(function (c, i, a) {
+        // 重複削除用フラグを立てる #23
+        if (i > 0 &amp;&amp; c.x === a[i - 1].x) {
+            a[i - 1].del = true;
+        }
+        // 同時取引数を集計する(前提：c.y に、開始なら1、終了なら(-1)が設定されている)
+        concNum += c.y;
         c.y = concNum;
+    });
+    // concの同じ時刻の点を削除する #23
+    conc = concTmp.filter(function (c) {
+        return !c.del;
     });
     HJN.util.Logger.ShowLogText("[4:conc created] " + conc.length + " plots",
             "calc");
@@ -689,9 +690,10 @@ HJN.Graph.prototype.createSeries = function (eTat) {
             + +Math.floor(concTerm / 1000) + "sec" + cTpsUnits[cTpsIdx].label
             + ")", "calc");
 
-    // 集計結果を設定する
+    // 集計結果をHJN.Graphに設定する 注）this.SERIESESと同じ順番にすること
+    var seriesSet = [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
     this.setSeriesSet(seriesSet);
-    return this.seriesSet;
+    return seriesSet;
 
     // 時刻を指定ミリ秒間隔で切り捨てる（内部関数）
     function floorTime(t, cycle) {
@@ -895,7 +897,7 @@ HJN.Graph.prototype.update = function (seriesSet) {
         // file dropのとき、新グラフデータに更新後に、旧グラフのidx値が引き渡されたとき 処理しない #12
         if (!g.rawData_ || g.rawData_.length - 1 &lt; idx)
             return;
-        var x = g.rawData_[idx][0], // クリックした 点(CONC)のx の値
+        var x = g.rawData_[idx][HJN.CONC.N], // クリックした 点(CONC)のx の値
         eTat = HJN.chart.eTat, sTat = HJN.chart.sTat, n = 0;
 
         // ETAT,STATのときlogレコードを表示する #28
@@ -923,7 +925,7 @@ HJN.Graph.prototype.update = function (seriesSet) {
                             + ", " + e.y;
                 } else { // ファイル読込のとき
                     // ファイルの該当行を Uint8Arrayに登録する
-                    var buff = new Uint8Array(e.len + 2), file = HJN.filesArrayBuffer[HJN.filesIdx];
+                    var buff = new Uint8Array(e.len + 2), file = HJN.filesArrayBuffer[e.fileIdx]; // #23
                     buff.set(new Uint8Array(file, e.pos, Math.min(e.len + 2,
                             file.byteLength - e.pos)));
                     // ログデータを編集する
@@ -1311,7 +1313,7 @@ HJN.Graph.prototype.addMenu = function () {
     // '&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;li/>'
     function getATag(arg, preLabel) {
         preLabel = preLabel || "";
-        return '' + '&lt;li>&lt;a id="' + arg.menuId + ' "'
+        return '' + '&lt;li>&lt;a id="' + arg.menuId + '" '
                 + 'class="hjnButton4Input" href="#" ' // #51
                 + 'download="' + arg.fileName + '" ' //
                 + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '"
@@ -1545,14 +1547,16 @@ HJN.Graph.prototype.menuDownloadLog = function (menuId, fileName) {
             eTat.sort(function (a, b) {
                 return a.pos - b.pos;
             });
-            // 最大作業領域として元ファイルサイズ分のメモリを確保する
-            var buff = new Uint8Array(
-                    HJN.filesArrayBuffer[HJN.filesIdx].byteLength), offset = 0;
+            // 最大作業領域として元ファイルサイズの合計分のメモリを確保する #23
+            var maxSize = HJN.filesArrayBuffer.reduce(function (p, c) {
+                return p + c.byteLength + 2;
+            }, 0);
+            var buff = new Uint8Array(maxSize), offset = 0;
             // ファイルの該当行を Uint8Arrayに登録する
             eTat.forEach(function (e) {
-                buff.set(new Uint8Array(HJN.filesArrayBuffer[HJN.filesIdx],
-                        e.pos, Math.min(e.len + 2,
-                                HJN.filesArrayBuffer[HJN.filesIdx].byteLength
+                buff.set(new Uint8Array(HJN.filesArrayBuffer[e.fileIdx], e.pos,
+                        Math.min(e.len + 2,
+                                HJN.filesArrayBuffer[e.fileIdx].byteLength
                                         - e.pos)), offset);
                 offset += (e.len + 2);
             });
@@ -1602,25 +1606,19 @@ HJN.Graph.prototype.menuDownloadConc = function (menuId, fileName) {
                 trans.sort(function (a, b) {
                     return a.pos - b.pos;
                 });
-                // 最大作業領域として元ファイルサイズ分のメモリを確保する
-                var buff = new Uint8Array(
-                        HJN.filesArrayBuffer[HJN.filesIdx].byteLength), offset = 0;
+                // 最大作業領域として元ファイルサイズの合計分のメモリを確保する #23
+                var maxSize = HJN.filesArrayBuffer.reduce(function (p, c) {
+                    return p + c.byteLength + 2;
+                }, 0);
+                var buff = new Uint8Array(maxSize), offset = 0;
                 // ファイルの該当行を Uint8Arrayに登録する
-                trans
-                        .forEach(function (e) {
-                            buff
-                                    .set(
-                                            new Uint8Array(
-                                                    HJN.filesArrayBuffer[HJN.filesIdx],
-                                                    e.pos,
-                                                    Math
-                                                            .min(
-                                                                    e.len + 2,
-                                                                    HJN.filesArrayBuffer[HJN.filesIdx].byteLength
-                                                                            - e.pos)),
-                                            offset);
-                            offset += (e.len + 2);
-                        });
+                trans.forEach(function (e) {
+                    buff.set(new Uint8Array(HJN.filesArrayBuffer[e.fileIdx],
+                            e.pos, Math.min(e.len + 2,
+                                    HJN.filesArrayBuffer[e.fileIdx].byteLength
+                                            - e.pos)), offset);
+                    offset += (e.len + 2);
+                });
                 // 未使用作業領域を削除する
                 var buff2 = new Uint8Array(buff.slice(0, offset));
                 // ダウンロードする
@@ -1687,7 +1685,7 @@ HJN.Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Sep 23 2017 04:49:42 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Sep 24 2017 04:55:38 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
