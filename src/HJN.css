@@ -92,13 +92,13 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 
 /* 詳細メニューリスト   */
 .hjnMenuLv2 { transition: 0.3s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
-.hjnMenuLv2 ol { display: block; padding-left: 5px; margin: 2px 0; }
+.hjnMenuLv2 ol { display: block; margin: 2px 0; }
 .hjnMenuLv2 label { height: 12px; }
 .hjnLabel4Input:hover,  .hjnButton4Input:hover { background: rgba(0,0,0,0.2); }
 .hjnLabel4Input:active, .hjnButton4Input:active { background: #999; }
 /* 詳細メニューリスト  ボタン */
 .hjnMenuLv2 .hjnButton4Input label, .hjnMenuLv2 label.hjnButton4Input, .hjnPlot 
-		{ display: block; width: 198px; padding: 8px 12px 8px 22px;}
+		{ display: block; padding: 8px 12px 8px 22px;}
 .hjnButton4Input { position: relative; display: block; overflow: hidden; transition: all 0.3s;  
 		text-decoration: none; color: #000; border: outset #fff; border-radius: 14px; }
 .hjnButton4Input:active { border: inset #fff; }
