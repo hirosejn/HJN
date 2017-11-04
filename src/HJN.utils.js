@@ -124,7 +124,7 @@ HJN.util.DateToString=function() {
  * 日時(ミリ秒：Ｘ軸用）から、指定フォーマットの文字列を取得する
  * 
  * @param {Number|Date}
- *            ds 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
+ *            ds 時刻をUNIX経過時間（ミリ秒）で表した数値、もしくはDate(日付）
  * @param {String}
  *            str フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
  * @return {String} str 編集後文字列
@@ -139,7 +139,7 @@ HJN.util.D2S = function(ds, str){
  * （hover、legendなどでY軸の値を使うときに使用する）
  * 
  * @param {Number|Date}
- *            y 時刻をユリウス経過時間（ミリ秒）で表した数値、もしくはDate(日付）
+ *            y 時刻をUNIX経過時間（ミリ秒）で表した数値、もしくはDate(日付）
  * @return {String} str 編集後文字列
  *         {@linkhttps://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat}
  */
@@ -1072,7 +1072,6 @@ HJN.util.Config = (function() { // #24
 }());
 
 
-
 /**
  * Heap
  * 
@@ -1080,15 +1079,17 @@ HJN.util.Config = (function() { // #24
  * @name Heap
  * @memberof HJN.util
  * @classdesc ヒープ(二分ヒープ)
- *            <p>最小値(最大値)を効率よく取り出すことができるデータ構造
- *            <p>参考 {@link http://d.hatena.ne.jp/otaks/20121220/1355993039}
- * @param {func}
+ *            <p>
+ *            最小値(最大値)を効率よく取り出すことができるデータ構造
+ *            <p>
+ *            参考 {@link http://d.hatena.ne.jp/otaks/20121220/1355993039}
+ * @param {Function}
  *            [func=function(obj){ return +obj; }]
  *            pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数
  * @example h = HJN.util.Heap( function(obj){ return +obj; } ) 
  * h.push("12.34") // データを登録する 
  * h.push(0.12) // 
- * h.pop() // => 0.12 最小値のオブジェクトを取り出す
+ * h.pop() // => 0.12 最小値のオブジェクトを取り出す 
  * h.pop() // => "12.34" 
  * h.top() // =>undefined 最小値のオブジェクト 
  * h.size() // =>0 登録オブジェクト数
@@ -1113,6 +1114,7 @@ HJN.util.Heap = (function() { // #55
     // public
     /**
      * データを追加する
+     * 
      * @function
      * @memberof HJN.util.Heap
      * @param {Object}
@@ -1135,7 +1137,7 @@ HJN.util.Heap = (function() { // #55
      * 
      * @function
      * @memberof HJN.util.Heap
-     * @return {Number|undefined} 最小値
+     * @return {Object|undefined} 最小値
      */
     proto.pop = function() {
         var ret = this._heap[0];
@@ -1164,18 +1166,18 @@ HJN.util.Heap = (function() { // #55
      * 
      * @function
      * @memberof HJN.util.Heap
-     * @return {Number|undefined} 最小値
+     * @return {Object|undefined} 最小値
      */
     proto.top = function() {
         return this._heap[0];
     };
 
     /**
-     * ヒープのサイズ返却する
+     * ヒープのサイズを返却する
      * 
      * @function
      * @memberof HJN.util.Heap
-     * @return {Number|undefined} ヒープサイズ
+     * @return {Number} ヒープサイズ（0以上）
      */
     proto.size = function() {
         return this._size;
@@ -1183,4 +1185,176 @@ HJN.util.Heap = (function() { // #55
     
     /* new */
     return Heap;
+}());
+
+
+/**
+ * Random
+ * 
+ * @class
+ * @name Random
+ * @memberof HJN.util
+ * @classdesc 乱数取得<br>
+ *            ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>
+ *            M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う
+ *            <p>
+ *            参考 {@link http://www.ishikawa-lab.com/montecarlo/4shou.html}
+ * @param {Number}
+ *            [average=0.5] 平均値
+ * @example var r = HJN.util.Random(10), val = r.exponential();
+ */
+HJN.util.Random = (function() { // #56
+    "use strict";
+    /** @static */
+    var proto = Random.prototype = {
+            __Random : {}   // Random設定コンテナ
+    };
+    /** @constructor */
+    function Random(average){
+        if(!(this instanceof Random)) return new Random(average);
+        this._average = average || 0.5;
+    }
+
+    /** @private */
+    
+    // public
+    /**
+     * 一様分布となる乱数を返却する
+     * 
+     * @function
+     * @memberof HJN.util.Random
+     * @param {Number}
+     *            [average=this._average] 平均値<br>
+     * @return {Number} 乱数
+     */
+    proto.uniform = function(average) {
+        average = average || this._average;
+        return Math.random() * average * 2.0;
+    };
+
+    /**
+     * 指数分布となる乱数を返却する(lambda = 1/average)
+     * 
+     * @function
+     * @memberof HJN.util.Random
+     * @param {Number}
+     *            [average=this._average] 平均値=1/λ、分散=1/(λ^2)<br>
+     * @return {Number} 乱数
+     */
+    proto.exponential = function(average) {
+        average = average || this._average;
+        return (-1.0 * average) * Math.log(1.0 - Math.random());
+    };
+    /**
+     * ポアソン分布となる乱数を返却する(lambda = average)
+     * 
+     * @function
+     * @memberof HJN.util.Random
+     * @param {Number}
+     *            [average=this._average] 平均値=分散=λ<br>
+     * @return {Number} 乱数
+     */
+    proto.poisson = function(average) {
+        var lambda = average || this._average;
+        var xp = Math.random();
+        var k = 0;
+        while (xp >= Math.exp(-lambda)) {
+            xp = xp * Math.random();
+            k = k + 1;
+        }
+        return (k);
+    };
+    
+    /* new */
+    return Random;
+}());
+
+
+/**
+ * WebLogSimulator
+ * 
+ * @class
+ * @name WebLogSimulator
+ * @memberof HJN.util
+ * @classdesc Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する
+ * @param {Date}
+ *            [start=HJN.util.S2D("1970/01/01 00:00:00")] シミュレート開始時刻
+ * @param {Number}
+ *            [end=86400000] シミュレート時間（ミリ秒）（デフォルト：24時間)
+ * @param {Number}
+ *            [maxClients=1024] Webサーバの最大スレッド数
+ * @param {Number}
+ *            [maxThreads=20] APサーバの最大スレッド数
+ * @param {Number}
+ *            [max_connections=10] DBサーバの最大コネクション数
+ * @example sim = HJN.util.WebLogSimulator()
+ */
+HJN.util.WebLogSimulator = (function() { // #55
+    "use strict";
+    /** @static */
+    var proto = WebLogSimulator.prototype = {
+            __WebLogSimulator : {}   // WebLogSimulator設定コンテナ
+    };
+    /** @constructor */
+    function WebLogSimulator(start, end, maxClients, maxThreads, max_connections){
+        if(!(this instanceof WebLogSimulator)){
+            return new WebLogSimulator(start, end, maxClients, maxThreads, max_connections);
+        }
+        this._start = start || HJN.util.S2D("1970/01/01 00:00:00");   // シミュレート開始時刻
+        this._end = end || start + 86400000;    // シミュレート終了時刻（デフォルト：24時間後)
+        this._web = {};
+        this._web.maxClients = maxClients || 1024; // Webサーバの最大スレッド数
+        this._ap = {};
+        this._ap.maxThreads = maxThreads || 20; // APサーバの最大スレッド数
+        this._db = {};
+        this._db.maxConnections = max_connections || 10; // DBサーバの最大コネクション数
+        
+        this._schedule  = HJN.util.Heap( function(obj){ return obj.getExecTime(); } ); // イベント予約スケジュール（ヒープ）
+    }
+
+    /** @private */
+    //
+
+    // public
+    /**
+     * 取引を発生するクライアントを取得する
+     * 
+     * @function
+     * @memberof HJN.util.WebLogSimulator
+     * @param {Object}
+     *            transactionModel 取引パターン
+     * @param {Function}
+     *            [createInterval=function(){return 1000;}]
+     *            次のクライアント生成間隔取得関数（デフォルト：1秒後）
+     * @return {Object} 仮想クライアント
+     */
+    proto.createClients = function(transactionModel, createInterval) {
+        var clients = {}; // 仮想クライアント
+        clients.transactionModel = transactionModel;
+        clients.createInterval = createInterval;       
+        return clients;
+    };
+
+    /**
+     * クライアントを登録する
+     * 
+     * @function
+     * @memberof HJN.util.WebLogSimulator
+     * @param {Object}
+     *            client 仮想クライアント
+     * @param {Function}
+     *            [createInterval=function(){return 1000;}]
+     *            次のクライアント生成間隔取得関数（デフォルト：1秒後）
+     * @return {Object} 仮想クライアント
+     */
+    proto.setClients = function(client, start, end, num) {
+        var clients = {}; // 仮想クライアント
+        start = start || HJN.util.S2D("1970/01/01 00:00:00");   // シミュレート開始時刻
+        end = end || start + 3600000;    // 生成終了時刻（デフォルト：1時間)
+        num = num || 360; // クライアント数（デフォルト：360： 10秒に1つ
+    };
+
+    
+    /* new */
+    return WebLogSimulator;
 }());

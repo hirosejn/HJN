@@ -79,8 +79,7 @@ HJN.init.ChartRegist = function(chartName){
  *            [response=1500] 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
  * @param {Blob}
  *            [freq=10] データ発生頻度の目安（tps)
- * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(JulianDayからの経過時間(秒)),
- *         y:レスポンス(秒)}]
+ * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)), y:レスポンス(秒)}]
  */
 HJN.init.CreateSampleTatLog = function(num, response, freq){
     "use strict";
@@ -1091,11 +1090,11 @@ HJN.util.FileReader = (function() {
 					if (this.isYMD){	// 年月日時分秒の文字列のとき
 						strX = String.fromCharCode.apply(null,arrX);
 						x = HJN.util.S2D(strX, this.paseDateConf);
-					} else if (this.confTIME_FORM === "TIME_FORM_TEXT"){	// テキスト数字のユリウス経過時間のとき
+					} else if (this.confTIME_FORM === "TIME_FORM_TEXT"){	// テキスト数字のUNIX経過時間のとき
 						strX = String.fromCharCode.apply(null,arrX);
 						x = GetterOfXY.parseNumber(strX);
 					} else{	// this.confTIME_FORM === "TIME_FORM_LONG"
-							// // longのユリウス経過時間のとき
+                            // longのUNIX経過時間のとき
 						x = this._parseLong(arrX);
 					}
 					// 単位を補正する
@@ -1108,11 +1107,11 @@ HJN.util.FileReader = (function() {
 							: line.array.slice(posY, nextPos);
 					// フィールドをパースする
 					if (this.confTAT_FORM === "TAT_FORM_TEXT"){
-					    // テキスト数字によるユリウス経過時間のとき
+					    // テキスト数字によるUNIX経過時間のとき
 						var strY = String.fromCharCode.apply(null,arrY);
 						y = GetterOfXY.parseNumber(strY);
 					} else{
-					    // TAT_FORM_TEXT === "TAT_FORM_LONG" 数値によるユリウス経過時間のとき
+					    // TAT_FORM_TEXT === "TAT_FORM_LONG" 数値によるUNIX経過時間のとき
 						y = this._parseLong(arrY);
 					}
 					// 単位を補正する

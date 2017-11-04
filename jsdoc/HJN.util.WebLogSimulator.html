@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Logger</title>
+    <title>JSDoc: Class: WebLogSimulator</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Logger</h1>
+    <h1 class="page-title">Class: WebLogSimulator</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>Logger</h2>
+            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>WebLogSimulator</h2>
         
-            <div class="class-description">モードに応じたログを出力する。画面ログ表示領域、コンソールログへの出力に対応</div>
+            <div class="class-description">Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する</div>
         
     
 </header>
@@ -47,17 +47,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line341">line 341</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1273">line 1273</a>
     </dir>
     
 
-    <h4 class="name" id="Logger">
-    <span class="type-signature"></span>new Logger<span class="signature">(mode<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="WebLogSimulator">
+    <span class="type-signature"></span>new WebLogSimulator<span class="signature">(start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, maxClients<span class="signature-attributes">opt</span>, maxThreads<span class="signature-attributes">opt</span>, max_connections<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		ロガー
+		WebLogSimulator
 	</div>
 	
     
@@ -78,13 +78,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>mode</code></td>
+                <td class="name"><code>start</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">Date</span>
 
 
             
@@ -105,12 +105,168 @@
             
                 <span class="default">
                 
-                    0
+                    HJN.util.S2D("1970/01/01 00:00:00")
                 
                 </span>
             
 
-            <div class="description last">ログ出力モード</div>
+            <div class="description last">シミュレート開始時刻</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>end</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    86400000
+                
+                </span>
+            
+
+            <div class="description last">シミュレート時間（ミリ秒）（デフォルト：24時間)</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>maxClients</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    1024
+                
+                </span>
+            
+
+            <div class="description last">Webサーバの最大スレッド数</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>maxThreads</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    20
+                
+                </span>
+            
+
+            <div class="description last">APサーバの最大スレッド数</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>max_connections</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    10
+                
+                </span>
+            
+
+            <div class="description last">DBサーバの最大コネクション数</div>
         </li></ul>
 
     
@@ -166,6 +322,11 @@
     
 </dl>
 </h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>sim = HJN.util.WebLogSimulator()</code></pre>
 
 
 
@@ -194,17 +355,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line376">line 376</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1331">line 1331</a>
     </dir>
     
 
-    <h4 class="name" id=".Logger.ByInterval">
-    <span class="type-signature">(static) </span>Logger.ByInterval<span class="signature">(i, text)</span><span class="type-signature"></span>
+    <h4 class="name" id=".proto.createClients">
+    <span class="type-signature">(static) </span>proto.createClients<span class="signature">(transactionModel, createInterval<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
 	<div class="description">
-		一定時間（１分）経過後、最初に本メソッドが呼ばれたときのみログ出力する（ループ用）
+		取引を発生するクライアントを取得する
 	</div>
 	
     
@@ -225,285 +386,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>i</code></td>
+                <td class="name"><code>transactionModel</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">参考番号<br>           経過時間内のループ回数などの表示に使用することを想定</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>text</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">ログ出力文字列</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line451">line 451</a>
-    </dir>
-    
-
-    <h4 class="name" id=".Logger.ShowIHtmlBody">
-    <span class="type-signature">(static) </span>Logger.ShowIHtmlBody<span class="signature">(elementId, iHtmlBody)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>elementId</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">iframeのID名</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>iHtmlBody</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">ログ（HTML化）</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line410">line 410</a>
-    </dir>
-    
-
-    <h4 class="name" id=".Logger.ShowLogText">
-    <span class="type-signature">(static) </span>Logger.ShowLogText<span class="signature">(text, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		ログ出力： ログテキストをテキストアレイに追記し、表示する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>text</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
+<span class="param-type">Object</span>
 
 
             
@@ -520,21 +409,25 @@
             
 
             
+                <span class="default">
+                
+                </span>
+            
 
-            <div class="description last">ログ出力文字列</div>
+            <div class="description last">取引パターン</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>type</code></td>
+                <td class="name"><code>createInterval</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">function</span>
 
 
             
@@ -553,8 +446,14 @@
             
 
             
+                <span class="default">
+                
+                    function(){return 1000;}
+                
+                </span>
+            
 
-            <div class="description last">ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））</div>
+            <div class="description last">次のクライアント生成間隔取得関数（デフォルト：1秒後）</div>
         </li></ul>
 
     
@@ -573,6 +472,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    仮想クライアント
+		</div>
+		
+	</li></ul>
+
+    
 
 <h6>
 
@@ -620,17 +541,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line395">line 395</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1350">line 1350</a>
     </dir>
     
 
-    <h4 class="name" id=".Logger.ShowLogTextInit">
-    <span class="type-signature">(static) </span>Logger.ShowLogTextInit<span class="signature">(text, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id=".proto.setClients">
+    <span class="type-signature">(static) </span>proto.setClients<span class="signature">(client, createInterval<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
 	<div class="description">
-		ログ出力： ログテキストを初期化する
+		クライアントを登録する
 	</div>
 	
     
@@ -651,13 +572,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>text</code></td>
+                <td class="name"><code>client</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">Object</span>
 
 
             
@@ -674,21 +595,25 @@
             
 
             
+                <span class="default">
+                
+                </span>
+            
 
-            <div class="description last">ログ出力文字列</div>
+            <div class="description last">仮想クライアント</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>type</code></td>
+                <td class="name"><code>createInterval</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">function</span>
 
 
             
@@ -707,8 +632,14 @@
             
 
             
+                <span class="default">
+                
+                    function(){return 1000;}
+                
+                </span>
+            
 
-            <div class="description last">ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））</div>
+            <div class="description last">次のクライアント生成間隔取得関数（デフォルト：1秒後）</div>
         </li></ul>
 
     
@@ -727,119 +658,28 @@
 
 
 
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
+<h5>Returns:</h5>
 
         
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line434">line 434</a>
-    </dir>
-    
-
-    <h4 class="name" id=".Logger.ShowText">
-    <span class="type-signature">(static) </span>Logger.ShowText<span class="signature">(textArray)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
-	</div>
-	
-    
-    
 
 
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
 
 
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
+			
+	    </span>
 		
-        <ul class="params"><li>
-            
-                <td class="name"><code>textArray</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">出力するログ（配列１行がログ１件）</div>
-        </li></ul>
+		<div class="param-desc">
+		    仮想クライアント
+		</div>
+		
+	</li></ul>
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <h6>
 

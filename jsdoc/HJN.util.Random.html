@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Heap</title>
+    <title>JSDoc: Class: Random</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Heap</h1>
+    <h1 class="page-title">Class: Random</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>Heap</h2>
+            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>Random</h2>
         
-            <div class="class-description">ヒープ(二分ヒープ)           <p>           最小値(最大値)を効率よく取り出すことができるデータ構造           <p>           参考 <a href="http://d.hatena.ne.jp/otaks/20121220/1355993039">http://d.hatena.ne.jp/otaks/20121220/1355993039</a></div>
+            <div class="class-description">乱数取得<br>           ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>           M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う           <p>           参考 <a href="http://www.ishikawa-lab.com/montecarlo/4shou.html">http://www.ishikawa-lab.com/montecarlo/4shou.html</a></div>
         
     
 </header>
@@ -47,17 +47,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1075">line 1075</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1191">line 1191</a>
     </dir>
     
 
-    <h4 class="name" id="Heap">
-    <span class="type-signature"></span>new Heap<span class="signature">(func<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="Random">
+    <span class="type-signature"></span>new Random<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		Heap
+		Random
 	</div>
 	
     
@@ -78,13 +78,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>func</code></td>
+                <td class="name"><code>average</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">Number</span>
 
 
             
@@ -105,12 +105,12 @@
             
                 <span class="default">
                 
-                    function(obj){ return +obj; }
+                    0.5
                 
                 </span>
             
 
-            <div class="description last">pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数</div>
+            <div class="description last">平均値</div>
         </li></ul>
 
     
@@ -170,7 +170,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>h = HJN.util.Heap( function(obj){ return +obj; } ) h.push("12.34") // データを登録する h.push(0.12) // h.pop() // => 0.12 最小値のオブジェクトを取り出す h.pop() // => "12.34" h.top() // =>undefined 最小値のオブジェクト h.size() // =>0 登録オブジェクト数</code></pre>
+    <pre class="prettyprint"><code>var r = HJN.util.Random(10), val = r.exponential();</code></pre>
 
 
 
@@ -199,126 +199,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1142">line 1142</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1244">line 1244</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.pop">
-    <span class="type-signature">(static) </span>proto.pop<span class="signature">()</span><span class="type-signature"> &rarr; {Object|undefined}</span>
+    <h4 class="name" id=".proto.exponential">
+    <span class="type-signature">(static) </span>proto.exponential<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
     </h4>
     
     
 	<div class="description">
-		最小値のデータを取り出す
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">undefined</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    最小値
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1123">line 1123</a>
-    </dir>
-    
-
-    <h4 class="name" id=".proto.push">
-    <span class="type-signature">(static) </span>proto.push<span class="signature">(obj)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		データを追加する
+		指数分布となる乱数を返却する(lambda = 1/average)
 	</div>
 	
     
@@ -339,110 +230,42 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>obj</code></td>
+                <td class="name"><code>average</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Number</span>
 
 
             
             </span>
 
             
+                <span class="attributes">
+                
+                    &lt;optional>
+                
 
+                
+
+                
+                </span>
             
 
-            <div class="description last">登録オブジェクト</div>
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値=1/λ、分散=1/(λ^2)<br></div>
         </li></ul>
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1182">line 1182</a>
-    </dir>
-    
-
-    <h4 class="name" id=".proto.size">
-    <span class="type-signature">(static) </span>proto.size<span class="signature">()</span><span class="type-signature"> &rarr; {Number}</span>
-    </h4>
-    
-    
-	<div class="description">
-		ヒープのサイズを返却する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
 
 
 
@@ -474,7 +297,7 @@
 	    </span>
 		
 		<div class="param-desc">
-		    ヒープサイズ（0以上）
+		    乱数
 		</div>
 		
 	</li></ul>
@@ -527,17 +350,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1171">line 1171</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1257">line 1257</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.top">
-    <span class="type-signature">(static) </span>proto.top<span class="signature">()</span><span class="type-signature"> &rarr; {Object|undefined}</span>
+    <h4 class="name" id=".proto.poisson">
+    <span class="type-signature">(static) </span>proto.poisson<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
     </h4>
     
     
 	<div class="description">
-		最小値を返却する（登録データは変更しない）
+		ポアソン分布となる乱数を返却する(lambda = average)
 	</div>
 	
     
@@ -549,6 +372,51 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値=分散=λ<br></div>
+        </li></ul>
+
+    
 
 
 
@@ -573,17 +441,165 @@
 	    <span>
 	    	
 	        
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">undefined</span>
+<span class="param-type">Number</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    最小値
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1230">line 1230</a>
+    </dir>
+    
+
+    <h4 class="name" id=".proto.uniform">
+    <span class="type-signature">(static) </span>proto.uniform<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		一様分布となる乱数を返却する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
 		</div>
 		
 	</li></ul>
