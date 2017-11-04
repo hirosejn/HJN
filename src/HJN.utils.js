@@ -1070,3 +1070,117 @@ HJN.util.Config = (function() { // #24
 	/* new */
 	return Config;
 }());
+
+
+
+/**
+ * Heap
+ * 
+ * @class
+ * @name Heap
+ * @memberof HJN.util
+ * @classdesc ヒープ(二分ヒープ)
+ *            <p>最小値(最大値)を効率よく取り出すことができるデータ構造
+ *            <p>参考 {@link http://d.hatena.ne.jp/otaks/20121220/1355993039}
+ * @param {func}
+ *            [func=function(obj){ return +obj; }]
+ *            pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数
+ * @example h = HJN.util.Heap( function(obj){ return +obj; } ) 
+ * h.push("12.34") // データを登録する 
+ * h.push(0.12) // 
+ * h.pop() // => 0.12 最小値のオブジェクトを取り出す
+ * h.pop() // => "12.34" 
+ * h.top() // =>undefined 最小値のオブジェクト 
+ * h.size() // =>0 登録オブジェクト数
+ */
+HJN.util.Heap = (function() { // #55
+    "use strict";
+    /** @static */
+    var proto = Heap.prototype = {
+            __Heap : {}   // Heap設定コンテナ
+    };
+    /** @constructor */
+    function Heap(func){ 
+        if(!(this instanceof Heap)) return new Heap(func);
+        this._func = func || function(obj){ return +obj; };
+        this._heap = []; // Heap構造体（大小比較数値用）
+        this._size = 0;  // 格納要素数
+    }
+
+    /** @private */
+    //
+
+    // public
+    /**
+     * データを追加する
+     * @function
+     * @memberof HJN.util.Heap
+     * @param {Object}
+     *            obj 登録オブジェクト
+     */
+    proto.push = function(obj) {
+        var k = this._size++;
+
+        while( 0 < k ) {
+            var p = Math.floor( (k - 1) / 2 );
+            if( this._func(this._heap[p]) <= this._func(obj) ) break;
+            this._heap[k] = this._heap[p];
+            k = p;
+        }
+        this._heap[k] = obj;
+    };
+
+    /**
+     * 最小値のデータを取り出す
+     * 
+     * @function
+     * @memberof HJN.util.Heap
+     * @return {Number|undefined} 最小値
+     */
+    proto.pop = function() {
+        var ret = this._heap[0];
+        if(0 < this._size){
+            var x = this._heap[--this._size];
+            var xVal = this._func(x);
+            var k = 0;
+            while( k * 2 + 1 < this._size ) {
+                var a = k * 2 + 1;
+                var b = k * 2 + 2;
+                if( b < this._size && this._func(this._heap[b]) < this._func(this._heap[a]) ) a = b;
+                
+                if( xVal <= this._func(this._heap[a]) ) break;
+
+                this._heap[k] = this._heap[a];
+                k = a;
+            }
+            this._heap[k] = x;
+            this._heap.pop();
+        }
+        return ret;
+    };
+
+    /**
+     * 最小値を返却する（登録データは変更しない）
+     * 
+     * @function
+     * @memberof HJN.util.Heap
+     * @return {Number|undefined} 最小値
+     */
+    proto.top = function() {
+        return this._heap[0];
+    };
+
+    /**
+     * ヒープのサイズ返却する
+     * 
+     * @function
+     * @memberof HJN.util.Heap
+     * @return {Number|undefined} ヒープサイズ
+     */
+    proto.size = function() {
+        return this._size;
+    };
+    
+    /* new */
+    return Heap;
+}());
