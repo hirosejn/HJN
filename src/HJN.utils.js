@@ -1086,13 +1086,9 @@ HJN.util.Config = (function() { // #24
  * @param {Function}
  *            [func=function(obj){ return +obj; }]
  *            pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数
- * @example h = HJN.util.Heap( function(obj){ return +obj; } ) 
- * h.push("12.34") // データを登録する 
- * h.push(0.12) // 
- * h.pop() // => 0.12 最小値のオブジェクトを取り出す 
- * h.pop() // => "12.34" 
- * h.top() // =>undefined 最小値のオブジェクト 
- * h.size() // =>0 登録オブジェクト数
+ * @example h = HJN.util.Heap( function(obj){ return +obj; } ) h.push("12.34") //
+ *          データを登録する h.push(0.12) // h.pop() // => 0.12 最小値のオブジェクトを取り出す h.pop() // =>
+ *          "12.34" h.top() // =>undefined 最小値のオブジェクト h.size() // =>0 登録オブジェクト数
  */
 HJN.util.Heap = (function() { // #55
     "use strict";
@@ -1229,7 +1225,7 @@ HJN.util.Random = (function() { // #56
      */
     proto.uniform = function(average) {
         average = average || this._average;
-        return Math.random() * average * 2.0;
+        return  2.0 * average * Math.random();
     };
 
     /**
@@ -1245,6 +1241,7 @@ HJN.util.Random = (function() { // #56
         average = average || this._average;
         return (-1.0 * average) * Math.log(1.0 - Math.random());
     };
+    
     /**
      * ポアソン分布となる乱数を返却する(lambda = average)
      * 
@@ -1278,9 +1275,9 @@ HJN.util.Random = (function() { // #56
  * @memberof HJN.util
  * @classdesc Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する
  * @param {Date}
- *            [start=HJN.util.S2D("1970/01/01 00:00:00")] シミュレート開始時刻
+ *            [start=HJN.util.S2D("1970/01/02 00:00:00")] シミュレート開始時刻
  * @param {Number}
- *            [end=86400000] シミュレート時間（ミリ秒）（デフォルト：24時間)
+ *            [end = 86,400,000 ms(24時間)] シミュレート時間（ミリ秒）
  * @param {Number}
  *            [maxClients=1024] Webサーバの最大スレッド数
  * @param {Number}
@@ -1289,7 +1286,7 @@ HJN.util.Random = (function() { // #56
  *            [max_connections=10] DBサーバの最大コネクション数
  * @example sim = HJN.util.WebLogSimulator()
  */
-HJN.util.WebLogSimulator = (function() { // #55
+HJN.util.WebLogSimulator = (function() { // #53
     "use strict";
     /** @static */
     var proto = WebLogSimulator.prototype = {
@@ -1300,8 +1297,8 @@ HJN.util.WebLogSimulator = (function() { // #55
         if(!(this instanceof WebLogSimulator)){
             return new WebLogSimulator(start, end, maxClients, maxThreads, max_connections);
         }
-        this._start = start || HJN.util.S2D("1970/01/01 00:00:00");   // シミュレート開始時刻
-        this._end = end || start + 86400000;    // シミュレート終了時刻（デフォルト：24時間後)
+        this._start = +start || HJN.util.S2D("1970/01/02 00:00:00");   // シミュレート開始時刻
+        this._end = end || this._start + 86400000;    // シミュレート終了時刻（デフォルト：24時間後)
         this._web = {};
         this._web.maxClients = maxClients || 1024; // Webサーバの最大スレッド数
         this._ap = {};
@@ -1309,7 +1306,7 @@ HJN.util.WebLogSimulator = (function() { // #55
         this._db = {};
         this._db.maxConnections = max_connections || 10; // DBサーバの最大コネクション数
         
-        this._schedule  = HJN.util.Heap( function(obj){ return obj.getExecTime(); } ); // イベント予約スケジュール（ヒープ）
+        this._schedule  = HJN.util.Heap( function(tran){ return tran.getTime(); } ); // イベント予約スケジュール（ヒープ）
     }
 
     /** @private */
@@ -1317,44 +1314,176 @@ HJN.util.WebLogSimulator = (function() { // #55
 
     // public
     /**
-     * 取引を発生するクライアントを取得する
-     * 
-     * @function
-     * @memberof HJN.util.WebLogSimulator
-     * @param {Object}
-     *            transactionModel 取引パターン
-     * @param {Function}
-     *            [createInterval=function(){return 1000;}]
-     *            次のクライアント生成間隔取得関数（デフォルト：1秒後）
-     * @return {Object} 仮想クライアント
-     */
-    proto.createClients = function(transactionModel, createInterval) {
-        var clients = {}; // 仮想クライアント
-        clients.transactionModel = transactionModel;
-        clients.createInterval = createInterval;       
-        return clients;
-    };
-
-    /**
-     * クライアントを登録する
+     * 取引をスケジューラに登録する
      * 
      * @function
      * @memberof HJN.util.WebLogSimulator
      * @param {Object}
      *            client 仮想クライアント
-     * @param {Function}
-     *            [createInterval=function(){return 1000;}]
-     *            次のクライアント生成間隔取得関数（デフォルト：1秒後）
-     * @return {Object} 仮想クライアント
+     * @param {Number}
+     *            [start = HJN.util.S2D("1970/01/02 00:00:00")]
+     *            開始時刻（UNIX時刻の数値、ミリ秒）
+     * @param {Number}
+     *            [end = start + 3,600,000ms(1時間後)] 終了時刻（UNIX時刻の数値、ミリ秒）
+     * @param {Number}
+     *            [num = 360] 期間内に開始する仮想クライアント数（デフォルト：360回は、1時間のとき平均10秒毎相当）
      */
-    proto.setClients = function(client, start, end, num) {
-        var clients = {}; // 仮想クライアント
-        start = start || HJN.util.S2D("1970/01/01 00:00:00");   // シミュレート開始時刻
-        end = end || start + 3600000;    // 生成終了時刻（デフォルト：1時間)
-        num = num || 360; // クライアント数（デフォルト：360： 10秒に1つ
+    proto.setClients = function(logText, model, start, end, num) {
+        start = +start || HJN.util.S2D("1970/01/02 00:00:00");   // シミュレート開始時刻
+        end = +end || start + 3600000;    // 生成終了時刻（デフォルト：1時間)
+        num = num || 360; // クライアント数
+
+        var r = HJN.util.Random((end - start) / num);
+        var t = start;
+        for (var i = 0; i < num; i++) {
+            // 仮想クライアントを作成する
+            var vClient = HJN.util.TransitionModel(logText+i, model);
+            // 仮想クライアントに開始時刻（指数分布）を設定し、登録する
+            t += Math.round(r.exponential());
+            this._schedule.push(vClient.start(t));
+        }
+    };
+    
+    /**
+     * シミュレーションを実行する
+     * 
+     * @function
+     * @memberof HJN.util.WebLogSimulator
+     * @param {eTat}
+     *            ログの出力先eTat
+     */
+    proto.execute = function(eTat) {
+        while(0 < this._schedule.size()) {
+            // 次にイベントを迎える仮想クライアントを取り出すし、次の処理をシミュレートする
+            var vClient = this._schedule.pop().next(eTat);
+            // 仮想クライアントの処理が完了していないとき、再スケジュールする
+            if (vClient) {
+                this._schedule.push(vClient);
+            }
+        }
+    };
+
+    /* new */
+    return WebLogSimulator;
+}());
+
+
+/**
+ * TransitionModel
+ * 
+ * @class
+ * @name TransitionModel
+ * @memberof HJN.util
+ * @classdesc 取引モデル
+ * @param {String}
+ *            [logText = "sampleSeq"] ログに出力する文字列
+ * @param {Array}
+ *            [sequence = SQL３個のオン処理] 取引の処理シーケンスを格納した配列
+ * @param {Number}
+ *            [times = 30 回] 繰返し回数
+ * @param {Number}
+ *            [thinkTime = 60,000 ms] 繰返し時の次回処理開始までの平均時間(ミリ秒）
+ */
+HJN.util.TransitionModel = (function() { // #53
+    "use strict";
+    /** @static */
+    var proto = TransitionModel.prototype = {
+            __TransitionModel : {}   // TransitionModel設定コンテナ
+    };
+    /** @constructor */
+    function TransitionModel(logText, model){
+        if(!(this instanceof TransitionModel)){
+            return new TransitionModel(logText, model);
+        }
+        var sampleSeq = [
+            {tatMin:6,   tatAve:15,   message:"Request message", push:["WEB","AP","DB"], pop:[]},
+            {tatMin:10,  tatAve:50,   message:"SQL select A",    push:["TBL_A"],pop:["TBL_A"]},
+            {tatMin:10,  tatAve:110,  message:"SQL update B",    push:["TBL_B"],pop:[]},
+            {tatMin:10,  tatAve:900,  message:"SQL update C",    push:["TBL_C"],pop:[]},
+            {tatMin:6,   tatAve:15,   message:"Response message",push:[],pop:["TBL_B","TBL_C","DB","AP","WEB"]}
+        ];
+        this._logText = logText || "sampleSeq"; // ログ出力テキスト
+        this._sequence = model.sequence || sampleSeq; // イベントシーケンス
+        this._times = model.times || 30;   // イベントシーケンスの繰り返し回数
+        this._thinkTime = model.thinkTime || 60000;   // イベントシーケンス終了時に再実行する場合の平均再開時間（0以下の場合再実行しない）
+        
+        this._startTime = 0;      // イベントシーケンス開始時刻（UNIX時刻：ミリ秒）
+        this._sequenceIdx = 0;    // シミュレータに登録したイベントシーケンスの位置
+        this._sequenceTime = 0;   // シミュレータに登録したイベントの時刻
+    }
+
+    /** @private */
+    //
+
+    // public
+    /**
+     * 取引を開始する
+     * 
+     * @function
+     * @memberof HJN.util.TransitionModel
+     * @param {Number}
+     *            startTime 開始時刻（UNIX時刻：ミリ秒）
+     * @return {Object} 取引モデル(this)
+     */
+    proto.start = function(startTime) {
+        this._times--; // イベントシーケンスの繰り返し回数を1減らす
+        this._startTime = +startTime;      // イベントシーケンス開始時刻（UNIX時刻：ミリ秒）
+        this._sequenceIdx = 0;    // シミュレータに登録したイベントシーケンスの位置
+        this._sequenceTime = +startTime;   // シミュレータに登録したイベントの時刻
+        return this;
+    };
+
+    /**
+     * イベント時刻を返却する
+     * 
+     * @function
+     * @memberof HJN.util.TransitionModel
+     * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
+     */
+    proto.getTime = function() {
+        return this._sequenceTime;
+    };
+
+    /**
+     * 次の状態に遷移する、シーケンス終了時TATログを出力する
+     * 
+     * @function
+     * @memberof HJN.util.TransitionModel
+     * @param {eTat}
+     *            eTat ログ出力先
+     * @return {Object|null} 取引モデル(this)、登録処理完了時はnull
+     */
+    proto.next = function(eTat) {
+        var transactionModel = {}; // 取引モデル
+        if (this._sequenceIdx < this._sequence.length) { // イベントシーケンス処理途中のとき
+            // 完了した処理の処理時間を加える
+            var seq = this._sequence[this._sequenceIdx];
+            var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tatAve - seq.tatMin));
+            this._sequenceTime += seq.tatMin + tatAdd;
+            // 次の処理を参照する（ シミュレータに登録したイベントシーケンスの位置）
+            this._sequenceIdx++;
+            return this;
+        } else { // イベントシーケンスを終えたとき
+            // TATログを出力する
+            eTat.push( {x: this._sequenceTime,
+                        y: Math.round(this._sequenceTime - this._startTime), 
+                        sTatIdx: 0,
+                        message: this._logText} );
+            // 継続判定
+            if (0 < this._times) { // イベントシーケンスを繰り返すとき
+                this._sequenceTime += this._thinkTime; // イベント時刻にThink timeを加える
+                this._times--; // イベントシーケンスの繰り返し回数を1減らす
+                // 処理の先頭に戻る
+                this._startTime = this._sequenceTime;
+                this._sequenceIdx = 0;
+                return this;
+            } else { // イベントシーケンスを継続しない時
+                return null;
+            }
+        }
     };
 
     
     /* new */
-    return WebLogSimulator;
+    return TransitionModel;
 }());

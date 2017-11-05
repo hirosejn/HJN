@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: MappedArray</title>
+    <title>JSDoc: Class: TransitionModel</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: MappedArray</h1>
+    <h1 class="page-title">Class: TransitionModel</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>MappedArray</h2>
+            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>TransitionModel</h2>
         
-            <div class="class-description">配列に格納されているオブジェクトのx値をキーとするマップ           <p>           参考 <a href="http://qiita.com/alucky0707/items/10052866719ba5c5f5d7">http://qiita.com/alucky0707/items/10052866719ba5c5f5d7</a></div>
+            <div class="class-description">取引モデル</div>
         
     
 </header>
@@ -47,17 +47,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line702">line 702</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1371">line 1371</a>
     </dir>
     
 
-    <h4 class="name" id="MappedArray">
-    <span class="type-signature"></span>new MappedArray<span class="signature">(arr, getKey<span class="signature-attributes">opt</span>, isMappedMap<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {object}</span>
+    <h4 class="name" id="TransitionModel">
+    <span class="type-signature"></span>new TransitionModel<span class="signature">(logText<span class="signature-attributes">opt</span>, sequence<span class="signature-attributes">opt</span>, times<span class="signature-attributes">opt</span>, thinkTime<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		配列に格納されているオブジェクトのx値で、配列位置を高速検索
+		TransitionModel
 	</div>
 	
     
@@ -78,7 +78,46 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>arr</code></td>
+                <td class="name"><code>logText</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "sampleSeq"
+                
+                </span>
+            
+
+            <div class="description last">ログに出力する文字列</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>sequence</code></td>
             
 
             <span class="type">
@@ -93,6 +132,8 @@
             
                 <span class="attributes">
                 
+                    &lt;optional>
+                
 
                 
 
@@ -103,26 +144,25 @@
             
                 <span class="default">
                 
+                    SQL３個のオン処理
+                
                 </span>
             
 
-            <div class="description last">インデクスをつける対象の配列</div>
+            <div class="description last">取引の処理シーケンスを格納した配列</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>getKey</code></td>
+                <td class="name"><code>times</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type">function</span>
+<span class="param-type">Number</span>
 
 
             
@@ -143,25 +183,25 @@
             
                 <span class="default">
                 
-                    ""
+                    30 回
                 
                 </span>
             
 
-            <div class="description last">MappedArrayのKey値の取得方法           <p>           String指定のとき（デフォルト""を含む）、配列要素の値(valueOf)           <p>           注： 0,00,"0"は同値、1,01,"1"は同値 Stringのとき、 配列要素が持つ指定要素の値           <p>           functionのとき、配列要素に指定関数を適用した戻り値           <p>           関数の引数：(配列要素オブジェクト、配列のインデックス、作成中のMappedArrayへの参照）</div>
+            <div class="description last">繰返し回数</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>isMappedMap</code></td>
+                <td class="name"><code>thinkTime</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Boolean</span>
+<span class="param-type">Number</span>
 
 
             
@@ -182,13 +222,117 @@
             
                 <span class="default">
                 
+                    60,000 ms
+                
                 </span>
             
 
-            <div class="description last">getKeyが2段Map用の配列を返却する</div>
+            <div class="description last">繰返し時の次回処理開始までの平均時間(ミリ秒）</div>
         </li></ul>
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1443">line 1443</a>
+    </dir>
+    
+
+    <h4 class="name" id=".proto.getTime">
+    <span class="type-signature">(static) </span>proto.getTime<span class="signature">()</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		イベント時刻を返却する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
 
 
 
@@ -213,14 +357,14 @@
 	    <span>
 	    	
 	        
-<span class="param-type">object</span>
+<span class="param-type">Number</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    Index arrに対するインデックス（連想配列名で検索）
+		    イベント時刻（UNIX時刻：ミリ秒）
 		</div>
 		
 	</li></ul>
@@ -265,29 +409,6 @@
 </h6>
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>_tatMap = new HJN.util.MappedArray(eTat, this._getKey, true);</code></pre>
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
 
         
             
@@ -296,17 +417,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line792">line 792</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1456">line 1456</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.has">
-    <span class="type-signature">(static) </span>proto.has<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id=".proto.next">
+    <span class="type-signature">(static) </span>proto.next<span class="signature">(eTat)</span><span class="type-signature"> &rarr; {Object|null}</span>
     </h4>
     
     
 	<div class="description">
-		値の存在チェック
+		次の状態に遷移する、シーケンス終了時TATログを出力する
 	</div>
 	
     
@@ -320,6 +441,33 @@
 
 
 
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>eTat</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">eTat</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">ログ出力先</div>
+        </li></ul>
+
+    
 
 
 
@@ -333,6 +481,33 @@
 
 
 
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">null</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    取引モデル(this)、登録処理完了時はnull
+		</div>
+		
+	</li></ul>
+
+    
 
 <h6>
 
@@ -380,17 +555,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line801">line 801</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1428">line 1428</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.indexes">
-    <span class="type-signature">(static) </span>proto.indexes<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id=".proto.start">
+    <span class="type-signature">(static) </span>proto.start<span class="signature">(startTime)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
 	<div class="description">
-		該当位置を配列で返す
+		取引を開始する
 	</div>
 	
     
@@ -404,248 +579,32 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
+    <h5>Parameters:</h5>
     
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>startTime</code></td>
             
 
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line823">line 823</a>
-    </dir>
-    
-
-    <h4 class="name" id=".proto.indexOf">
-    <span class="type-signature">(static) </span>proto.indexOf<span class="signature">()</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		Array.prototype.indexOf() 同等
-	</div>
-	
-    
-    
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
 
 
+            
+            </span>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
             
 
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line834">line 834</a>
-    </dir>
-    
-
-    <h4 class="name" id=".proto.lastIndexOf">
-    <span class="type-signature">(static) </span>proto.lastIndexOf<span class="signature">()</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		Array.prototype.lastIndexOf() 同等
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
             
 
-    
+            <div class="description last">開始時刻（UNIX時刻：ミリ秒）</div>
+        </li></ul>
 
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line810">line 810</a>
-    </dir>
-    
-
-    <h4 class="name" id=".proto.search">
-    <span class="type-signature">(static) </span>proto.search<span class="signature">()</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		該当する要素を配列で返す
-	</div>
-	
-    
     
 
 
@@ -662,13 +621,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
 
 
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
 
 
+			
+	    </span>
+		
+		<div class="param-desc">
+		    取引モデル(this)
+		</div>
+		
+	</li></ul>
 
-
-
+    
 
 <h6>
 

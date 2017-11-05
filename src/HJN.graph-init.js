@@ -81,7 +81,7 @@ HJN.init.ChartRegist = function(chartName){
  *            [freq=10] データ発生頻度の目安（tps)
  * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)), y:レスポンス(秒)}]
  */
-HJN.init.CreateSampleTatLog = function(num, response, freq){
+HJN.init.CreateSampleTatLog2 = function(num, response, freq){
     "use strict";
     HJN.util.Logger.ShowLogText("----- create data -----------------------------","calc");
     num = num || 100*100;        // arg0
@@ -105,12 +105,47 @@ HJN.init.CreateSampleTatLog = function(num, response, freq){
                         ) / 1e+6;
         var y2 = Math.random() < 20 / num ? 3 : 1;
         // 生成データを登録する
-        eTat.push( {x: d , y: y * y2, sTatIdx: 0} );
+        eTat.push( {x: d , y: y * y2, sTatIdx: 0, message:"sample"} );
     }
     HJN.util.Logger.ShowLogText("got     " + eTat.length + " plots [tat/endT]","calc");
     return eTat;
 };
 
+HJN.init.CreateSampleTatLog = function(){ // #53
+    "use strict";
+    var h = 3600000; // 1時間（ミリ秒）
+    var mim = 60000; // 1分（ミリ秒）
+    var sec =  1000; // 1秒（ミリ秒）
+
+    var onModel = {
+            sequence: [ // イベントシーケンス
+                {tatMin:2,   tatAve:5,    message:"Request message", push:["WEB"], pop:[]},
+                {tatMin:2,   tatAve:5,    message:"Execute message", push:["AP"],  pop:[]},
+                {tatMin:2,   tatAve:5,    message:"Bigin tran",      push:["DB"],  pop:[]},
+                {tatMin:2,   tatAve:100,  message:"SQL select A",    push:["TBL_A"],pop:["TBL_A"]},
+                {tatMin:2,   tatAve:50,   message:"SQL update B",    push:["TBL_B"],pop:[]},
+                {tatMin:2,   tatAve:100,  message:"SQL update C",    push:["TBL_C"],pop:[]},
+                {tatMin:2,   tatAve:5,    message:"Commit tran",     push:[],      pop:["TBL_B","TBL_C","DB"]},
+                {tatMin:2,   tatAve:5,    message:"Execute message", push:[],      pop:["AP"]},
+                {tatMin:2,   tatAve:5,    message:"Response message", push:[],      pop:["WEB"]}
+            ],
+            times: 50,   // イベントシーケンスの繰り返し回数
+            thinkTime: 6*sec   // イベントシーケンス終了時に再実行する場合の平均再開時間（0以下の場合再実行しない）
+        };
+    var start = HJN.util.S2D("1970/01/02 00:00:00"); // シミュレート開始時刻
+    var end = start + 1*h;    // 生成終了時刻（デフォルト：1時間)
+    var num = 1000; // クライアント数
+
+    var eTat = []; // 戻り値
+    var simu = HJN.util.WebLogSimulator();
+    // シミューレートシナリオを登録する
+    simu.setClients("STD user", onModel, start+16*h, start+17*h, num);
+    simu.setClients("EoD user", onModel, start+16.5*h, start+16.7*h, num);
+    // シミューレートシナリオを実行し、eTatを取得する
+    simu.execute(eTat);
+    // シミュレートして生成したeTatをリターンする
+    return eTat;
+}
 
 /**
  * HJN.init.ChartShow: 終了時刻とtatの配列をグラフ表示する

@@ -47,7 +47,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1273">line 1273</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1270">line 1270</a>
     </dir>
     
 
@@ -105,7 +105,7 @@
             
                 <span class="default">
                 
-                    HJN.util.S2D("1970/01/01 00:00:00")
+                    HJN.util.S2D("1970/01/02 00:00:00")
                 
                 </span>
             
@@ -144,12 +144,12 @@
             
                 <span class="default">
                 
-                    86400000
+                    86,400,000 ms(24時間)
                 
                 </span>
             
 
-            <div class="description last">シミュレート時間（ミリ秒）（デフォルト：24時間)</div>
+            <div class="description last">シミュレート時間（ミリ秒）</div>
         </li></ul>
 
     
@@ -355,17 +355,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1331">line 1331</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1355">line 1355</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.createClients">
-    <span class="type-signature">(static) </span>proto.createClients<span class="signature">(transactionModel, createInterval<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    <h4 class="name" id=".proto.execute">
+    <span class="type-signature">(static) </span>proto.execute<span class="signature">(ログの出力先eTat)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		取引を発生するクライアントを取得する
+		シミュレーションを実行する
 	</div>
 	
     
@@ -386,74 +386,23 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>transactionModel</code></td>
+                <td class="name"><code>ログの出力先eTat</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">eTat</span>
 
 
             
             </span>
 
             
-                <span class="attributes">
-                
-
-                
-
-                
-                </span>
-            
 
             
-                <span class="default">
-                
-                </span>
-            
 
-            <div class="description last">取引パターン</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>createInterval</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    function(){return 1000;}
-                
-                </span>
-            
-
-            <div class="description last">次のクライアント生成間隔取得関数（デフォルト：1秒後）</div>
+            <div class="description last"></div>
         </li></ul>
 
     
@@ -472,28 +421,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Object</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    仮想クライアント
-		</div>
-		
-	</li></ul>
-
-    
 
 <h6>
 
@@ -541,17 +468,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1350">line 1350</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1331">line 1331</a>
     </dir>
     
 
     <h4 class="name" id=".proto.setClients">
-    <span class="type-signature">(static) </span>proto.setClients<span class="signature">(client, createInterval<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    <span class="type-signature">(static) </span>proto.setClients<span class="signature">(client, start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, num<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		クライアントを登録する
+		取引をスケジューラに登録する
 	</div>
 	
     
@@ -607,13 +534,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>createInterval</code></td>
+                <td class="name"><code>start</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">Number</span>
 
 
             
@@ -634,12 +561,90 @@
             
                 <span class="default">
                 
-                    function(){return 1000;}
+                    HJN.util.S2D("1970/01/02 00:00:00")
                 
                 </span>
             
 
-            <div class="description last">次のクライアント生成間隔取得関数（デフォルト：1秒後）</div>
+            <div class="description last">開始時刻（UNIX時刻の数値、ミリ秒）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>end</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    start + 3,600,000ms(1時間後)
+                
+                </span>
+            
+
+            <div class="description last">終了時刻（UNIX時刻の数値、ミリ秒）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>num</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    360
+                
+                </span>
+            
+
+            <div class="description last">期間内に開始する仮想クライアント数（デフォルト：360回は、1時間のとき平均10秒毎相当）</div>
         </li></ul>
 
     
@@ -658,28 +663,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Object</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    仮想クライアント
-		</div>
-		
-	</li></ul>
-
-    
 
 <h6>
 
@@ -736,13 +719,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.WebLogSimulator.html">HJN.util.WebLogSimulator</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.TransitionModel.html">HJN.util.TransitionModel</a></li><li><a href="HJN.util.WebLogSimulator.html">HJN.util.WebLogSimulator</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Nov 05 2017 01:36:50 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 06 2017 04:04:47 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

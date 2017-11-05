@@ -894,7 +894,7 @@ HJN.Graph.prototype.update = function (seriesSet) {
                 if (typeof e.pos === "undefined") { // 生成データのとき
                     // 生成データをCSVのログデータとして編集する
                     logHtml = HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp")
-                            + ", " + e.y;
+                            + ", " + e.y + ", " + e.message; // #53
                 } else { // ファイル読込のとき
                     // ファイルの該当行を Uint8Arrayに登録する
                     var buff = new Uint8Array(e.len + 2), file = HJN.filesArrayBuffer[e.fileIdx]; // #23
