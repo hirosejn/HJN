@@ -311,7 +311,8 @@ HJN.Graph.prototype = {
         val : "1000"
     }, {
         label : "10sec",
-        val : "10000"
+        val : "10000",
+        selected : "selected"
     }, {
         label : "min",
         val : "60000"
@@ -1348,8 +1349,9 @@ HJN.Graph.prototype.addMenu = function () {
                 + '<select id="DetailRangeUnit" class="hjnLabel4Input" onchange="HJN.init.setDetailRange()">' // #48
                 + HJN.Graph.prototype.UNIT_RANGE.reduce(
                         function (prev, e, i, a) {
-                            return prev + '<option value="' + e.val + '">'
-                                    + e.label + '</option>';
+                            return prev + '<option value="' + e.val + '" '
+                                    + (e.selected || "") + '>' + e.label // #53
+                                    + '</option>';
                         }, '') + '</select>';
     }
 };
