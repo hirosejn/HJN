@@ -1419,10 +1419,10 @@ HJN.util.VirtualApp = (function() { // #53
             return new VirtualApp(userName, model);
         }
         var sampleSeq = [
-            {tatMin:6,   tatAve:15,  note:"Req",     hold:"DB",    free:[]},
-            {tatMin:70,  tatAve:100, note:"selectA", hold:"TBL_A", free:["TBL_A"]},
-            {tatMin:150, tatAve:200, note:"updateB", hold:"TBL_B", free:[]},
-            {tatMin:30,   tatAve:50,  note:"Res",     hold:"",      free:["TBL_B","DB"]}
+            {tatMin:6,   tat:15,  note:"Req",     hold:"DB",    free:[]},
+            {tatMin:70,  tat:100, note:"selectA", hold:"TBL_A", free:["TBL_A"]},
+            {tatMin:150, tat:200, note:"updateB", hold:"TBL_B", free:[]},
+            {tatMin:30,   tat:50,  note:"Res",     hold:"",      free:["TBL_B","DB"]}
         ];
         this._userName = userName || "default"; // ログ出力テキスト
 
@@ -1430,7 +1430,7 @@ HJN.util.VirtualApp = (function() { // #53
         this._sequence = model.sequence || sampleSeq; // イベントシーケンス
         this._times = model.times || 2;   // イベントシーケンスの繰り返し回数
         this._thinkTime = Math.max(0, model.thinkTime) || 500;   // イベントシーケンス終了時に再実行する場合の平均再開時間
-        
+        this._thinkTimeMin = Math.max(0, model.thinkTimeMin) || 500;   // イベントシーケンス終了時に再実行する場合の最小再開時間
         this._startTime = 0;      // イベントシーケンス開始時刻（UNIX時刻：ミリ秒）
         this._sequenceIdx = 0;    // シミュレータに登録したイベントシーケンスの位置
         this._sequenceTime = 0;   // シミュレータに登録したイベントの時刻
@@ -1508,7 +1508,7 @@ HJN.util.VirtualApp = (function() { // #53
             // リソースを確保できたときthisの処理する
             if (0 < vApps.length) {
                 // 完了した処理の処理時間を加える
-                var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tatAve - seq.tatMin));
+                var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tat - seq.tatMin));
                 this._sequenceTime += seq.tatMin + tatAdd;
                 // freeで指定されたリソースを解放する
                 if (typeof(seq.free) !== "undefined") {
@@ -1528,7 +1528,11 @@ HJN.util.VirtualApp = (function() { // #53
             // 継続判定
             if (0 < this._times) { // イベントシーケンスを繰り返すとき
                 // イベント時刻にThink time（指数分布）を加える
-                this._sequenceTime += HJN.util.Random().exponential(this._thinkTime);
+                this._sequenceTime += this._thinkTimeMin;
+                if (this._thinkTimeMin < this._thinkTime) {
+                    this._sequenceTime += HJN.util.Random().exponential(
+                                        this._thinkTime - this._thinkTimeMin);
+                }
                 this._times--; // イベントシーケンスの繰り返し回数を1減らす
                 // 処理の先頭に戻る
                 this._startTime = this._sequenceTime;
@@ -1607,7 +1611,7 @@ HJN.util.VirtualResource = (function() { // #53
      * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            vApp リソースにhold要求する仮想AP
-     * @return {[vApp] | []} スケジューラに登録するイベントの配列
+     * @return {Array} スケジューラに登録するイベントの配列([vApp] | [])
      */
     proto.hold = function(vApp) {
         if (this._name == "unlimited") return [vApp]; // リソース解放待ちを管理しないとき

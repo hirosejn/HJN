@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Cash</title>
+    <title>JSDoc: Class: VirtualResource</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Cash</h1>
+    <h1 class="page-title">Class: VirtualResource</h1>
 
     
 
@@ -29,9 +29,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>Cash</h2>
-        
-            <div class="class-description">キャッシュを保持させるオブジェクト</div>
+            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>VirtualResource</h2>
         
     
 </header>
@@ -42,22 +40,20 @@
         
 
     
-    <h2>Constructor</h2>
-    
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line161">line 161</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1569">line 1569</a>
     </dir>
     
 
-    <h4 class="name" id="Cash">
-    <span class="type-signature"></span>new Cash<span class="signature">(size<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="VirtualResource">
+    <span class="type-signature"></span>new VirtualResource<span class="signature">(name<span class="signature-attributes">opt</span>, capacity<span class="signature-attributes">opt</span>, timeout<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		キャッシュ
+		VirtualResource
 	</div>
 	
     
@@ -78,7 +74,46 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>size</code></td>
+                <td class="name"><code>name</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "unlimited"
+                
+                </span>
+            
+
+            <div class="description last">リソース名（"unlimited"はリソース解放待ちを管理しない）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>capacity</code></td>
             
 
             <span class="type">
@@ -105,12 +140,51 @@
             
                 <span class="default">
                 
-                    10
+                    1
                 
                 </span>
             
 
-            <div class="description last">キャッシュ最大件数（未対応機能、設定は無視される）</div>
+            <div class="description last">保有リソース総量（数）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    10秒
+                
+                </span>
+            
+
+            <div class="description last">解放待ちタイムアウト時間</div>
         </li></ul>
 
     
@@ -194,17 +268,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line188">line 188</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1638">line 1638</a>
     </dir>
     
 
-    <h4 class="name" id=".Cash._arg2arr">
-    <span class="type-signature">(static) </span>Cash._arg2arr<span class="signature">(args)</span><span class="type-signature"> &rarr; {Array}</span>
+    <h4 class="name" id=".proto.free">
+    <span class="type-signature">(static) </span>proto.free<span class="signature">(vApp)</span><span class="type-signature"> &rarr; {Array}</span>
     </h4>
     
     
 	<div class="description">
-		第一引数のargumentsを配列に変換する<br>（注：引数が１つ以上あることを前提）
+		リソースを解放する
 	</div>
 	
     
@@ -225,13 +299,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>args</code></td>
+                <td class="name"><code>vApp</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">Object</span>
 
 
             
@@ -241,7 +315,7 @@
 
             
 
-            <div class="description last">引数一覧（arguments）</div>
+            <div class="description last">解放するリソース</div>
         </li></ul>
 
     
@@ -276,7 +350,7 @@
 	    </span>
 		
 		<div class="param-desc">
-		    引数の配列
+		    スケジューラに登録するイベントのリスト
 		</div>
 		
 	</li></ul>
@@ -329,17 +403,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line201">line 201</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1616">line 1616</a>
     </dir>
     
 
-    <h4 class="name" id=".Cash._getKey">
-    <span class="type-signature">(static) </span>Cash._getKey<span class="signature">(args)</span><span class="type-signature"> &rarr; {String}</span>
+    <h4 class="name" id=".proto.hold">
+    <span class="type-signature">(static) </span>proto.hold<span class="signature">(vApp)</span><span class="type-signature"> &rarr; {Array}</span>
     </h4>
     
     
 	<div class="description">
-		cash判定Keyを取得する<br>（注：引数を'.'でつないだ文字列をkeyとするので、関数名長の上限を超える大きな配列は不可）
+		リソースを取得する
 	</div>
 	
     
@@ -360,142 +434,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>args</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">引数一覧（argumentsオブジェクト）</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">String</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    キャッシュキー用の文字列
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line219">line 219</a>
-    </dir>
-    
-
-    <h4 class="name" id=".proto.getCash">
-    <span class="type-signature">(static) </span>proto.getCash<span class="signature">(arguments)</span><span class="type-signature"> &rarr; {Number|undefined}</span>
-    </h4>
-    
-    
-	<div class="description">
-		cashオブジェクトを、cashが無いときはundefinedを返却する<br>cashヒットした場合、cashの使用回数をカウントアップする
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>arguments</code></td>
+                <td class="name"><code>vApp</code></td>
             
 
             <span class="type">
@@ -511,7 +450,7 @@
 
             
 
-            <div class="description last">引数からキー文字列を定める</div>
+            <div class="description last">リソースにhold要求する仮想AP</div>
         </li></ul>
 
     
@@ -539,17 +478,14 @@
 	    <span>
 	    	
 	        
-<span class="param-type">Number</span>
-|
-
-<span class="param-type">undefined</span>
+<span class="param-type">Array</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    キャッシュデータ（デーがが無い場合は undefined)
+		    スケジューラに登録するイベントの配列([vApp] | [])
 		</div>
 		
 	</li></ul>

@@ -2,7 +2,7 @@
 /* HJN クラス変数 */
 /** @namespace */
 HJN = {};
-HJN.ver = "v0.9.24";
+HJN.ver = "v0.11.12";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -33,7 +33,7 @@ HJN.CTPS = {
 };
 HJN.ETPS = {
     key : 'eTps',
-    name : 'trans / sec (end) [line]',
+    name : 'average tps / min (end) [line]', // #57
     label : 'end:%Ntps',
     N : 2,
     scale : 0,
@@ -57,7 +57,7 @@ HJN.ETAT = {
 };
 HJN.EMPS = {
     key : 'eMps',
-    name : 'max response / sec (end) [Y2軸:line]',
+    name : 'max response / min (end) [Y2軸:line]', // #57
     label : 'max:%Nms',
     N : 5,
     scale : 1,
@@ -65,7 +65,7 @@ HJN.EMPS = {
 };
 HJN.EAPS = {
     key : 'eAps',
-    name : 'average response / sec (end) [Y2軸:line]',
+    name : 'average response / min (end) [Y2軸:line]', // #57
     label : 'ave:%Nms',
     N : 6,
     scale : 1,
@@ -233,7 +233,7 @@ HJN.Graph = function (chartIdName, globalName, config) {
 
     this.scale = [ null, null ];
     this.graph = null;
-    this.cycle = 1000; // ミリ秒
+    this.cycle = 1000 * 60; // ミリ秒 #57
     this.cTpsUnit = HJN.Graph.prototype.UNIT_CTPS[0];
 
     this.cash = null; // キャッシュオブジェクト
@@ -494,10 +494,11 @@ HJN.Graph.prototype.createSeries = function (eTat) {
             "calc");
 
     /** eTps(時間あたり処理件数),eMps,eAps(時間あたり最大/平均応答時間)時系列データを作成する * */
-    var dFrom = Math.floor(eTat[0].x / this.cycle) * this.cycle, dTo = dFrom
-            + this.cycle, num = 0, // #39
-    maxTat = 0.0, // #19
-    aveTmp = 0.0;
+    var dFrom = Math.floor(eTat[0].x / this.cycle) * this.cycle,
+        dTo = dFrom + this.cycle,
+        num = 0, // #39
+        maxTat = 0.0, // #19
+        aveTmp = 0.0;
     eTat.forEach(function (e) {
         if (e.x < dTo) {
             num += 1;
@@ -507,7 +508,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
         } else {
             eTps.push({
                 x : dFrom,
-                y : num
+                y : num * 1000 / this.cycle // #57
             });
             eMps.push({
                 x : dFrom,
@@ -524,18 +525,35 @@ HJN.Graph.prototype.createSeries = function (eTat) {
             aveTmp = e.y; // #39
         }
     }, this);
+
     eTps.push({
         x : dFrom,
-        y : num
+        y : num * 1000 / this.cycle // #57
     });
-    eMps.push({
+    eTps.push({ // #57
+        x : dFrom + this.cycle,
+        y : num * 1000 / this.cycle
+    });
+
+    eMps.push({ // #19
         x : dFrom,
         y : maxTat
-    }); // #19
+    });
+    eMps.push({ // #57
+        x : dFrom + this.cycle,
+        y : maxTat
+    });
+
     eAps.push({
         x : dFrom,
         y : aveTmp / num
     });
+    eAps.push({ // #57
+        x : dFrom + this.cycle,
+        y : aveTmp / num
+    });
+
+    
     HJN.util.Logger.ShowLogText("[3:eTps,eMps,eAps created] " + eTps.length
             + " plots", "calc");
 
@@ -680,7 +698,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
  * @param {seriesSet}
  *            seriesSet dygraph用時系列データ配列
  */
-HJN.Graph.prototype.update = function (seriesSet) {
+HJN.Graph.prototype.update = function (seriesSet, n) {
     "use strict";
     // 指定データがあるとき取り込む
     if (seriesSet)
@@ -697,12 +715,17 @@ HJN.Graph.prototype.update = function (seriesSet) {
         idx[i] = 0;
     }
     // dygraph表示時間帯を設定する（上段グラフは全期間が処理対象）
-    var xRangeMin = Number.MIN_VALUE, xRangeMax = Number.MAX_VALUE;
+    var xRangeMin = Number.MIN_VALUE,
+        xRangeMax = Number.MAX_VALUE;
     if (HJN.chartD === this) { // 詳細（下段グラフ）のとき画面で指定された期間を設定する // ミリ秒
-        xRangeMin = +HJN.detailDateTime - HJN.detailRangeMinus
-                * HJN.detailRangeUnit; // #48
-        xRangeMax = +HJN.detailDateTime + HJN.detailRangePlus
-                * HJN.detailRangeUnit; // #48
+        if (n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N){ // #57
+            var dt = Math.floor(+HJN.detailDateTime / HJN.chartD.cycle) * HJN.chartD.cycle
+            xRangeMin = dt - HJN.detailRangeMinus * HJN.detailRangeUnit;
+            xRangeMax = dt + HJN.detailRangePlus * HJN.detailRangeUnit;
+        } else {
+            xRangeMin = +HJN.detailDateTime - HJN.detailRangeMinus * HJN.detailRangeUnit; // #48
+            xRangeMax = +HJN.detailDateTime + HJN.detailRangePlus * HJN.detailRangeUnit; // #48
+        } 
     }
 
     // dygraph用arrayを空にする

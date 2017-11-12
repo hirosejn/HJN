@@ -40,7 +40,8 @@ HJN.init.ChartRegist = function(chartName){
 	"use strict";
 	// 引数１ ：デフォルトHJN.chartName("chart")
 	HJN.chartName = chartName = chartName || HJN.chartName;
-	
+	// タイトルを設定する #57
+	document.title = "tat log diver " + HJN.ver; 
 	// htmlを作成する #52
 	var html_chart = document.getElementById("hjn_" + chartName) || document.body;
 	html_chart.innerHTML = ''
@@ -53,29 +54,29 @@ HJN.init.ChartRegist = function(chartName){
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '&lt;header>'
-        + '    &lt;div class="statusbar">'
-        + '        &lt;iframe id="fileInfo">&lt;/iframe>'
+        + '&lt;div class="statusbar">'
+        + '  &lt;iframe id="fileInfo">&lt;/iframe>'
+        + '&lt;/div>'
+        + '&lt;div class="hjnBurgerTray">'
+        + '  &lt;input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize"'
+        + '    checked="checked" /> &lt;label for="hjnBoxBuger" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+        + '  &lt;div class="hjnBurgerTitle">'
+        + '    &lt;input id="hjnBoxPlaceOn" type="checkbox"'
+        + '      class="hjnBoxSwitch hjnResize" /> &lt;label for="hjnBoxPlaceOn"'
+        + '      class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+        + '    &lt;p>'
+        + '      &lt;a class="hjnLabel4Input" href="../jsdoc/index.html" target=”_hirosejnJSDoc3”>TAT log diver&lt;/a>&lt;BR>'
+        + '      &lt;a class="hjnLabel4Input" href="https://github.com/hirosejn/" target=”_hirosejnGit”>&amp;copy;2017 Junichiroh Hirose&lt;/a>'
+        + '    &lt;/p>'
+        + '  &lt;/div>'
+        + '  &lt;div class="hjnBurgerWrap">'
+        + '    &lt;div class="hjnAccordion">'
+        + '      &lt;div id="' + chartName + '_menu">&lt;/div>'
+        + '      &lt;div id="' + chartName + 'Detail_menu">&lt;/div>'
+        + '      &lt;div id="' + chartName + 'Labels">&lt;/div>'
         + '    &lt;/div>'
-        + '    &lt;div class="hjnBurgerTray">'
-        + '        &lt;input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize"'
-        + '            checked="checked" /> &lt;label for="hjnBoxBuger" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
-        + '        &lt;div class="hjnBurgerTitle">'
-        + '            &lt;input id="hjnBoxPlaceOn" type="checkbox"'
-        + '                class="hjnBoxSwitch hjnResize" /> &lt;label for="hjnBoxPlaceOn"'
-        + '                class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
-        + '            &lt;p>'
-        + '                &lt;a class="hjnLabel4Input" href="../jsdoc/index.html" target=”_hirosejnJSDoc3”>TAT log diver&lt;/a>&lt;BR>'
-        + '                &lt;a class="hjnLabel4Input" href="https://github.com/hirosejn/" target=”_hirosejnGit”>&amp;copy;2017 Junichiroh Hirose&lt;/a>'
-        + '            &lt;/p>'
-        + '        &lt;/div>'
-        + '        &lt;div class="hjnBurgerWrap">'
-        + '            &lt;div class="hjnAccordion">'
-        + '                &lt;div id="' + chartName + '_menu">&lt;/div>'
-        + '                &lt;div id="' + chartName + 'Detail_menu">&lt;/div>'
-        + '                &lt;div id="' + chartName + 'Labels">&lt;/div>'
-        + '            &lt;/div>'
-        + '        &lt;/div>'
-        + '    &lt;/div>'
+        + '  &lt;/div>'
+        + '&lt;/div>'
         + '&lt;/header>';
 	html_chart.parentNode.insertBefore(html_nav, html_chart);
 	
@@ -101,21 +102,15 @@ HJN.init.ChartRegist = function(chartName){
 /**
  * 初期表示用サンプルデータ(ETAT)を自動生成する
  * 
- * @param {Number}
- *            [num=10000] 生成データ数（デフォルト:100、50*100*100)
- * @param {Number}
- *            [response=1500] 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
- * @param {Blob}
- *            [freq=10] データ発生頻度の目安（tps)
  * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)), y:レスポンス(秒)}]
  */
-HJN.init.CreateSampleTatLog2 = function(num, response, freq){
+HJN.init.CreateSampleTatLog1 = function(){
     "use strict";
     HJN.util.Logger.ShowLogText("----- create data -----------------------------","calc");
-    num = num || 100*100;        // arg0
-    response = response || 1500;   // arg1
-    freq = freq || 10;             // arg2
-    var eTat = [];                 // 戻り値
+    var num = 100*100;   // 生成データ数
+    var response = 1500; // 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
+    var freq = 10;       // データ発生頻度の目安（tps)
+    var eTat = [];       // 戻り値
 
     var x = new Date(),
         d= Math.floor(x.getTime()),
@@ -139,41 +134,95 @@ HJN.init.CreateSampleTatLog2 = function(num, response, freq){
     return eTat;
 };
 
-HJN.init.CreateSampleTatLog = function(){ // #53
+HJN.init.CreateSampleTatLog2 = function(){ // #53
     "use strict";
     var h = 3600000; // 1時間（ミリ秒）
-    var mim = 60000; // 1分（ミリ秒）
+    var min = 60000; // 1分（ミリ秒）
     var sec =  1000; // 1秒（ミリ秒）
 
-    var onModel = {
+    // 仮想クライアントが実行する取引モデルの宣言
+    var onModel = { // オンライン取引１
+            times: 60,   // イベントシーケンスの繰り返し回数
+            thinkTimeMin: 3*sec,   // イベントシーケンス終了時に再実行する場合の平均再開時間
+            thinkTime: 10*sec,   // イベントシーケンス終了時に再実行する場合の平均再開時間
             sequence: [ // イベントシーケンス
-                {tatMin:2,   tatAve:5,    message:"Request message", push:["WEB"], pop:[]},
-                {tatMin:2,   tatAve:5,    message:"Execute message", push:["AP"],  pop:[]},
-                {tatMin:2,   tatAve:5,    message:"Bigin tran",      push:["DB"],  pop:[]},
-                {tatMin:2,   tatAve:100,  message:"SQL select A",    push:["TBL_A"],pop:["TBL_A"]},
-                {tatMin:2,   tatAve:50,   message:"SQL update B",    push:["TBL_B"],pop:[]},
-                {tatMin:2,   tatAve:100,  message:"SQL update C",    push:["TBL_C"],pop:[]},
-                {tatMin:2,   tatAve:5,    message:"Commit tran",     push:[],      pop:["TBL_B","TBL_C","DB"]},
-                {tatMin:2,   tatAve:5,    message:"Execute message", push:[],      pop:["AP"]},
-                {tatMin:2,   tatAve:5,    message:"Response message", push:[],      pop:["WEB"]}
-            ],
-            times: 50,   // イベントシーケンスの繰り返し回数
-            thinkTime: 6*sec   // イベントシーケンス終了時に再実行する場合の平均再開時間（0以下の場合再実行しない）
+                {note:"Req",     hold:"WEB",  tatMin:2,  tat:5,   free:[]},
+                {note:"Exec",    hold:"AP",   tatMin:2,  tat:5,   free:[]},
+                {note:"Bigin",   hold:"DB",   tatMin:2,  tat:5,   free:[]},
+                {note:"select A",hold:"",     tatMin:30, tat:50,  free:[]},
+                {note:"updateB", hold:"TBL_B",tatMin:10, tat:50,  free:[]},
+                {note:"updateC", hold:"TBL_C",tatMin:80, tat:100, free:[]},
+                {note:"Commit",  hold:"",     tatMin:2,  tat:5,   free:["TBL_B","TBL_C","DB"]},
+                {note:"Exec",    hold:"",     tatMin:2,  tat:5,   free:["AP"]},
+                {note:"Res",     hold:"",     tatMin:2,  tat:5,   free:["WEB"]}
+            ]
         };
-    var start = HJN.util.S2D("1970/01/02 00:00:00"); // シミュレート開始時刻
-    var end = start + 1*h;    // 生成終了時刻（デフォルト：1時間)
-    var num = 1000; // クライアント数
+    var onMode2 = { // オンライン取引2
+            times: 60,   // イベントシーケンスの繰り返し回数
+            thinkTimeMin: 500,   // イベントシーケンス終了時に再実行する場合の平均再開時間
+            thinkTime: 1*sec,   // イベントシーケンス終了時に再実行する場合の平均再開時間
+            sequence: [ // イベントシーケンス
+                {hold:"WEB",  tatMin:2,  tat:5,   free:[]},
+                {hold:"AP",   tatMin:2,  tat:5,   free:[]},
+                {hold:"DB",   tatMin:2,  tat:5,   free:[]},
+                {hold:"",     tatMin:100,tat:500, free:["DB","AP","WEB"]},
+            ]
+        };
+    
+    var btModel4 = { // バッチ取引3
+            times: 1,   // イベントシーケンスの繰り返し回数
+            thinkTime: 1*min,   // イベントシーケンス終了時に再実行する場合の平均再開時間
+            sequence: [ // イベントシーケンス
+                {tatMin:2,  tat:5,    hold:"DB",   free:[]},
+                {tatMin:2000,tat:3000,hold:"TBL_B",free:[]},
+                {tatMin:6,tat:15,     hold:"",     free:["TBL_B","DB"]}
+            ]
+        };
+    var model3 = '{' // バッチ取引3
+        + '"times": 1, "thinkTime": 1000,'
+        + '"sequence": ['
+        + '  {"tatMin":2,   "tat":5,   "hold":"DB",   "free":[]},'
+        + '  {"tatMin":2000,"tat":3000,"hold":"TBL_B","free":[]},'
+        + '  {"tatMin":6,   "tat":15,  "hold":"",     "free":["TBL_B","DB"]}'
+        + ']}';
+    var btModel3 = JSON.parse(model3);
 
-    var eTat = []; // 戻り値
-    var simu = HJN.util.WebLogSimulator();
-    // シミューレートシナリオを登録する
-    simu.setClients("STD user", onModel, start+16*h, start+17*h, num);
-    simu.setClients("EoD user", onModel, start+16.5*h, start+16.7*h, num);
-    // シミューレートシナリオを実行し、eTatを取得する
-    simu.execute(eTat);
-    // シミュレートして生成したeTatをリターンする
-    return eTat;
+    // シミュレータ（開始時刻、停止時刻、Webスレッド数、APスレッド数、DBコネクション数）
+    var start = HJN.util.S2D("1970/01/02 00:00:00");
+    var end = start+17*h;
+    var vSys = HJN.util.VirtualSystem(start, end, 1024, 20, 10);
+    // シミューレートシナリオを登録する（User名, User数, 開始時刻, 最終開始時刻, 実行取引モデル）
+     vSys.setClients("select A update B,C user", 100, start+16.0*h, start+17.0*h, onModel);
+     vSys.setClients("select A update B,C 増user",20, start+16.5*h, start+16.6*h, onModel);
+     vSys.setClients("排他なし user",100, start+16.0*h, start+17.0*h, onMode2);
+     vSys.setClients("バッチ処理 update B＊＊＊＊＊＊＊＊＊", 20, start+16.0*h, start+17.0*h, btModel3);
+
+    // シミューレートシナリオを実行し、生成したeTatをリターンする
+    return vSys.execute();
 }
+
+HJN.init.CreateSampleTatLog3 = function(){ // #53
+    "use strict";
+    var vSys = HJN.util.VirtualSystem();
+    vSys.setClients();
+    return vSys.execute();
+}
+
+HJN.init.CreateSampleTatLogX = function(){ // #53
+    var simu = '{'
+        + '"btModel3" : {' // バッチ取引3
+        + '    "sequence": [' // イベントシーケンス
+        + '        {"tatMin":2,   "tat":5,   "note":"Bigin",  "hold":"DB",   "free":[]},'
+        + '        {"tatMin":2000,"tat":3000,"note":"updateB","hold":"TBL_B","free":[]},'
+        + '        {"tatMin":6,   "tat":15,  "note":"Commit", "hold":"",     "free":["TBL_B","DB"]}'
+        + '    ],'
+        + '    "times": 1,'   // イベントシーケンスの繰り返し回数
+        + '    "thinkTime": 1000 }'
+        + '}';
+}
+
+HJN.init.CreateSampleTatLog = HJN.init.CreateSampleTatLog2;
+
 
 /**
  * HJN.init.ChartShow: 終了時刻とtatの配列をグラフ表示する
@@ -378,7 +427,7 @@ HJN.init.ChartRegistDetail = function(cTps){
 			x = HJN.chart.conc[cTpsIdx].x;
 		}
 		// slider rangeに、下段の表示時刻を設定する
-		HJN.init.SetSliderRange(x);
+		HJN.init.SetDetailDateTime(x);
 		// eTpsの範囲を取得し、詳細用seriesSet(HJN.chartD.seriesSet）を設定する
 		HJN.chartD.createSeries(HJN.init.GetSliderRangedEtat());
 		// plotsアイコン用 HJN.Plot.Listに、下段表示したplotを登録する
@@ -393,19 +442,20 @@ HJN.init.ChartRegistDetail = function(cTps){
  * 
  * @return {ETAT} 詳細グラフ用eTat
  */
-HJN.init.GetSliderRangedEtat = function() {
+HJN.init.GetSliderRangedEtat = function(n) {
 	"use strict";
 	// 指定時刻（ｄｔ ± range）を取得する
 	var rangeTagPlus  = document.getElementById("DetailRangePlus"),
 		rangeTagMinus = document.getElementById("DetailRangeMinus"),
         rangeTagUnit  = document.getElementById("DetailRangeUnit"), // #48
-		rangeCycle = HJN.chart.cTpsUnit.unit / 1000;					// #38
-	// HJNグローバル変数に退避する
-	HJN.detailRangePlus  = rangeTagPlus  ? +rangeTagPlus.value  : 1 + rangeCycle; // 幅（秒）
-	HJN.detailRangeMinus = rangeTagMinus ? +rangeTagMinus.value : rangeCycle; 	  // 幅（秒）
-    HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : 1000; // #48
-	var rangeUnit = HJN.detailRangeUnit, // #48
-	    dt = Math.floor(HJN.detailDateTime * rangeUnit) / rangeUnit, // 中央時刻(ミリ秒)
+		rangeCycle = HJN.chart.cTpsUnit.unit / 1000; // #38
+    // HJNグローバル変数に退避する
+    HJN.detailRangePlus  = rangeTagPlus  ? +rangeTagPlus.value  : 1 + rangeCycle; // 幅（秒）
+    HJN.detailRangeMinus = rangeTagMinus ? +rangeTagMinus.value : rangeCycle;     // 幅（秒）
+    HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : HJN.chart.cycle; // #48
+
+	var rangeUnit = HJN.detailRangeUnit; // #48
+	var dt = Math.floor(HJN.detailDateTime / rangeUnit) * rangeUnit, // 中央時刻(ミリ秒)
 		rangePlus  = HJN.detailRangePlus  * rangeUnit,  // 幅（ミリ秒）
 		rangeMinus = HJN.detailRangeMinus * rangeUnit,  // #48
 		from = dt - rangeMinus,
@@ -436,7 +486,10 @@ HJN.init.setDetailRange = function(){
             var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
             HJN.Plot.List[i].rangePlus  = document.getElementById("DetailRangePlus").value;
             HJN.Plot.List[i].rangeMinus = document.getElementById("DetailRangeMinus").value;
-            HJN.Plot.List[i].rangeUnit  = document.getElementById("DetailRangeUnit").value; // #48
+            var rangeTagUnit = document.getElementById("DetailRangeUnit"); // #48
+            HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : HJN.chart.cycle; // #57
+            HJN.Plot.List[i].rangeUnit  = HJN.detailRangeUnit; // #48
+
             // 下段データを登録する
             HJN.chartD.seriesSet = HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat() );
             // 下段グラフを描画する
@@ -449,7 +502,7 @@ HJN.init.setDetailRange = function(){
  * @param {xMs}
  *            date 日時（ミリ秒単位）
  */
-HJN.init.SetSliderRange=function(date) {
+HJN.init.SetDetailDateTime=function(date) {
     "use strict";
     HJN.detailDateTime = Math.floor(date / 1000) * 1000;    // 秒単位に丸める
 };
@@ -488,11 +541,28 @@ HJN.Plot.PointClickCallback = function(point) {
 	var	n = HJN.seriesConfig.findIndex(function(e){	return e.key === point.name; }),// シリーズ番号
 		x = point.xval,	// ミリ秒
 		y = point.yval; // 秒
+
+	// ETPS,EMPS,EAPSのとき、TATが幅に含まれるよう、幅(range)を拡大する #57
+    var rangeTagUnit = document.getElementById("DetailRangeUnit");
+    var rangeUnit  = rangeTagUnit  ? +rangeTagUnit.value : HJN.chart.cycle;
+	if ((n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N) 
+            &amp;&amp; rangeUnit &lt; HJN.chart.cycle) {
+        rangeUnit = HJN.chart.cycle;
+        HJN.detailRangeUnit = rangeUnit;
+        // selectリストの選択を、rangeUnitに合わせる #57
+        for (var i = 0; i &lt; rangeTagUnit.length; i++) {
+            if(HJN.detailRangeUnit &lt;= rangeTagUnit[i].value){
+                rangeTagUnit[i].selected = true;
+                break;
+            }
+        }
+    }
+
 	// グラフの日時で、詳細グラフを再作成する
-	HJN.init.SetSliderRange(x);
-	HJN.chartD.createSeries(HJN.init.GetSliderRangedEtat());
+	HJN.init.SetDetailDateTime(x);
+	HJN.chartD.createSeries(HJN.init.GetSliderRangedEtat(n)); // #57
 	// 下段の残処理終了後、下段データを登録描画する
-	HJN.chartD.graph.ready(function(){ HJN.chartD.update(HJN.chartD.seriesSet); });
+	HJN.chartD.graph.ready(function(){ HJN.chartD.update(HJN.chartD.seriesSet, n); }); // #57
 	// Hover表示しているplotを、HJN.Plot.Listに登録し、plotsアイコンを再描画する
 	HJN.Plot.Add(n, x, y);
 	// Balloonを再描画する
@@ -545,19 +615,10 @@ HJN.Plot.Add=function(n, x, y) {
 	var	rangePlusTag  =  document.getElementById("DetailRangePlus"),
 		rangeMinusTag =  document.getElementById("DetailRangeMinus"),
 	    rangeUnitTag  =  document.getElementById("DetailRangeUnit"), // #48
-        rangeUnit  = rangeUnitTag  ? +rangeUnitTag.value : 1000,
+        rangeUnit  = rangeUnitTag  ? +rangeUnitTag.value : HJN.chart.cycle, // #57
 	    rangePlus  = rangePlusTag  ? +rangePlusTag.value  : 1,	// 幅
 		rangeMinus = rangeMinusTag ? +rangeMinusTag.value : 1;
-	// ETAT,STATのとき、TATが幅に含まれるよう、幅(range)を拡大する #30 #48 TODO
-	if (n === HJN.ETAT.N){
-		rangeMinus = Math.max(rangeMinus, 
-		        Math.floor(x / rangeUnit) - Math.floor((x - y) / rangeUnit)); // #48
-		document.getElementById("DetailRangeMinus").value = rangeMinus; 
-	}else if (n === HJN.STAT.N){
-		rangePlus = Math.max(rangePlus,
-				Math.floor((x + y) / rangeUnit)) - Math.floor(x / rangeUnit) ; // #48
-		document.getElementById("DetailRangePlus").value = rangePlus;
-	}
+
 	// 既存Poltを検索する
 	var	i = HJN.Plot.List.findIndex(function(p){
 				return(p.n === n &amp;&amp; p.x === x) ||	// 完全一致
@@ -568,17 +629,28 @@ HJN.Plot.Add=function(n, x, y) {
 	if(0 &lt;= i){	// 既存Plotsにある時、選択状態とし、rangeを再設定する
 		plot = HJN.Plot.List[i];
 		plot.radio = true;
-		plot.rangePlus  = rangePlus;	// 秒
+		plot.rangePlus  = rangePlus; // 秒
 		plot.rangeMinus = rangeMinus;
 	    plot.rangeUnit  = rangeUnit; // #48
 	}else{		// 既存に無いときPlotを追加する
-		plot = {label: label, ckBox:false,
+	    // ETAT,STATのとき、TATが幅に含まれるよう、幅(range)を拡大する #30 #48 #57
+	    if (n === HJN.ETAT.N){
+	        rangeMinus = Math.max(rangeMinus, 
+	                Math.floor(x / rangeUnit) - Math.floor((x - y) / rangeUnit)); // #48
+	        document.getElementById("DetailRangeMinus").value = rangeMinus; 
+	    }else if (n === HJN.STAT.N){
+	        rangePlus = Math.max(rangePlus,
+	                Math.floor((x + y) / rangeUnit)) - Math.floor(x / rangeUnit) ; // #48
+	        document.getElementById("DetailRangePlus").value = rangePlus;
+	    }
+	    // Plotを追加する
+	    plot = {label: label, ckBox:false,
 				 radio:true, n: n, x: x, y: y, 
 				 rangePlus: rangePlus, rangeMinus: rangeMinus, rangeUnit: rangeUnit };
 		if (n === HJN.CTPS.N){			// CTPSのとき秒内最大CONCとして登録する
-			adjustMaxPlot(HJN.chartD.conc, x, x + HJN.chart.cTpsUnit.unit, y, HJN.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
+			adjustPlotToY(HJN.chartD.conc, x, x + HJN.chart.cTpsUnit.unit, y, HJN.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
 		}else if (n === HJN.EMPS.N){	// EMPSのとき秒内最大ETATとして登録する
-			adjustMaxPlot(HJN.chartD.eTat, x, x + HJN.chart.cycle, y, HJN.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
+			adjustPlotToY(HJN.chartD.eTat, x, x + HJN.chart.cycle, y, HJN.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
 		}else {	// CTPS,EMPS以外の時、選択Plotを追加する
 			HJN.Plot.List.push(plot);
 		}
@@ -593,7 +665,7 @@ HJN.Plot.Add=function(n, x, y) {
 
 	
 	// 内部関数：プロット位置を、指定秒から詳細グラフの最大時刻に変更する #19
-	function adjustMaxPlot(conc, x, toX, y, n, plot, rangePlus, rangeMinus, rangeUnit){
+	function adjustPlotToY(conc, x, toX, y, n, plot, rangePlus, rangeMinus, rangeUnit){
 		var	maxTime = 0,
 			concMax = 0,
 			i = HJN.util.binarySearch(x, conc, function(e){ return e.x; });
@@ -671,13 +743,13 @@ HJN.Plot.CheckRadio = function(i) {
 	HJN.Plot.List.forEach(function(e){ e.radio = false; });
 	HJN.Plot.List[i].radio = true;
 	// グラフの日時で、詳細グラフを再作成する
-	HJN.init.SetSliderRange(HJN.Plot.List[i].x);	// 中心時刻に設定する
+	HJN.init.SetDetailDateTime(HJN.Plot.List[i].x);	// 中心時刻に設定する
 	document.getElementById("DetailRangePlus").value = HJN.Plot.List[i].rangePlus;	// 幅を設定する
 	document.getElementById("DetailRangeMinus").value = HJN.Plot.List[i].rangeMinus;
 	document.getElementById("DetailRangeUnit").value = HJN.Plot.List[i].rangeUnit; // #48
-	HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat() );
+	HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat(HJN.Plot.List[i].tpsPlot.n) ); // #57
 	// 下段データを登録描画する
-	HJN.chartD.update(HJN.chartD.seriesSet);
+	HJN.chartD.update(HJN.chartD.seriesSet, HJN.Plot.List[i].tpsPlot.n); // #57
 	// Balloonを再描画する
 	HJN.Plot.ShowBalloon();
 };
@@ -1300,13 +1372,13 @@ HJN.init.Copyright=function(){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.TransitionModel.html">HJN.util.TransitionModel</a></li><li><a href="HJN.util.WebLogSimulator.html">HJN.util.WebLogSimulator</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 06 2017 04:04:47 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Nov 12 2017 11:34:09 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

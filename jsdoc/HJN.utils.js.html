@@ -1122,7 +1122,7 @@ HJN.util.Heap = (function() { // #55
     "use strict";
     /** @static */
     var proto = Heap.prototype = {
-            __Heap : {}   // Heap設定コンテナ
+            // クラス変数 _xxx: 0
     };
     /** @constructor */
     function Heap(func){ 
@@ -1231,7 +1231,7 @@ HJN.util.Random = (function() { // #56
     "use strict";
     /** @static */
     var proto = Random.prototype = {
-            __Random : {}   // Random設定コンテナ
+            // クラス変数 _xxx: 0
     };
     /** @constructor */
     function Random(average){
@@ -1296,45 +1296,44 @@ HJN.util.Random = (function() { // #56
 
 
 /**
- * WebLogSimulator
+ * VirtualSystem
  * 
  * @class
- * @name WebLogSimulator
+ * @name VirtualSystem
  * @memberof HJN.util
  * @classdesc Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する
- * @param {Date}
- *            [start=HJN.util.S2D("1970/01/02 00:00:00")] シミュレート開始時刻
  * @param {Number}
- *            [end = 86,400,000 ms(24時間)] シミュレート時間（ミリ秒）
+ *            [start = 1970/01/02 00:00:00)] シミュレート開始時刻（UNIX日付（ミリ秒））
+ * @param {Number}
+ *            [end = startの24時間後] シミュレート終了時刻（UNIX日付（ミリ秒））
  * @param {Number}
  *            [maxClients=1024] Webサーバの最大スレッド数
  * @param {Number}
  *            [maxThreads=20] APサーバの最大スレッド数
  * @param {Number}
- *            [max_connections=10] DBサーバの最大コネクション数
- * @example sim = HJN.util.WebLogSimulator()
+ *            [max_connections=2] DBサーバの最大コネクション数
+ * @example sim = HJN.util.VirtualSystem()
  */
-HJN.util.WebLogSimulator = (function() { // #55
+HJN.util.VirtualSystem = (function() { // #53
     "use strict";
     /** @static */
-    var proto = WebLogSimulator.prototype = {
-            __WebLogSimulator : {}   // WebLogSimulator設定コンテナ
+    var proto = VirtualSystem.prototype = {
+            // クラス変数 _xxx: 0
     };
     /** @constructor */
-    function WebLogSimulator(start, end, maxClients, maxThreads, max_connections){
-        if(!(this instanceof WebLogSimulator)){
-            return new WebLogSimulator(start, end, maxClients, maxThreads, max_connections);
+    function VirtualSystem(start, end, maxClients, maxThreads, max_connections){
+        if(!(this instanceof VirtualSystem)){
+            return new VirtualSystem(start, end, maxClients, maxThreads, max_connections);
         }
         this._start = +start || HJN.util.S2D("1970/01/02 00:00:00");   // シミュレート開始時刻
         this._end = end || this._start + 86400000;    // シミュレート終了時刻（デフォルト：24時間後)
-        this._web = {};
-        this._web.maxClients = maxClients || 1024; // Webサーバの最大スレッド数
-        this._ap = {};
-        this._ap.maxThreads = maxThreads || 20; // APサーバの最大スレッド数
-        this._db = {};
-        this._db.maxConnections = max_connections || 10; // DBサーバの最大コネクション数
-        
-        this._schedule  = HJN.util.Heap( function(tran){ return tran.getTime(); } ); // イベント予約スケジュール（ヒープ）
+        // イベント予約スケジュール（ヒープ）
+        this._simulator = HJN.util.Heap(function(obj){ return obj.getTime(); });
+        // リソース
+        this._resources = {}
+        this._resources["WEB"] = HJN.util.VirtualResource("WEB", 1024, 90000); // Webサーバの最大スレッド数(maxClients)
+        this._resources["AP"]  = HJN.util.VirtualResource("AP", 20, 60000); // APサーバの最大スレッド数(maxThreads)
+        this._resources["DB"]  = HJN.util.VirtualResource("DB", 2, 10000); // DBサーバの最大コネクション数(max_connections)
     }
 
     /** @private */
@@ -1342,33 +1341,36 @@ HJN.util.WebLogSimulator = (function() { // #55
 
     // public
     /**
-     * 取引をスケジューラに登録する
+     * 仮想クライアントをスケジューラに登録する
      * 
      * @function
-     * @memberof HJN.util.WebLogSimulator
-     * @param {Object}
-     *            client 仮想クライアント
+     * @memberof HJN.util.VirtualSystem
+     * @param {String}
+     *            [userName = "sampleSeq"] ログに出力するユーザ名
+     * @param {Number}
+     *            [num = 3] 期間内に生成する仮想クライアントの数
      * @param {Number}
      *            [start = HJN.util.S2D("1970/01/02 00:00:00")]
-     *            開始時刻（UNIX時刻の数値、ミリ秒）
+     *            仮想クライアント生成開始時刻（UNIX時刻の数値、ミリ秒）
      * @param {Number}
-     *            [end = start + 3,600,000ms(1時間後)] 終了時刻（UNIX時刻の数値、ミリ秒）
-     * @param {Number}
-     *            [num = 360] 期間内に開始する仮想クライアント数（デフォルト：360回は、1時間のとき平均10秒毎相当）
+     *            [end = startの0.1秒後] 仮想クライアント生成終了時刻（UNIX時刻の数値、ミリ秒）
+     * @param {Object}
+     *            appModel 仮想クライアントが実行する取引モデル
      */
-    proto.setClients = function(logText, model, start, end, num) {
-        start = +start || HJN.util.S2D("1970/01/02 00:00:00");   // シミュレート開始時刻
-        end = +end || start + 3600000;    // 生成終了時刻（デフォルト：1時間)
-        num = num || 360; // クライアント数
+    proto.setClients = function(userName, num, start, end, appModel) {
+        userName = userName || "Default_";
+        num = num || 3;
+        start = +start || HJN.util.S2D("1970/01/02 00:00:00");
+        end = +end || start + 100;
 
         var r = HJN.util.Random((end - start) / num);
         var t = start;
         for (var i = 0; i &lt; num; i++) {
             // 仮想クライアントを作成する
-            var vClient = HJN.util.TransitionModel(logText+i, model);
+            var vApp = HJN.util.VirtualApp(userName+i, appModel);
             // 仮想クライアントに開始時刻（指数分布）を設定し、登録する
             t += Math.round(r.exponential());
-            this._schedule.push(vClient.start(t));
+            this._simulator.push(vApp.start(t));
         }
     };
     
@@ -1376,65 +1378,87 @@ HJN.util.WebLogSimulator = (function() { // #55
      * シミュレーションを実行する
      * 
      * @function
-     * @memberof HJN.util.WebLogSimulator
-     * @param {eTat}
-     *            ログの出力先eTat
+     * @memberof HJN.util.VirtualSystem
+     * @return {eTat} シミュレート実行結果のログ（eTat）
      */
-    proto.execute = function(eTat) {
-        while(0 &lt; this._schedule.size()) {
-            // 次にイベントを迎える仮想クライアントを取り出すし、次の処理をシミュレートする
-            var vClient = this._schedule.pop().next(eTat);
-            // 仮想クライアントの処理が完了していないとき、再スケジュールする
-            if (vClient) {
-                this._schedule.push(vClient);
+    proto.execute = function() {
+        var eTat = []; // 戻り値
+        var vApp, vApps;
+        // 処理対象がなくなるか、シミュレート終了時刻になるまでシミュレートする
+        while(0 &lt; this._simulator.size() &amp;&amp;
+              this._simulator.top().getTime() &lt;= this._end ) {
+            // 次にイベントを迎える仮想APを取り出し、「次の処理」をシミュレートする
+            vApp = this._simulator.pop();
+            vApps = vApp.next(eTat, this);
+            // 「次の処理」のシミュレートに伴い発生したイベントを、スケジュールする
+            while (vApps.length) {
+                this._simulator.push(vApps.pop());
             }
         }
+        return eTat;
+    };
+
+    /**
+     * リソースを取得する
+     * 
+     * @function
+     * @memberof HJN.util.VirtualSystem
+     * @param {String}
+     *            [name = "unlimited"] 仮想リソース名
+     * @return {Object} 仮想リソース（登録されていないときは、新たにcapacity=1の仮想リソースを登録）
+     */
+    proto.getResouce = function(name) {
+        if (typeof(this._resources[name]) == "undefined") {
+            this._resources[name] = HJN.util.VirtualResource(name);
+        }
+        return this._resources[name];
     };
 
     /* new */
-    return WebLogSimulator;
+    return VirtualSystem;
 }());
 
 
 /**
- * TransitionModel
+ * VirtualApp
  * 
  * @class
- * @name TransitionModel
+ * @name VirtualApp
  * @memberof HJN.util
- * @classdesc 取引モデル
+ * @classdesc仮想アプリケーション
  * @param {String}
- *            [logText = "sampleSeq"] ログに出力する文字列
+ *            [userName = "dafault"] ログに出力するユーザ名
  * @param {Array}
  *            [sequence = SQL３個のオン処理] 取引の処理シーケンスを格納した配列
  * @param {Number}
- *            [times = 30 回] 繰返し回数
+ *            [times = 2 回] 繰返し回数
  * @param {Number}
- *            [thinkTime = 60,000 ms] 繰返し時の次回処理開始までの平均時間(ミリ秒）
+ *            [thinkTime = 300 ms] 繰返し時の次回処理開始までの平均時間(ミリ秒）
  */
-HJN.util.TransitionModel = (function() { // #55
+HJN.util.VirtualApp = (function() { // #53
     "use strict";
     /** @static */
-    var proto = TransitionModel.prototype = {
-            __TransitionModel : {}   // TransitionModel設定コンテナ
+    var proto = VirtualApp.prototype = {
+            // クラス変数 _xxx: 0
     };
     /** @constructor */
-    function TransitionModel(logText, model){
-        if(!(this instanceof TransitionModel)){
-            return new TransitionModel(logText, model);
+    function VirtualApp(userName, model){
+        if(!(this instanceof VirtualApp)){
+            return new VirtualApp(userName, model);
         }
         var sampleSeq = [
-            {tatMin:6,   tatAve:15,   message:"Request message", push:["WEB","AP","DB"], pop:[]},
-            {tatMin:10,  tatAve:50,   message:"SQL select A",    push:["TBL_A"],pop:["TBL_A"]},
-            {tatMin:10,  tatAve:110,  message:"SQL update B",    push:["TBL_B"],pop:[]},
-            {tatMin:10,  tatAve:900,  message:"SQL update C",    push:["TBL_C"],pop:[]},
-            {tatMin:6,   tatAve:15,   message:"Response message",push:[],pop:["TBL_B","TBL_C","DB","AP","WEB"]}
+            {tatMin:6,   tat:15,  note:"Req",     hold:"DB",    free:[]},
+            {tatMin:70,  tat:100, note:"selectA", hold:"TBL_A", free:["TBL_A"]},
+            {tatMin:150, tat:200, note:"updateB", hold:"TBL_B", free:[]},
+            {tatMin:30,   tat:50,  note:"Res",     hold:"",      free:["TBL_B","DB"]}
         ];
-        this._logText = logText || "sampleSeq"; // ログ出力テキスト
+        this._userName = userName || "default"; // ログ出力テキスト
+
+        if (typeof(model) == "undefined") model = {}
         this._sequence = model.sequence || sampleSeq; // イベントシーケンス
-        this._times = model.times || 30;   // イベントシーケンスの繰り返し回数
-        this._thinkTime = model.thinkTime || 60000;   // イベントシーケンス終了時に再実行する場合の平均再開時間（0以下の場合再実行しない）
-        
+        this._times = model.times || 2;   // イベントシーケンスの繰り返し回数
+        this._thinkTime = Math.max(0, model.thinkTime) || 500;   // イベントシーケンス終了時に再実行する場合の平均再開時間
+        this._thinkTimeMin = Math.max(0, model.thinkTimeMin) || 500;   // イベントシーケンス終了時に再実行する場合の最小再開時間
         this._startTime = 0;      // イベントシーケンス開始時刻（UNIX時刻：ミリ秒）
         this._sequenceIdx = 0;    // シミュレータに登録したイベントシーケンスの位置
         this._sequenceTime = 0;   // シミュレータに登録したイベントの時刻
@@ -1448,10 +1472,10 @@ HJN.util.TransitionModel = (function() { // #55
      * 取引を開始する
      * 
      * @function
-     * @memberof HJN.util.TransitionModel
+     * @memberof HJN.util.VirtualApp
      * @param {Number}
      *            startTime 開始時刻（UNIX時刻：ミリ秒）
-     * @return {Object} 取引モデル(this)
+     * @return {Object}仮想アプリケーション(this)
      */
     proto.start = function(startTime) {
         this._times--; // イベントシーケンスの繰り返し回数を1減らす
@@ -1465,7 +1489,7 @@ HJN.util.TransitionModel = (function() { // #55
      * イベント時刻を返却する
      * 
      * @function
-     * @memberof HJN.util.TransitionModel
+     * @memberof HJN.util.VirtualApp
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
     proto.getTime = function() {
@@ -1473,47 +1497,190 @@ HJN.util.TransitionModel = (function() { // #55
     };
 
     /**
+     * リソース使用量を返却する
+     * 
+     * @function
+     * @memberof HJN.util.VirtualApp
+     * @param {Object}
+     *            [resource| 指定なしのとき1.0を返却する] リソース
+     * @return {Number} リソース使用量
+     */
+    proto.getAmount = function(resource) {
+        return 1.0;
+    };
+
+    /**
      * 次の状態に遷移する、シーケンス終了時TATログを出力する
      * 
      * @function
-     * @memberof HJN.util.TransitionModel
+     * @memberof HJN.util.VirtualApp
      * @param {eTat}
      *            eTat ログ出力先
-     * @return {Object|null} 取引モデル(this)、登録処理完了時はnull
+     * @param {Object}
+     *            system VirtualSystem
+     * @return {Array}再スケジュールする仮想アプリケーションの配列、登録処理完了時はthisを含まない
      */
-    proto.next = function(eTat) {
-        var transactionModel = {}; // 取引モデル
+    proto.next = function(eTat, system) {
+        var vApps = []; // 戻り値
         if (this._sequenceIdx &lt; this._sequence.length) { // イベントシーケンス処理途中のとき
-            // 完了した処理の処理時間を加える
-            var seq = this._sequence[this._sequenceIdx];
-            var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tatAve - seq.tatMin));
-            this._sequenceTime += seq.tatMin + tatAdd;
-            // 次の処理を参照する（ シミュレータに登録したイベントシーケンスの位置）
-            this._sequenceIdx++;
-            return this;
+            var seq = this._sequence[this._sequenceIdx]; // 現在の処理シーケンス位置
+            
+            if (typeof(seq.hold) !== "undefined" &amp;&amp; seq.hold !== "") {
+                // holdリソースがあるときリソースを取得する
+                vApps = system.getResouce(seq.hold).hold(this);
+            } else {
+                // holdリソースがないとき
+                vApps.push(this);
+            }
+            
+            // リソースを確保できたときthisの処理する
+            if (0 &lt; vApps.length) {
+                // 完了した処理の処理時間を加える
+                var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tat - seq.tatMin));
+                this._sequenceTime += seq.tatMin + tatAdd;
+                // freeで指定されたリソースを解放する
+                if (typeof(seq.free) !== "undefined") {
+                    for (var i = 0; i &lt; seq.free.length; i++) {
+                        vApps = vApps.concat(system.getResouce(seq.free[i]).free(this));
+                    }
+                }
+                // 次の処理を参照する（ シミュレータに登録したイベントシーケンスの位置）
+                this._sequenceIdx++;
+            }
         } else { // イベントシーケンスを終えたとき
             // TATログを出力する
             eTat.push( {x: this._sequenceTime,
                         y: Math.round(this._sequenceTime - this._startTime), 
                         sTatIdx: 0,
-                        message: this._logText} );
+                        message: this._userName} );
             // 継続判定
             if (0 &lt; this._times) { // イベントシーケンスを繰り返すとき
-                this._sequenceTime += this._thinkTime; // イベント時刻にThink timeを加える
+                // イベント時刻にThink time（指数分布）を加える
+                this._sequenceTime += this._thinkTimeMin;
+                if (this._thinkTimeMin &lt; this._thinkTime) {
+                    this._sequenceTime += HJN.util.Random().exponential(
+                                        this._thinkTime - this._thinkTimeMin);
+                }
                 this._times--; // イベントシーケンスの繰り返し回数を1減らす
                 // 処理の先頭に戻る
                 this._startTime = this._sequenceTime;
                 this._sequenceIdx = 0;
-                return this;
+                vApps.push(this);
             } else { // イベントシーケンスを継続しない時
-                return null;
+                // return [];
             }
+        }
+        return vApps;
+    };
+    
+    /**
+     * Freeに伴い、次の状態に遷移する
+     * 
+     * @function
+     * @memberof HJN.util.VirtualApp
+     * @param {Number}
+     *            [time | 変更しない} イベント時刻（UNIX時刻：ミリ秒）
+     */
+    proto.nextByFree = function(time) {
+        // 解放された時刻をイベント時刻に設定する
+        if (typeof(time) == "number") this._sequenceTime = time;
+        // 次の処理を参照する（ シミュレータに登録したイベントシーケンスの位置）
+        this._sequenceIdx++;
+    };
+
+    /* new */
+    return VirtualApp;
+}());
+
+
+
+/**
+ * VirtualResource
+ * 
+ * @class
+ * @name VirtualResource
+ * @memberof HJN.util
+ * @classdesc仮想リソース
+ * @param {String}
+ *            [name = "unlimited"] リソース名（"unlimited"はリソース解放待ちを管理しない）
+ * @param {Number}
+ *            [capacity = 1] 保有リソース総量（数）
+ * @param {Number}
+ *            [timeout = 10秒] 解放待ちタイムアウト時間
+ */
+HJN.util.VirtualResource = (function() { // #53
+    "use strict";
+    /** @static */
+    var proto = VirtualResource.prototype = {
+            // クラス変数 _xxx: 0
+    };
+    /** @constructor */
+    function VirtualResource(name, capacity, timeout){
+        if(!(this instanceof VirtualResource)){
+            return new VirtualResource(name, capacity);
+        }
+        this._name = name || "unlimited";   // リソース名
+        this._capacity = capacity || 1.0;       // 保有リソース量（数）
+        this._timeout = timeout || 10000;   // 解放待ちタイムアウト時間
+
+        this._remaining = this._capacity;     // 残リソース量（数）
+        this._waitQueue = HJN.util.Heap(    // リソース解放待ちキュー（登録時間順）
+                function(obj){ return obj.getTime(); });
+    }
+
+    /** @private */
+    //
+
+    // public
+    /**
+     * リソースを取得する
+     * 
+     * @function
+     * @memberof HJN.util.VirtualResource
+     * @param {Object}
+     *            vApp リソースにhold要求する仮想AP
+     * @return {Array} スケジューラに登録するイベントの配列([vApp] | [])
+     */
+    proto.hold = function(vApp) {
+        if (this._name == "unlimited") return [vApp]; // リソース解放待ちを管理しないとき
+        
+        var amount = vApp.getAmount(this); // 消費リソース量(デフォルト1.0）
+        if (amount &lt;= this._remaining) { // リソースを取得できるとき
+            this._remaining -= amount;  // 残リソース量（数）を減らす
+            return [vApp];           
+        } else { // リソース解放待ちとなるとき
+            this._waitQueue.push(vApp);
+            return []; // リソース解放待ちタイムアウトイベント ToDo
         }
     };
 
+    /**
+     * リソースを解放する
+     * 
+     * @function
+     * @memberof HJN.util.VirtualResource
+     * @param {Object}
+     *            vApp 解放するリソース
+     * @return {Array} スケジューラに登録するイベントのリスト
+     */
+    proto.free = function(vApp) {
+        if (this._name == "unlimited") return []; // リソース解放待ちを管理しないとき
+        var vApps = []; // 戻り値
+        this._remaining += vApp.getAmount(this); // 解放した分、残リソース量（数）を増やす(デフォルト1.0）
+        while (0 &lt; this._waitQueue.size() &amp;&amp; 0 &lt; this._remaining){ // リソースに余裕がある間
+            var amount = this._waitQueue.top().getAmount(this); // 次のリソース解放待ちキューの使用量
+            if (amount &lt;= this._remaining) { // リソースに余裕があるとき
+                var app = this._waitQueue.pop(); // リソース解放待ちキューからfreeするappを取り出す
+                app.nextByFree(vApp.getTime()); // appにfree時刻をセットする
+                vApps.push(app); // appをスケジュールイベントに登録する
+                this._remaining -= amount; // 残リソースを更新
+            }
+        }
+        return vApps;
+    };
     
     /* new */
-    return TransitionModel;
+    return VirtualResource;
 }());
 </code></pre>
         </article>
@@ -1525,13 +1692,13 @@ HJN.util.TransitionModel = (function() { // #55
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.TransitionModel.html">HJN.util.TransitionModel</a></li><li><a href="HJN.util.WebLogSimulator.html">HJN.util.WebLogSimulator</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 06 2017 04:04:47 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Nov 12 2017 11:34:09 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
