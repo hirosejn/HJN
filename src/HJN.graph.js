@@ -2,7 +2,7 @@
 /* HJN クラス変数 */
 /** @namespace */
 HJN = {};
-HJN.ver = "v0.11.12";
+HJN.ver = "v0.11.13";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */

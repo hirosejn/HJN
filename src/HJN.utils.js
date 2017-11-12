@@ -1413,6 +1413,70 @@ HJN.util.VirtualApp = (function() { // #53
     var proto = VirtualApp.prototype = {
             // クラス変数 _xxx: 0
     };
+
+    /**
+     * 取引モデルを取得する（ユーティリティ）
+     * 
+     * @function
+     * @memberof HJN.util.VirtualApp
+     * @param {Array}
+     *            [webApDb = []] 使用リソースの一覧["WEB","AP","DB"]
+     * @param {Number}
+     *            [tat = 5] 使用リソースの平均取得時間＆平均開放時間
+     * @param {Number}
+     *            [tatMin = 2] 使用リソースの最小取得時間＆最小開放時間
+     * @param {Array}
+     *            [sequence = []] イベントシーケンス
+     * @param {Number}
+     *            [times = undefined] イベントシーケンスの繰り返し回数（未指定時:1)
+     * @param {Number}
+     *            [thinkTime= undefined] イベントシーケンス終了時に再実行する場合の平均再開時間（未指定時:500)
+     * @param {Number}
+     *            [thinkTimeMin = undefined]
+     *            イベントシーケンス終了時に再実行する場合の最小再開時間（未指定時:thinkTimeと同じ）
+     * @return {Object} 取引モデル
+     */
+    VirtualApp.getModel = function(webApDb, tatMin, tat, sequence, times, thinkTimeMin, thinkTime) {
+        var model = {};
+        if (typeof(times) == "number")model.times = times;
+        if (typeof(thinkTime) == "number")model.thinkTime = thinkTime;
+        if (typeof(thinkTimeMin) == "number")model.thinkTimeMin = thinkTimeMin;
+
+        tat = tat || 5;
+        tatMin = tatMin || tat;
+        model.sequence = []; // 処理シーケンス
+        // リソース（WebApDb)取得処理を登録する
+        webApDb.forEach( function(e) {
+            model.sequence.push({hold:e, tatMin:tatMin, tat:tat, free:[]});
+        });
+        // 指定シーケンスを登録する
+        model.sequence = model.sequence.concat(sequence);
+        // 指定シーケンスの未開放リソースを取得する
+        var resources = [];
+        sequence.forEach( function(tran) {
+            if (tran.hold !== "") {
+                resources.push(tran.hold);                
+            }
+            if (tran.free) {
+                tran.free.forEach( function(free){
+                    resources.some( function(r, i){
+                        if (r == free) {
+                            resources.splice(i,1);
+                            return true;
+                        }
+                    })    
+                })
+            }
+        }, this);
+        // 未開放リソース（sequence未開放とWebApDb)開放処理を登録する
+        var freeResources = resources.reverse().concat(webApDb.reverse());
+        model.sequence = model.sequence.concat(
+                [{hold: "", tatMin: tatMin * webApDb.length, tat: tat * webApDb.length,
+                    free: freeResources}]);
+        
+        return model;
+    };
+    
     /** @constructor */
     function VirtualApp(userName, model){
         if(!(this instanceof VirtualApp)){
@@ -1427,8 +1491,17 @@ HJN.util.VirtualApp = (function() { // #53
         this._userName = userName || "default"; // ログ出力テキスト
 
         if (typeof(model) == "undefined") model = {}
+        
         this._sequence = model.sequence || sampleSeq; // イベントシーケンス
-        this._times = model.times || 2;   // イベントシーケンスの繰り返し回数
+        if (model.baseModel) { // baseModel指定があるとき、イベントシーケンスにbaseModelを追加する
+            var tmpModel = VirtualApp.getModel(
+                    model.baseModel.holds, model.baseModel.tatMin, model.baseModel.tat,
+                    model.sequence,
+                    model.times, model.thinkTimeMin, model.thinkTime)
+            this._sequence = tmpModel.sequence;
+        }
+        
+        this._times = model.times || 1;   // イベントシーケンスの繰り返し回数
         this._thinkTime = Math.max(0, model.thinkTime) || 500;   // イベントシーケンス終了時に再実行する場合の平均再開時間
         this._thinkTimeMin = Math.max(0, model.thinkTimeMin) || 500;   // イベントシーケンス終了時に再実行する場合の最小再開時間
         this._startTime = 0;      // イベントシーケンス開始時刻（UNIX時刻：ミリ秒）
@@ -1497,7 +1570,7 @@ HJN.util.VirtualApp = (function() { // #53
         if (this._sequenceIdx < this._sequence.length) { // イベントシーケンス処理途中のとき
             var seq = this._sequence[this._sequenceIdx]; // 現在の処理シーケンス位置
             
-            if (typeof(seq.hold) !== "undefined" && seq.hold !== "") {
+            if (seq.hold && seq.hold !== "") {
                 // holdリソースがあるときリソースを取得する
                 vApps = system.getResouce(seq.hold).hold(this);
             } else {
@@ -1505,13 +1578,13 @@ HJN.util.VirtualApp = (function() { // #53
                 vApps.push(this);
             }
             
-            // リソースを確保できたときthisの処理する
+            // リソースを確保できたとき、thisの処理を完了させる
             if (0 < vApps.length) {
                 // 完了した処理の処理時間を加える
                 var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tat - seq.tatMin));
                 this._sequenceTime += seq.tatMin + tatAdd;
-                // freeで指定されたリソースを解放する
-                if (typeof(seq.free) !== "undefined") {
+                // 処理完了に伴うリソース（freeで指定）の解放
+                if (seq.free) {
                     for (var i = 0; i < seq.free.length; i++) {
                         vApps = vApps.concat(system.getResouce(seq.free[i]).free(this));
                     }
@@ -1559,7 +1632,7 @@ HJN.util.VirtualApp = (function() { // #53
         // 次の処理を参照する（ シミュレータに登録したイベントシーケンスの位置）
         this._sequenceIdx++;
     };
-
+    
     /* new */
     return VirtualApp;
 }());
@@ -1632,7 +1705,7 @@ HJN.util.VirtualResource = (function() { // #53
      * @function
      * @memberof HJN.util.VirtualResource
      * @param {Object}
-     *            vApp 解放するリソース
+     *            vApp リソースにfree要求する仮想AP
      * @return {Array} スケジューラに登録するイベントのリスト
      */
     proto.free = function(vApp) {

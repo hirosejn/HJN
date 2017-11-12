@@ -307,7 +307,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1480">line 1480</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1553">line 1553</a>
     </dir>
     
 
@@ -452,7 +452,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1467">line 1467</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1540">line 1540</a>
     </dir>
     
 
@@ -558,7 +558,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1495">line 1495</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1568">line 1568</a>
     </dir>
     
 
@@ -716,7 +716,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1556">line 1556</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1629">line 1629</a>
     </dir>
     
 
@@ -829,7 +829,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1452">line 1452</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1525">line 1525</a>
     </dir>
     
 
@@ -958,6 +958,385 @@
 
 
         
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1439">line 1439</a>
+    </dir>
+    
+
+    <h4 class="name" id=".VirtualApp.getModel">
+    <span class="type-signature">(static) </span>VirtualApp.getModel<span class="signature">(webApDb<span class="signature-attributes">opt</span>, tat<span class="signature-attributes">opt</span>, tatMin<span class="signature-attributes">opt</span>, sequence<span class="signature-attributes">opt</span>, times<span class="signature-attributes">opt</span>, thinkTime<span class="signature-attributes">opt</span>, thinkTimeMin<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		取引モデルを取得する（ユーティリティ）
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>webApDb</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    []
+                
+                </span>
+            
+
+            <div class="description last">使用リソースの一覧["WEB","AP","DB"]</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>tat</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    5
+                
+                </span>
+            
+
+            <div class="description last">使用リソースの平均取得時間＆平均開放時間</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>tatMin</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    2
+                
+                </span>
+            
+
+            <div class="description last">使用リソースの最小取得時間＆最小開放時間</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>sequence</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    []
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンス</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>times</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンスの繰り返し回数（未指定時:1)</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>thinkTime</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンス終了時に再実行する場合の平均再開時間（未指定時:500)</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>thinkTimeMin</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンス終了時に再実行する場合の最小再開時間（未指定時:thinkTimeと同じ）</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    取引モデル
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
     
 
     
@@ -979,7 +1358,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Nov 12 2017 11:34:09 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 13 2017 01:39:46 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

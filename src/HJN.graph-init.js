@@ -19,9 +19,7 @@ HJN.init.ChartRegist = function(chartName){
 	html_chart.innerHTML = ''
 	    + '<div id="' + chartName + '"></div>'
         + '<div id="' + chartName + 'Detail"></div>'
-        + '<fieldset>'
-            + '<div id="lineViewer">logdata</div>'
-        + '</fieldset>';
+        + '<fieldset><div id="lineViewer">logdata</div></fieldset>';
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
@@ -30,15 +28,16 @@ HJN.init.ChartRegist = function(chartName){
         + '  <iframe id="fileInfo"></iframe>'
         + '</div>'
         + '<div class="hjnBurgerTray">'
-        + '  <input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize"'
-        + '    checked="checked" /> <label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>'
+        + '  <input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
+        + '    <label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>'
         + '  <div class="hjnBurgerTitle">'
-        + '    <input id="hjnBoxPlaceOn" type="checkbox"'
-        + '      class="hjnBoxSwitch hjnResize" /> <label for="hjnBoxPlaceOn"'
-        + '      class="hjnCtrlBox"><span></span></label>'
+        + '    <input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
+        + '      <label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>'
         + '    <p>'
-        + '      <a class="hjnLabel4Input" href="../jsdoc/index.html" target=”_hirosejnJSDoc3”>TAT log diver</a><BR>'
-        + '      <a class="hjnLabel4Input" href="https://github.com/hirosejn/" target=”_hirosejnGit”>&copy;2017 Junichiroh Hirose</a>'
+        + '      <a class="hjnLabel4Input" href="../jsdoc/index.html"'
+        + '                target=”_hirosejnJSDoc3”>TAT log diver</a><BR>'
+        + '      <a class="hjnLabel4Input" href="https://github.com/hirosejn/"'
+        + '                target=”_hirosejnGit”>&copy;2017 Junichiroh Hirose</a>'
         + '    </p>'
         + '  </div>'
         + '  <div class="hjnBurgerWrap">'
@@ -53,7 +52,7 @@ HJN.init.ChartRegist = function(chartName){
 	html_chart.parentNode.insertBefore(html_nav, html_chart);
 	
 	var dropFieldName = chartName;	// ファイルドロップを受け付けるタグ名
-	HJN.util.Logger.ShowLogTextInit();			// 処理時間計測の初期化
+	HJN.util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
 
 	// グラフのインスタンスを作成し初期化する
 	HJN.chart = new HJN.Graph(chartName, "HJN.chart");
@@ -88,7 +87,7 @@ HJN.init.CreateSampleTatLog1 = function(){
         d= Math.floor(x.getTime()),
         y = 0.0,
         random = 0;
-    for (var i = 0; i < num; i++) {     // jsはミリ秒単位
+    for (var i = 0; i < num; i++) { // jsはミリ秒単位
         // 次の電文発生時刻を求める
         d += Math.round( Math.random() * 1000.0 / (2 * freq) *
                             (1 + (0.5 * Math.cos(2 * Math.PI * i / num)))
@@ -111,52 +110,24 @@ HJN.init.CreateSampleTatLog2 = function(){ // #53
     var h = 3600000; // 1時間（ミリ秒）
     var min = 60000; // 1分（ミリ秒）
     var sec =  1000; // 1秒（ミリ秒）
+    var ms =      1; // 1ミリ秒
 
-    // 仮想クライアントが実行する取引モデルの宣言
-    var onModel = { // オンライン取引１
-            times: 60,   // イベントシーケンスの繰り返し回数
-            thinkTimeMin: 3*sec,   // イベントシーケンス終了時に再実行する場合の平均再開時間
-            thinkTime: 10*sec,   // イベントシーケンス終了時に再実行する場合の平均再開時間
-            sequence: [ // イベントシーケンス
-                {note:"Req",     hold:"WEB",  tatMin:2,  tat:5,   free:[]},
-                {note:"Exec",    hold:"AP",   tatMin:2,  tat:5,   free:[]},
-                {note:"Bigin",   hold:"DB",   tatMin:2,  tat:5,   free:[]},
-                {note:"select A",hold:"",     tatMin:30, tat:50,  free:[]},
-                {note:"updateB", hold:"TBL_B",tatMin:10, tat:50,  free:[]},
-                {note:"updateC", hold:"TBL_C",tatMin:80, tat:100, free:[]},
-                {note:"Commit",  hold:"",     tatMin:2,  tat:5,   free:["TBL_B","TBL_C","DB"]},
-                {note:"Exec",    hold:"",     tatMin:2,  tat:5,   free:["AP"]},
-                {note:"Res",     hold:"",     tatMin:2,  tat:5,   free:["WEB"]}
-            ]
-        };
+    // 仮想クライアントが実行する取引モデルの宣言（3通りの書き方）
+    var onModel = HJN.util.VirtualApp.getModel(["WEB","AP","DB"], 2*ms, 5*ms,
+            [   {note:"select A", tatMin:30, tat:50},
+                {note:"updateB", hold:"TBL_B",tatMin:10, tat:50},
+                {note:"updateC", hold:"TBL_C",tatMin:80, tat:100}
+            ], 60, 3*sec, 10*sec);
     var onMode2 = { // オンライン取引2
+            baseModel: {holds:["WEB","AP","DB"], tatMin: 2, tat:5},
+            sequence: [ {hold:"",    tatMin:100,tat:500} ], // イベントシーケンス
             times: 60,   // イベントシーケンスの繰り返し回数
-            thinkTimeMin: 500,   // イベントシーケンス終了時に再実行する場合の平均再開時間
-            thinkTime: 1*sec,   // イベントシーケンス終了時に再実行する場合の平均再開時間
-            sequence: [ // イベントシーケンス
-                {hold:"WEB",  tatMin:2,  tat:5,   free:[]},
-                {hold:"AP",   tatMin:2,  tat:5,   free:[]},
-                {hold:"DB",   tatMin:2,  tat:5,   free:[]},
-                {hold:"",     tatMin:100,tat:500, free:["DB","AP","WEB"]},
-            ]
+            thinkTimeMin: 500,  // イベントシーケンス終了時に再実行する場合の最小再開時間
+            thinkTime: 1*sec    // イベントシーケンス終了時に再実行する場合の平均再開時間
         };
-    
-    var btModel4 = { // バッチ取引3
-            times: 1,   // イベントシーケンスの繰り返し回数
-            thinkTime: 1*min,   // イベントシーケンス終了時に再実行する場合の平均再開時間
-            sequence: [ // イベントシーケンス
-                {tatMin:2,  tat:5,    hold:"DB",   free:[]},
-                {tatMin:2000,tat:3000,hold:"TBL_B",free:[]},
-                {tatMin:6,tat:15,     hold:"",     free:["TBL_B","DB"]}
-            ]
-        };
-    var model3 = '{' // バッチ取引3
-        + '"times": 1, "thinkTime": 1000,'
-        + '"sequence": ['
-        + '  {"tatMin":2,   "tat":5,   "hold":"DB",   "free":[]},'
-        + '  {"tatMin":2000,"tat":3000,"hold":"TBL_B","free":[]},'
-        + '  {"tatMin":6,   "tat":15,  "hold":"",     "free":["TBL_B","DB"]}'
-        + ']}';
+    var model3 = '' // バッチ取引3
+        + '{ "baseModel":  {"holds": ["DB"], "tatMin": 2, "tat":5},'
+        + '  "sequence": [{"hold":"TBL_B","tatMin":2000,"tat":3000}]}';
     var btModel3 = JSON.parse(model3);
 
     // シミュレータ（開始時刻、停止時刻、Webスレッド数、APスレッド数、DBコネクション数）
@@ -167,7 +138,7 @@ HJN.init.CreateSampleTatLog2 = function(){ // #53
      vSys.setClients("select A update B,C user", 100, start+16.0*h, start+17.0*h, onModel);
      vSys.setClients("select A update B,C 増user",20, start+16.5*h, start+16.6*h, onModel);
      vSys.setClients("排他なし user",100, start+16.0*h, start+17.0*h, onMode2);
-     vSys.setClients("バッチ処理 update B＊＊＊＊＊＊＊＊＊", 20, start+16.0*h, start+17.0*h, btModel3);
+     vSys.setClients("バッチ処理 update B＊＊＊＊＊", 20, start+16.0*h, start+17.0*h, btModel3);
 
     // シミューレートシナリオを実行し、生成したeTatをリターンする
     return vSys.execute();
