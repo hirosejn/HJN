@@ -426,13 +426,14 @@ HJN.init.setDetailRange = function(){
     HJN.timer = setTimeout(function(){
             HJN.util.Logger.ShowLogTextInit("[-:HJN.init.setDetailRange]start---------------","calc");
             // 表示中Plotsのrangeを更新する #30
-            var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
-            HJN.Plot.List[i].rangePlus  = document.getElementById("DetailRangePlus").value;
-            HJN.Plot.List[i].rangeMinus = document.getElementById("DetailRangeMinus").value;
             var rangeTagUnit = document.getElementById("DetailRangeUnit"); // #48
             HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : HJN.chart.cycle; // #57
-            HJN.Plot.List[i].rangeUnit  = HJN.detailRangeUnit; // #48
-
+            var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
+            if (0 <= i) { // #58
+                HJN.Plot.List[i].rangePlus  = document.getElementById("DetailRangePlus").value;
+                HJN.Plot.List[i].rangeMinus = document.getElementById("DetailRangeMinus").value;
+                HJN.Plot.List[i].rangeUnit  = HJN.detailRangeUnit; // #48
+            }
             // 下段データを登録する
             HJN.chartD.seriesSet = HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat() );
             // 下段グラフを描画する
@@ -478,17 +479,17 @@ HJN.Plot.List = [];
  * @param {Objcet}
  *            point dygraph の point
  */
-HJN.Plot.PointClickCallback = function(point) {
+HJN.Plot.PointClickCallback = function(point, ann) {
 	"use strict";
 	HJN.util.Logger.ShowLogText("[0:PointClickCallback]start---------------","calc");
 	var	n = HJN.seriesConfig.findIndex(function(e){	return e.key === point.name; }),// シリーズ番号
 		x = point.xval,	// ミリ秒
 		y = point.yval; // 秒
 
-	// ETPS,EMPS,EAPSのとき、TATが幅に含まれるよう、幅(range)を拡大する #57
+    // ETPS,EMPS,EAPSのPlotクリック時、TATが幅に含まれるよう、幅(range)を拡大する #57
     var rangeTagUnit = document.getElementById("DetailRangeUnit");
-    var rangeUnit  = rangeTagUnit  ? +rangeTagUnit.value : HJN.chart.cycle;
-	if ((n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N) 
+	var rangeUnit  = rangeTagUnit  ? +rangeTagUnit.value : HJN.chart.cycle;
+    if ((n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N) 
             && rangeUnit < HJN.chart.cycle) {
         rangeUnit = HJN.chart.cycle;
         HJN.detailRangeUnit = rangeUnit;
@@ -500,7 +501,6 @@ HJN.Plot.PointClickCallback = function(point) {
             }
         }
     }
-
 	// グラフの日時で、詳細グラフを再作成する
 	HJN.init.SetDetailDateTime(x);
 	HJN.chartD.createSeries(HJN.init.GetSliderRangedEtat(n)); // #57
@@ -510,6 +510,26 @@ HJN.Plot.PointClickCallback = function(point) {
 	HJN.Plot.Add(n, x, y);
 	// Balloonを再描画する
 	HJN.Plot.ShowBalloon();
+};
+
+/**
+ * Annotationクリック時呼出し用関数<br>
+ * Annotationに該当するPlotを選択し、下段グラフを更新する
+ * 
+ * @param {Objcet}
+ *            point dygraph の point
+ */
+HJN.Plot.AnnotationClickCallback = function(point) { // #58
+    "use strict";
+    // Baloonに該当するplotを特定する
+    var n = HJN.seriesConfig.findIndex(function(e){ return e.key === point.name; }),
+        x = point.xval, // ミリ秒
+        i = HJN.Plot.List.findIndex(function(p){
+                return(p.n === n && p.x === x) ||   // 完全一致
+                        ("tpsPlot" in p &&          // 詳細一致
+                        p.tpsPlot.n === n && p.tpsPlot.x === x); });
+    // Plot選択時の処理を行う
+    if(0 <= i) HJN.Plot.CheckRadio(i);
 };
 
 /**
@@ -748,9 +768,9 @@ HJN.util.FileReader = (function() {
 		// 名称と挙動の定義
 		this._configFileFormat = HJN.util.Config("m")	
 		    // File Format Config設定画面定義 #51
-            .name("NEWFILE").label(null,"Registered ") // #23
-                .radio("NEWDATA", null, "newly", true)
-                .radio("ADDDATA", null, "additionally").n()
+            .name("NEWFILE").label(null,"Files will ") // #23 #58
+                .radio("NEWDATA", null, "renew the graph", true)
+                .radio("ADDDATA", null, "add data").n()
 			.label(null,"----- File format definition --------").n()
 			.n("<br>")
 			.name("LF").label(null, "[Line feed code]").n()
@@ -809,9 +829,9 @@ HJN.util.FileReader = (function() {
 		// Filter Config設定画面定義 #51
 		this._configFilter = HJN.util.Config("m")
         .name("F_SYNC").label(null,"Sync") // #50
-            .radio("F_SYNC_UPPER", null, "Upper", false ,null, func_F_SYNC_UPPER) // #51
+            .radio("F_SYNC_UPPER", null, "Upper", true ,null, func_F_SYNC_UPPER) // #51
             .radio("F_SYNC_DETAIL", null, "Detail", false, null, func_F_SYNC_DETAIL)
-            .radio("F_ASYNC", null, "Async", true).n()
+            .radio("F_ASYNC", null, "Async", false).n() // #58
 		.label(null,"----- Data filter condition--------").n()
 			.n("<br>")
 			.name("F_TIME").label(null, "[Date filter]").n()

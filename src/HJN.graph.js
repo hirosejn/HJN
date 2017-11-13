@@ -1036,7 +1036,7 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
 
     // アノテーション（グラフ中の吹出し）をクリックしたときの処理(内部関数宣言）
     function annotationClickHandler() { // annotation, p, dygraph, event
-        HJN.Plot.PointClickCallback(arguments[1]);
+        HJN.Plot.AnnotationClickCallback(arguments[1]); // #58
     }
 
     // アノテーション（グラフ中の吹出し）をダブルクリックしたときの処理(内部関数宣言）
@@ -1221,7 +1221,7 @@ HJN.Graph.prototype.addMenu = function () {
             menuId : divMenuId + "_FilterApply"
         };
         var menuFilterClear = { // getFuncTag #34
-            menuLabel : "Clear filter condition",
+            menuLabel : "Reset filter", // #58
             funcName : g + ".menuFilterClear",
             menuId : divMenuId + "_FilterClear"
         };
@@ -1275,9 +1275,9 @@ HJN.Graph.prototype.addMenu = function () {
         var chartView = document.getElementById("menu_View");
         chartView.appendChild(chartViewUl);
 
-        // "Bottom detail graph" Menu
+        // "Detail graph" Menu
         accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, 4, "Bottom detail graph", true)
+                + getAccordionTag(this, 4, "Detail graph", true) // #58
                 + '<ul class="hjnMenuLv2">' //
                 + '<ol><div id="detailTimeRange">' + getDetailTimeRangeTag()
                 + '</div></ol>' // #51
@@ -1290,15 +1290,16 @@ HJN.Graph.prototype.addMenu = function () {
             menuId : divMenuId + "_HelpAbout",
             strFuncName : "HJN.init.Copyright()"
         };
-        var menuHowToUse = { // getAlertTag
-            menuLabel : "How to use TAT log diver",
-            menuId : divMenuId + "_HelpHowToUse",
-            strFuncName : "HJN.init.HowToUse()"
-        };
+        // var menuHowToUse = { // getAlertTag #58
+        // menuLabel : "How to use TAT log diver",
+        // menuId : divMenuId + "_HelpHowToUse",
+        // strFuncName : "HJN.init.HowToUse()"
+        // };
         accordion.innerHTML += '<li class="hjnMenuLv1">'
                 + getAccordionTag(this, 5, "Help")
-                + '<ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpAbout) + getAlertTag(menuHowToUse)
+                + '<ul class="hjnMenuLv2" style="width: 100%;">'
+                + getAlertTag(menuHelpAbout) 
+                // + getAlertTag(menuHowToUse) #58
                 + '</ul>' + '</li>';
 
         // メニュー登録

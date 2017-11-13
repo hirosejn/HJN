@@ -89,7 +89,7 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 		padding: 10px; border-bottom: 1px solid #fff; background: #eee; transition: all 0.1s; }
 .hjnMenuLv1 > label:hover { background: rgba(0,0,0,0.2); }
 .hjnMenuLv1 > label:active { background: #999;  }
-.hjnMenuLv1 > input:checked ~ .hjnMenuLv2 { height: auto; padding: 10px; }
+.hjnMenuLv1 > input:checked ~ .hjnMenuLv2 { height: auto; padding: 9px; }
 
 /* 詳細メニューリスト   */
 .hjnMenuLv2 { transition: 0.1s; height: 0; overflow: hidden; padding: 0 10px; background: #ddd; }
@@ -97,6 +97,7 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 .hjnMenuLv2 label { height: 12px; }
 .hjnLabel4Input:hover,  .hjnButton4Input:hover { background: rgba(0,0,0,0.2); }
 .hjnLabel4Input:active, .hjnButton4Input:active { background: #999; }
+
 /* 詳細メニューリスト  ボタン */
 .hjnMenuLv2 .hjnButton4Input label, .hjnMenuLv2 label.hjnButton4Input, .hjnPlot 
 		{ display: block; padding: 8px 12px 8px 22px;}
