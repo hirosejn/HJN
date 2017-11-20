@@ -1036,7 +1036,7 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
 
     // アノテーション（グラフ中の吹出し）をクリックしたときの処理(内部関数宣言）
     function annotationClickHandler() { // annotation, p, dygraph, event
-        HJN.Plot.AnnotationClickCallback(arguments[1]); // #58
+        HJN.Plot.PointClickCallback(arguments[1]);
     }
 
     // アノテーション（グラフ中の吹出し）をダブルクリックしたときの処理(内部関数宣言）
@@ -1189,6 +1189,7 @@ HJN.Graph.prototype.addMenu = function () {
 
     // メニューを追加する
     var accordion = document.createElement('div'); // 要素の作成
+    var _id = 0;
     if (HJN.chart.chartId === this.chartId) { // 上段グラフ用機能のメニュー追加
         // File Menu
         var menuOpenCsv = { // getInputTag
@@ -1208,7 +1209,7 @@ HJN.Graph.prototype.addMenu = function () {
             menuId : divMenuId + "_LoadCongig"
         };
         accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, 0, "File") + '<ul class="hjnMenuLv2">'
+                + getAccordionTag(this, ++_id, "File") + '<ul class="hjnMenuLv2">'
                 + getInputTag(menuOpenCsv)
                 + this.fileReader.getConfigHtml("File") // #24
                 + getATag(menuSaveConfig) + getInputTag(menuLoadConfig) // #10
@@ -1221,26 +1222,66 @@ HJN.Graph.prototype.addMenu = function () {
             menuId : divMenuId + "_FilterApply"
         };
         var menuFilterClear = { // getFuncTag #34
-            menuLabel : "Reset filter", // #58
+            menuLabel : "Clear filter condition",
             funcName : g + ".menuFilterClear",
             menuId : divMenuId + "_FilterClear"
         };
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Filter">'
-                + getAccordionTag(this, 1, "Filter")
+                + getAccordionTag(this, ++_id, "Filter")
                 + '<ul class="hjnMenuLv2">'
                 + this.fileReader.getConfigHtml("Filter") // #24
-                + getFuncTag(menuFilterApply) + getFuncTag(menuFilterClear)
+                + getFuncTag(menuFilterApply)
+                + getFuncTag(menuFilterClear)
                 + '</ul>' + '</li>';
+
+        // Simulator Menu #53
+        var menuSimulatorSimulate = {
+            menuLabel : "Simulate",
+            funcName : g + ".menuSimulatorSimulate",
+            menuId : divMenuId + "_SimulatorSimulate"
+        };
+        var menuSimulatorShow = {
+                menuLabel : "Show Editor",
+                funcName : g + ".menuSimulatorShow",
+                menuId : divMenuId + "_SimulatorShow"
+            };
+        var menuSimulatorClose = {
+                menuLabel : "Close Editor",
+                funcName : g + ".menuSimulatorClose",
+                menuId : divMenuId + "_SimulatorClose"
+            };
+        var menuSimulatorReset = {
+                menuLabel : "Reset JSON and simulate",
+                funcName : g + ".menuSimulatorReset",
+                menuId : divMenuId + "_SimulatorReset"
+            };
+        accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Simulator">'
+                + getAccordionTag(this, ++_id, "Simulator")
+                + '<ul class="hjnMenuLv2">'
+                + getFuncTag(menuSimulatorSimulate)
+                + getFuncTag(menuSimulatorShow)
+                + getFuncTag(menuSimulatorClose)
+                + getFuncTag(menuSimulatorReset)
+                + '</ul>' + '</li>';
+        // シミュレーション条件JSON Editエリアを設定する
+        var divSimulator = document.getElementById("Simulator");
+        var jsonEditor = document.createElement('div'); // 要素の作成
+        jsonEditor.innerHTML = '<textarea id="SimulatorEditor" '
+            + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
+        divSimulator.appendChild(jsonEditor);
+        var divSimulatorEditor = document.getElementById("SimulatorEditor");
+        divSimulatorEditor.value = HJN.init.CreateSampleTatLogJson(); // デフォルトJSON
+        
         // View Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_View">'
-                + getAccordionTag(this, 3, "View", true)
+                + getAccordionTag(this, ++_id, "View", true)
                 + '<ul class="hjnMenuLv2">' // 
                 + '<li><div id="' + this.chartIdName + '_legend"></div></li>'
                 + '</ul>' + '</li>';
 
         // Download Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Download">'
-                + getAccordionTag(this, 2, "Download")
+                + getAccordionTag(this, ++_id, "Download")
                 + '<ul class="hjnMenuLv2">' //
                 + getATag(menuDownloadImg, "Upper ")
                 + getATag(menuDownloadCsv, "Upper ")
@@ -1256,6 +1297,7 @@ HJN.Graph.prototype.addMenu = function () {
                 'change', this.menuLoadConfig.bind(this), false); // LoadConfig用
 
     } else { // 下段用グラフ機能のメニュー追加
+        _id += 100;
         // Download Menu
         var chartDownloadUl = document.createElement('ul');
         chartDownloadUl.className = "hjnMenuLv2";
@@ -1275,9 +1317,9 @@ HJN.Graph.prototype.addMenu = function () {
         var chartView = document.getElementById("menu_View");
         chartView.appendChild(chartViewUl);
 
-        // "Detail graph" Menu
+        // "Bottom detail graph" Menu
         accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, 4, "Detail graph", true) // #58
+                + getAccordionTag(this, ++_id, "Bottom detail graph", true)
                 + '<ul class="hjnMenuLv2">' //
                 + '<ol><div id="detailTimeRange">' + getDetailTimeRangeTag()
                 + '</div></ol>' // #51
@@ -1290,16 +1332,15 @@ HJN.Graph.prototype.addMenu = function () {
             menuId : divMenuId + "_HelpAbout",
             strFuncName : "HJN.init.Copyright()"
         };
-        // var menuHowToUse = { // getAlertTag #58
-        // menuLabel : "How to use TAT log diver",
-        // menuId : divMenuId + "_HelpHowToUse",
-        // strFuncName : "HJN.init.HowToUse()"
-        // };
+        var menuHowToUse = { // getAlertTag
+            menuLabel : "How to use TAT log diver",
+            menuId : divMenuId + "_HelpHowToUse",
+            strFuncName : "HJN.init.HowToUse()"
+        };
         accordion.innerHTML += '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, 5, "Help")
-                + '<ul class="hjnMenuLv2" style="width: 100%;">'
-                + getAlertTag(menuHelpAbout) 
-                // + getAlertTag(menuHowToUse) #58
+                + getAccordionTag(this, ++_id, "Help")
+                + '<ul class="hjnMenuLv2" style="width: 100%;">' //
+                + getAlertTag(menuHelpAbout) + getAlertTag(menuHowToUse)
                 + '</ul>' + '</li>';
 
         // メニュー登録
@@ -1533,8 +1574,59 @@ HJN.Graph.prototype.menuFilterClear = function () { // #34
         document.getElementById(id).checked = true;
         document.getElementById(id).onchange();
     }
+};
+
+/**
+ * メニュー機能：シミュレータ 指定JSONでシミュレートする
+ * 
+ */
+HJN.Graph.prototype.menuSimulatorSimulate = function () { // #53
+    "use strict";
+    // グラフを再生成する
+    var json = document.getElementById("SimulatorEditor").value;
+    HJN.Plot.List = [];
+    HJN.init.CreateSampleTatLogAndChartShow(json);
 
 };
+/**
+ * メニュー機能：シミュレータ JSON入力エリアを広げる
+ * 
+ */
+HJN.Graph.prototype.menuSimulatorShow = function () { // #53
+    "use strict";
+    // textareaの親を一度閉じる（textareaが大きいとき親が大きくなりスクロールが出るため）
+    HJN.Graph.prototype.menuSimulatorClose();
+    // textareaの親を広げる
+    var divSimulator = document.getElementById("Simulator");
+    var divSimulatorEditor = document.getElementById("SimulatorEditor");
+    divSimulator.style.height = "100%";
+    divSimulator.style.width = "70%";
+    divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
+};
+/**
+ * メニュー機能：シミュレータ JSON入力エリアを小さくする
+ * 
+ */
+HJN.Graph.prototype.menuSimulatorClose = function () { // #53
+    "use strict";
+    // textareaの親の高さを０にして見えなくする
+    var divSimulator = document.getElementById("Simulator");
+    divSimulator.style.height = "0";
+    divSimulator.style.width = "190px";
+};
+/**
+ * メニュー機能：シミュレータ デフォルトJSONにし、シミュレートする
+ * 
+ */
+HJN.Graph.prototype.menuSimulatorReset = function () { // #53
+    "use strict";
+    // textareaに初期値を設定する
+    var divSimulatorEditor = document.getElementById("SimulatorEditor");
+    divSimulatorEditor.value = HJN.init.CreateSampleTatLogJson();
+    // グラフを再生成する
+    HJN.Graph.prototype.menuSimulatorSimulate();
+};
+
 /**
  * メニュー機能：canvas画像をファイルとしてダウンロードする
  * 
