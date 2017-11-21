@@ -77,7 +77,7 @@ HJN.init.ChartRegist = function(chartName){
  */
 HJN.init.CreateSampleTatLogAndChartShow = function(json){ // #53
     "use strict";
-    json = json || HJN.init.CreateSampleTatLogJson();
+    json = json || HJN.init.CreateSampleTatLogJson(0); // ★
     // 初期表示データを自動生成する
     HJN.chart.eTatOriginal = HJN.init.CreateSampleTatLog(json); // arg0：生成データ数
     // データを表示する
@@ -215,8 +215,8 @@ HJN.init.CreateSampleTatLogJson = function(n){ // #53
             + '"end"   : "17.0*h",\n'
             + '"resources" : [\n'
             + '  {"type" :"WEB", "thread":1024,"timeout":"300*sec", "q":1280, "qWait":0},\n'
-            + '  {"type" :"AP",  "thread":20,  "timeout":"300*sec", "q":1280, "qWait":0},\n'
-            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"10*sec"}\n'
+            + '  {"type" :"AP",  "thread":20,  "timeout":"300*sec", "q":1280, "qWait":0},\n' // AP:thread=DB:thread+DB:q
+            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":10,  "qWait":"10*sec"}\n'
             + '],\n'
             + '\n'
             + '"models" : [\n' // 取引モデル一覧
@@ -252,17 +252,18 @@ HJN.init.CreateSampleTatLogJson = function(n){ // #53
             + '"end"   : "40.0*sec",\n'
             + '\n'
             + '"resources" : [\n'
-            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"10*sec"}\n'
+            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"6*sec"}\n'
             + '],\n'
             + '"models" : [\n' // 取引モデル一覧
             + ' { "TEST-1" : {\n' // テスト取引
             + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
-            + '    "sequence": [{"tatMin":"5*sec", "tat":"5*sec", "hold":"TBL_B"}],\n'
-            + '    "times": 2, "thinkTimeMin":"0.9*sec", "thinkTime": "1*sec"}}\n'
+            + '    "sequence": [{"tatMin":"12*sec", "tat":"12*sec", "hold":"TBL_B"}],\n'
+            + '    "times": 2, "thinkTimeMin":"2*sec", "thinkTime": "2*sec"}}\n'
             + '    ],\n'
             + '\n'
             + '"clients" : [\n' // ユーザ作成条件
-            + '  {"num": 2,"start":"10*sec", "end":"20*sec", "model":"TEST-1","user" :"test"}\n'
+            + '  {"num": 1,"start":"0*sec", "end":"0*sec", "model":"TEST-1","user" :"test1"},\n'
+            + '  {"num": 1,"start":"1*sec", "end":"1*sec", "model":"TEST-1","user" :"test2"}\n'
             + ']\n'
             + '}\n';
         
