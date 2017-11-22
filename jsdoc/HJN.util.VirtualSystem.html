@@ -31,7 +31,7 @@
         <h2>
             <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>VirtualSystem</h2>
         
-            <div class="class-description">Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する</div>
+            <div class="class-description">Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する Webサーバ 最大スレッド数： Apache 2.4           [MaxClients = 1024] JBossトランザクションタイムアウト [default-timeout = 300 秒]           キュー長 ： Apache 2.4 ListenBackLog (511) + Linux           tcp_max_syn_backlog(769=1024*0.75+1)、 タイムアウトなしAPサーバ 最大スレッド数(maxThreads),JBossトランザクションタイムアウト [default-timeout = 300 秒] DBサーバ最大コネクション数(max_connections)</div>
         
     
 </header>
@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1270">line 1270</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1257">line 1257</a>
     </dir>
     
 
     <h4 class="name" id="VirtualSystem">
-    <span class="type-signature"></span>new VirtualSystem<span class="signature">(start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, maxClients<span class="signature-attributes">opt</span>, maxThreads<span class="signature-attributes">opt</span>, max_connections<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <span class="type-signature"></span>new VirtualSystem<span class="signature">(start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, resourcesJson<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -156,13 +156,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>maxClients</code></td>
+                <td class="name"><code>resourcesJson</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">String</span>
 
 
             
@@ -183,90 +183,10 @@
             
                 <span class="default">
                 
-                    1024
-                
                 </span>
             
 
-            <div class="description last">Webサーバの最大スレッド数</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>maxThreads</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    20
-                
-                </span>
-            
-
-            <div class="description last">APサーバの最大スレッド数</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>max_connections</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    2
-                
-                </span>
-            
-
-            <div class="description last">DBサーバの最大コネクション数</div>
+            <div class="description last">リソース指定JSONテキスト</div>
         </li></ul>
 
     
@@ -355,17 +275,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1356">line 1356</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1416">line 1416</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.execute">
-    <span class="type-signature">(static) </span>proto.execute<span class="signature">()</span><span class="type-signature"> &rarr; {eTat}</span>
+    <h4 class="name" id=".VirtualSystem.getModel">
+    <span class="type-signature">(static) </span>VirtualSystem.getModel<span class="signature">(baseModel<span class="signature-attributes">opt</span>, tat<span class="signature-attributes">opt</span>, tatMin<span class="signature-attributes">opt</span>, sequence<span class="signature-attributes">opt</span>, times<span class="signature-attributes">opt</span>, thinkTime<span class="signature-attributes">opt</span>, thinkTimeMin<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
 	<div class="description">
-		シミュレーションを実行する
+		取引モデルを取得する（ユーティリティ）
 	</div>
 	
     
@@ -377,6 +297,279 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>baseModel</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    []
+                
+                </span>
+            
+
+            <div class="description last">使用リソースの一覧["WEB","AP","DB"]</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>tat</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    5
+                
+                </span>
+            
+
+            <div class="description last">使用リソースの平均取得時間＆平均開放時間</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>tatMin</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    2
+                
+                </span>
+            
+
+            <div class="description last">使用リソースの最小取得時間＆最小開放時間</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>sequence</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    []
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンス</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>times</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンスの繰り返し回数（未指定時:1)</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>thinkTime</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンス終了時に再実行する場合の平均再開時間（未指定時:500)</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>thinkTimeMin</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">イベントシーケンス終了時に再実行する場合の最小再開時間（未指定時:thinkTimeと同じ）</div>
+        </li></ul>
+
+    
 
 
 
@@ -401,14 +594,14 @@
 	    <span>
 	    	
 	        
-<span class="param-type">eTat</span>
+<span class="param-type">Object</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    シミュレート実行結果のログ（eTat）
+		    取引モデル
 		</div>
 		
 	</li></ul>
@@ -461,12 +654,118 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1382">line 1382</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1351">line 1351</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.getResouce">
-    <span class="type-signature">(static) </span>proto.getResouce<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    <h4 class="name" id="execute">
+    <span class="type-signature">(static) </span>VirtualSystem#execute<span class="signature">()</span><span class="type-signature"> &rarr; {eTat}</span>
+    </h4>
+    
+    
+	<div class="description">
+		シミュレーションを実行する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">eTat</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    シミュレート実行結果のログ（this.eTat）
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1376">line 1376</a>
+    </dir>
+    
+
+    <h4 class="name" id="getResouce">
+    <span class="type-signature">(static) </span>VirtualSystem#getResouce<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
@@ -612,12 +911,118 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1332">line 1332</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1389">line 1389</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.setClients">
-    <span class="type-signature">(static) </span>proto.setClients<span class="signature">(userName<span class="signature-attributes">opt</span>, num<span class="signature-attributes">opt</span>, start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, appModel)</span><span class="type-signature"></span>
+    <h4 class="name" id="getTime">
+    <span class="type-signature">(static) </span>VirtualSystem#getTime<span class="signature">()</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		シミュレーション現在時刻（処理中のイベントの時刻）を返却する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    イベント時刻（UNIX時刻：ミリ秒）
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1310">line 1310</a>
+    </dir>
+    
+
+    <h4 class="name" id="setClients">
+    <span class="type-signature">(static) </span>VirtualSystem#setClients<span class="signature">(userName<span class="signature-attributes">opt</span>, num<span class="signature-attributes">opt</span>, start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, model)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -799,7 +1204,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>appModel</code></td>
+                <td class="name"><code>model</code></td>
             
 
             <span class="type">
@@ -887,6 +1292,119 @@
 
 
         
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1341">line 1341</a>
+    </dir>
+    
+
+    <h4 class="name" id="setEvent">
+    <span class="type-signature">(static) </span>VirtualSystem#setEvent<span class="signature">(event)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		イベントをスケジューラに登録する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">仮想クライアントもしくは仮想リソースのイベント</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
     
 
     
@@ -908,7 +1426,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 13 2017 01:39:46 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Nov 23 2017 05:01:14 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

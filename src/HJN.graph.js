@@ -2,7 +2,7 @@
 /* HJN クラス変数 */
 /** @namespace */
 HJN = {};
-HJN.ver = "v0.11.21";
+HJN.ver = "v0.11.22";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -158,7 +158,6 @@ HJN.timer = {};
  * 
  * @namespace
  * @class
- * @constructor
  * @classdesc TAT(Turnaround time)ログ分析用グラフ
  * @param {string}
  *            chartIdName グラフを作成するHTML要素のID

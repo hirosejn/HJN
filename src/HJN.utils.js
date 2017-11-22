@@ -1,4 +1,8 @@
+debug=false;
 /** ie11 互換用 * */
+if(!Number.MAX_SAFE_INTEGER) Number.MAX_SAFE_INTEGER = 9007199254740991; // #59
+if(!Number.MIN_SAFE_INTEGER) Number.MIN_SAFE_INTEGER = -9007199254740991;
+
 if(!Uint8Array.prototype.indexOf){
     Uint8Array.prototype.indexOf = function(target,index){
         "use strict";
@@ -18,28 +22,31 @@ if (!Uint8Array.prototype.slice) {  // #29
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 if (!Array.prototype.findIndex) {
     Array.prototype.findIndex = function(predicate) {
-        "use strict";
-        var list = Object(this), length = list.length >>> 0, thisArg = arguments[1], value;
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) return i;
-        }
-        return -1;
+          "use strict";
+      if (this === null) throw new TypeError('Array.prototype.findIndex called on null or undefined');
+      if (typeof predicate !== 'function') throw new TypeError('predicate must be a function');
+      var list = Object(this), length = list.length >>> 0, thisArg = arguments[1], value;
+      for (var i = 0; i < length; i++) {
+        value = list[i];
+        if (predicate.call(thisArg, value, i, list)) return i;
+      }
+      return -1;
     };
-}
+  }
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 if (!Array.prototype.find) {
     Array.prototype.find = function(predicate) {
         "use strict";
-        var list = Object(this), length = list.length >>> 0, thisArg = arguments[1], value;
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) { return value; }
-        }
-        return undefined;
+      if (this === null) throw new TypeError('Array.prototype.find called on null or undefined');
+      if (typeof predicate !== 'function')  throw new TypeError('predicate must be a function');
+      var list = Object(this), length = list.length >>> 0, thisArg = arguments[1], value;
+      for (var i = 0; i < length; i++) {
+        value = list[i];
+        if (predicate.call(thisArg, value, i, list))  return value;
+      }
+      return undefined;
     };
-}
-
+  }
 
 /**
  * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
@@ -180,10 +187,6 @@ HJN.util.S2N = function(s0, s1){ // #53
  */
 HJN.util.Cash = (function() {
     "use strict";
-    /** static member */
-    var proto = Cash.prototype = {
-            // クラス変数 _xxx: 0
-        };
     /** constructor */
     function Cash(size){
         size = size || 10;  // TODO 未使用
@@ -199,7 +202,6 @@ HJN.util.Cash = (function() {
      * 第一引数のargumentsを配列に変換する<br>
      * （注：引数が１つ以上あることを前提）
      * 
-     * @function
      * @memberof HJN.util.Cash
      * @param {Number}
      *            args 引数一覧（arguments）
@@ -212,7 +214,6 @@ HJN.util.Cash = (function() {
      * cash判定Keyを取得する<br>
      * （注：引数を'.'でつないだ文字列をkeyとするので、関数名長の上限を超える大きな配列は不可）
      * 
-     * @function
      * @memberof HJN.util.Cash
      * @param {Number}
      *            args 引数一覧（argumentsオブジェクト）
@@ -230,13 +231,12 @@ HJN.util.Cash = (function() {
      * cashオブジェクトを、cashが無いときはundefinedを返却する<br>
      * cashヒットした場合、cashの使用回数をカウントアップする
      * 
-     * @function
      * @memberof HJN.util.Cash
      * @param {Object}
      *            arguments 引数からキー文字列を定める
      * @return {Number|undefined} キャッシュデータ（デーがが無い場合は undefined)
      */
-    proto.getCash = function () {
+    Cash.prototype.getCash = function () {
             if (arguments.length < 1) return undefined;
             var args = Cash._arg2arr(arguments),
                 key = Cash._getKey(args);
@@ -252,13 +252,14 @@ HJN.util.Cash = (function() {
     /**
      * オブジェクトをcashする
      * 
+     * @memberof HJN.util.Cash
      * @param {Object}
      *            cashVal キャッシュするオブジェクト
      * @param {Object}
      *            arguments 第二引数以降の、引数からキー文字列を定める
      * @return {Object} キャッシュデータ（デーがが無い場合は undefined)
      */
-    proto.setCash = function () {
+    Cash.prototype.setCash = function () {
             if (arguments.length < 2) return undefined;
             var cashVal = arguments[0],
                 args = Cash._arg2arr(arguments).slice(1, arguments.length),
@@ -271,13 +272,14 @@ HJN.util.Cash = (function() {
      * レンジキー(form,to)範囲内でキーマッチするcashを、cashが無いときはundefinedを返却する<br>
      * キーは大小比較できる数値であることが前提
      * 
+     * @memberof HJN.util.Cash
      * @param {Number}
      *            from 抽出するキャッシュキー最小値
      * @param {Number}
      *            to 抽出するキャッシュキーの最大値
      * @return {Object} キャッシュデータ（デーがが無い場合は undefined)
      */
-    proto.getRangedCash = function (from, to) {
+    Cash.prototype.getRangedCash = function (from, to) {
             var range = this._ranges.find(function(e){
                     return (e.from <= from && to <= e.to);
                 });
@@ -287,6 +289,7 @@ HJN.util.Cash = (function() {
      * レンジキー(from,to)指定でキャッシュする<br>
      * キーは大小比較できること（通常、数値）、from-to期間内の既存のキャッシュは削除される
      * 
+     * @memberof HJN.util.Cash
      * @param {Object}
      *            cashVal キャッシュするオブジェクト
      * @param {Number}
@@ -295,7 +298,7 @@ HJN.util.Cash = (function() {
      *            to 抽出するキャッシュキーの最大値
      * @return {Object} キャッシュデータ（デーがが無い場合は undefined)
      */
-    proto.setRangedCash = function (cashVal, from, to) {
+    Cash.prototype.setRangedCash = function (cashVal, from, to) {
             if (arguments.length < 3) return undefined;
             // 登録キー範囲に包含される既存キャッシュを削除する
             var count = 0;
@@ -325,7 +328,6 @@ HJN.util.Cash = (function() {
 /**
  * 非同期化 内部関数
  * 
- * @function
  * @param {function}
  *            global 非同期化して実行する関数
  *            <p>
@@ -362,8 +364,6 @@ HJN.util.setZeroTimeout = (function(global) {
  * ロガー
  * 
  * @class
- * @name Logger
- * @memberof HJN.util
  * @classdesc モードに応じたログを出力する。画面ログ表示領域、コンソールログへの出力に対応
  * @param {String}
  *            [mode=0] ログ出力モード
@@ -385,7 +385,6 @@ HJN.util.Logger = (function() { // #27
     /**
      * 一定時間（１分）経過後、最初に本メソッドが呼ばれたときのみログ出力する（ループ用）
      * 
-     * @function
      * @memberof HJN.util.Logger
      * @param {Number}
      *            i 参考番号<br>
@@ -405,7 +404,6 @@ HJN.util.Logger = (function() { // #27
     /**
      * ログ出力： ログテキストを初期化する
      * 
-     * @function
      * @memberof HJN.util.Logger
      * @param {String}
      *            text ログ出力文字列
@@ -420,7 +418,6 @@ HJN.util.Logger = (function() { // #27
     /**
      * ログ出力： ログテキストをテキストアレイに追記し、表示する
      * 
-     * @function
      * @memberof HJN.util.Logger
      * @param {String}
      *            text ログ出力文字列
@@ -446,7 +443,6 @@ HJN.util.Logger = (function() { // #27
     /**
      * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
      * 
-     * @function
      * @memberof HJN.util.Logger
      * @param {String}
      *            textArray 出力するログ（配列１行がログ１件）
@@ -461,7 +457,6 @@ HJN.util.Logger = (function() { // #27
     /**
      * 第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
      * 
-     * @function
      * @memberof HJN.util.Logger
      * @param {String}
      *            elementId iframeのID名
@@ -579,8 +574,6 @@ HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
  * 期間指定eTat取得用Map
  * 
  * @class
- * @name MappedETat
- * @memberof HJN.util
  * @classdesc 指定期間に動いているeTatの一覧を、高速に取得するマップ
  * @param {ETAT}
  *            eTat インデックスを追加するETAT
@@ -590,7 +583,7 @@ HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
 HJN.util.MappedETat = (function() { // #18
     "use strict";
     /** @static */
-    var proto = MappedETat.prototype = {
+    MappedETat.prototype = {
             _abscissa: [],
             _conf :[{ms:      10, step:5, label:"0_10ms_"},
                     {ms:      50, step:2, label:"1_50ms_"},
@@ -614,18 +607,18 @@ HJN.util.MappedETat = (function() { // #18
     }
 
     /** @private */
-    proto._row = function(label, step) {return label + step;};
+    MappedETat.prototype._row = function(label, step) {return label + step;};
 
     /**
      * MapKey取得関数
      * 
      * @private
      */
-    proto._getKey = function(e, i) {        // MapedMap用Key配列関数
+    MappedETat.prototype._getKey = function(e, i) {        // MapedMap用Key配列関数
         var start = e.x - e.y,      // x,yはミリ秒
             end = e.x,
-            _conf = proto._conf,
-            _row = proto._row,
+            _conf = MappedETat.prototype._conf,
+            _row = MappedETat.prototype._row,
             term = _conf[0].ms,
             rowLv = 0;
         if(Math.ceil(end / term) - 1 === Math.floor(start / term)){ // 最小BOX
@@ -647,20 +640,23 @@ HJN.util.MappedETat = (function() { // #18
 
     // static メンバーの設定
     // _confから_abscissa(横軸）を生成する
-    var c = proto._conf,
+    var c = MappedETat.prototype._conf,
         e2 = c[c.length - 2],
         
         e  = c[c.length - 1];
-    proto._abscissa.push( {label: proto._row(e.label, e.step), ms: e.ms ,i: 1,
+    MappedETat.prototype._abscissa.push(
+            {label: MappedETat.prototype._row(e.label, e.step), ms: e.ms ,i: 1,
                 step: e.step, from: e2.ms * e2.step, to: e.ms} );   // 末尾を先頭に追加
     for (var j = c.length - 1; 0 <= j; j--){    // 降順に追加
         e = c[j];
         for (var i = e.step; 0 < i; i--){ // #39
-            proto._abscissa.push( {label: proto._row(e.label, i), ms: e.ms, i: i, 
+            MappedETat.prototype._abscissa.push(
+                    {label: MappedETat.prototype._row(e.label, i), ms: e.ms, i: i, 
                                 step: e.step, from: e.ms * i, to: e.ms * (i + 1)} );
         }
     }
-    proto._abscissa.push( {label: proto._row(c[0].label, 0), ms: c[0].ms, i: 0,
+    MappedETat.prototype._abscissa.push( 
+            {label: MappedETat.prototype._row(c[0].label, 0), ms: c[0].ms, i: 0,
                 step: 0, from: 0, to: c[0].ms} );   // 先頭を末尾に追加
 
     
@@ -668,7 +664,6 @@ HJN.util.MappedETat = (function() { // #18
     /**
      * 指定期間に動いているeTatを検索する
      * 
-     * @function
      * @memberof HJN.util.MappedETat
      * @parm {Number} from 指定期間(from)
      * @parm {Number} [to=from] 指定期間(to)
@@ -723,8 +718,6 @@ HJN.util.MappedETat = (function() { // #18
  * 配列に格納されているオブジェクトのx値で、配列位置を高速検索
  * 
  * @class
- * @name MappedArray
- * @memberof HJN.util
  * @classdesc 配列に格納されているオブジェクトのx値をキーとするマップ
  *            <p>
  *            参考 {@link http://qiita.com/alucky0707/items/10052866719ba5c5f5d7}
@@ -746,11 +739,6 @@ HJN.util.MappedETat = (function() { // #18
  * @example _tatMap = new HJN.util.MappedArray(eTat, this._getKey, true);
  */
 HJN.util.MappedArray = (function() {    // #18
-    "use strict";
-    /** @static */
-    var proto = MappedArray.prototype = {
-            // クラス変数 _xxx: 0
-        };
     /** @constructor */
     function MappedArray(arr, getKey, isMappedMap){
         if(!(this instanceof MappedArray)) return new MappedArray();
@@ -778,7 +766,7 @@ HJN.util.MappedArray = (function() {    // #18
     }
 
     /** @private */
-    proto._createMappedArray = function() {
+    MappedArray.prototype._createMappedArray = function() {
         var key = ""; 
         this._map = this._arr.reduce(function(m, a, i) {
             key = this._getKey.call(a, a, i, m);
@@ -787,7 +775,7 @@ HJN.util.MappedArray = (function() {    // #18
         }, {});
     };
     /** @private */
-    proto._createMappedMappedArray = function() {
+    MappedArray.prototype._createMappedMappedArray = function() {
         var keys = [],
             key = "",
             mKey = "",
@@ -806,28 +794,25 @@ HJN.util.MappedArray = (function() {    // #18
     /**
      * 値の存在チェック
      * 
-     * @function
      * @memberof HJN.util.MappedArray
      */
-    proto.has = function (keyValue) {
+    MappedArray.prototype.has = function (keyValue) {
         return keyValue in this._map;
     };
     /**
      * 該当位置を配列で返す
      * 
-     * @function
      * @memberof HJN.util.MappedArray
      */
-    proto.indexes = function (keyValue) {
+    MappedArray.prototype.indexes = function (keyValue) {
         return this._map[keyValue] || [];
     };
     /**
      * 該当する要素を配列で返す
      * 
-     * @function
      * @memberof HJN.util.MappedArray
      */
-    proto.search = function (keyValue) {    
+    MappedArray.prototype.search = function (keyValue) {    
         var arr = this._arr;
         return this.indexes(keyValue).reduce(function(m, i) {
             m.push(arr[i]);
@@ -837,10 +822,9 @@ HJN.util.MappedArray = (function() {    // #18
     /**
      * Array.prototype.indexOf() 同等
      * 
-     * @function
      * @memberof HJN.util.MappedArray
      */
-    proto.indexOf = function (keyValue) {
+    MappedArray.prototype.indexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
             i = idxArr ? idxArr.length : -1;
         return (0 < i) ? idxArr[0] : -1;
@@ -848,10 +832,9 @@ HJN.util.MappedArray = (function() {    // #18
     /**
      * Array.prototype.lastIndexOf() 同等
      * 
-     * @function
      * @memberof HJN.util.MappedArray
      */
-    proto.lastIndexOf = function (keyValue) {
+    MappedArray.prototype.lastIndexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
             i = idxArr ? idxArr.length : -1;
         return (0 < i) ? idxArr[i-1] : -1;
@@ -865,8 +848,6 @@ HJN.util.MappedArray = (function() {    // #18
  * 定数設定機能
  * 
  * @class
- * @name Config
- * @memberof HJN.util
  * @classdesc 定数設定機能（設定HTML作成機能付き）
  *            <p>
  *            日時、TATフォーマット指定機能追加用に作成 #24
@@ -883,7 +864,7 @@ HJN.util.MappedArray = (function() {    // #18
 HJN.util.Config = (function() { // #24
     "use strict";
     /** @static */
-    var proto = Config.prototype = {
+    Config.prototype = {
             __config : {}   // config設定コンテナ
     };
     /** @constructor */
@@ -902,7 +883,6 @@ HJN.util.Config = (function() { // #24
     /**
      * HTML要素の値が変更した時に、configに当該要素を登録する
      * 
-     * @function
      * @memberof HJN.util.Config
      */
     Config.on = function(t) {
@@ -926,37 +906,33 @@ HJN.util.Config = (function() { // #24
     /**
      * configに登録されているid(=prefix+key)の設定値を取得する
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.getObjctById = function(id) {
+    Config.prototype.getObjctById = function(id) {
         return this.__config[id];
     };
     /**
      * configに登録されているkey(prefix補填)の設定値を取得する
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.getValueByKey = function(key) { 
+    Config.prototype.getValueByKey = function(key) { 
         return this.getObjctById(this._pre + key);
     };
     /**
      * config設定用HTMLテキストを取得する
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.getHtml = function() { 
+    Config.prototype.getHtml = function() { 
         return this._html + this._ole;
     };
     /**
      * keyに値を設定する
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.xset = function(key, val) { 
+    Config.prototype.xset = function(key, val) { 
         this.value[this._pre + key] = val;
     };
     
@@ -964,10 +940,9 @@ HJN.util.Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： 改行
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.n = function (str) {
+    Config.prototype.n = function (str) {
         str = str || "";
         this._html += this._ole + str + this._ols;
         return this;
@@ -975,30 +950,27 @@ HJN.util.Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ネスト一つ下げ
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.nDown = function () {
+    Config.prototype.nDown = function () {
         this._html += this._ols;
         return this;
     };
     /**
      * 定義＆設定画面作成用機能： ネスト一つ上げ
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.nUp = function () {
+    Config.prototype.nUp = function () {
         this._html += this._ole;
         return this;
     };
     /**
      * 定義＆設定画面作成用機能： nameを変更する（radio等の先頭で指定）
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.name = function (str) {
+    Config.prototype.name = function (str) {
         this._nameHtml = str ? 'name="' + this._pre + str + '" ' : '';
         this._name = str;
         return this;
@@ -1006,10 +978,9 @@ HJN.util.Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ラベル要素(prefix+keyで関連付けるformのid属性となる)
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.label = function (key, str, attribute) {
+    Config.prototype.label = function (key, str, attribute) {
         this._html += '<label ' +
                         (key ? 'for="' + this._pre + key + '" ': '') +
                         (attribute || '') + '>' +
@@ -1020,10 +991,9 @@ HJN.util.Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ラベル付された各種入力フォーム
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.labeledForm = function (key, type, typedAttribute,
+    Config.prototype.labeledForm = function (key, type, typedAttribute,
                                 pLabel, sLabel, val, attribute, check, cssClass) {
         var classStr = (cssClass) ? ' class="' + cssClass + '"' : ''; // #51
         this._html += '<label' + classStr + '>' + // #51
@@ -1041,44 +1011,41 @@ HJN.util.Config = (function() { // #24
                     '</label>\n'; // #51
         // デフォルト指定があるとき configにデフォルト値を設定する
         if (type === "radio" && check) {    // radioのとき、nameに対して、選択状態のkeyを登録
-            proto.__config[this._pre + this._name] = key;
+            Config.prototype.__config[this._pre + this._name] = key;
         } else if (type === "number") { // numberradioのとき、keyに対する、val(入力値)を数値として登録
-            proto.__config[this._pre + key] = +val;
+            Config.prototype.__config[this._pre + key] = +val;
         } else {    // text,numberのとき、keyに対する、val(入力値)を登録
-            proto.__config[this._pre + key] = val;
+            Config.prototype.__config[this._pre + key] = val;
         }
         return this;
     };
     /**
      * 定義＆設定画面作成用機能： テキストボックス要素で、文字列を設定
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.number = function (key, pLabel, sLabel, val, attribute) {
-        proto.labeledForm.call(this, key, "number", "", 
+    Config.prototype.number = function (key, pLabel, sLabel, val, attribute) {
+        Config.prototype.labeledForm.call(this, key, "number", "", 
                                 pLabel, sLabel, val, attribute);
         return this;
     };
     /**
      * 定義＆設定画面作成用機能： テキストボックス要素で、数値を設定
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.text = function (key, pLabel, sLabel, val, attribute) {
-        proto.labeledForm.call(this, key, "text", "", 
+    Config.prototype.text = function (key, pLabel, sLabel, val, attribute) {
+        Config.prototype.labeledForm.call(this, key, "text", "", 
                                 pLabel, sLabel, val, attribute);
         return this;
     };
     /**
      * 定義＆設定画面作成用機能： ラジオボタン要素で、選択肢の一つを設定
      * 
-     * @function
      * @memberof HJN.util.Config
      */
-    proto.radio = function (key, pLabel, sLabel, check, attribute, func) {
-        proto.labeledForm.call(this, key, "radio", (check ? 'checked="checked;"' : ''),
+    Config.prototype.radio = function (key, pLabel, sLabel, check, attribute, func) {
+        Config.prototype.labeledForm.call(this, key, "radio", (check ? 'checked="checked;"' : ''),
                                 pLabel, sLabel, "", attribute, check, "hjnLabel4Input");
         // 関数登録指定時、attributeを関数名として、指定関数を登録する #51
         if (func){
@@ -1096,8 +1063,6 @@ HJN.util.Config = (function() { // #24
  * Heap
  * 
  * @class
- * @name Heap
- * @memberof HJN.util
  * @classdesc ヒープ(二分ヒープ)
  *            <p>
  *            最小値(最大値)を効率よく取り出すことができるデータ構造
@@ -1112,10 +1077,6 @@ HJN.util.Config = (function() { // #24
  */
 HJN.util.Heap = (function() { // #55
     "use strict";
-    /** @static */
-    var proto = Heap.prototype = {
-            // クラス変数 _xxx: 0
-    };
     /** @constructor */
     function Heap(func){ 
         if(!(this instanceof Heap)) return new Heap(func);
@@ -1131,12 +1092,11 @@ HJN.util.Heap = (function() { // #55
     /**
      * データを追加する
      * 
-     * @function
      * @memberof HJN.util.Heap
      * @param {Object}
      *            obj 登録オブジェクト
      */
-    proto.push = function(obj) {
+    Heap.prototype.push = function(obj) {
         var k = this._size++;
 
         while( 0 < k ) {
@@ -1151,11 +1111,10 @@ HJN.util.Heap = (function() { // #55
     /**
      * 最小値のデータを取り出す
      * 
-     * @function
      * @memberof HJN.util.Heap
      * @return {Object|undefined} 最小値
      */
-    proto.pop = function() {
+    Heap.prototype.pop = function() {
         var ret = this._heap[0];
         if(0 < this._size){
             var x = this._heap[--this._size];
@@ -1180,22 +1139,20 @@ HJN.util.Heap = (function() { // #55
     /**
      * 最小値を返却する（登録データは変更しない）
      * 
-     * @function
      * @memberof HJN.util.Heap
      * @return {Object|undefined} 最小値
      */
-    proto.top = function() {
+    Heap.prototype.top = function() {
         return this._heap[0];
     };
 
     /**
      * ヒープのサイズを返却する
      * 
-     * @function
      * @memberof HJN.util.Heap
      * @return {Number} ヒープサイズ（0以上）
      */
-    proto.size = function() {
+    Heap.prototype.size = function() {
         return this._size;
     };
     
@@ -1208,8 +1165,6 @@ HJN.util.Heap = (function() { // #55
  * Random
  * 
  * @class
- * @name Random
- * @memberof HJN.util
  * @classdesc 乱数取得<br>
  *            ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>
  *            M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う
@@ -1221,10 +1176,6 @@ HJN.util.Heap = (function() { // #55
  */
 HJN.util.Random = (function() { // #56
     "use strict";
-    /** @static */
-    var proto = Random.prototype = {
-            // クラス変数 _xxx: 0
-    };
     /** @constructor */
     function Random(average){
         if(!(this instanceof Random)) return new Random(average);
@@ -1237,13 +1188,12 @@ HJN.util.Random = (function() { // #56
     /**
      * 一様分布となる乱数を返却する
      * 
-     * @function
      * @memberof HJN.util.Random
      * @param {Number}
      *            [average=this._average] 平均値<br>
      * @return {Number} 乱数
      */
-    proto.uniform = function(average) {
+    Random.prototype.uniform = function(average) {
         average = average || this._average;
         return  2.0 * average * Math.random();
     };
@@ -1251,13 +1201,12 @@ HJN.util.Random = (function() { // #56
     /**
      * 指数分布となる乱数を返却する(lambda = 1/average)
      * 
-     * @function
      * @memberof HJN.util.Random
      * @param {Number}
      *            [average=this._average] 平均値=1/λ、分散=1/(λ^2)<br>
      * @return {Number} 乱数
      */
-    proto.exponential = function(average) {
+    Random.prototype.exponential = function(average) {
         average = average || this._average;
         return (-1.0 * average) * Math.log(1.0 - Math.random());
     };
@@ -1265,13 +1214,12 @@ HJN.util.Random = (function() { // #56
     /**
      * ポアソン分布となる乱数を返却する(lambda = average)
      * 
-     * @function
      * @memberof HJN.util.Random
      * @param {Number}
      *            [average=this._average] 平均値=分散=λ<br>
      * @return {Number} 乱数
      */
-    proto.poisson = function(average) {
+    Random.prototype.poisson = function(average) {
         var lambda = average || this._average;
         var xp = Math.random();
         var k = 0;
@@ -1291,8 +1239,6 @@ HJN.util.Random = (function() { // #56
  * VirtualSystem
  * 
  * @class
- * @name VirtualSystem
- * @memberof HJN.util
  * @classdesc Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する Webサーバ 最大スレッド数： Apache 2.4
  *            [MaxClients = 1024] JBossトランザクションタイムアウト [default-timeout = 300 秒]
  *            キュー長 ： Apache 2.4 ListenBackLog (511) + Linux
@@ -1310,20 +1256,16 @@ HJN.util.Random = (function() { // #56
  */
 HJN.util.VirtualSystem = (function() { // #53
     "use strict";
-    /** @static */
-    var proto = VirtualSystem.prototype = {
-            // クラス変数 _xxx: 0
-    };
     /** @constructor */
     function VirtualSystem(start, end, resourcesJson){
         if(!(this instanceof VirtualSystem)){
             return new VirtualSystem(start, end, resourcesJson);
         }
         if (!resourcesJson) {
-            jsonText =  '['
-                + '{"type" :"WEB", "thread":1024,"timeout":300000, "q":1280, "qWait":0},'
-                + '{"type" :"AP", "thread":20, "timeout":300000, "q":1280, "qWait":0},'
-                + '{"type" :"DB", "thread":2, "timeout": 10000, "q":1000, "qWait":10000}'
+            var jsonText =  '['
+                +   '{"type" :"WEB", "thread":1024,"timeout":300000, "q":1280, "qWait":0},'
+                +   '{"type" :"AP", "thread":20, "timeout":300000, "q":1280, "qWait":0},'
+                +   '{"type" :"DB", "thread":2, "timeout": 10000, "q":1000, "qWait":10000}'
                 + ']';
             resourcesJson = JSON.parse(jsonText);
         }
@@ -1341,8 +1283,8 @@ HJN.util.VirtualSystem = (function() { // #53
             var e = _resources[i];
             this._resources[e.type] = HJN.util.VirtualResource(
                     e.type, e.thread, e.timeout, e.q, e.qWait);
-HJN.util.VirtualSystem.test = this; // ★
         };
+        HJN.util.VirtualSystem.test = this; // ★
     }
 
     /** @private */
@@ -1352,7 +1294,6 @@ HJN.util.VirtualSystem.test = this; // ★
     /**
      * 仮想クライアントをスケジューラに登録する
      * 
-     * @function
      * @memberof HJN.util.VirtualSystem
      * @param {String}
      *            [userName = "sampleSeq"] ログに出力するユーザ名
@@ -1364,21 +1305,26 @@ HJN.util.VirtualSystem.test = this; // ★
      * @param {Number}
      *            [end = startの0.1秒後] 仮想クライアント生成終了時刻（UNIX時刻の数値、ミリ秒）
      * @param {Object}
-     *            appModel 仮想クライアントが実行する取引モデル
+     *            model 仮想クライアントが実行する取引モデル
      */
-    proto.setClients = function(userName, num, start, end, appModel) {
+    VirtualSystem.prototype.setClients = function(userName, num, start, end, model) {
         userName = userName || "Default_";
         num = num || 3;
         start = +start || HJN.util.S2D("1970/01/02 00:00:00");
         end = +end || start + 100;
-
+        // baseModelが指定されているとき、modelに展開する
+        if (model.baseModel){
+            model = HJN.util.VirtualSystem.getModel(
+                model.baseModel.holds, model.baseModel.tatMin, model.baseModel.tat,
+                model.sequence, model.times, model.thinkTimeMin, model.thinkTime);
+        }
+        // 仮想APを登録する
         var checkStart = start;
         var r = HJN.util.Random((end - start) / num);
         var t = start;
-        // 仮想APを登録する
         for (var i = 0; i < num; i++) {
             // 仮想APを作成する
-            var vApp = HJN.util.VirtualApp(userName+i, appModel);
+            var vApp = HJN.util.VirtualApp(userName+i, model);
             // 仮想APに開始時刻（指数分布）を設定し、登録する
             t += Math.round(r.exponential());
             this.setEvent(vApp.start(t));
@@ -1388,23 +1334,21 @@ HJN.util.VirtualSystem.test = this; // ★
     /**
      * イベントをスケジューラに登録する
      * 
-     * @function
      * @memberof HJN.util.VirtualSystem
      * @param {Object}
      *            event 仮想クライアントもしくは仮想リソースのイベント
      */
-    proto.setEvent = function(event) {
+    VirtualSystem.prototype.setEvent = function(event) {
         this._simulator.push(event);
     }
     
     /**
      * シミュレーションを実行する
      * 
-     * @function
      * @memberof HJN.util.VirtualSystem
      * @return {eTat} シミュレート実行結果のログ（this.eTat）
      */
-    proto.execute = function() {
+    VirtualSystem.prototype.execute = function() {
         var event, events;
         // 処理対象がなくなるか、シミュレート終了時刻になるまでシミュレートする
         while(0 < this._simulator.size() &&
@@ -1424,16 +1368,14 @@ HJN.util.VirtualSystem.test = this; // ★
     /**
      * リソースを取得する
      * 
-     * @function
      * @memberof HJN.util.VirtualSystem
      * @param {String}
      *            [name = "unlimited"] 仮想リソース名
      * @return {Object} 仮想リソース（登録されていないときは、新たにcapacity=1の仮想リソースを登録）
      */
-    proto.getResouce = function(name) {
+    VirtualSystem.prototype.getResouce = function(name) {
         if (typeof(this._resources[name]) === "undefined") {
             this._resources[name] = HJN.util.VirtualResource(name);
-// console.log("new %o", name); // ★
         }
         return this._resources[name];
     };
@@ -1441,14 +1383,89 @@ HJN.util.VirtualSystem.test = this; // ★
     /**
      * シミュレーション現在時刻（処理中のイベントの時刻）を返却する
      * 
-     * @function
-     * @memberof HJN.util.VirtualApp
+     * @memberof HJN.util.VirtualSystem
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
-    proto.getTime = function() {
+    VirtualSystem.prototype.getTime = function() {
         return this._now;
     };
 
+
+    // Static Method
+    /**
+     * 取引モデルを取得する（ユーティリティ）
+     * 
+     * @memberof HJN.util.VirtualSystem
+     * @param {Array}
+     *            [baseModel = []] 使用リソースの一覧["WEB","AP","DB"]
+     * @param {Number}
+     *            [tat = 5] 使用リソースの平均取得時間＆平均開放時間
+     * @param {Number}
+     *            [tatMin = 2] 使用リソースの最小取得時間＆最小開放時間
+     * @param {Array}
+     *            [sequence = []] イベントシーケンス
+     * @param {Number}
+     *            [times = undefined] イベントシーケンスの繰り返し回数（未指定時:1)
+     * @param {Number}
+     *            [thinkTime= undefined] イベントシーケンス終了時に再実行する場合の平均再開時間（未指定時:500)
+     * @param {Number}
+     *            [thinkTimeMin = undefined]
+     *            イベントシーケンス終了時に再実行する場合の最小再開時間（未指定時:thinkTimeと同じ）
+     * @return {Object} 取引モデル
+     */
+    VirtualSystem.getModel = function(baseModel, tatMin, tat, sequence, times, thinkTimeMin, thinkTime) {
+        baseModel = baseModel || [];
+        tatMin = tatMin || 2;
+        tat = tat || 5;
+        sequence = sequence || [
+                {tatMin:6,   tat:15,  note:"Req",     hold:"DB",    free:[]},
+                {tatMin:70,  tat:100, note:"selectA", hold:"TBL_A", free:["TBL_A"]},
+                {tatMin:150, tat:200, note:"updateB", hold:"TBL_B", free:[]},
+                {tatMin:30,   tat:50,  note:"Res",     hold:"",      free:["TBL_B","DB"]}
+            ];
+        var model = {sequence :[]};
+        if (typeof(times) === "number") model.times = times;
+        if (typeof(thinkTimeMin) === "number") model.thinkTimeMin = thinkTimeMin;
+        if (typeof(thinkTime) === "number") model.thinkTime = thinkTime;
+        
+        // リソース（baseModel)取得処理を登録する
+        baseModel.forEach( function(e) {
+            model.sequence.push({hold:e, tatMin:tatMin, tat:tat, free:[]});
+        });
+        // 指定シーケンスを登録する
+        model.sequence = model.sequence.concat(sequence);
+
+        // 指定シーケンスの未開放リソースを取得する
+        var resources = baseModel;
+        var holding = []; // #59
+        sequence.forEach( function(tran) {
+            // 処理開始時にholdしているリソース一覧をholdingに登録する #59
+            tran.holding = [];
+            resources.forEach(function(r) {tran.holding.push(r)});
+            // 未開放リソース一覧を更新する
+            if (typeof(tran.hold) !== "undefined" && tran.hold !== "") {
+                resources.push(tran.hold);                
+            }
+            if (tran.free) {
+                tran.free.forEach( function(free){
+                    resources.some( function(r, i){
+                        if (r == free) {
+                            resources.splice(i,1);
+                            return true;
+                        }
+                    })    
+                })
+            }
+        }, this);
+        // 未開放リソースが残っているとき開放処理を登録する
+        if (0 < resources.length){
+            model.sequence = model.sequence.concat(
+                    [{hold: "", tatMin: tatMin * baseModel.length, tat: tat * baseModel.length,
+                        free: resources.reverse()}]);
+        }
+        return model;
+    };
+    
     /* new */
     return VirtualSystem;
 }());
@@ -1472,11 +1489,6 @@ HJN.util.VirtualSystem.test = this; // ★
  */
 HJN.util.VirtualApp = (function() { // #53
     "use strict";
-    /** @static */
-    var proto = VirtualApp.prototype = {
-            // クラス変数 _xxx: 0
-    };
-    
     /** @constructor */
     function VirtualApp(userName, model){
         if(!(this instanceof VirtualApp)){
@@ -1487,10 +1499,7 @@ HJN.util.VirtualApp = (function() { // #53
         // イベントシーケンスを取得する
         if (typeof(model) === "undefined") model = {}
         model.baseModel = model.baseModel || {"holds": []};
-        var tmpModel = VirtualApp.getModel(
-                model.baseModel.holds, model.baseModel.tatMin, model.baseModel.tat,
-                model.sequence, model.times, model.thinkTimeMin, model.thinkTime);
-        this._sequence = tmpModel.sequence;
+        this._sequence = model.sequence;
         // イベントシーケンスの繰り返し回数
         this._times = (typeof(model.times) !== "undefined") ? model.times : 1;
         // イベントシーケンス終了時に再実行する場合の平均再開時間
@@ -1513,13 +1522,12 @@ HJN.util.VirtualApp = (function() { // #53
     /**
      * 取引を開始する
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @param {Number}
      *            startTime 開始時刻（UNIX時刻：ミリ秒）
      * @return {Object}仮想アプリケーション(this)
      */
-    proto.start = function(startTime) {
+    VirtualApp.prototype.start = function(startTime) {
         this._times--; // イベントシーケンスの繰り返し回数を1減らす
         this._startTime = startTime;      // イベントシーケンス開始時刻（UNIX時刻：ミリ秒）
         this._sequenceIdx = 0;    // シミュレータに登録したイベントシーケンスの位置
@@ -1530,37 +1538,34 @@ HJN.util.VirtualApp = (function() { // #53
     /**
      * イベント時刻を返却する
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
-    proto.getTime = function() {
+    VirtualApp.prototype.getTime = function() {
         return this._sequenceTime;
     };
 
     /**
      * リソース使用量を返却する
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            [resource| 指定なしのとき1.0を返却する] リソース
      * @return {Number} リソース使用量
      */
-    proto.getAmount = function(resource) {
+    VirtualApp.prototype.getAmount = function(resource) {
         return 1.0;
     };
 
     /**
      * 次の状態に遷移する、シーケンス終了時TATログを出力する
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
      */
-    proto.next = function(system) {
+    VirtualApp.prototype.next = function(system) {
         var events = []; // 戻り値
         if (this._sequenceIdx < this._sequence.length) { // イベントシーケンス処理途中のとき
             var seq = this._sequence[this._sequenceIdx]; // 現在の処理シーケンス位置
@@ -1599,24 +1604,20 @@ HJN.util.VirtualApp = (function() { // #53
     /**
      * Freeに伴い、次の状態に遷移する
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @param {Number}
      *            [time | 変更しない} イベント時刻（UNIX時刻：ミリ秒）
      * @return {Object}仮想アプリケーション(this)
      */
-    proto.nextByFree = function(time) {
+    VirtualApp.prototype.nextByFree = function(time) {
         // 解放された時刻をイベント時刻に設定する
         if (typeof(time) === "number") this._sequenceTime = time;
-        // 次の処理を参照する（ シミュレータに登録したイベントシーケンスの位置）
- // this._sequenceIdx++;
         return this;
     };
     
     /**
      * アベンド処理（イベントシーケンスを強制終了し、TATログを出力する）
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
@@ -1626,7 +1627,7 @@ HJN.util.VirtualApp = (function() { // #53
      *            [time=sytem.getTime()] abend時刻
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
      */
-    proto.abend = function(system, logID, time) {
+    VirtualApp.prototype.abend = function(system, logID, time) {
         logID = logID || "E_600";
         var events = []; // 戻り値
         // holdしているリソースを開放する
@@ -1645,7 +1646,6 @@ HJN.util.VirtualApp = (function() { // #53
     /**
      * イベント終了時処理（ログ出力と、繰り返し判定）
      * 
-     * @function
      * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
@@ -1653,7 +1653,7 @@ HJN.util.VirtualApp = (function() { // #53
      *            [logID="N_000"] ログID（ログメッセージの先頭文字）
      * @return {Object|null} 再スケジュールするときthis、再スケジュールしないときnull
      */
-    proto._finish = function(system, logID) {
+    VirtualApp.prototype._finish = function(system, logID) {
         logID = logID || "N_000";
         var events = []; // 戻り値
         // TATログを出力する
@@ -1679,83 +1679,6 @@ HJN.util.VirtualApp = (function() { // #53
         return null;
     };
 
-
-    // Static Method
-    /**
-     * 取引モデルを取得する（ユーティリティ）
-     * 
-     * @function
-     * @memberof HJN.util.VirtualApp
-     * @param {Array}
-     *            [webApDb = []] 使用リソースの一覧["WEB","AP","DB"]
-     * @param {Number}
-     *            [tat = 5] 使用リソースの平均取得時間＆平均開放時間
-     * @param {Number}
-     *            [tatMin = 2] 使用リソースの最小取得時間＆最小開放時間
-     * @param {Array}
-     *            [sequence = []] イベントシーケンス
-     * @param {Number}
-     *            [times = undefined] イベントシーケンスの繰り返し回数（未指定時:1)
-     * @param {Number}
-     *            [thinkTime= undefined] イベントシーケンス終了時に再実行する場合の平均再開時間（未指定時:500)
-     * @param {Number}
-     *            [thinkTimeMin = undefined]
-     *            イベントシーケンス終了時に再実行する場合の最小再開時間（未指定時:thinkTimeと同じ）
-     * @return {Object} 取引モデル
-     */
-    VirtualApp.getModel = function(webApDb, tatMin, tat, sequence, times, thinkTimeMin, thinkTime) {
-        webApDb = webApDb || [];
-        tatMin = tatMin || 2;
-        tat = tat || 5;
-        sequence = sequence || [
-                {tatMin:6,   tat:15,  note:"Req",     hold:"DB",    free:[]},
-                {tatMin:70,  tat:100, note:"selectA", hold:"TBL_A", free:["TBL_A"]},
-                {tatMin:150, tat:200, note:"updateB", hold:"TBL_B", free:[]},
-                {tatMin:30,   tat:50,  note:"Res",     hold:"",      free:["TBL_B","DB"]}
-            ];
-        var model = {sequence :[]};
-        if (typeof(times) === "number") model.times = times;
-        if (typeof(thinkTimeMin) === "number") model.thinkTimeMin = thinkTimeMin;
-        if (typeof(thinkTime) === "number") model.thinkTime = thinkTime;
-        
-        // リソース（WebApDb)取得処理を登録する
-        webApDb.forEach( function(e) {
-            model.sequence.push({hold:e, tatMin:tatMin, tat:tat, free:[]});
-        });
-        // 指定シーケンスを登録する
-        model.sequence = model.sequence.concat(sequence);
-
-        // 指定シーケンスの未開放リソースを取得する
-        var resources = webApDb;
-        var holding = []; // #59
-        sequence.forEach( function(tran) {
-            // 処理開始時にholdしているリソース一覧をholdingに登録する #59
-            tran.holding = [];
-            resources.forEach(function(r) {tran.holding.push(r)});
-            // 未開放リソース一覧を更新する
-            if (typeof(tran.hold) !== "undefined" && tran.hold !== "") {
-                resources.push(tran.hold);                
-            }
-            if (tran.free) {
-                tran.free.forEach( function(free){
-                    resources.some( function(r, i){
-                        if (r == free) {
-                            resources.splice(i,1);
-                            return true;
-                        }
-                    })    
-                })
-            }
-        }, this);
-        // 未開放リソースが残っているとき開放処理を登録する
-        if (0 < resources.length){
-            model.sequence = model.sequence.concat(
-                    [{hold: "", tatMin: tatMin * webApDb.length, tat: tat * webApDb.length,
-                        free: resources.reverse()}]);
-        }
-        return model;
-    };
-    
     /* new */
     return VirtualApp;
 }());
@@ -1783,10 +1706,6 @@ HJN.util.VirtualApp = (function() { // #53
  */
 HJN.util.VirtualResource = (function() { // #53
     "use strict";
-    /** @static */
-    var proto = VirtualResource.prototype = {
-            // クラス変数 _xxx: 0
-    };
     /** @constructor */
     function VirtualResource(name, capacity, timeout, queueDepth, queueWait){
         if(!(this instanceof VirtualResource)){
@@ -1817,7 +1736,6 @@ HJN.util.VirtualResource = (function() { // #53
     /**
      * リソースチェックイベント（タイムアウトチェック）を開始する
      * 
-     * @function
      * @memberof HJN.util.VirtualResource
      * @param {Number}
      *            startTime 開始時刻（UNIX時刻：ミリ秒）
@@ -1825,7 +1743,7 @@ HJN.util.VirtualResource = (function() { // #53
      *            system VirtualSystem
      * @return {Object} イベント(this)
      */
-    proto.start = function(startTime, system) { // #59
+    VirtualResource.prototype.start = function(startTime, system) { // #59
         this._sequenceTime = startTime + this._queueTimeout; // シミュレータに登録するイベントの時刻
         system.setEvent(this);    // シミュレータにタイムアウトチェックイベントをスケジュールする
         this._isScheduled = true; // 「シミュレータにタイムアウトチェックイベントをスケジュールしたかフラグ」をON
@@ -1835,24 +1753,22 @@ HJN.util.VirtualResource = (function() { // #53
     /**
      * イベント時刻を返却する
      * 
-     * @function
      * @memberof HJN.util.VirtualResource
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
-    proto.getTime = function() {
+    VirtualResource.prototype.getTime = function() {
         return this._sequenceTime;
     };
     
     /**
      * タイムアウトチェック用仮想イベント
      * 
-     * @function
      * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            system VirtualSystem
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
      */
-    proto.next = function(system) {
+    VirtualResource.prototype.next = function(system) {
         var events = []; // 戻り値
         var now = this._sequenceTime;
 
@@ -1863,12 +1779,10 @@ HJN.util.VirtualResource = (function() { // #53
             if (this._queueTimeout <= now - holdTime) { // キューイング取引がタイムアウトしているとき
                 var app = this._waitQueue.pop(); // リソース解放待ちキューからfreeするappを取り出す
                 var apps = app.abend(system, "E_0TO "+this._name+" queue timeout", holdTime + this._queueTimeout); // appにfree時刻をセットする
-// console.log("%o(%o) %o TIMEOUT %o", app._sequenceTime, app._startTime,
-// app._userName, this._name); // ★
+if(debug)console.log("%o(%o) %o TIMEOUT %o", app._sequenceTime, app._startTime, app._userName, this._name); // ★
                 if (apps.length){
                     events = events.concat(apps);  // appsをスケジュールイベント登録対象に加える
-// console.log("%o(%o) %o RESHEDUED by %o", apps[0]._sequenceTime,
-// apps[0]._startTime, apps[0]._userName, this._name); // ★
+if(debug)console.log("%o(%o) %o RESHEDUED by %o", apps[0]._sequenceTime, apps[0]._startTime, apps[0]._userName, this._name); // ★
                 }
             }
         }
@@ -1889,7 +1803,6 @@ HJN.util.VirtualResource = (function() { // #53
     /**
      * リソースを取得する
      * 
-     * @function
      * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            system VirtualSystem
@@ -1897,7 +1810,7 @@ HJN.util.VirtualResource = (function() { // #53
      *            vApp リソースにhold要求する仮想AP
      * @return {Array} スケジューラに登録するイベントの配列([vApp] | [])
      */
-    proto.hold = function(system, vApp) {
+    VirtualResource.prototype.hold = function(system, vApp) {
         if (this._name === "unlimited") return [vApp]; // リソース解放待ちを管理しないとき
         
         var amount = vApp.getAmount(this); // 消費リソース量(デフォルト1.0）
@@ -1905,8 +1818,7 @@ HJN.util.VirtualResource = (function() { // #53
         if (amount <= this._remaining) {
             this._remaining -= amount;
             // 処理中にタイムアウトする場合、タイムアウト時刻を指定して登録する : TODO
-// console.log("%o(%o) %o hold %o", vApp._sequenceTime, vApp._startTime,
-// vApp._userName, this._name); // ★
+if(debug)console.log("%o(%o) %o hold %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._name); // ★
             return [vApp];         
         }
         // リソース解放待ちキューが溢れていないとき、vAppをキューに 登録する
@@ -1917,27 +1829,23 @@ HJN.util.VirtualResource = (function() { // #53
             if (!this._isScheduled && 0 < this._queueTimeout) {
                 this.start(vApp.getTime(), system);
             }
-// console.log("%o(%o) %o hold/queued(%o) %o > %o", vApp._sequenceTime,
-// vApp._startTime, vApp._userName, this._waitQueue._heap.length, this._name,
-// this._waitQueue._heap[0]._userName); // ★
+if(debug)console.log("%o(%o) %o hold/queued(%o) %o > %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._waitQueue._heap.length, this._name, this._waitQueue._heap[0]._userName); // ★
             return []; // リソース解放待ちタイムアウトイベント : TODO
         }
         // リソース解放待ちキューが溢れていた時、リソースを取得できずにエラー終了
-// console.log("%o(%o) %o hold/abend %o", vApp._sequenceTime, vApp._startTime,
-// vApp._userName, this._name); // ★
+if(debug)console.log("%o(%o) %o hold/abend %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._name); // ★
         return vApp.abend(system, "E_001");
     };
 
     /**
      * 引数vAppが使用していたリソースを解放する
      * 
-     * @function
      * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            vApp リソースにfree要求する仮想AP
      * @return {Array} スケジューラに登録するイベントの配列([vApp] | [])
      */
-    proto.free = function(vApp) { // #59
+    VirtualResource.prototype.free = function(vApp) { // #59
         if (this._name === "unlimited") return []; // リソース解放待ちを管理しないとき
         var vApps = []; // 戻り値
         // 解放したvAppが使用していたリソース量(デフォルト1.0）を、残リソース量（数）に加える
@@ -1953,9 +1861,7 @@ HJN.util.VirtualResource = (function() { // #53
             app.nextByFree(vApp.getTime());
             vApps.push(app);
         }
-// console.log("%o(%o) %o FREE %o --> %o %o", vApp._sequenceTime,
-// vApp._startTime, vApp._userName, this._name, vApps.length, app? app._userName
-// : ""); // ★
+if(debug)console.log("%o(%o) %o FREE %o --> %o %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._name, vApps.length, app? app._userName : ""); // ★
         return vApps;
     };
 

@@ -116,7 +116,7 @@ HJN.init.CreateSampleTatLog = function(jsonText){ // #53
             m.sequence[j].tatMin = HJN.util.S2N(m.sequence[j].tatMin);
             m.sequence[j].tat = HJN.util.S2N(m.sequence[j].tat);
         }
-        models[name] = HJN.util.VirtualApp.getModel(
+        models[name] = HJN.util.VirtualSystem.getModel(
                     baseModel.holds, 
                     HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
                     m.sequence, m.times, 
@@ -166,7 +166,7 @@ HJN.init.CreateSampleTatLog2 = function(){ // #53
     var ms =      1; // 1ミリ秒
 
     // 仮想クライアントが実行する取引モデルの宣言（3通りの書き方）
-    var onModel = HJN.util.VirtualApp.getModel(["WEB","AP","DB"], 2*ms, 5*ms,
+    var onModel = HJN.util.VirtualSystem.getModel(["WEB","AP","DB"], 2*ms, 5*ms,
             [   {note:"select A", tatMin:30, tat:50},
                 {note:"updateB", hold:"TBL_B",tatMin:10, tat:50},
                 {note:"updateC", hold:"TBL_C",tatMin:80, tat:100}
@@ -221,17 +221,19 @@ HJN.init.CreateSampleTatLogJson = function(n){ // #53
             + '\n'
             + '"models" : [\n' // 取引モデル一覧
             + '  { "ON-1" : {\n' // オンライン取引1
+            + '    "times": 60, "thinkTimeMin":"3*sec", "thinkTime": "10*sec",\n'
             + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
             + '    "sequence": [\n'
             + '      {"tatMin":30, "tat":50, "note":"select A"},\n'
             + '      {"tatMin":50, "tat":50, "note":"updateB", "hold":"TBL_B"},\n'
             + '      {"tatMin":80, "tat":100,"note":"updateC", "hold":"TBL_C"}\n'
-            + '    ],\n'
-            + '    "times": 60, "thinkTimeMin":"3*sec", "thinkTime": "10*sec"}},\n'
+            + '    ]}},\n'
             + ' { "ON-2" : {\n' // オンライン取引2
+            + '    "times": 60, "thinkTimeMin":"500*ms", "thinkTime": "1*sec",\n'
             + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
-            + '    "sequence": [{"tatMin":"100*ms", "tat":"500*ms", "hold":""}],\n'
-            + '    "times": 60, "thinkTimeMin":"500*ms", "thinkTime": "1*sec"}},\n'
+            + '    "sequence": [\n'
+            + '      {"tatMin":"100*ms", "tat":"500*ms", "hold":""}\n'
+            + '    ]}},\n'
             + ' { "BATCH-1" : {\n' // バッチ取引3
             + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
             + '    "sequence": [\n'

@@ -52,6 +52,7 @@ HJN.init.ChartRegist = function(chartName){
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '&lt;header>'
+        + '&lt;div id="Simulator">&lt;/div>' // #53
         + '&lt;div class="statusbar">'
         + '  &lt;iframe id="fileInfo">&lt;/iframe>'
         + '&lt;/div>'
@@ -92,17 +93,75 @@ HJN.init.ChartRegist = function(chartName){
 	HJN.init.DropField(dropFieldName+ "Detail");
 
 	// 初期表示データを自動生成する
-	HJN.chart.eTatOriginal = HJN.init.CreateSampleTatLog();	// arg0：生成データ数
-	// データを表示する
-	HJN.init.ChartShow(HJN.chart.eTatOriginal);
+	HJN.init.CreateSampleTatLogAndChartShow() // #53
 }
 
+/**
+ * データを自動生成し表示する
+ * 
+ * @param {String}
+ *            [json = HJN.init.CreateSampleTatLogJson()] シミュレーション条件JSONテキスト
+ * @return {String}
+ */
+HJN.init.CreateSampleTatLogAndChartShow = function(json){ // #53
+    "use strict";
+    json = json || HJN.init.CreateSampleTatLogJson(0); // ★
+    // 初期表示データを自動生成する
+    HJN.chart.eTatOriginal = HJN.init.CreateSampleTatLog(json); // arg0：生成データ数
+    // データを表示する
+    HJN.init.ChartShow(HJN.chart.eTatOriginal);
+}
 
 /**
  * 初期表示用サンプルデータ(ETAT)を自動生成する
  * 
+ * @param {String}
+ *            [jsonText] シミュレーション条件JSONテキスト
  * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)), y:レスポンス(秒)}]
  */
+HJN.init.CreateSampleTatLog = function(jsonText){ // #53
+    "use strict";
+    var vSys = {};
+    // parse
+    var json = JSON.parse(jsonText)
+    // virtual system と resources の設定
+    var start = (json.start === undefined) ? new Date(1970,1,2) : HJN.util.S2D(json.start);
+    var end = start + HJN.util.S2N(json.end, "24*h");
+    var resources = json.resources;
+    for (var i = 0; i &lt; resources.length; i++) {
+        resources[i].timeout = HJN.util.S2N(resources[i].timeout, "10*sec");
+        resources[i].qWait = HJN.util.S2N(resources[i].qWait, "10*sec");
+    }
+    vSys = HJN.util.VirtualSystem(start, end, json.resources);
+    // model の取得
+    var models = json.models;
+    for (var i = 0; i &lt; models.length; i++) {
+        var model = models[i];
+        var name = Object.keys(model)[0];
+        var m = model[name];
+        var baseModel = m.baseModel;
+        for (var j = 0; j &lt; m.sequence.length; j++) {
+            m.sequence[j].tatMin = HJN.util.S2N(m.sequence[j].tatMin);
+            m.sequence[j].tat = HJN.util.S2N(m.sequence[j].tat);
+        }
+        models[name] = HJN.util.VirtualSystem.getModel(
+                    baseModel.holds, 
+                    HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
+                    m.sequence, m.times, 
+                    HJN.util.S2N(m.thinkTimeMin), HJN.util.S2N(m.thinkTime)); 
+    }
+    // client の設定
+    var clients = json.clients;
+    for (var i = 0; i &lt; clients.length; i++) {
+        var c = clients[i];
+        var cStart = start + HJN.util.S2N(c.start, 0);
+        var cEnd   = start + HJN.util.S2N(c.end, 24*60*60*1000);
+        vSys.setClients(c.user, c.num, cStart, cEnd, models[c.model]);
+    }
+    console.log(vSys);
+    return vSys.execute();
+}
+
 HJN.init.CreateSampleTatLog1 = function(){
     "use strict";
     HJN.util.Logger.ShowLogText("----- create data -----------------------------","calc");
@@ -110,21 +169,15 @@ HJN.init.CreateSampleTatLog1 = function(){
     var response = 1500; // 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
     var freq = 10;       // データ発生頻度の目安（tps)
     var eTat = [];       // 戻り値
-
-    var x = new Date(),
-        d= Math.floor(x.getTime()),
-        y = 0.0,
-        random = 0;
+    var x = new Date(), d= Math.floor(x.getTime()), y = 0.0, random = 0;
     for (var i = 0; i &lt; num; i++) { // jsはミリ秒単位
         // 次の電文発生時刻を求める
         d += Math.round( Math.random() * 1000.0 / (2 * freq) *
-                            (1 + (0.5 * Math.cos(2 * Math.PI * i / num)))
-                        );
+                 (1 + (0.5 * Math.cos(2 * Math.PI * i / num))) );
         // レスポンスを求める
         random = Math.random();
         y  = Math.round( random*random*response * 1e+6 *
-                            (1 + (1.0 * Math.sin(2 * Math.PI * (i / num - 0.25))))
-                        ) / 1e+6;
+                (1 + (1.0 * Math.sin(2 * Math.PI * (i / num - 0.25)))) ) / 1e+6;
         var y2 = Math.random() &lt; 20 / num ? 3 : 1;
         // 生成データを登録する
         eTat.push( {x: d , y: y * y2, sTatIdx: 0, message:"sample"} );
@@ -141,7 +194,7 @@ HJN.init.CreateSampleTatLog2 = function(){ // #53
     var ms =      1; // 1ミリ秒
 
     // 仮想クライアントが実行する取引モデルの宣言（3通りの書き方）
-    var onModel = HJN.util.VirtualApp.getModel(["WEB","AP","DB"], 2*ms, 5*ms,
+    var onModel = HJN.util.VirtualSystem.getModel(["WEB","AP","DB"], 2*ms, 5*ms,
             [   {note:"select A", tatMin:30, tat:50},
                 {note:"updateB", hold:"TBL_B",tatMin:10, tat:50},
                 {note:"updateC", hold:"TBL_C",tatMin:80, tat:100}
@@ -161,7 +214,8 @@ HJN.init.CreateSampleTatLog2 = function(){ // #53
     // シミュレータ（開始時刻、停止時刻、Webスレッド数、APスレッド数、DBコネクション数）
     var start = HJN.util.S2D("1970/01/02 00:00:00");
     var end = start+17*h;
-    var vSys = HJN.util.VirtualSystem(start, end, 1024, 20, 10);
+
+    var vSys = HJN.util.VirtualSystem(start, end);
     // シミューレートシナリオを登録する（User名, User数, 開始時刻, 最終開始時刻, 実行取引モデル）
      vSys.setClients("select A update B,C user", 100, start+16.0*h, start+17.0*h, onModel);
      vSys.setClients("select A update B,C 増user",20, start+16.5*h, start+16.6*h, onModel);
@@ -172,27 +226,81 @@ HJN.init.CreateSampleTatLog2 = function(){ // #53
     return vSys.execute();
 }
 
-HJN.init.CreateSampleTatLog3 = function(){ // #53
+/**
+ * シミュレーション条件JSONテキストを作成する
+ * 
+ * @param {Number}
+ *            [n = 0] シナリオ番号
+ * @return {String} シミュレーション条件JSONテキスト
+ */
+HJN.init.CreateSampleTatLogJson = function(n){ // #53
     "use strict";
-    var vSys = HJN.util.VirtualSystem();
-    vSys.setClients();
-    return vSys.execute();
-}
+    n = (typeof(n) !== "undefined") ? n : 0;
+    var jsonText = "";
+    if (n === 0) {
+        jsonText =  '{\n'
+            + '"start" : "1970/01/02 00:00:00.000",\n'
+            + '"end"   : "17.0*h",\n'
+            + '"resources" : [\n'
+            + '  {"type" :"WEB", "thread":1024,"timeout":"300*sec", "q":1280, "qWait":0},\n'
+            + '  {"type" :"AP",  "thread":20,  "timeout":"300*sec", "q":1280, "qWait":0},\n' // AP:thread=DB:thread+DB:q
+            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":10,  "qWait":"10*sec"}\n'
+            + '],\n'
+            + '\n'
+            + '"models" : [\n' // 取引モデル一覧
+            + '  { "ON-1" : {\n' // オンライン取引1
+            + '    "times": 60, "thinkTimeMin":"3*sec", "thinkTime": "10*sec",\n'
+            + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+            + '    "sequence": [\n'
+            + '      {"tatMin":30, "tat":50, "note":"select A"},\n'
+            + '      {"tatMin":50, "tat":50, "note":"updateB", "hold":"TBL_B"},\n'
+            + '      {"tatMin":80, "tat":100,"note":"updateC", "hold":"TBL_C"}\n'
+            + '    ]}},\n'
+            + ' { "ON-2" : {\n' // オンライン取引2
+            + '    "times": 60, "thinkTimeMin":"500*ms", "thinkTime": "1*sec",\n'
+            + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+            + '    "sequence": [\n'
+            + '      {"tatMin":"100*ms", "tat":"500*ms", "hold":""}\n'
+            + '    ]}},\n'
+            + ' { "BATCH-1" : {\n' // バッチ取引3
+            + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+            + '    "sequence": [\n'
+            + '      {"tatMin":"2*sec","tat":"5*sec","note":"updateB","hold":"TBL_B"}\n'
+            + '    ]}}\n'
+            + '],\n'
+            + '\n'
+            + '"clients" : [\n' // ユーザ作成条件
+            + '  {"num":100,"start":"16.0*h", "end":"17.0*h", "model":"ON-1",  "user" :"select A update B,C user"},\n'
+            + '  {"num": 20,"start":"16.5*h", "end":"16.6*h", "model":"ON-1",  "user" :"select A update B,C 増user"},\n'
+            + '  {"num":100,"start":"16.0*h", "end":"17.0*h", "model":"ON-2",  "user" :"排他なし user"},\n'
+            + '  {"num": 20,"start":"16.0*h", "end":"17.0*h", "model":"BATCH-1","user" :"バッチ処理 update B＊＊＊＊＊"}\n'
+            + ']\n'
+            + '}\n';
+    } else if (n === 1) {
+        jsonText =  '{\n'
+            + '"start" : "1970/01/02 00:00:00.000",\n'
+            + '"end"   : "40.0*sec",\n'
+            + '\n'
+            + '"resources" : [\n'
+            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"6*sec"}\n'
+            + '],\n'
+            + '"models" : [\n' // 取引モデル一覧
+            + ' { "TEST-1" : {\n' // テスト取引
+            + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+            + '    "sequence": [{"tatMin":"12*sec", "tat":"12*sec", "hold":"TBL_B"}],\n'
+            + '    "times": 2, "thinkTimeMin":"2*sec", "thinkTime": "2*sec"}}\n'
+            + '    ],\n'
+            + '\n'
+            + '"clients" : [\n' // ユーザ作成条件
+            + '  {"num": 1,"start":"0*sec", "end":"0*sec", "model":"TEST-1","user" :"test1"},\n'
+            + '  {"num": 1,"start":"1*sec", "end":"1*sec", "model":"TEST-1","user" :"test2"}\n'
+            + ']\n'
+            + '}\n';
+        
+    }
 
-HJN.init.CreateSampleTatLogX = function(){ // #53
-    var simu = '{'
-        + '"btModel3" : {' // バッチ取引3
-        + '    "sequence": [' // イベントシーケンス
-        + '        {"tatMin":2,   "tat":5,   "note":"Bigin",  "hold":"DB",   "free":[]},'
-        + '        {"tatMin":2000,"tat":3000,"note":"updateB","hold":"TBL_B","free":[]},'
-        + '        {"tatMin":6,   "tat":15,  "note":"Commit", "hold":"",     "free":["TBL_B","DB"]}'
-        + '    ],'
-        + '    "times": 1,'   // イベントシーケンスの繰り返し回数
-        + '    "thinkTime": 1000 }'
-        + '}';
+    return jsonText; 
 }
-
-HJN.init.CreateSampleTatLog = HJN.init.CreateSampleTatLog2;
 
 
 /**
@@ -208,14 +316,19 @@ HJN.init.ChartShow = function(eTatOriginal){
     // グラフを初期表示する
     // 上段
     HJN.chart.update(HJN.chart.createSeries(eTat));
-    HJN.util.Logger.ShowLogText("上段表示", "elaps");       // 処理時間ログ出力
+    var text = "上段表示 [" + HJN.chart.eTat.length + "]";
+    HJN.util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
 
     // 下段(非同期）
     HJN.util.setZeroTimeout( function(){
         HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
         HJN.chart.showBalloon();    // 上段のBalloonを描画する
-        HJN.util.Logger.ShowLogText("下段表示", "elaps");
-        HJN.util.Logger.ShowLogText("&lt;mark>サンプルを表示しました&lt;/mark>", "msg");
+        var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
+        HJN.util.Logger.ShowLogText(text, "elaps");
+        text = "&lt;mark>Simulated data&lt;/mark>["
+            + HJN.chart.eTat.length.toString()
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
+        HJN.util.Logger.ShowLogText(text, "msg");
         // #49 上下段のマウス操作同期設定
         var sync = Dygraph.synchronize(
                  [ HJN.chart.graph, HJN.chartD.graph ],
@@ -295,7 +408,8 @@ HJN.init.FileReader = function (files){  // #15
                 HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer, filesIdx);
             } else { // 2件目以降のファイルのとき、もしくは、追加モード"ADDDATA"のとき、追加する
                 HJN.files.push(file);
-                HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(getTatLogArray(HJN.filesArrayBuffer, filesIdx));
+                HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(
+                        getTatLogArray(HJN.filesArrayBuffer, filesIdx));
             }
             
             // 全ファイルを読み込んだらグラフを描画する
@@ -304,7 +418,7 @@ HJN.init.FileReader = function (files){  // #15
                 var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
 
                 // 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
-                HJN.chart.update(HJN.chart.createSeries(eTat)); 
+                HJN.chart.update(HJN.chart.createSeries(eTat));
                 HJN.util.Logger.ShowLogText("上段表示", "elaps");
 
                 // 下段用データの展開とグラフ描画（非同期処理）
@@ -315,9 +429,9 @@ HJN.init.FileReader = function (files){  // #15
                     // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
                     HJN.chart.showBalloon();
                     HJN.util.Logger.ShowLogText("下段表示", "elaps");
-                    HJN.util.Logger.ShowLogText("&lt;BR>&lt;mark>"+ HJN.files[0].name +
+                    HJN.util.Logger.ShowLogText("&lt;mark>"+ HJN.files[0].name +
                             "["+ HJN.chart.eTat.length +
-                            "]を表示しました&lt;/mark>&lt;BR>", "msg");
+                            "]を表示しました&lt;/mark>", "msg");
                 });
             }
         }
@@ -1312,7 +1426,6 @@ HJN.util.FileReader = (function() {
 }());
 
 
-
 /**
  * 使い方を記載したHTMLを取得する
  * 
@@ -1349,7 +1462,7 @@ HJN.init.Copyright=function(){
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 13 2017 01:39:46 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Nov 23 2017 05:01:14 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
