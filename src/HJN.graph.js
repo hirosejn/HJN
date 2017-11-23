@@ -1271,6 +1271,7 @@ HJN.Graph.prototype.addMenu = function () {
                 + getFuncTag(menuSimulatorSimulate)
                 + getFuncTag(menuSimulatorEditor)
                 + getFuncTag(menuSimulatorReset)
+                + this.fileReader.getConfigHtml("Simulator") // #59
                 + '</ul>' + '</li>';
         // シミュレーション条件JSON Editエリアを設定する
         var divSimulator = document.getElementById("Simulator");
@@ -1456,8 +1457,8 @@ HJN.Graph.prototype.menuSaveConfig = function (menuId, fileName) {
     // plotsをjsonに変換する
     var save = {
         "HJN.Plot.List" : HJN.Plot.List,
-        "HJN.chart.fileReader" : HJN.chart.fileReader._configFileFormat.__config,
-        "HJN.chartD.fileReader" : HJN.chartD.fileReader._configFileFormat.__config
+        "HJN.chart.fileReader" : HJN.chart.fileReader._config_File.__config,
+        "HJN.chartD.fileReader" : HJN.chartD.fileReader._config_File.__config
     };
     var json = JSON.stringify(save, null, 4);
     // ダウンロードする
@@ -1511,9 +1512,9 @@ HJN.Graph.prototype.menuLoadConfig = function (evt) { // #10
 
             // jsonからHJN.chartD.fileReaderに登録されているHJN.util.Config の定義を作成する
             var conf = jsonObj["HJN.chart.fileReader"];
-            HJN.chart.fileReader._configFileFormat.__config = conf;
+            HJN.chart.fileReader._config_File.__config = conf;
             var confD = jsonObj["HJN.chartD.fileReader"];
-            HJN.chartD.fileReader._configFileFormat.__config = confD;
+            HJN.chartD.fileReader._config_File.__config = confD;
 
             // jsonからHJN.Plot.Listを作成する
             var tmpPlots = jsonObj["HJN.Plot.List"];

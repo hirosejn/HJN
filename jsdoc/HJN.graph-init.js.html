@@ -99,13 +99,17 @@ HJN.init.ChartRegist = function(chartName){
 /**
  * データを自動生成し表示する
  * 
- * @param {String}
- *            [json = HJN.init.CreateSampleTatLogJson()] シミュレーション条件JSONテキスト
- * @return {String}
+ * @param {String|Number}
+ *            [json = HJN.init.CreateSampleTatLogJson(0)]
+ *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
  */
 HJN.init.CreateSampleTatLogAndChartShow = function(json){ // #53
     "use strict";
-    json = json || HJN.init.CreateSampleTatLogJson(0); // ★
+    if (typeof(json) === "number") { // #59
+        json = HJN.init.CreateSampleTatLogJson(json);
+    } else{
+        json = json || HJN.init.CreateSampleTatLogJson(0);
+    }
     // 初期表示データを自動生成する
     HJN.chart.eTatOriginal = HJN.init.CreateSampleTatLog(json); // arg0：生成データ数
     // データを表示する
@@ -869,6 +873,8 @@ HJN.util.FileReader = (function() {
 	function FileReader(arg){ 
 		if(!(this instanceof FileReader)) return new FileReader(arg);
 
+        this.configId = "_config_" + "File"; // #59
+
 		// コンストラクタ内部関数：keyを定義する
 		var def = function(key, val, onFunc) {
 					var _keyConf = FileReader.prototype.__keyConfig[key] = {};
@@ -888,7 +894,8 @@ HJN.util.FileReader = (function() {
 
 				
 		// 名称と挙動の定義
-		this._configFileFormat = HJN.util.Config("m")	
+		var env = "File";
+		this["_config_" + env] = HJN.util.Config(env) // #59
 		    // File Format Config設定画面定義 #51
             .name("NEWFILE").label(null,"Registered ") // #23
                 .radio("NEWDATA", null, "newly", true)
@@ -945,11 +952,13 @@ HJN.util.FileReader = (function() {
 				.nUp()
             .n("&lt;br>")
 			;
+
 		// Filter Config用関数定義(radio用） #51
+		env = "Filter"
 		var func_F_SYNC_UPPER = function(){ HJN.Graph.DrawCallback(HJN.chart.graph); },
 		    func_F_SYNC_DETAIL = function(){ HJN.Graph.DrawCallback(HJN.chartD.graph); };
 		// Filter Config設定画面定義 #51
-		this._configFilter = HJN.util.Config("m")
+        this["_config_" + env] = HJN.util.Config(env) // #59
         .name("F_SYNC").label(null,"Sync") // #50
             .radio("F_SYNC_UPPER", null, "Upper", false ,null, func_F_SYNC_UPPER) // #51
             .radio("F_SYNC_DETAIL", null, "Detail", false, null, func_F_SYNC_DETAIL)
@@ -977,6 +986,20 @@ HJN.util.FileReader = (function() {
 				.text("F_TEXT_REG", "match the regular expression", null, null, 'size="7" placeholder=".*"').n()
 			.n("&lt;br>")
 			;
+
+        // Simulator Config用関数定義(radio用） #59
+        env = "Simulator"
+        var func_S_SIMU_000 = function(){ HJN.init.CreateSampleTatLogAndChartShow(0); };
+        var func_S_SIMU_001 = function(){ HJN.init.CreateSampleTatLogAndChartShow(1); };
+		// Simulator Config設定画面定義 #59
+        this["_config_" + env] = HJN.util.Config(env) // #59
+        .label(null,"----- select simulate JSON --------").n()
+        .name("S_SIMU")
+            .radio("S_SIMU_000", null, "1 hour. online[200ms 5tps] batch[5sec evry3min]", false ,null, func_S_SIMU_000).n()
+            .radio("S_SIMU_001", null, "for test", true ,null, func_S_SIMU_001).n()
+        ;
+	
+	    
 	}
 
 	// class method
@@ -1197,6 +1220,7 @@ HJN.util.FileReader = (function() {
 				if(!(this instanceof GetterOfXY)) return new GetterOfXY();
 
 				var c = HJN.chart.fileReader;
+				this.configId = "_config_" + "Filter"; // #59
 				this.confSEP = c.getValue("SEP");	// セパレータ
 				
 				this.confTIME_COL = c.getValue("TIME_COL") - 1 || 0;	// 時刻(X)のカラム位置
@@ -1351,7 +1375,7 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.getObjctById = function(id) {
-		return this._configFileFormat.getObjctById(id);
+		return this[this.configId].getObjctById(id);
 	};
     /**
      * configに登録されているkey(prefix補填)の設定値を取得する
@@ -1359,7 +1383,7 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.getValueByKey = function(key) {
-		return this._configFileFormat.getValueByKey(key);
+		return this[this.configId].getValueByKey(key);
 	};
     /**
      * 設定値を保有するオブジェクトを返却する
@@ -1367,7 +1391,7 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.getConfig = function() {
-		return this._configFileFormat._config;
+		return this[this.configId]._config;
 	};
     /**
      * HTML（config設定用）テキストを返却する
@@ -1375,10 +1399,15 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.getConfigHtml = function(type) {
-		if (type === "Filter"){
-			return this._configFilter.getHtml();
+	    type = type || "File";
+        return this["_config_" + type].getHtml(); // #59
+
+	    if (type === "Simulator"){ // #59
+	        return this._configSimulator.getHtml();
+		} else if (type === "Filter"){
+	            return this["_config_Filter"].getHtml();
 		} else{	// "File"
-			return this._configFileFormat.getHtml();
+			return this[this.configId].getHtml();
 		}
 	};
     /**
@@ -1387,7 +1416,7 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.getFunction = function(key) {
-		var cKey = this._configFileFormat.getValueByKey(key);
+		var cKey = this[this.configId].getValueByKey(key);
 		if(!this.__keyConfig[cKey] || !this.__keyConfig[cKey].func){
 			return function(){};	// funcが定義されていないとき、何もしない関数を返却する
 		}else{
@@ -1400,7 +1429,7 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.getValue = function(key) {
-		var cKey = this._configFileFormat.getValueByKey(key);
+		var cKey = this[this.configId].getValueByKey(key);
 		if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
 			return cKey;	// valueが定義されていないとき、keyの設定値を返却
 		}else{
@@ -1449,7 +1478,7 @@ HJN.init.Copyright=function(){
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Nov 23 2017 23:44:11 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 24 2017 03:40:39 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

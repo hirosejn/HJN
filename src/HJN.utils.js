@@ -914,8 +914,9 @@ HJN.util.Config = (function() { // #24
         if (t.type === "radio") {           // radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
             this.prototype.__config[t.name] = t.id.substr(t.id.indexOf(".") + 1);
             // on呼出し関数が登録されているとき、登録関数を呼び出す #51
-            if(typeof(HJN.chart.fileReader._configFilter._onFunctions[t.id]) === "function"){ 
-                HJN.chart.fileReader._configFilter._onFunctions[t.id](); // ToDo:Config("m")から関数を取得する
+            var configId = "_config_" + t.id.match(/[A-Za-z0-9]*/)[0]; // #59
+            if(typeof(HJN.chart.fileReader[configId]._onFunctions[t.id]) === "function"){
+                HJN.chart.fileReader[configId]._onFunctions[t.id](); // TODO:Config("m")から関数を取得する
             }
         }else if (t.type === "number") {    // numberのとき、idに対する、value(入力値)を数値として登録
             this.prototype.__config[t.id] = +t.value;
