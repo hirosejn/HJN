@@ -157,16 +157,16 @@ HJN.util.N2S = function(y){
 /**
  * 文字列を数値に変換する
  * 
- * @param {Number|String}
- *            [s = s0] 計算式（日時分秒ミリ秒(d,h,mim,sec,ms)の文字は、ミリ秒に変換する）
- * @param {Number|String}
- *            [s0] 第一引数が指定されていないときの代用
- * @return {Number} n eval(s)で取得した数値
+ * @param {String|Number}
+ *            [str = sub] 計算式（日時分秒ミリ秒(d,h,mim,sec,ms)の文字は、ミリ秒に変換する）
+ * @param {String|Number}
+ *            [sub] 第一引数が指定されていない(undefined)ときの代用
+ * @return {Number} n eval(str||sub)で取得した数値
  * 
  */
-HJN.util.S2N = function(s0, s1){ // #53
+HJN.util.S2N = function(str, sub){ // #53
     "use strict";
-    var s = (typeof(s0) === "undefined") ? s1 : s0;
+    var s = (typeof(str) !== "undefined") ? str : sub;
     var h = 3600000; // 1時間（ミリ秒）
     var min = 60000; // 1分（ミリ秒）
     var sec =  1000; // 1秒（ミリ秒）
@@ -180,7 +180,6 @@ HJN.util.S2N = function(s0, s1){ // #53
  * キャッシュ
  * 
  * @class
- * @memberof HJN.util
  * @classdesc キャッシュを保持させるオブジェクト
  * @param {Number}
  *            [size=10] キャッシュ最大件数（未対応機能、設定は無視される）
@@ -328,6 +327,7 @@ HJN.util.Cash = (function() {
 /**
  * 非同期化 内部関数
  * 
+ * @class
  * @param {function}
  *            global 非同期化して実行する関数
  *            <p>
@@ -609,11 +609,8 @@ HJN.util.MappedETat = (function() { // #18
     /** @private */
     MappedETat.prototype._row = function(label, step) {return label + step;};
 
-    /**
-     * MapKey取得関数
-     * 
-     * @private
-     */
+    /** @private */
+    // MapKey取得関数
     MappedETat.prototype._getKey = function(e, i) {        // MapedMap用Key配列関数
         var start = e.x - e.y,      // x,yはミリ秒
             end = e.x,

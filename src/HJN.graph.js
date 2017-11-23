@@ -1,12 +1,9 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
-/** @namespace */
 HJN = {};
 HJN.ver = "v0.11.22";
 /** @namespace */
 HJN.util = {}; // utils登録変数
-/** @namespace */
-HJN.Plot = {}; // plot関連
 /** @namespace */
 HJN.init = {}; // 初期登録処理関連
 
@@ -71,7 +68,7 @@ HJN.EAPS = {
     scale : 1,
     color : 'rgba(127,   0,  64, 0.1)'
 };
-/** グラフ定数 */
+// グラフ定数
 HJN.seriesConfig = [ HJN.CONC, HJN.CTPS, HJN.ETPS, HJN.STAT, HJN.ETAT,
         HJN.EMPS, HJN.EAPS ];
 
@@ -892,8 +889,10 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
         // file dropのとき、新グラフデータに更新後に、旧グラフのidx値が引き渡されたとき 処理しない #12
         if (!g.rawData_ || g.rawData_.length - 1 < idx)
             return;
-        var x = g.rawData_[idx][HJN.CONC.N], // クリックした 点(CONC)のx の値
-        eTat = HJN.chart.eTat, sTat = HJN.chart.sTat, n = 0;
+        var x = g.rawData_[idx][HJN.CONC.N]; // 選択されている点(時刻)のCONCのxの値（無いときundefined)
+        var eTat = HJN.chart.eTat;
+        var sTat = HJN.chart.sTat;
+        var n = 0;
 
         // ETAT,STATのときlogレコードを表示する #28
         if ((name === HJN.STAT.key || name === HJN.ETAT.key)
@@ -920,7 +919,8 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
                             + ", " + e.y + ", " + e.message; // #53
                 } else { // ファイル読込のとき
                     // ファイルの該当行を Uint8Arrayに登録する
-                    var buff = new Uint8Array(e.len + 2), file = HJN.filesArrayBuffer[e.fileIdx]; // #23
+                    var buff = new Uint8Array(e.len + 2);
+                    var file = HJN.filesArrayBuffer[e.fileIdx]; // #23
                     buff.set(new Uint8Array(file, e.pos, Math.min(e.len + 2,
                             file.byteLength - e.pos)));
                     // ログデータを編集する
@@ -952,9 +952,13 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
         }
 
         // 選択点の点と数値を表示する
-        var val = (0 <= idx && name) ? g.rawData_[idx][g.setIndexByName_[name]]
-                : '';
-        drawPoint(ctx, cx, cy, r, color, val);
+        var val = "";
+        var time = "";
+        if (0 <= idx) {
+            time = g.rawData_[idx][0]; // #60
+            val = name ? g.rawData_[idx][g.setIndexByName_[name]] : "";
+        }
+        drawPoint(ctx, cx, cy, r, color, val, time);
         // 縦線を引く
         drawLine(ctx, [ {
             x : cx,
@@ -998,17 +1002,20 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
         }
 
         // 点を表示する（内部関数）
-        function drawPoint(ctx, cx, cy, r, color, text) {
+        function drawPoint(ctx, cx, cy, r, color, val, time) {
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.fillStyle = color;
             ctx.arc(cx, cy, r, 0, 2 * Math.PI, false);
             ctx.fill();
             ctx.stroke();
-            if (text) {
-                text = Math.round(text * 10) / 10;
+            var text = "";
+            if (val || time) {
+                if (val)  text += Math.round(val * 10) / 10;
+                if (val && time) text += " ";
+                if (time) text += "[" + HJN.util.D2S(time, "hh:mm:ss.ppp") + "]"; // #60
                 ctx.beginPath();
-                ctx.fillStyle = "rgba(0,0,0,1)";
+                ctx.fillStyle = color.replace(/\,[\s\.0-9]*\)/,",1)"); // #60
                 ctx.textAlign = "center";
                 ctx.fillText(text, cx, cy - 12);
                 ctx.stroke();

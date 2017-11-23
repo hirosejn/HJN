@@ -564,12 +564,16 @@ HJN.init.SetDetailDateTime=function(date) {
     HJN.detailDateTime = Math.floor(date / 1000) * 1000;    // 秒単位に丸める
 };
 
-
+/**
+ * Plot一覧（過去にクリックしたplotの一覧）およびグラフのplot(点)のクリック時の処理群
+ * 
+ * @namespace
+ */
+HJN.Plot = {}; // plot関連
 
 /**
  * Plotの一覧
  * 
- * @memberof HJN.Plot
  * @type array.<String, Boolean, Boolean, index, xMs, Number, Number, Number>
  * @prop {String} label Plot一覧に表示する文字列
  * @prop {Boolean} ckBox チェックボックスの選択状態<br>
@@ -826,14 +830,12 @@ HJN.Plot.ShowBalloon =function(){
  * ファイルをパースして読み込む
  * 
  * @class
- * @name FileReader
- * @memberof HJN.util
  * @classdesc ファイルをパースして読み込む、パース条件指定画面生成つき
  */
 HJN.util.FileReader = (function() {
 	"use strict";
 	/** @static */
-	var proto = FileReader.prototype = {
+	FileReader.prototype = {
 			__keyConfig : {}	// configで使用する値の定義
 	};
 
@@ -843,14 +845,14 @@ HJN.util.FileReader = (function() {
 
 		// コンストラクタ内部関数：keyを定義する
 		var def = function(key, val, onFunc) {
-					var _keyConf = proto.__keyConfig[key] = {};
+					var _keyConf = FileReader.prototype.__keyConfig[key] = {};
 					_keyConf.value = (val === undefined) ? key : val;	// getValueByKeyの返却値（デフォルト：keyと同じ文字列）
 					_keyConf.getValue = function () { return (val === undefined) ? key : val; };
 					_keyConf.onFunc = onFunc || null;	// onイベント時に実行する処理（メニューのa属性などで利用）
 					return key;
 				};
 		var v = function(key, fieldId) { // fieldIdの値を返却値とする(デフォルト： key+".v")
-					var _keyConf = proto.__keyConfig[key] = {};
+					var _keyConf = FileReader.prototype.__keyConfig[key] = {};
 					_keyConf.value = key;			// getValueByKeyの返却値（デフォルト：keyと同じ文字列）
 					_keyConf.getValue = function () {
 							return HJN.util.Config("m").getValueByKey(fieldId || key + ".v");
@@ -958,26 +960,23 @@ HJN.util.FileReader = (function() {
     /**
      * ファイルが新たに指定された時、eTatOriginalを再構築するか否（データを追加する）か
      * 
-     * @function
      * @memberof HJN.util.FileReader
      * @return {boolean} 再構築モードするときtrue、データを追加するときfalse
      */
-    proto.isNewETAT = function() { // #23
+    FileReader.prototype.isNewETAT = function() { // #23
         return this.getValue("NEWFILE") === "NEWDATA";
     }
 	
 	/**
      * 「ファイルから次の1レコードを取得するutil」 を取得する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.createGetterOfLine = function(file) {
+	FileReader.prototype.createGetterOfLine = function(file) {
 	    /**
          * ファイルから１レコード取得する
          * 
          * @class
-         * @name GetterOfLine
          * @memberof HJN.util.FileReader
          * @classdesc ファクトリのFileReaderが保持する改行コードを用いて、ファイルから１レコードを取得する
          * @example try{ var getterOfLine =
@@ -1002,7 +1001,6 @@ HJN.util.FileReader = (function() {
         /**
          * 次の1レコードを取得する
          * 
-         * @function
          * @name getValueByKey
          * @memberof HJN.util.FileReader.GetterOfLine
          */
@@ -1050,15 +1048,13 @@ HJN.util.FileReader = (function() {
     /**
      * eTatのフィルター
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-    proto.createFilter = function() { // #34
+    FileReader.prototype.createFilter = function() { // #34
        /**
          * フィルターを取得する
          * 
          * @class
-         * @name Filter
          * @memberof HJN.util.FileReader
          * @classdesc ファクトリのFileReaderが保持するフィルタ条件を用いるフィルターを取得する
          */
@@ -1101,7 +1097,6 @@ HJN.util.FileReader = (function() {
         /**
          * フィルター条件で判定する
          * 
-         * @function
          * @memberof HJN.util.FileReader.Filter
          */
         Filter.prototype._isIn = function (e) {
@@ -1143,7 +1138,6 @@ HJN.util.FileReader = (function() {
         /**
          * eTatをフィルターする
          * 
-         * @function
          * @memberof HJN.util.FileReader.Filter
          */
         Filter.prototype.filter = function (eTat) {
@@ -1158,15 +1152,13 @@ HJN.util.FileReader = (function() {
     /**
      * 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.createGetterOfXY = function() {
+	FileReader.prototype.createGetterOfXY = function() {
        /**
          * ファイルから１レコード取得する
          * 
          * @class
-         * @name GetterOfXY
          * @memberof HJN.util.FileReader
          * @classdesc ファクトリのFileReaderが保持するレコードフォーマット情報を用いて、ファイルからＸ(data)とＹ(value)を取得する
          */
@@ -1218,7 +1210,6 @@ HJN.util.FileReader = (function() {
          * 数字をパースして数値（ミリ秒）を取得する<br>
          * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
          * 
-         * @function
          * @memberof HJN.util.FileReader.GetterOfXY
          */
 		GetterOfXY.parseNumber = function (){ // str, unit,
@@ -1257,7 +1248,6 @@ HJN.util.FileReader = (function() {
         /**
          * レコードからXとYを取得する
          * 
-         * @function
          * @memberof HJN.util.FileReader.GetterOfXY
          */
 		GetterOfXY.prototype.parse = function (line) {
@@ -1327,37 +1317,33 @@ HJN.util.FileReader = (function() {
     /**
      * configに登録されているid(=prefix+key)の設定値を取得する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.getObjctById = function(id) {
+	FileReader.prototype.getObjctById = function(id) {
 		return this._configFileFormat.getObjctById(id);
 	};
     /**
      * configに登録されているkey(prefix補填)の設定値を取得する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.getValueByKey = function(key) {
+	FileReader.prototype.getValueByKey = function(key) {
 		return this._configFileFormat.getValueByKey(key);
 	};
     /**
      * 設定値を保有するオブジェクトを返却する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.getConfig = function() {
+	FileReader.prototype.getConfig = function() {
 		return this._configFileFormat._config;
 	};
     /**
      * HTML（config設定用）テキストを返却する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.getConfigHtml = function(type) {
+	FileReader.prototype.getConfigHtml = function(type) {
 		if (type === "Filter"){
 			return this._configFilter.getHtml();
 		} else{	// "File"
@@ -1367,10 +1353,9 @@ HJN.util.FileReader = (function() {
     /**
      * keyの値に指定された関数（なければ何もしない関数）を返却する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.getFunction = function(key) {
+	FileReader.prototype.getFunction = function(key) {
 		var cKey = this._configFileFormat.getValueByKey(key);
 		if(!this.__keyConfig[cKey] || !this.__keyConfig[cKey].func){
 			return function(){};	// funcが定義されていないとき、何もしない関数を返却する
@@ -1381,10 +1366,9 @@ HJN.util.FileReader = (function() {
     /**
      * keyの値に指定されたvalue（なければkey値）を返却する
      * 
-     * @function
      * @memberof HJN.util.FileReader
      */
-	proto.getValue = function(key) {
+	FileReader.prototype.getValue = function(key) {
 		var cKey = this._configFileFormat.getValueByKey(key);
 		if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
 			return cKey;	// valueが定義されていないとき、keyの設定値を返却
