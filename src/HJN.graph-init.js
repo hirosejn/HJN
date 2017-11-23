@@ -824,13 +824,11 @@ HJN.Plot.ShowBalloon =function(){
 };
 
 
-
-
 /**
- * ファイルをパースして読み込む
- * 
  * @class
- * @classdesc ファイルをパースして読み込む、パース条件指定画面生成つき
+ * @classdesc ファイルをパースして読み込む
+ *            <p>
+ *            パース条件指定画面生成つき
  */
 HJN.util.FileReader = (function() {
 	"use strict";
@@ -973,12 +971,14 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.createGetterOfLine = function(file) {
+
 	    /**
-         * ファイルから１レコード取得する
-         * 
          * @class
+         * @classdesc ファイルから１レコード取得する
+         *            <p>
+         *            ファクトリのFileReaderが保持する改行コードを用いて、ファイルから１レコードを取得する
+         * 
          * @memberof HJN.util.FileReader
-         * @classdesc ファクトリのFileReaderが保持する改行コードを用いて、ファイルから１レコードを取得する
          * @example try{ var getterOfLine =
          *          HJN.chart.fileReader.createGetterOfLine(file), fileInfo;
          *          for(var i = 0; i < n; i++) { line = getterOfLine.next();
@@ -1052,11 +1052,12 @@ HJN.util.FileReader = (function() {
      */
     FileReader.prototype.createFilter = function() { // #34
        /**
-         * フィルターを取得する
-         * 
          * @class
+         * @classdesc FileReaderのフィルター
+         *            <p>
+         *            ファクトリのFileReaderが保持するフィルタ条件を用いるフィルターを取得する
+         * 
          * @memberof HJN.util.FileReader
-         * @classdesc ファクトリのFileReaderが保持するフィルタ条件を用いるフィルターを取得する
          */
         function Filter(){ /* constructor */
                 if(!(this instanceof Filter)) return new Filter();
@@ -1155,12 +1156,14 @@ HJN.util.FileReader = (function() {
      * @memberof HJN.util.FileReader
      */
 	FileReader.prototype.createGetterOfXY = function() {
-       /**
-         * ファイルから１レコード取得する
-         * 
+
+	    /**
          * @class
+         * @classdesc １レコードをパースし、XとYをレコード取得する
+         *            <p>
+         *            ファクトリのFileReaderが保持するレコードフォーマット情報を用いて、ファイルの指定レコードからＸ(data)とＹ(value)を取得する
+         * 
          * @memberof HJN.util.FileReader
-         * @classdesc ファクトリのFileReaderが保持するレコードフォーマット情報を用いて、ファイルからＸ(data)とＹ(value)を取得する
          */
 		function GetterOfXY(){ /* constructor */
 				if(!(this instanceof GetterOfXY)) return new GetterOfXY();

@@ -957,6 +957,11 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
         if (0 <= idx) {
             time = g.rawData_[idx][0]; // #60
             val = name ? g.rawData_[idx][g.setIndexByName_[name]] : "";
+            // valが時間のとき、 時間表記に文字列編集する
+            if (name === HJN.STAT.key || name === HJN.ETAT.key 
+                    || name === HJN.EMPS.key || name === HJN.EAPS.key) {
+                val = HJN.util.D2S(val);
+            }
         }
         drawPoint(ctx, cx, cy, r, color, val, time);
         // 縦線を引く
@@ -1011,12 +1016,16 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             ctx.stroke();
             var text = "";
             if (val || time) {
-                if (val)  text += Math.round(val * 10) / 10;
+                if (typeof(val) === "number") {
+                    text += Math.round(val * 10) / 10;
+                } else if (typeof(val) === "string") { // #60
+                    text += val;
+                }
                 if (val && time) text += " ";
                 if (time) text += "[" + HJN.util.D2S(time, "hh:mm:ss.ppp") + "]"; // #60
                 ctx.beginPath();
                 ctx.fillStyle = color.replace(/\,[\s\.0-9]*\)/,",1)"); // #60
-                ctx.textAlign = "center";
+                ctx.textAlign = "left"; // "rigth" "center" #60
                 ctx.fillText(text, cx, cy - 12);
                 ctx.stroke();
             }
@@ -1246,15 +1255,10 @@ HJN.Graph.prototype.addMenu = function () {
             funcName : g + ".menuSimulatorSimulate",
             menuId : divMenuId + "_SimulatorSimulate"
         };
-        var menuSimulatorShow = {
-                menuLabel : "Show Editor",
-                funcName : g + ".menuSimulatorShow",
-                menuId : divMenuId + "_SimulatorShow"
-            };
-        var menuSimulatorClose = {
-                menuLabel : "Close Editor",
-                funcName : g + ".menuSimulatorClose",
-                menuId : divMenuId + "_SimulatorClose"
+        var menuSimulatorEditor = {
+                menuLabel : "JSON Editor(Open/Close)",
+                funcName : g + ".menuSimulatorEditor",
+                menuId : divMenuId + "_SimulatorEditor"
             };
         var menuSimulatorReset = {
                 menuLabel : "Reset JSON and simulate",
@@ -1265,8 +1269,7 @@ HJN.Graph.prototype.addMenu = function () {
                 + getAccordionTag(this, ++_id, "Simulator")
                 + '<ul class="hjnMenuLv2">'
                 + getFuncTag(menuSimulatorSimulate)
-                + getFuncTag(menuSimulatorShow)
-                + getFuncTag(menuSimulatorClose)
+                + getFuncTag(menuSimulatorEditor)
                 + getFuncTag(menuSimulatorReset)
                 + '</ul>' + '</li>';
         // シミュレーション条件JSON Editエリアを設定する
@@ -1598,27 +1601,22 @@ HJN.Graph.prototype.menuSimulatorSimulate = function () { // #53
  * メニュー機能：シミュレータ JSON入力エリアを広げる
  * 
  */
-HJN.Graph.prototype.menuSimulatorShow = function () { // #53
+HJN.Graph.prototype.menuSimulatorEditor = function () { // #53
     "use strict";
-    // textareaの親を一度閉じる（textareaが大きいとき親が大きくなりスクロールが出るため）
-    HJN.Graph.prototype.menuSimulatorClose();
-    // textareaの親を広げる
     var divSimulator = document.getElementById("Simulator");
     var divSimulatorEditor = document.getElementById("SimulatorEditor");
-    divSimulator.style.height = "100%";
-    divSimulator.style.width = "70%";
-    divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
-};
-/**
- * メニュー機能：シミュレータ JSON入力エリアを小さくする
- * 
- */
-HJN.Graph.prototype.menuSimulatorClose = function () { // #53
-    "use strict";
-    // textareaの親の高さを０にして見えなくする
-    var divSimulator = document.getElementById("Simulator");
-    divSimulator.style.height = "0";
-    divSimulator.style.width = "190px";
+    if (divSimulator.style.height === "100%") { // #60
+        // 開いているとき、textareaの親を閉じる
+        divSimulator.style.height = "0";
+        divSimulator.style.width = "190px";
+    } else{ // 閉じているとき
+        // textareaを一度閉じる（textareaが大きいとき親が大きくなりスクロールが出るため）
+        divSimulatorEditor.style.height = "0";
+        // textareaの親を開く
+        divSimulator.style.height = "100%";
+        divSimulator.style.width = "70%";
+        divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
+    }
 };
 /**
  * メニュー機能：シミュレータ デフォルトJSONにし、シミュレートする

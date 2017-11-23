@@ -102,7 +102,7 @@ HJN.util.S2D = function(str, conf){ // #34
 
 
 /**
- * 日時(JS Date)から、指定フォーマットの文字列を取得する
+ * 日時(Date)から、ローカル時刻に基づく、指定フォーマットの文字列を取得する
  * 
  * @param {Date}
  *            dt Date型（内部実装はミリ秒単位）
@@ -114,30 +114,55 @@ HJN.util.DateToString=function() {
     "use strict";
     var dt = arguments[0],  // arg0
         str = arguments[1]; // arg1
-    
+    // if (typeof(dt) === "number") dt = new Date(dt);
     str = str.replace(/yyyy/, dt.getFullYear() );
     str = str.replace(/MM/, ('0' + (dt.getMonth() + 1) ).slice(-2) );
     str = str.replace(/dd/, ('0' + dt.getDate()).slice(-2) );
     str = str.replace(/hh/, ('0' + dt.getHours()).slice(-2) );
     str = str.replace(/mm/, ('0' + dt.getMinutes()).slice(-2) );
     str = str.replace(/ss/, ('0' + dt.getSeconds()).slice(-2) );
-    str = str.replace(/ppp/,('00' + Math.floor(dt % 1000)).slice(-3) );
+    str = str.replace(/ppp/,('00' + dt.getMilliseconds()).slice(-3) ); // #60
+    // str = str.replace(/ppp/,('00' + Math.floor(dt % 1000)).slice(-3) );
 
     return str;
 };
 
 /**
- * 日時(ミリ秒：Ｘ軸用）から、指定フォーマットの文字列を取得する
+ * 日時(ミリ秒：Ｘ軸用）から、時差補正のない、指定フォーマットの文字列を取得する
  * 
  * @param {Number|Date}
  *            ds 時刻をUNIX経過時間（ミリ秒）で表した数値、もしくはDate(日付）
  * @param {String}
- *            str フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
+ *            [str=自動] フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）<br>
+ *            自動のとき 日数+ hh:mm:ss.ppp 表示単位に至らない単位は表示しない、ミリ秒は分単位以下の時表示<br>
+ *            例： 日数表示："1 02:03:04",時表示"02:03:04" 分表示"0:03:04.567" 秒表示"04.567"
  * @return {String} str 編集後文字列
  */
-HJN.util.D2S = function(ds, str){
+HJN.util.D2S = function(ds, str){ // #60
     "use strict";
-    return HJN.util.DateToString(new Date(ds), str);
+    var minus = "";
+    var ret = "";
+    if (ds < 0) {
+        minus = "-";
+        ds = -1 * ds;
+    }
+    var datetime = new Date(ds);
+    datetime = new Date(+datetime + 60000 * datetime.getTimezoneOffset()); // 環境タイムゾーンの補正
+    if(str){ // フォーマット指定があるとき
+        ret = HJN.util.DateToString(datetime, str);
+    } else if (ds < 1000) { // 自動で1秒(1000)未満のとき
+        ret = "0." + Math.round(ds);
+    } else if (ds < 60000) { // 自動で1分(1*60*1000)未満のとき
+        ret = HJN.util.DateToString(datetime, "ss.ppp");
+    } else if (ds < 3600000) { // 自動で1分以上、1時間(1*60*60*1000)未満のとき
+        ret = "0:" + HJN.util.DateToString(datetime, "mm:ss.ppp");
+    } else if (ds < 86400000) { // 自動で1時間以上、1日(1*24*60*60*1000)未満のとき
+        ret = HJN.util.DateToString(datetime, "hh:mm:ss");
+    } else { // 自動で1日以上のとき
+        ret = Math.floor(ds / 86400000) + " ";
+        ret += HJN.util.DateToString(datetime, "hh:mm:ss");
+    }
+    return minus + ret;
 };
 
 /**
@@ -177,10 +202,10 @@ HJN.util.S2N = function(str, sub){ // #53
 
 
 /**
- * キャッシュ
- * 
  * @class
- * @classdesc キャッシュを保持させるオブジェクト
+ * @classdesc キャッシュ
+ *            <p>
+ *            キャッシュを保持させるオブジェクト
  * @param {Number}
  *            [size=10] キャッシュ最大件数（未対応機能、設定は無視される）
  */
@@ -196,7 +221,7 @@ HJN.util.Cash = (function() {
         this._size = size;  // キャッシュ最大件数
     }
     
-    /* class method */
+    /* method */
     /**
      * 第一引数のargumentsを配列に変換する<br>
      * （注：引数が１つ以上あることを前提）
@@ -325,9 +350,9 @@ HJN.util.Cash = (function() {
 
 
 /**
- * 非同期化 内部関数
- * 
  * @class
+ * @classdesc 非同期化
+ * 
  * @param {function}
  *            global 非同期化して実行する関数
  *            <p>
@@ -361,10 +386,11 @@ HJN.util.setZeroTimeout = (function(global) {
 
 
 /**
- * ロガー
- * 
  * @class
- * @classdesc モードに応じたログを出力する。画面ログ表示領域、コンソールログへの出力に対応
+ * @classdesc ロガー
+ *            <p>
+ *            モードに応じたログを出力する。画面ログ表示領域、コンソールログへの出力に対応
+ * 
  * @param {String}
  *            [mode=0] ログ出力モード
  */
@@ -396,7 +422,7 @@ HJN.util.Logger = (function() { // #27
         var ts = new Date(),
             freq = 60000;   // 1分毎
         if (freq < ts - HJN.util.Logger._logtime){
-            var t = HJN.util.DateToString(ts, "hh:mm:ss.ppp");
+            var t = HJN.util.D2S(ts, "hh:mm:ss.ppp"); // #60
             console.log(t + "[" + i + "]~~~~" + text);
             HJN.util.Logger._logtime = ts;
         }
@@ -434,7 +460,7 @@ HJN.util.Logger = (function() { // #27
             text = (Math.round( HJN.util.Logger._timestamp - lastTimestamp ) / 1000.0) + "s " + text;
             // 数値のカンマ編集（小数部もカンマが入る）
             text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            text = HJN.util.DateToString(HJN.util.Logger._timestamp, "hh:mm:ss.ppp     ") + text;
+            text = HJN.util.D2S(HJN.util.Logger._timestamp, "hh:mm:ss.ppp     ") + text; // #60
         }
         HJN.util.Logger._logText.push(text);
         HJN.util.Logger.ShowText(HJN.util.Logger._logText);
@@ -503,9 +529,9 @@ HJN.util.Logger = (function() { // #27
 
 
 /**
- * 配列二分木検索
- * 
  * @class
+ * @classdesc 配列二分木検索
+ * 
  * @param {Number}
  *            val 検索する値
  * @param {Array}
@@ -571,10 +597,11 @@ HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
 
 
 /**
- * 期間指定eTat取得用Map
- * 
  * @class
- * @classdesc 指定期間に動いているeTatの一覧を、高速に取得するマップ
+ * @classdesc 期間指定eTat取得用Map
+ *            <p>
+ *            指定期間に動いているeTatの一覧を、高速に取得するマップ
+ * 
  * @param {ETAT}
  *            eTat インデックスを追加するETAT
  * @example eTat.tatMap = new HJN.util.MappedETat(eTat); var trans =
@@ -712,12 +739,14 @@ HJN.util.MappedETat = (function() { // #18
 
 
 /**
- * 配列に格納されているオブジェクトのx値で、配列位置を高速検索
- * 
  * @class
- * @classdesc 配列に格納されているオブジェクトのx値をキーとするマップ
+ * @classdesc 配列位置逆引きマップ
+ *            <p>
+ *            配列に格納されているオブジェクトのx値で、配列位置を高速検索するマップ<br>
+ *            指定関数の戻り値(x)をキーとするマップを作成する
  *            <p>
  *            参考 {@link http://qiita.com/alucky0707/items/10052866719ba5c5f5d7}
+ * 
  * @param {Array}
  *            arr インデクスをつける対象の配列
  * @param {String|function}
@@ -842,12 +871,11 @@ HJN.util.MappedArray = (function() {    // #18
 
 
 /**
- * 定数設定機能
- * 
  * @class
  * @classdesc 定数設定機能（設定HTML作成機能付き）
  *            <p>
- *            日時、TATフォーマット指定機能追加用に作成 #24
+ *            日時、TATフォーマット指定機能追加用に作成
+ * 
  * @param {String}
  *            [prefix=''] 定数の名前空間を一位に指定する文字列、指定しない場合グローバル
  * @param {String}
@@ -1057,14 +1085,13 @@ HJN.util.Config = (function() { // #24
 
 
 /**
- * Heap
- * 
  * @class
- * @classdesc ヒープ(二分ヒープ)
+ * @classdesc Heap ヒープ(二分ヒープ)
  *            <p>
  *            最小値(最大値)を効率よく取り出すことができるデータ構造
  *            <p>
  *            参考 {@link http://d.hatena.ne.jp/otaks/20121220/1355993039}
+ * 
  * @param {Function}
  *            [func=function(obj){ return +obj; }]
  *            pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数
@@ -1159,14 +1186,14 @@ HJN.util.Heap = (function() { // #55
 
 
 /**
- * Random
- * 
  * @class
- * @classdesc 乱数取得<br>
+ * @classdesc Random 乱数取得
+ *            <p>
  *            ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>
  *            M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う
  *            <p>
  *            参考 {@link http://www.ishikawa-lab.com/montecarlo/4shou.html}
+ * 
  * @param {Number}
  *            [average=0.5] 平均値
  * @example var r = HJN.util.Random(10), val = r.exponential();
@@ -1233,16 +1260,21 @@ HJN.util.Random = (function() { // #56
 
 
 /**
- * VirtualSystem
- * 
  * @class
- * @classdesc Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する Webサーバ 最大スレッド数： Apache 2.4
- *            [MaxClients = 1024] JBossトランザクションタイムアウト [default-timeout = 300 秒]
+ * @classdesc 仮想システム(VirtualSystem)
+ *            <p>
+ *            Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する
+ *            <p>
+ *            Webサーバ<br>
+ *            最大スレッド数： Apache 2.4 [MaxClients = 1024]<br>
+ *            JBossトランザクションタイムアウト [default-timeout = 300 秒]<br>
  *            キュー長 ： Apache 2.4 ListenBackLog (511) + Linux
- *            tcp_max_syn_backlog(769=1024*0.75+1)、 タイムアウトなし
+ *            tcp_max_syn_backlog(769=1024*0.75+1)、タイムアウトなし<br>
+ *            APサーバ<br>
+ *            最大スレッド数(maxThreads)<br>
+ *            JBossトランザクションタイムアウト [default-timeout=300 秒]<br>
+ *            DBサーバ 最大コネクション数(max_connections)
  * 
- * APサーバ 最大スレッド数(maxThreads),JBossトランザクションタイムアウト [default-timeout = 300 秒] DBサーバ
- * 最大コネクション数(max_connections)
  * @param {Number}
  *            [start = 1970/01/02 00:00:00)] シミュレート開始時刻（UNIX日付（ミリ秒））
  * @param {Number}
@@ -1436,6 +1468,8 @@ HJN.util.VirtualSystem = (function() { // #53
         var resources = baseModel;
         var holding = []; // #59
         sequence.forEach( function(tran) {
+            // tatMinがtatより大きいとき、tatをtatMin一定とする #59
+            if (tran.tat < tran.tatMin) tran.tat = tran.tatMin;
             // 処理開始時にholdしているリソース一覧をholdingに登録する #59
             tran.holding = [];
             resources.forEach(function(r) {tran.holding.push(r)});
@@ -1469,12 +1503,9 @@ HJN.util.VirtualSystem = (function() { // #53
 
 
 /**
- * VirtualApp
- * 
  * @class
- * @name VirtualApp
- * @memberof HJN.util
- * @classdesc仮想アプリケーション
+ * @classdesc 仮想アプリケーション(VirtualApp)
+ * 
  * @param {String}
  *            [userName = "dafault"] ログに出力するユーザ名
  * @param {Array}
@@ -1683,12 +1714,9 @@ HJN.util.VirtualApp = (function() { // #53
 
 
 /**
- * VirtualResource
- * 
  * @class
- * @name VirtualResource
- * @memberof HJN.util
- * @classdesc仮想リソース
+ * @classdesc 仮想リソース(VirtualResource)
+ * 
  * @param {String}
  *            [name = "unlimited"] リソース名（"unlimited"はリソース解放待ちを管理しない）
  * @param {Number}
