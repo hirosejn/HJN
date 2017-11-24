@@ -1,4 +1,3 @@
-debug=false;
 /** ie11 互換用 * */
 if(!Number.MAX_SAFE_INTEGER) Number.MAX_SAFE_INTEGER = 9007199254740991; // #59
 if(!Number.MIN_SAFE_INTEGER) Number.MIN_SAFE_INTEGER = -9007199254740991;
@@ -889,9 +888,9 @@ HJN.util.MappedArray = (function() {    // #18
 HJN.util.Config = (function() { // #24
     "use strict";
     /** @static */
-    Config.prototype = {
-            __config : {}   // config設定コンテナ
-    };
+    Config.prototype.__config = {};   // config設定コンテナ
+    Config.prototype.__config._onFunctions = {}; // 関数登録用
+
     /** @constructor */
     function Config(prefix, ol){ 
         if(!(this instanceof Config)) return new Config(prefix, ol);
@@ -902,7 +901,7 @@ HJN.util.Config = (function() { // #24
         this._html = this._ols; // config設定画面のHtml
         this._nameHtml = '';    // HTMLタグの name属性指定
         this._name = '';        // radioのConfig.get用
-        this._onFunctions = {}; // onイベント時に呼び出す関数の設定用 #51
+// this._onFunctions = {}; // onイベント時に呼び出す関数の設定用 #51
     }
 
     /**
@@ -914,10 +913,8 @@ HJN.util.Config = (function() { // #24
         if (t.type === "radio") {           // radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
             this.prototype.__config[t.name] = t.id.substr(t.id.indexOf(".") + 1);
             // on呼出し関数が登録されているとき、登録関数を呼び出す #51
-            var configId = "_config_" + t.id.match(/[A-Za-z0-9]*/)[0]; // #59
-            if(typeof(HJN.chart.fileReader[configId]._onFunctions[t.id]) === "function"){
-                HJN.chart.fileReader[configId]._onFunctions[t.id](); // TODO:Config("m")から関数を取得する
-            }
+            var func = HJN.util.Config.GetConfig().getFunctionById(t.id); // #59
+            if(typeof(func) === "function") func();
         }else if (t.type === "number") {    // numberのとき、idに対する、value(入力値)を数値として登録
             this.prototype.__config[t.id] = +t.value;
         } else {                            // textのとき、idに対する、value(入力値)を登録
@@ -925,6 +922,15 @@ HJN.util.Config = (function() { // #24
         }
     };
 
+    /**
+     * Configリポジトリ管理インスタンスを取得する
+     * 
+     * @memberof HJN.util.Config
+     */
+    Config.GetConfig = function(prefix) { // #59
+        return new Config(prefix);
+    }
+    
     /** @private */
     //
 
@@ -936,6 +942,22 @@ HJN.util.Config = (function() { // #24
      */
     Config.prototype.getObjctById = function(id) {
         return this.__config[id];
+    };
+    /**
+     * configに登録されているkey(prefix補填)の関数を取得する
+     * 
+     * @memberof HJN.util.Config
+     */
+    Config.prototype.getFunctionByKey = function(key) { // #59
+        return Config.prototype.__config._onFunctions[this._pre + this.getValueByKey(key)];
+    };
+    /**
+     * configの指定Idに登録されている関数を取得する
+     * 
+     * @memberof HJN.util.Config
+     */
+    Config.prototype.getFunctionById = function(id) { // #53
+        return Config.prototype.__config._onFunctions[id];
     };
     /**
      * configに登録されているkey(prefix補填)の設定値を取得する
@@ -958,11 +980,11 @@ HJN.util.Config = (function() { // #24
      * 
      * @memberof HJN.util.Config
      */
-    Config.prototype.xset = function(key, val) { 
+    Config.prototype.set = function(key, val) { 
         this.value[this._pre + key] = val;
     };
     
-    // config作成用 publicメソッド
+    // config作成用 メソッド
     /**
      * 定義＆設定画面作成用機能： 改行
      * 
@@ -1075,7 +1097,8 @@ HJN.util.Config = (function() { // #24
                                 pLabel, sLabel, "", attribute, check, "hjnLabel4Input");
         // 関数登録指定時、attributeを関数名として、指定関数を登録する #51
         if (func){
-            this._onFunctions[this._pre + key] = func;
+// this._onFunctions[this._pre + key] = func;
+            Config.prototype.__config._onFunctions[this._pre + key] = func;
         }
         return this;
     };
@@ -1282,14 +1305,16 @@ HJN.util.Random = (function() { // #56
  *            [end = startの24時間後] シミュレート終了時刻（UNIX日付（ミリ秒））
  * @param {String}
  *            [resourcesJson] リソース指定JSONテキスト
+ * @param {Boolean}
+ *            [log=false] 詳細ログ出力有無
  * @example sim = HJN.util.VirtualSystem()
  */
 HJN.util.VirtualSystem = (function() { // #53
     "use strict";
     /** @constructor */
-    function VirtualSystem(start, end, resourcesJson){
+    function VirtualSystem(start, end, resourcesJson, log){
         if(!(this instanceof VirtualSystem)){
-            return new VirtualSystem(start, end, resourcesJson);
+            return new VirtualSystem(start, end, resourcesJson, log);
         }
         if (!resourcesJson) {
             var jsonText =  '['
@@ -1299,8 +1324,9 @@ HJN.util.VirtualSystem = (function() { // #53
                 + ']';
             resourcesJson = JSON.parse(jsonText);
         }
-        this.eTat = []; // ログ
+        this.eTat = []; // シミュレートにより生成するTATログ出力先
         var _resources = resourcesJson;
+        this._log = (typeof(log) === "boolean") ? log : false; // #53
         this._start = +start || new Date(1970, 1, 2);   // シミュレート開始時刻
         this._end = end || this._start + 24*60*60*1000;    // シミュレート終了時刻（デフォルト：24時間後)
         
@@ -1311,8 +1337,9 @@ HJN.util.VirtualSystem = (function() { // #53
         this._resources = {}
         for (var i = 0; i < _resources.length; i++) {
             var e = _resources[i];
+            e.log = (typeof(e.log) === "boolean") ? e.log : this._log; // #53
             this._resources[e.type] = HJN.util.VirtualResource(
-                    e.type, e.thread, e.timeout, e.q, e.qWait);
+                    e.type, e.thread, e.timeout, e.q, e.qWait, e.log);
         };
         HJN.util.VirtualSystem.test = this; // ★
     }
@@ -1392,6 +1419,14 @@ HJN.util.VirtualSystem = (function() { // #53
                 this._simulator.push(events.pop());
             }
         }
+        // シミュレーション終了後処理（処理中のvAppを強制終了する）
+        while(0 < this._simulator.size()){
+            event = this._simulator.pop();
+            if (event._finish) {
+                event._finish(this, "N_EoS", this._end);
+            }
+        }
+
         return this.eTat;
     };
 
@@ -1680,18 +1715,22 @@ HJN.util.VirtualApp = (function() { // #53
      *            system VirtualSystem
      * @param {String}
      *            [logID="N_000"] ログID（ログメッセージの先頭文字）
+     * @param {Number}
+     *            [forceTime] 強制終了時刻を指定する（ミシュレーション停止後のeTat強制出力用）
      * @return {Object|null} 再スケジュールするときthis、再スケジュールしないときnull
      */
-    VirtualApp.prototype._finish = function(system, logID) {
+    VirtualApp.prototype._finish = function(system, logID, forceTime) {
         logID = logID || "N_000";
         var events = []; // 戻り値
+        var now = (typeof(forceTime) === "number") ? forceTime : this._sequenceTime; // #59
         // TATログを出力する
-        system.eTat.push( {x: this._sequenceTime,
-                    y: Math.round(this._sequenceTime - this._startTime), 
-                    sTatIdx: 0,
-                    message: logID + " " + this._userName} );
+        if (this._startTime < now) { // #59 forceTime以降に開始する処理はTATログ出力しない
+            system.eTat.push( {x: now, y: Math.round(now - this._startTime), 
+                sTatIdx: 0, message: logID + " " + this._userName} );           
+        }
+ 
         // 継続判定
-        if (0 < this._times) { // イベントシーケンスを繰り返すとき
+        if (0 < this._times && typeof(forceTime) !== "number") { // イベントシーケンスを繰り返すとき
             // イベント時刻にThink time（指数分布）を加える
             this._sequenceTime += this._thinkTimeMin;
             if (this._thinkTimeMin < this._thinkTime) {
@@ -1704,7 +1743,7 @@ HJN.util.VirtualApp = (function() { // #53
             this._sequenceIdx = 0;
             return this;
         }
-        // イベントシーケンスを継続しない時
+        // イベントシーケンスを継続しない時、もしくはforceTime指定時
         return null;
     };
 
@@ -1729,24 +1768,30 @@ HJN.util.VirtualApp = (function() { // #53
  *            リソース取得待ちキューの深さ（数）、キュー溢れ時は即時エラー終了しリソース処理しない
  * @param {Number}
  *            [queueWait = 10秒] 最大キュー滞留時間（リソース取得待ちタイムアウト時間）
+ * @param {Boolean}
+ *            [log=false] 詳細ログ出力有無
  */
 HJN.util.VirtualResource = (function() { // #53
     "use strict";
     /** @constructor */
-    function VirtualResource(name, capacity, timeout, queueDepth, queueWait){
+    function VirtualResource(name, capacity, timeout, queueDepth, queueWait, log){
         if(!(this instanceof VirtualResource)){
-            return new VirtualResource(name, capacity, timeout, queueDepth, queueWait);
+            return new VirtualResource(name, capacity, timeout, queueDepth, queueWait, log);
         }
         this._name = name || "unlimited";   // リソース名
+        this._log = (typeof(log) === "boolean") ? log : false; // #59
         // 処理待ち管理用
-        this._queueTimeout = (typeof(queueWait) !== "undefined") ? queueWait : 10000;   // キュー滞留時間上限
-        this._queueDepth  = (typeof(queueDepth) !== "undefined") ? queueDepth : Number.MAX_SAFE_INTEGER; // キューの深さ
+        this._queueTimeout = (typeof(queueWait) !== "undefined")
+                           ? queueWait : 10000;   // キュー滞留時間上限
+        this._queueDepth  = (typeof(queueDepth) !== "undefined")
+                          ? queueDepth : Number.MAX_SAFE_INTEGER; // キューの深さ
         this._queueLength = 0;   // キューの残りの深さ（キューイング数）
         this._waitQueue = HJN.util.Heap(    // リソース解放待ちキュー（登録時間順）
                 function(obj){ return obj.getTime(); });
         
         // 処理管理用
-        this._transactionTimeout  = (typeof(timeout)  !== "undefined") ? timeout : 10000;   // 処理のタイムアウト時間（未使用）
+        this._transactionTimeout  = (typeof(timeout)  !== "undefined") 
+                                  ? timeout : 10000;   // 処理のタイムアウト時間（未使用）
         this._capacity = (typeof(capacity) !== "undefined") ? capacity : 1.0;   // 保有リソース量（数）
         this._remaining = this._capacity;   // 残リソース量（数）
         
@@ -1804,11 +1849,14 @@ HJN.util.VirtualResource = (function() { // #53
             holdTime = this._waitQueue.top().getTime();
             if (this._queueTimeout <= now - holdTime) { // キューイング取引がタイムアウトしているとき
                 var app = this._waitQueue.pop(); // リソース解放待ちキューからfreeするappを取り出す
-                var apps = app.abend(system, "E_0TO "+this._name+" queue timeout", holdTime + this._queueTimeout); // appにfree時刻をセットする
-if(debug)console.log("%o(%o) %o TIMEOUT %o", app._sequenceTime, app._startTime, app._userName, this._name); // ★
+                var apps = app.abend(system, "E_0TO "+this._name+" queue timeout", 
+                        holdTime + this._queueTimeout); // appにfree時刻をセットする
+                if(this._log)console.log("%o(%o) %o TIMEOUT %o", 
+                        app._sequenceTime, app._startTime, app._userName, this._name);
                 if (apps.length){
                     events = events.concat(apps);  // appsをスケジュールイベント登録対象に加える
-if(debug)console.log("%o(%o) %o RESHEDUED by %o", apps[0]._sequenceTime, apps[0]._startTime, apps[0]._userName, this._name); // ★
+                    if(this._log)console.log("%o(%o) %o RESHEDUED by %o", 
+                            apps[0]._sequenceTime, apps[0]._startTime, apps[0]._userName, this._name);
                 }
             }
         }
@@ -1844,7 +1892,8 @@ if(debug)console.log("%o(%o) %o RESHEDUED by %o", apps[0]._sequenceTime, apps[0]
         if (amount <= this._remaining) {
             this._remaining -= amount;
             // 処理中にタイムアウトする場合、タイムアウト時刻を指定して登録する : TODO
-if(debug)console.log("%o(%o) %o hold %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._name); // ★
+            if(this._log)console.log("%o(%o) %o hold %o", 
+                    vApp._sequenceTime, vApp._startTime, vApp._userName, this._name);
             return [vApp];         
         }
         // リソース解放待ちキューが溢れていないとき、vAppをキューに 登録する
@@ -1855,11 +1904,14 @@ if(debug)console.log("%o(%o) %o hold %o", vApp._sequenceTime, vApp._startTime, v
             if (!this._isScheduled && 0 < this._queueTimeout) {
                 this.start(vApp.getTime(), system);
             }
-if(debug)console.log("%o(%o) %o hold/queued(%o) %o > %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._waitQueue._heap.length, this._name, this._waitQueue._heap[0]._userName); // ★
+            if(this._log)console.log("%o(%o) %o hold/queued(%o) %o > %o",
+                    vApp._sequenceTime, vApp._startTime, vApp._userName, 
+                    this._waitQueue._heap.length, this._name, this._waitQueue._heap[0]._userName);
             return []; // リソース解放待ちタイムアウトイベント : TODO
         }
         // リソース解放待ちキューが溢れていた時、リソースを取得できずにエラー終了
-if(debug)console.log("%o(%o) %o hold/abend %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._name); // ★
+        if(this._log)console.log("%o(%o) %o hold/abend %o",
+                vApp._sequenceTime, vApp._startTime, vApp._userName, this._name);
         return vApp.abend(system, "E_001");
     };
 
@@ -1887,10 +1939,171 @@ if(debug)console.log("%o(%o) %o hold/abend %o", vApp._sequenceTime, vApp._startT
             app.nextByFree(vApp.getTime());
             vApps.push(app);
         }
-if(debug)console.log("%o(%o) %o FREE %o --> %o %o", vApp._sequenceTime, vApp._startTime, vApp._userName, this._name, vApps.length, app? app._userName : ""); // ★
+        if(this._log) console.log("%o(%o) %o FREE %o --> %o %o",
+                vApp._sequenceTime, vApp._startTime, vApp._userName, 
+                this._name, vApps.length, app? app._userName : "");
         return vApps;
     };
 
     /* new */
     return VirtualResource;
+}());
+
+
+/**
+ * @class
+ * @classdesc 仮想システム生成ツール(virtualSystemByJson)
+ *            <p>
+ *            util管理用クラス（スタティックメソッドのみ）のためコンストラクタは使用しない
+ */
+HJN.util.virtualSystemByJson = (function() { // #53
+    "use strict";
+    /** @constructor */
+    function virtualSystemByJson(){
+        if(!(this instanceof virtualSystemByJson)){
+            return new virtualSystemByJson();
+        }
+    }
+
+    /** @private */
+    //
+
+    // public
+    
+    // static
+    /**
+     * 初期表示用サンプルデータ(ETAT)を自動生成する
+     * 
+     * @memberof HJN.util.virtualSystemByJson
+     * @param {String}
+     *            [jsonText] シミュレーション条件JSONテキスト
+     * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)),
+     *         y:レスポンス(秒)}]
+     */
+    // CreateSampleTatLog
+    virtualSystemByJson.Execute = function(jsonText){ // #53
+        "use strict";
+        var vSys = {};
+        // parse
+        var json = JSON.parse(jsonText)
+        // virtual system と resources の設定
+        var log = (json.log !== undefined) ? json.log : false; // #59
+        var start = (json.start !== undefined) ? HJN.util.S2D(json.start) : new Date(1970,1,2);
+        var end = start + HJN.util.S2N(json.end, "24*h");
+        var resources = json.resources;
+        for (var i = 0; i < resources.length; i++) {
+            resources[i].timeout = HJN.util.S2N(resources[i].timeout, "10*sec");
+            resources[i].qWait = HJN.util.S2N(resources[i].qWait, "10*sec");
+        }
+        vSys = HJN.util.VirtualSystem(start, end, json.resources, log);
+        // model の取得
+        var models = json.models;
+        for (var i = 0; i < models.length; i++) {
+            var model = models[i];
+            var name = Object.keys(model)[0];
+            var m = model[name];
+            var baseModel = m.baseModel;
+            for (var j = 0; j < m.sequence.length; j++) {
+                m.sequence[j].tatMin = HJN.util.S2N(m.sequence[j].tatMin);
+                m.sequence[j].tat = HJN.util.S2N(m.sequence[j].tat);
+            }
+            models[name] = HJN.util.VirtualSystem.getModel(
+                        baseModel.holds, 
+                        HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
+                        m.sequence, m.times, 
+                        HJN.util.S2N(m.thinkTimeMin), HJN.util.S2N(m.thinkTime)); 
+        }
+        // client の設定
+        var clients = json.clients;
+        for (var i = 0; i < clients.length; i++) {
+            var c = clients[i];
+            var cStart = start + HJN.util.S2N(c.start, 0);
+            var cEnd   = start + HJN.util.S2N(c.end, 24*60*60*1000);
+            vSys.setClients(c.user, c.num, cStart, cEnd, models[c.model]);
+        }
+        if (log) console.log(vSys); // #59
+        return vSys.execute();
+    }
+
+    /**
+     * シミュレーション条件JSONテキストを作成する
+     * 
+     * @memberof HJN.util.virtualSystemByJson
+     * @param {Number}
+     *            [n = 0] シナリオ番号
+     * @return {String} シミュレーション条件JSONテキスト
+     */
+    // CreateSampleTatLogJson
+    virtualSystemByJson.GetJsonConfig = function(n){ // #53
+        "use strict";
+        n = (typeof(n) !== "undefined") ? n : 0;
+        var jsonText = "";
+        if (n === 0) {
+            jsonText =  '{\n'
+                + '"start" : "1970/01/02 00:00:00.000",\n'
+                + '"end"   : "17.0*h",\n'
+                + '"resources" : [\n'
+                + '  {"type" :"WEB", "thread":1024,"timeout":"300*sec", "q":1280, "qWait":0},\n'
+                + '  {"type" :"AP",  "thread":20,  "timeout":"300*sec", "q":1280, "qWait":0},\n'
+                + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":10,  "qWait":"10*sec"}\n'
+                + '],\n'
+                + '\n'
+                + '"models" : [\n' // 取引モデル一覧
+                + '  { "ON-1" : {\n' // オンライン取引1
+                + '    "times": 60, "thinkTimeMin":"3*sec", "thinkTime": "10*sec",\n'
+                + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+                + '    "sequence": [\n'
+                + '      {"tatMin":30, "tat":50, "note":"select A"},\n'
+                + '      {"tatMin":50, "tat":50, "note":"updateB", "hold":"TBL_B"},\n'
+                + '      {"tatMin":80, "tat":100,"note":"updateC", "hold":"TBL_C"}\n'
+                + '    ]}},\n'
+                + ' { "ON-2" : {\n' // オンライン取引2
+                + '    "times": 60, "thinkTimeMin":"500*ms", "thinkTime": "1*sec",\n'
+                + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+                + '    "sequence": [\n'
+                + '      {"tatMin":"100*ms", "tat":"500*ms", "hold":""}\n'
+                + '    ]}},\n'
+                + ' { "BATCH-1" : {\n' // バッチ取引3
+                + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+                + '    "sequence": [\n'
+                + '      {"tatMin":"2*sec","tat":"5*sec","note":"updateB","hold":"TBL_B"}\n'
+                + '    ]}}\n'
+                + '],\n'
+                + '\n'
+                + '"clients" : [\n' // ユーザ作成条件
+                + '  {"num":100,"start":"16.0*h", "end":"17.0*h", "model":"ON-1",  "user" :"select A update B,C user"},\n'
+                + '  {"num": 20,"start":"16.5*h", "end":"16.6*h", "model":"ON-1",  "user" :"select A update B,C 増user"},\n'
+                + '  {"num":100,"start":"16.0*h", "end":"17.0*h", "model":"ON-2",  "user" :"排他なし user"},\n'
+                + '  {"num": 20,"start":"16.0*h", "end":"17.0*h", "model":"BATCH-1","user" :"バッチ処理 update B＊＊＊＊＊"}\n'
+                + ']\n'
+                + '}\n';
+        } else if (n === 1) {
+            // test用
+            jsonText =  '{\n'
+                + '"log" : true,\n'
+                + '"start" : "1970/01/02 00:00:00.000",\n'
+                + '"end"   : "30.0*sec",\n'
+                + '\n'
+                + '"resources" : [\n'
+                + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"6*sec"}\n'
+                + '],\n'
+                + '"models" : [\n' // 取引モデル一覧
+                + ' { "TEST-1" : {\n' // テスト取引
+                + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
+                + '    "sequence": [{"tatMin":"12*sec", "tat":"12*sec", "hold":"TBL_B"}],\n'
+                + '    "times": 3, "thinkTimeMin":"2*sec", "thinkTime": "2*sec"}}\n'
+                + '    ],\n'
+                + '\n'
+                + '"clients" : [\n' // ユーザ作成条件
+                + '  {"num": 1,"start":"0*sec", "end":"0*sec", "model":"TEST-1","user" :"test1"},\n'
+                + '  {"num": 1,"start":"1*sec", "end":"1*sec", "model":"TEST-1","user" :"test2"}\n'
+                + ']\n'
+                + '}\n';
+        }
+
+        return jsonText; 
+    }
+
+    /* new */
+    return virtualSystemByJson;
 }());

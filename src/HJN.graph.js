@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.11.22";
+HJN.ver = "v0.11.24";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -391,9 +391,8 @@ HJN.Graph.prototype.init = function () {
     }
     // ウィンドウ枠に合わせて描画領域をリサイズするイベントを登録し、リサイズする
     window.addEventListener("resize", this.resize.bind(this));
-    window.addEventListener("orientationchange", this.resize.bind(this)); // tablet
-    // 回転
-    // #22
+    // tablet回転時も、リサイズする #22
+    window.addEventListener("orientationchange", this.resize.bind(this));
     var resizes = document.getElementsByClassName("hjnResize");
     for (var i = 0; i < resizes.length; i++) {
         resizes[i].addEventListener("change", this.resize.bind(this)); // メニュ－の開閉
@@ -1260,18 +1259,12 @@ HJN.Graph.prototype.addMenu = function () {
                 funcName : g + ".menuSimulatorEditor",
                 menuId : divMenuId + "_SimulatorEditor"
             };
-        var menuSimulatorReset = {
-                menuLabel : "Reset JSON and simulate",
-                funcName : g + ".menuSimulatorReset",
-                menuId : divMenuId + "_SimulatorReset"
-            };
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Simulator">'
                 + getAccordionTag(this, ++_id, "Simulator")
                 + '<ul class="hjnMenuLv2">'
                 + getFuncTag(menuSimulatorSimulate)
                 + getFuncTag(menuSimulatorEditor)
-                + getFuncTag(menuSimulatorReset)
-                + this.fileReader.getConfigHtml("Simulator") // #59
+                + this.fileReader.getConfigHtml("Simulator") // #53
                 + '</ul>' + '</li>';
         // シミュレーション条件JSON Editエリアを設定する
         var divSimulator = document.getElementById("Simulator");
@@ -1280,7 +1273,7 @@ HJN.Graph.prototype.addMenu = function () {
             + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
-        divSimulatorEditor.value = HJN.init.CreateSampleTatLogJson(); // デフォルトJSON
+        divSimulatorEditor.value = HJN.util.virtualSystemByJson.GetJsonConfig(); // デフォルトJSON
         
         // View Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_View">'
@@ -1619,18 +1612,7 @@ HJN.Graph.prototype.menuSimulatorEditor = function () { // #53
         divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
     }
 };
-/**
- * メニュー機能：シミュレータ デフォルトJSONにし、シミュレートする
- * 
- */
-HJN.Graph.prototype.menuSimulatorReset = function () { // #53
-    "use strict";
-    // textareaに初期値を設定する
-    var divSimulatorEditor = document.getElementById("SimulatorEditor");
-    divSimulatorEditor.value = HJN.init.CreateSampleTatLogJson();
-    // グラフを再生成する
-    HJN.Graph.prototype.menuSimulatorSimulate();
-};
+
 
 /**
  * メニュー機能：canvas画像をファイルとしてダウンロードする

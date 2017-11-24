@@ -29,7 +29,7 @@
             <pre class="prettyprint source linenums"><code>/* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.11.22";
+HJN.ver = "v0.11.24";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -419,9 +419,8 @@ HJN.Graph.prototype.init = function () {
     }
     // ウィンドウ枠に合わせて描画領域をリサイズするイベントを登録し、リサイズする
     window.addEventListener("resize", this.resize.bind(this));
-    window.addEventListener("orientationchange", this.resize.bind(this)); // tablet
-    // 回転
-    // #22
+    // tablet回転時も、リサイズする #22
+    window.addEventListener("orientationchange", this.resize.bind(this));
     var resizes = document.getElementsByClassName("hjnResize");
     for (var i = 0; i &lt; resizes.length; i++) {
         resizes[i].addEventListener("change", this.resize.bind(this)); // メニュ－の開閉
@@ -1288,18 +1287,12 @@ HJN.Graph.prototype.addMenu = function () {
                 funcName : g + ".menuSimulatorEditor",
                 menuId : divMenuId + "_SimulatorEditor"
             };
-        var menuSimulatorReset = {
-                menuLabel : "Reset JSON and simulate",
-                funcName : g + ".menuSimulatorReset",
-                menuId : divMenuId + "_SimulatorReset"
-            };
         accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Simulator">'
                 + getAccordionTag(this, ++_id, "Simulator")
                 + '&lt;ul class="hjnMenuLv2">'
                 + getFuncTag(menuSimulatorSimulate)
                 + getFuncTag(menuSimulatorEditor)
-                + getFuncTag(menuSimulatorReset)
-                + this.fileReader.getConfigHtml("Simulator") // #59
+                + this.fileReader.getConfigHtml("Simulator") // #53
                 + '&lt;/ul>' + '&lt;/li>';
         // シミュレーション条件JSON Editエリアを設定する
         var divSimulator = document.getElementById("Simulator");
@@ -1308,7 +1301,7 @@ HJN.Graph.prototype.addMenu = function () {
             + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
-        divSimulatorEditor.value = HJN.init.CreateSampleTatLogJson(); // デフォルトJSON
+        divSimulatorEditor.value = HJN.util.virtualSystemByJson.GetJsonConfig(); // デフォルトJSON
         
         // View Menu
         accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_View">'
@@ -1647,18 +1640,7 @@ HJN.Graph.prototype.menuSimulatorEditor = function () { // #53
         divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
     }
 };
-/**
- * メニュー機能：シミュレータ デフォルトJSONにし、シミュレートする
- * 
- */
-HJN.Graph.prototype.menuSimulatorReset = function () { // #53
-    "use strict";
-    // textareaに初期値を設定する
-    var divSimulatorEditor = document.getElementById("SimulatorEditor");
-    divSimulatorEditor.value = HJN.init.CreateSampleTatLogJson();
-    // グラフを再生成する
-    HJN.Graph.prototype.menuSimulatorSimulate();
-};
+
 
 /**
  * メニュー機能：canvas画像をファイルとしてダウンロードする
@@ -1872,13 +1854,13 @@ HJN.Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li><li><a href="HJN.util.virtualSystemByJson.html">HJN.util.virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 24 2017 03:40:39 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 25 2017 00:00:45 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

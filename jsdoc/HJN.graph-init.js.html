@@ -92,220 +92,32 @@ HJN.init.ChartRegist = function(chartName){
 	HJN.init.DropField(dropFieldName);
 	HJN.init.DropField(dropFieldName+ "Detail");
 
-	// 初期表示データを自動生成する
-	HJN.init.CreateSampleTatLogAndChartShow() // #53
+	// 初期表示データを自動生成する // #53
+	HJN.util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
 }
 
 /**
  * データを自動生成し表示する
  * 
  * @param {String|Number}
- *            [json = HJN.init.CreateSampleTatLogJson(0)]
+ *            [json = HJN.util.virtualSystemByJson.GetJsonConfig(0)]
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
  */
 HJN.init.CreateSampleTatLogAndChartShow = function(json){ // #53
     "use strict";
-    if (typeof(json) === "number") { // #59
-        json = HJN.init.CreateSampleTatLogJson(json);
+    var jsonText;
+    if (typeof(json) === "number") { // #53
+        jsonText = HJN.util.virtualSystemByJson.GetJsonConfig(json);
     } else{
-        json = json || HJN.init.CreateSampleTatLogJson(0);
+        jsonText = json || HJN.util.virtualSystemByJson.GetJsonConfig(0);
     }
+    // JSON Editorを更新する
+    document.getElementById("SimulatorEditor").value = jsonText;
     // 初期表示データを自動生成する
-    HJN.chart.eTatOriginal = HJN.init.CreateSampleTatLog(json); // arg0：生成データ数
+    HJN.chart.eTatOriginal = HJN.util.virtualSystemByJson.Execute(jsonText);
     // データを表示する
     HJN.init.ChartShow(HJN.chart.eTatOriginal);
 }
-
-/**
- * 初期表示用サンプルデータ(ETAT)を自動生成する
- * 
- * @param {String}
- *            [jsonText] シミュレーション条件JSONテキスト
- * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)), y:レスポンス(秒)}]
- */
-HJN.init.CreateSampleTatLog = function(jsonText){ // #53
-    "use strict";
-    var vSys = {};
-    // parse
-    var json = JSON.parse(jsonText)
-    // virtual system と resources の設定
-    var start = (json.start === undefined) ? new Date(1970,1,2) : HJN.util.S2D(json.start);
-    var end = start + HJN.util.S2N(json.end, "24*h");
-    var resources = json.resources;
-    for (var i = 0; i &lt; resources.length; i++) {
-        resources[i].timeout = HJN.util.S2N(resources[i].timeout, "10*sec");
-        resources[i].qWait = HJN.util.S2N(resources[i].qWait, "10*sec");
-    }
-    vSys = HJN.util.VirtualSystem(start, end, json.resources);
-    // model の取得
-    var models = json.models;
-    for (var i = 0; i &lt; models.length; i++) {
-        var model = models[i];
-        var name = Object.keys(model)[0];
-        var m = model[name];
-        var baseModel = m.baseModel;
-        for (var j = 0; j &lt; m.sequence.length; j++) {
-            m.sequence[j].tatMin = HJN.util.S2N(m.sequence[j].tatMin);
-            m.sequence[j].tat = HJN.util.S2N(m.sequence[j].tat);
-        }
-        models[name] = HJN.util.VirtualSystem.getModel(
-                    baseModel.holds, 
-                    HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
-                    m.sequence, m.times, 
-                    HJN.util.S2N(m.thinkTimeMin), HJN.util.S2N(m.thinkTime)); 
-    }
-    // client の設定
-    var clients = json.clients;
-    for (var i = 0; i &lt; clients.length; i++) {
-        var c = clients[i];
-        var cStart = start + HJN.util.S2N(c.start, 0);
-        var cEnd   = start + HJN.util.S2N(c.end, 24*60*60*1000);
-        vSys.setClients(c.user, c.num, cStart, cEnd, models[c.model]);
-    }
-    console.log(vSys);
-    return vSys.execute();
-}
-
-HJN.init.CreateSampleTatLog1 = function(){
-    "use strict";
-    HJN.util.Logger.ShowLogText("----- create data -----------------------------","calc");
-    var num = 100*100;   // 生成データ数
-    var response = 1500; // 最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする
-    var freq = 10;       // データ発生頻度の目安（tps)
-    var eTat = [];       // 戻り値
-    var x = new Date(), d= Math.floor(x.getTime()), y = 0.0, random = 0;
-    for (var i = 0; i &lt; num; i++) { // jsはミリ秒単位
-        // 次の電文発生時刻を求める
-        d += Math.round( Math.random() * 1000.0 / (2 * freq) *
-                 (1 + (0.5 * Math.cos(2 * Math.PI * i / num))) );
-        // レスポンスを求める
-        random = Math.random();
-        y  = Math.round( random*random*response * 1e+6 *
-                (1 + (1.0 * Math.sin(2 * Math.PI * (i / num - 0.25)))) ) / 1e+6;
-        var y2 = Math.random() &lt; 20 / num ? 3 : 1;
-        // 生成データを登録する
-        eTat.push( {x: d , y: y * y2, sTatIdx: 0, message:"sample"} );
-    }
-    HJN.util.Logger.ShowLogText("got     " + eTat.length + " plots [tat/endT]","calc");
-    return eTat;
-};
-
-HJN.init.CreateSampleTatLog2 = function(){ // #53
-    "use strict";
-    var h = 3600000; // 1時間（ミリ秒）
-    var min = 60000; // 1分（ミリ秒）
-    var sec =  1000; // 1秒（ミリ秒）
-    var ms =      1; // 1ミリ秒
-
-    // 仮想クライアントが実行する取引モデルの宣言（3通りの書き方）
-    var onModel = HJN.util.VirtualSystem.getModel(["WEB","AP","DB"], 2*ms, 5*ms,
-            [   {note:"select A", tatMin:30, tat:50},
-                {note:"updateB", hold:"TBL_B",tatMin:10, tat:50},
-                {note:"updateC", hold:"TBL_C",tatMin:80, tat:100}
-            ], 60, 3*sec, 10*sec);
-    var onMode2 = { // オンライン取引2
-            baseModel: {holds:["WEB","AP","DB"], tatMin: 2, tat:5},
-            sequence: [ {hold:"",    tatMin:100,tat:500} ], // イベントシーケンス
-            times: 60,   // イベントシーケンスの繰り返し回数
-            thinkTimeMin: 500,  // イベントシーケンス終了時に再実行する場合の最小再開時間
-            thinkTime: 1*sec    // イベントシーケンス終了時に再実行する場合の平均再開時間
-        };
-    var model3 = '' // バッチ取引3
-        + '{ "baseModel":  {"holds": ["DB"], "tatMin": 2, "tat":5},'
-        + '  "sequence": [{"hold":"TBL_B","tatMin":2000,"tat":3000}]}';
-    var btModel3 = JSON.parse(model3);
-
-    // シミュレータ（開始時刻、停止時刻、Webスレッド数、APスレッド数、DBコネクション数）
-    var start = HJN.util.S2D("1970/01/02 00:00:00");
-    var end = start+17*h;
-
-    var vSys = HJN.util.VirtualSystem(start, end);
-    // シミューレートシナリオを登録する（User名, User数, 開始時刻, 最終開始時刻, 実行取引モデル）
-     vSys.setClients("select A update B,C user", 100, start+16.0*h, start+17.0*h, onModel);
-     vSys.setClients("select A update B,C 増user",20, start+16.5*h, start+16.6*h, onModel);
-     vSys.setClients("排他なし user",100, start+16.0*h, start+17.0*h, onMode2);
-     vSys.setClients("バッチ処理 update B＊＊＊＊＊", 20, start+16.0*h, start+17.0*h, btModel3);
-
-    // シミューレートシナリオを実行し、生成したeTatをリターンする
-    return vSys.execute();
-}
-
-/**
- * シミュレーション条件JSONテキストを作成する
- * 
- * @param {Number}
- *            [n = 0] シナリオ番号
- * @return {String} シミュレーション条件JSONテキスト
- */
-HJN.init.CreateSampleTatLogJson = function(n){ // #53
-    "use strict";
-    n = (typeof(n) !== "undefined") ? n : 0;
-    var jsonText = "";
-    if (n === 0) {
-        jsonText =  '{\n'
-            + '"start" : "1970/01/02 00:00:00.000",\n'
-            + '"end"   : "17.0*h",\n'
-            + '"resources" : [\n'
-            + '  {"type" :"WEB", "thread":1024,"timeout":"300*sec", "q":1280, "qWait":0},\n'
-            + '  {"type" :"AP",  "thread":20,  "timeout":"300*sec", "q":1280, "qWait":0},\n' // AP:thread=DB:thread+DB:q
-            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":10,  "qWait":"10*sec"}\n'
-            + '],\n'
-            + '\n'
-            + '"models" : [\n' // 取引モデル一覧
-            + '  { "ON-1" : {\n' // オンライン取引1
-            + '    "times": 60, "thinkTimeMin":"3*sec", "thinkTime": "10*sec",\n'
-            + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
-            + '    "sequence": [\n'
-            + '      {"tatMin":30, "tat":50, "note":"select A"},\n'
-            + '      {"tatMin":50, "tat":50, "note":"updateB", "hold":"TBL_B"},\n'
-            + '      {"tatMin":80, "tat":100,"note":"updateC", "hold":"TBL_C"}\n'
-            + '    ]}},\n'
-            + ' { "ON-2" : {\n' // オンライン取引2
-            + '    "times": 60, "thinkTimeMin":"500*ms", "thinkTime": "1*sec",\n'
-            + '    "baseModel":  {"holds": ["WEB","AP","DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
-            + '    "sequence": [\n'
-            + '      {"tatMin":"100*ms", "tat":"500*ms", "hold":""}\n'
-            + '    ]}},\n'
-            + ' { "BATCH-1" : {\n' // バッチ取引3
-            + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
-            + '    "sequence": [\n'
-            + '      {"tatMin":"2*sec","tat":"5*sec","note":"updateB","hold":"TBL_B"}\n'
-            + '    ]}}\n'
-            + '],\n'
-            + '\n'
-            + '"clients" : [\n' // ユーザ作成条件
-            + '  {"num":100,"start":"16.0*h", "end":"17.0*h", "model":"ON-1",  "user" :"select A update B,C user"},\n'
-            + '  {"num": 20,"start":"16.5*h", "end":"16.6*h", "model":"ON-1",  "user" :"select A update B,C 増user"},\n'
-            + '  {"num":100,"start":"16.0*h", "end":"17.0*h", "model":"ON-2",  "user" :"排他なし user"},\n'
-            + '  {"num": 20,"start":"16.0*h", "end":"17.0*h", "model":"BATCH-1","user" :"バッチ処理 update B＊＊＊＊＊"}\n'
-            + ']\n'
-            + '}\n';
-    } else if (n === 1) {
-        jsonText =  '{\n'
-            + '"start" : "1970/01/02 00:00:00.000",\n'
-            + '"end"   : "40.0*sec",\n'
-            + '\n'
-            + '"resources" : [\n'
-            + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"6*sec"}\n'
-            + '],\n'
-            + '"models" : [\n' // 取引モデル一覧
-            + ' { "TEST-1" : {\n' // テスト取引
-            + '    "baseModel":  {"holds": ["DB"], "tatMin": "2*ms", "tat":"5*ms"},\n'
-            + '    "sequence": [{"tatMin":"12*sec", "tat":"12*sec", "hold":"TBL_B"}],\n'
-            + '    "times": 2, "thinkTimeMin":"2*sec", "thinkTime": "2*sec"}}\n'
-            + '    ],\n'
-            + '\n'
-            + '"clients" : [\n' // ユーザ作成条件
-            + '  {"num": 1,"start":"0*sec", "end":"0*sec", "model":"TEST-1","user" :"test1"},\n'
-            + '  {"num": 1,"start":"1*sec", "end":"1*sec", "model":"TEST-1","user" :"test2"}\n'
-            + ']\n'
-            + '}\n';
-        
-    }
-
-    return jsonText; 
-}
-
 
 /**
  * HJN.init.ChartShow: 終了時刻とtatの配列をグラフ表示する
@@ -337,7 +149,6 @@ HJN.init.ChartShow = function(eTatOriginal){
         var sync = Dygraph.synchronize(
                  [ HJN.chart.graph, HJN.chartD.graph ],
                  {selection: true, zoom: false});
-
     });
 }
 
@@ -741,9 +552,11 @@ HJN.Plot.Add=function(n, x, y) {
 				 radio:true, n: n, x: x, y: y, 
 				 rangePlus: rangePlus, rangeMinus: rangeMinus, rangeUnit: rangeUnit };
 		if (n === HJN.CTPS.N){			// CTPSのとき秒内最大CONCとして登録する
-			adjustPlotToY(HJN.chartD.conc, x, x + HJN.chart.cTpsUnit.unit, y, HJN.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
+			adjustPlotToY(HJN.chartD.conc, x, x + HJN.chart.cTpsUnit.unit, y, 
+			        HJN.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
 		}else if (n === HJN.EMPS.N){	// EMPSのとき秒内最大ETATとして登録する
-			adjustPlotToY(HJN.chartD.eTat, x, x + HJN.chart.cycle, y, HJN.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
+			adjustPlotToY(HJN.chartD.eTat, x, x + HJN.chart.cycle, y, 
+			        HJN.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
 		}else {	// CTPS,EMPS以外の時、選択Plotを追加する
 			HJN.Plot.List.push(plot);
 		}
@@ -865,20 +678,18 @@ HJN.Plot.ShowBalloon =function(){
 HJN.util.FileReader = (function() {
 	"use strict";
 	/** @static */
-	FileReader.prototype = {
-			__keyConfig : {}	// configで使用する値の定義
-	};
+	FileReader.prototype.__keyConfig = {};	// configで使用する値の定義
 
 	/** constructor */
 	function FileReader(arg){ 
 		if(!(this instanceof FileReader)) return new FileReader(arg);
 
-        this.configId = "_config_" + "File"; // #59
+        this.configId = "_config_" + "File"; // #53
 
 		// コンストラクタ内部関数：keyを定義する
 		var def = function(key, val, onFunc) {
 					var _keyConf = FileReader.prototype.__keyConfig[key] = {};
-					_keyConf.value = (val === undefined) ? key : val;	// getValueByKeyの返却値（デフォルト：keyと同じ文字列）
+					_keyConf.value = (val === undefined) ? key : val; // getValueByKeyの返却値（デフォルト：keyと同じ文字列）
 					_keyConf.getValue = function () { return (val === undefined) ? key : val; };
 					_keyConf.onFunc = onFunc || null;	// onイベント時に実行する処理（メニューのa属性などで利用）
 					return key;
@@ -887,7 +698,9 @@ HJN.util.FileReader = (function() {
 					var _keyConf = FileReader.prototype.__keyConfig[key] = {};
 					_keyConf.value = key;			// getValueByKeyの返却値（デフォルト：keyと同じ文字列）
 					_keyConf.getValue = function () {
-							return HJN.util.Config("m").getValueByKey(fieldId || key + ".v");
+							return HJN.util.Config("m").getValueByKey(fieldId || key + ".v"); // TODO:
+                                                                                                // m
+                                                                                                // の指定
 						};
 					return key;
 				};
@@ -895,7 +708,7 @@ HJN.util.FileReader = (function() {
 				
 		// 名称と挙動の定義
 		var env = "File";
-		this["_config_" + env] = HJN.util.Config(env) // #59
+		this["_config_" + env] = HJN.util.Config(env) // #53
 		    // File Format Config設定画面定義 #51
             .name("NEWFILE").label(null,"Registered ") // #23
                 .radio("NEWDATA", null, "newly", true)
@@ -958,7 +771,7 @@ HJN.util.FileReader = (function() {
 		var func_F_SYNC_UPPER = function(){ HJN.Graph.DrawCallback(HJN.chart.graph); },
 		    func_F_SYNC_DETAIL = function(){ HJN.Graph.DrawCallback(HJN.chartD.graph); };
 		// Filter Config設定画面定義 #51
-        this["_config_" + env] = HJN.util.Config(env) // #59
+        this["_config_" + env] = HJN.util.Config(env) // #53
         .name("F_SYNC").label(null,"Sync") // #50
             .radio("F_SYNC_UPPER", null, "Upper", false ,null, func_F_SYNC_UPPER) // #51
             .radio("F_SYNC_DETAIL", null, "Detail", false, null, func_F_SYNC_DETAIL)
@@ -987,19 +800,22 @@ HJN.util.FileReader = (function() {
 			.n("&lt;br>")
 			;
 
-        // Simulator Config用関数定義(radio用） #59
+        // Simulator Config用関数定義(radio用） #53
         env = "Simulator"
         var func_S_SIMU_000 = function(){ HJN.init.CreateSampleTatLogAndChartShow(0); };
         var func_S_SIMU_001 = function(){ HJN.init.CreateSampleTatLogAndChartShow(1); };
-		// Simulator Config設定画面定義 #59
-        this["_config_" + env] = HJN.util.Config(env) // #59
-        .label(null,"----- select simulate JSON --------").n()
+		// Simulator Config設定画面定義 #53
+        this["_config_" + env] = HJN.util.Config(env) // #53
+        .n("&lt;br>")
+        .label(null," If you change the scenario below,").n()
+        .label(null,"JSON is initialized and re-simulated.").n()
+        .n("&lt;br>")
         .name("S_SIMU")
-            .radio("S_SIMU_000", null, "1 hour. online[200ms 5tps] batch[5sec evry3min]", false ,null, func_S_SIMU_000).n()
-            .radio("S_SIMU_001", null, "for test", true ,null, func_S_SIMU_001).n()
+            .radio("S_SIMU_000", null, 
+                    "1 hour with table(B) lock.&lt;br>- online[100-500ms 2-5tps]&lt;br>- batch[2-5sec evry3min]", 
+                    true ,null, func_S_SIMU_000).n()
+            .radio("S_SIMU_001", null, "for test", false ,null, func_S_SIMU_001).n()
         ;
-	
-	    
 	}
 
 	// class method
@@ -1220,7 +1036,7 @@ HJN.util.FileReader = (function() {
 				if(!(this instanceof GetterOfXY)) return new GetterOfXY();
 
 				var c = HJN.chart.fileReader;
-				this.configId = "_config_" + "Filter"; // #59
+				this.configId = "_config_" + "Filter"; // #53
 				this.confSEP = c.getValue("SEP");	// セパレータ
 				
 				this.confTIME_COL = c.getValue("TIME_COL") - 1 || 0;	// 時刻(X)のカラム位置
@@ -1340,8 +1156,9 @@ HJN.util.FileReader = (function() {
 				if (i === this.confTAT_COL){
 					// パース対象フィールドを切り出す
 					var posY =  pos + this.confTAT_POS;
-					var arrY = (0 &lt; this.confTAT_LEN) ? line.array.slice(posY, posY + this.confTAT_LEN)
-							: line.array.slice(posY, nextPos);
+					var arrY = (0 &lt; this.confTAT_LEN) 
+					         ? line.array.slice(posY, posY + this.confTAT_LEN)
+							 : line.array.slice(posY, nextPos);
 					// フィールドをパースする
 					if (this.confTAT_FORM === "TAT_FORM_TEXT"){
 					    // テキスト数字によるUNIX経過時間のとき
@@ -1400,15 +1217,7 @@ HJN.util.FileReader = (function() {
      */
 	FileReader.prototype.getConfigHtml = function(type) {
 	    type = type || "File";
-        return this["_config_" + type].getHtml(); // #59
-
-	    if (type === "Simulator"){ // #59
-	        return this._configSimulator.getHtml();
-		} else if (type === "Filter"){
-	            return this["_config_Filter"].getHtml();
-		} else{	// "File"
-			return this[this.configId].getHtml();
-		}
+        return this["_config_" + type].getHtml(); // #53
 	};
     /**
      * keyの値に指定された関数（なければ何もしない関数）を返却する
@@ -1433,7 +1242,7 @@ HJN.util.FileReader = (function() {
 		if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
 			return cKey;	// valueが定義されていないとき、keyの設定値を返却
 		}else{
-			return this.__keyConfig[cKey].getValue();	// keyの設定値のvalueが定義されているとき
+			return this.__keyConfig[cKey].getValue(); // keyの設定値のvalueが定義されているとき
 		}
 	};
 
@@ -1472,13 +1281,13 @@ HJN.init.Copyright=function(){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li><li><a href="HJN.util.virtualSystemByJson.html">HJN.util.virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 24 2017 03:40:39 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 25 2017 00:00:45 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
