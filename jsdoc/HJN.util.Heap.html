@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1126">line 1126</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1136">line 1136</a>
     </dir>
     
 
     <h4 class="name" id="Heap">
-    <span class="type-signature"></span>new Heap<span class="signature">(func<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <span class="type-signature"></span>new Heap<span class="signature">(func<span class="signature-attributes">opt</span>, delFunc<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -107,6 +107,45 @@
             
 
             <div class="description last">pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>delFunc</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    function(obj){ return obj; }
+                
+                </span>
+            
+
+            <div class="description last">削除対象ノードを特定する関数<br>           「delの引数オブジェクト === delFunc(heapのノードのオブジェクト)」 で判定する</div>
         </li></ul>
 
     
@@ -166,7 +205,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>h = HJN.util.Heap( function(obj){ return +obj; } ) h.push("12.34") //         データを登録する h.push(0.12) // h.pop() // => 0.12 最小値のオブジェクトを取り出す h.pop() // =>         "12.34" h.top() // =>undefined 最小値のオブジェクト h.size() // =>0 登録オブジェクト数</code></pre>
+    <pre class="prettyprint"><code>h = HJN.util.Heap( function(obj){ return +obj; } );&lt;br>         h.push("12.34") // データを登録する ;&lt;br>         h.push(0.12) // ;&lt;br>         h.pop() // => 0.12 最小値のオブジェクトを取り出す ;&lt;br>         h.pop() // => "12.34" ;&lt;br>         h.top() // =>undefined 最小値のオブジェクト ;&lt;br>         h.size() // =>0 登録オブジェクト数</code></pre>
 
 
 
@@ -195,7 +234,145 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1165">line 1165</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1279">line 1279</a>
+    </dir>
+    
+
+    <h4 class="name" id="del">
+    <span class="type-signature">(static) </span>Heap#del<span class="signature">(obj)</span><span class="type-signature"> &rarr; {Object|undefined}</span>
+    </h4>
+    
+    
+	<div class="description">
+		指定データを削除する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">削除対象と同一オブジェクト(== で判定)</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    削除したオブジェクト（undefined：合致するオブジェクトが無いとき）
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1259">line 1259</a>
     </dir>
     
 
@@ -304,7 +481,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1147">line 1147</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1245">line 1245</a>
     </dir>
     
 
@@ -417,7 +594,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1203">line 1203</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1305">line 1305</a>
     </dir>
     
 
@@ -523,7 +700,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1193">line 1193</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1296">line 1296</a>
     </dir>
     
 
@@ -647,7 +824,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 25 2017 00:00:46 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 27 2017 03:22:04 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

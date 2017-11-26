@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.11.24";
+HJN.ver = "v0.11.26";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -354,18 +354,18 @@ HJN.Graph.DrawCallback = function (g, is_initial) { // #50 #51
     if (is_initial)
         return;
     // Filterメニューで指定されている F_SYNC の状態を取得する
-    var syncMode = HJN.chartD.fileReader.getValueByKey("F_SYNC");
+    var syncMode = HJN.util.Config("Filter").getValueByKey("F_SYNC"); // #59
     // "F_SYNC_UPPER"かつ上段グラフ もしくは、"F_SYNC_DETAIL"かつ下段グラフのとき処理する
     if ((syncMode === "F_SYNC_UPPER" && g.HJN === HJN.chart)
             || (syncMode === "F_SYNC_DETAIL" && g.HJN === HJN.chartD)) {
         // ｘ軸の幅をFilterメニューフェールドに反映する
-        setText("m.F_TIME_FROM", HJN.util.D2S(g.xAxisRange()[0],
-                "yyyy/MM/dd hh:mm:ss.ppp"));
-        setText("m.F_TIME_TO", HJN.util.D2S(g.xAxisRange()[1],
-                "yyyy/MM/dd hh:mm:ss.ppp"));
+        setText("Filter.F_TIME_FROM", HJN.util.D2S(g.xAxisRange()[0],
+                "yyyy/MM/dd hh:mm:ss.ppp", true));
+        setText("Filter.F_TIME_TO", HJN.util.D2S(g.xAxisRange()[1],
+                "yyyy/MM/dd hh:mm:ss.ppp", true));
         // ｙ軸(右)の幅をFilterメニューフェールドに反映する
-        setText("m.F_TAT_FROM", +(g.yAxisRange(1)[0].toPrecision(4)));
-        setText("m.F_TAT_TO", +(g.yAxisRange(1)[1].toPrecision(4)));
+        setText("Filter.F_TAT_FROM", +(g.yAxisRange(1)[0].toPrecision(4)));
+        setText("Filter.F_TAT_TO", +(g.yAxisRange(1)[1].toPrecision(4)));
     }
 
     function setText(id, val) {
@@ -914,7 +914,7 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
                 var e = eTat[n], logHtml = "";
                 if (typeof e.pos === "undefined") { // 生成データのとき
                     // 生成データをCSVのログデータとして編集する
-                    logHtml = HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp")
+                    logHtml = HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
                             + ", " + e.y + ", " + e.message; // #53
                 } else { // ファイル読込のとき
                     // ファイルの該当行を Uint8Arrayに登録する
@@ -1021,7 +1021,7 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
                     text += val;
                 }
                 if (val && time) text += " ";
-                if (time) text += "[" + HJN.util.D2S(time, "hh:mm:ss.ppp") + "]"; // #60
+                if (time) text += "[" + HJN.util.D2S(time, "hh:mm:ss.ppp", true) + "]"; // #60
                 ctx.beginPath();
                 ctx.fillStyle = color.replace(/\,[\s\.0-9]*\)/,",1)"); // #60
                 ctx.textAlign = "left"; // "rigth" "center" #60
@@ -1335,15 +1335,10 @@ HJN.Graph.prototype.addMenu = function () {
             menuId : divMenuId + "_HelpAbout",
             strFuncName : "HJN.init.Copyright()"
         };
-        var menuHowToUse = { // getAlertTag
-            menuLabel : "How to use TAT log diver",
-            menuId : divMenuId + "_HelpHowToUse",
-            strFuncName : "HJN.init.HowToUse()"
-        };
         accordion.innerHTML += '<li class="hjnMenuLv1">'
                 + getAccordionTag(this, ++_id, "Help")
                 + '<ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpAbout) + getAlertTag(menuHowToUse)
+                + getAlertTag(menuHelpAbout)
                 + '</ul>' + '</li>';
 
         // メニュー登録
@@ -1558,16 +1553,16 @@ HJN.Graph.prototype.menuFilterApply = function () { // #34
 HJN.Graph.prototype.menuFilterClear = function () { // #34
     "use strict";
     // メニュー画面おフィルタ条件に、初期値を設定する
-    setText("m.F_TIME_FROM", null);
-    setText("m.F_TIME_FROM", null);
-    setText("m.F_TIME_TO", null);
-    setText("m.F_TAT_FROM", 0);
-    setText("m.F_TAT_TO", null);
-    setSelector("m.F_TEXT_NON");
-    setText("m.F_TEXT_LEN", null);
-    setText("m.F_TEXT_POS", 1);
-    setText("m.F_TEXT_COL", 3);
-    setText("m.F_TEXT_REG", null);
+    setText("Filter.F_TIME_FROM", null);
+    setText("Filter.F_TIME_FROM", null);
+    setText("Filter.F_TIME_TO", null);
+    setText("Filter.F_TAT_FROM", 0);
+    setText("Filter.F_TAT_TO", null);
+    setSelector("Filter.F_TEXT_NON");
+    setText("Filter.F_TEXT_LEN", null);
+    setText("Filter.F_TEXT_POS", 1);
+    setText("Filter.F_TEXT_COL", 3);
+    setText("Filter.F_TEXT_REG", null);
 
     function setText(id, val) {
         document.getElementById(id).value = val;

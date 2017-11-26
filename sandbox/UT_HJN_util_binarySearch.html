@@ -3,35 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <title>test</title>
-<script src="../src/HJN.graph.js"></script>
+<script>
+HJN = {};
+HJN.util = {};
+</script>
 <script src="../src/HJN.utils.js"></script>
 </head>
 
 <body>
 <!-- ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7*****  -->
-<nav><header>UnitTest : HJN.util.binarySearch</header></nav>
+<nav><header style="color:blue;">UnitTest : HJN.util.binarySearch</header></nav>
 
 <section><div id="res"></div></section>
 
 <script>
 var div_res = document.getElementById("res");
 var time = new Date();
-var resTable = time + "<br>";
-resTable += '<table rules="rows">'
-resTable +="<tr><th>" + "ID" + "</th>" +
-		"<th>" + "val" + "</th>" +
-		"<th>" + "ret" + "</th>" +
-		"<th>" + "" + "</th>" +
-		"<th>" + "ans" + "</th><tr>";
-var func = function(e){return e.x};
+var resTable = "";
+
+function newTable(name){
+    resTable += (resTable==="") ? time : "</table>"; 
+    resTable += '<br><table rules="rows">'
+        resTable +="<tr><th>" + name + "</th>" +
+        		"<th>" + "argument" + "</th>" +
+        		"<th>" + "ret" + "</th>" +
+        		"<th>" + "correct" + "</th>" +
+        		"<th>" + "validate" + "</th><tr>";
+}
 
 function test(id, val, arr, ans){
+    var func = function(e){return e.x};
 	var ret =  HJN.util.binarySearch(val, arr, func);
     var retRow = "<tr><td>" + id + "</td>" +
     				"<td>" + val + "</td>" +
     				"<td>" + ret + "</td>" + 
-    				"<td>" + (ret == ans) + "</td>" +
-    				"<td>" + ans + "</td><tr>";
+    				"<td>" + ans + "</td>" +
+    				"<td>" + (ret == ans) + "</td><tr>";
     resTable += retRow;
     console.log(retRow);
     div_res.innerHTML = resTable + "</table>";
@@ -39,6 +46,7 @@ function test(id, val, arr, ans){
 }
 
 //　テスト
+newTable("test case");
 var arr2 = [{x:0},{x:1}];
 test("[0,1]＜low:", -0.1, arr2, 0);
 test("[0,1]＝low:",  0.0, arr2, 0);
@@ -50,6 +58,7 @@ test("[0,1]＜high:",0.99, arr2, 1);
 test("[0,1]＝high:",1.00, arr2, 1);
 test("[0,1]high＜:",1.01, arr2, 1);
 
+newTable("test case");
 var arr6 = [{x:0},{x:1},{x:2},{x:3},{x:4},{x:5}];
 test("[0,1,2,3,4,5]＜low:",  1.9, arr6, 2);
 test("[0,1,2,3,4,5]＝low:",  2.0, arr6, 2);

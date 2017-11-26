@@ -102,6 +102,7 @@ HJN.init.ChartShow = function(eTatOriginal){
     var eTat = HJN.chart.fileReader.createFilter().filter(eTatOriginal);
     
     // グラフを初期表示する
+    HJN.Plot.List = []; // #53
     // 上段
     HJN.chart.update(HJN.chart.createSeries(eTat));
     var text = "上段表示 [" + HJN.chart.eTat.length + "]";
@@ -117,7 +118,7 @@ HJN.init.ChartShow = function(eTatOriginal){
             + HJN.chart.eTat.length.toString()
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
         HJN.util.Logger.ShowLogText(text, "msg");
-        // #49 上下段のマウス操作同期設定
+        // 上下段のマウス操作同期設定 #49
         var sync = Dygraph.synchronize(
                  [ HJN.chart.graph, HJN.chartD.graph ],
                  {selection: true, zoom: false});
@@ -1222,17 +1223,6 @@ HJN.util.FileReader = (function() {
 	return FileReader;
 }());
 
-
-/**
- * 使い方を記載したHTMLを取得する
- * 
- * @return {String} html 使い方を記載したHTML（未実装）
- */
-HJN.init.HowToUse=function(){
-    "use strict";
-    var str =   "Sorry. Under construction _(..)_";
-    return str;
-};
 /**
  * 著作権表記文字を取得する
  * 

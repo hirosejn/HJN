@@ -163,9 +163,11 @@ HJN.util.DateToString=function() {
  *            [str=自動] フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）&lt;br>
  *            自動のとき 日数+ hh:mm:ss.ppp 表示単位に至らない単位は表示しない、ミリ秒は分単位以下の時表示&lt;br>
  *            例： 日数表示："1 02:03:04",時表示"02:03:04" 分表示"0:03:04.567" 秒表示"04.567"
+ * @param {Boolean}
+ *            [isLocal=false] trueのとき時差補正をしない
  * @return {String} str 編集後文字列
  */
-HJN.util.D2S = function(ds, str){ // #60
+HJN.util.D2S = function(ds, str, isLocal){ // #60
     "use strict";
     var minus = "";
     var ret = "";
@@ -174,7 +176,9 @@ HJN.util.D2S = function(ds, str){ // #60
         ds = -1 * ds;
     }
     var datetime = new Date(ds);
-    datetime = new Date(+datetime + 60000 * datetime.getTimezoneOffset()); // 環境タイムゾーンの補正
+    if (!isLocal) { // #60
+        datetime = new Date(+datetime + 60000 * datetime.getTimezoneOffset()); // 環境タイムゾーンの補正
+    }
     if(str){ // フォーマット指定があるとき
         ret = HJN.util.DateToString(datetime, str);
     } else if (ds &lt; 1000) { // 自動で1秒(1000)未満のとき
@@ -922,8 +926,7 @@ HJN.util.Config = (function() { // #24
     /** @constructor */
     function Config(prefix, ol){ 
         if(!(this instanceof Config)) return new Config(prefix, ol);
-        this._pre = (prefix || '') + ".";           // 各フィールド、要素の名称のプレフィックス(区切り文字
-                                                    // ".")
+        this._pre = (prefix || '') + "."; // 各フィールド、要素の名称のプレフィックス(区切り文字".")
         this._ols = ol ? '&lt;' + ol + '>' : '&lt;ol>';   // リストに使用する要素（初期値 ol )
         this._ole = ol ? '&lt;/' + ol + '>' : '&lt;/ol>';
         this._html = this._ols; // config設定画面のHtml
@@ -1125,7 +1128,6 @@ HJN.util.Config = (function() { // #24
                                 pLabel, sLabel, "", attribute, check, "hjnLabel4Input");
         // 関数登録指定時、attributeを関数名として、指定関数を登録する #51
         if (func){
-// this._onFunctions[this._pre + key] = func;
             Config.prototype.__config._onFunctions[this._pre + key] = func;
         }
         return this;
@@ -1147,23 +1149,119 @@ HJN.util.Config = (function() { // #24
  * @param {Function}
  *            [func=function(obj){ return +obj; }]
  *            pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数
- * @example h = HJN.util.Heap( function(obj){ return +obj; } ) h.push("12.34") //
- *          データを登録する h.push(0.12) // h.pop() // => 0.12 最小値のオブジェクトを取り出す h.pop() // =>
- *          "12.34" h.top() // =>undefined 最小値のオブジェクト h.size() // =>0 登録オブジェクト数
+ * @param {Function}
+ *            [delFunc=function(obj){ return obj; }] 削除対象ノードを特定する関数&lt;br>
+ *            「delの引数オブジェクト === delFunc(heapのノードのオブジェクト)」 で判定する
+ * 
+ * @example h = HJN.util.Heap( function(obj){ return +obj; } );&lt;br>
+ *          h.push("12.34") // データを登録する ;&lt;br>
+ *          h.push(0.12) // ;&lt;br>
+ *          h.pop() // => 0.12 最小値のオブジェクトを取り出す ;&lt;br>
+ *          h.pop() // => "12.34" ;&lt;br>
+ *          h.top() // =>undefined 最小値のオブジェクト ;&lt;br>
+ *          h.size() // =>0 登録オブジェクト数
  */
 HJN.util.Heap = (function() { // #55
     "use strict";
     /** @constructor */
-    function Heap(func){ 
-        if(!(this instanceof Heap)) return new Heap(func);
-        this._func = func || function(obj){ return +obj; };
+    function Heap(func, delFunc){ 
+        if(!(this instanceof Heap)) return new Heap(func, delFunc);
+        
+        this._func = (typeof(func) === "function") ? func 
+                : function(node){ if(+node !== NaN){ return +node }
+                                else { return node.val}; };
+        this._delFunc = (typeof(delFunc) === "function") ? delFunc 
+                : function(node){ if(typeof(node.obj) !== "undefined"){ return node } 
+                                else { return node.obj}; };
         this._heap = []; // Heap構造体（大小比較数値用）
-        this._size = 0;  // 格納要素数
     }
 
-    /** @private */
     //
-
+    /**
+     * upheap：root方向へheapを再構築する
+     * 
+     * @private
+     * @param {Number}
+     *            k 起点の_heap配列位置
+     */
+    Heap.prototype._upHeap = function(k) {
+        // 指定位置のオブジェクトとその値の控えを取る
+        var obj = this._heap[k];
+        var val = this._func(obj);
+        while( 0 &lt; k ) {
+            // 親ノードの配列位置を求める
+            var p = Math.floor( (k - 1) / 2 );
+            // 逆転していなければ処理終了
+            if( this._func(this._heap[p]) &lt;= val ) break;
+            // 親ノードと処理対象を入れ替える
+            this._heap[k] = this._heap[p];
+            this._heap[p] = obj;
+            k = p;
+        }
+    };
+    /**
+     * downheap：reaf方向へheapを再構築する
+     * 
+     * @private
+     * @param {Number}
+     *            k 起点の_heap配列位置
+     */
+    Heap.prototype._downHeap = function(k) {
+        // 指定位置のオブジェクトとその値の控えを取る
+        var obj = this._heap[k];
+        var val = this._func(obj);
+        var size = this._heap.length;
+        // 子ノードが無くなるまで繰り返す
+        while( k * 2 + 1 &lt; size) {
+            var a = k * 2 + 1;  // 子ノード（左）
+            var b = a + 1;      // 子ノード（右）
+            // aが比較対象の子ノードを指すようにする
+            if( b &lt; size &amp;&amp; this._func(this._heap[b]) &lt; this._func(this._heap[a]) ) a = b;
+            // 逆転していなければ処理終了
+            if( val &lt;= this._func(this._heap[a]) ) break;
+            // 子ノード（比較対象）と処理対象を入れ替える
+            this._heap[k] = this._heap[a];
+            this._heap[a] = obj;
+            k = a;
+        }
+    };
+    /**
+     * _heapのk番目を削除し、_heapを再構築する
+     * 
+     * @private
+     * @param {Number}
+     *            k 起点の_heap配列位置
+     * @return {object|undefined} 削除したオブジェクト（削除対象が無いとき undefined）
+     */
+    Heap.prototype._del = function(k) {
+        var n = this._heap.length - 1;
+        if (n &lt; k) return undefined;
+        var ret = this._heap[k]; // 削除したオブジェクト
+        // 末尾のノードのオブジェクトの値を控えて、指定位置に移動する
+        var val = this._func(this._heap[n]); // 末尾のオブジェクトの値
+        this._heap[k] = this._heap[n];
+        this._heap.pop();
+        var size = this._heap.length;
+        if (size &lt;= 1 || size &lt;= k) return ret; // 空か１個か末尾削除のとき、再構築不要
+        // upHeapの判定
+        var p = Math.floor( (k - 1) / 2 );
+        if (0 &lt; k &amp;&amp; val &lt; this._func(this._heap[p])) {
+            // 親ノードより小さいときupheapする
+            this._upHeap(k);
+        } else {
+            var a = k * 2 + 1;  // 子ノード（左）
+            var b = a + 1;      // 子ノード（右）
+            if (a &lt; size) { // 子ノードがあるとき（末端の枝葉でないとき）のみdownHeapする
+                // aが比較対象の子ノードを指すようにする
+                if( b &lt; size &amp;&amp; this._func(this._func(this._heap[a]) &lt;= this._heap[b]) ) a = b;
+                if( this._func(this._heap[a]) &lt; val ){
+                    // 子ノードより大きいときdownheapする
+                    this._downHeap(k);
+                }
+            }
+        }
+        return ret;
+    };
     // public
     /**
      * データを追加する
@@ -1173,17 +1271,13 @@ HJN.util.Heap = (function() { // #55
      *            obj 登録オブジェクト
      */
     Heap.prototype.push = function(obj) {
-        var k = this._size++;
-
-        while( 0 &lt; k ) {
-            var p = Math.floor( (k - 1) / 2 );
-            if( this._func(this._heap[p]) &lt;= this._func(obj) ) break;
-            this._heap[k] = this._heap[p];
-            k = p;
+        // 末尾に追加し、upHeapする
+        this._heap.push(obj);
+        this._upHeap(this._heap.length - 1);
+        if (this._deletable) {
+            this._deleteMap = {};
         }
-        this._heap[k] = obj;
     };
-
     /**
      * 最小値のデータを取り出す
      * 
@@ -1191,27 +1285,36 @@ HJN.util.Heap = (function() { // #55
      * @return {Object|undefined} 最小値
      */
     Heap.prototype.pop = function() {
+        // 戻り値となる先頭ノードを取り出す
         var ret = this._heap[0];
-        if(0 &lt; this._size){
-            var x = this._heap[--this._size];
-            var xVal = this._func(x);
-            var k = 0;
-            while( k * 2 + 1 &lt; this._size ) {
-                var a = k * 2 + 1;
-                var b = k * 2 + 2;
-                if( b &lt; this._size &amp;&amp; this._func(this._heap[b]) &lt; this._func(this._heap[a]) ) a = b;
-                
-                if( xVal &lt;= this._func(this._heap[a]) ) break;
-
-                this._heap[k] = this._heap[a];
-                k = a;
-            }
-            this._heap[k] = x;
-            this._heap.pop();
+        // 末尾ノードを退避する
+        var obj = this._heap.pop();
+        if(0 &lt; this._heap.length){
+            // 末尾ノードを先頭に移動し、downHeapする
+            this._heap[0] = obj;
+            this._downHeap(0);
         }
         return ret;
     };
-
+    /**
+     * 指定データを削除する
+     * 
+     * @memberof HJN.util.Heap
+     * @param {Object}
+     *            obj 削除対象と同一オブジェクト(== で判定)
+     * @return {Object|undefined} 削除したオブジェクト（undefined：合致するオブジェクトが無いとき）
+     */
+    Heap.prototype.del = function(obj) { // #59
+        // 削除対象オブジェクトのHeap配列位置を取得する
+        var k = -1;
+        if (this._heap.some(function(e, i) 
+                    { if(this._delFunc(e) === obj){k = i; return true;} }, this)){
+            // 合致するオブジェクトのノードを削除する
+            return this._del(k);
+        }
+        // 合致するオブジェクトが無いとき
+        return undefined;
+    };
     /**
      * 最小値を返却する（登録データは変更しない）
      * 
@@ -1221,7 +1324,6 @@ HJN.util.Heap = (function() { // #55
     Heap.prototype.top = function() {
         return this._heap[0];
     };
-
     /**
      * ヒープのサイズを返却する
      * 
@@ -1229,7 +1331,7 @@ HJN.util.Heap = (function() { // #55
      * @return {Number} ヒープサイズ（0以上）
      */
     Heap.prototype.size = function() {
-        return this._size;
+        return this._heap.length;
     };
     
     /* new */
@@ -1369,7 +1471,7 @@ HJN.util.VirtualSystem = (function() { // #53
             this._resources[e.type] = HJN.util.VirtualResource(
                     e.type, e.thread, e.timeout, e.q, e.qWait, e.log);
         };
-        HJN.util.VirtualSystem.test = this; // ★
+        HJN.util.VirtualSystem.debug = this; // ★
     }
 
     /** @private */
@@ -1447,14 +1549,18 @@ HJN.util.VirtualSystem = (function() { // #53
                 this._simulator.push(events.pop());
             }
         }
-        // シミュレーション終了後処理（処理中のvAppを強制終了する）
+        // シミュレーション終了後処理（処理中のvAppを強制終了する） #59
         while(0 &lt; this._simulator.size()){
             event = this._simulator.pop();
             if (event._finish) {
                 event._finish(this, "N_EoS", this._end);
             }
         }
-
+        // シミュレーション終了後処理（リソース開放待ちのvAppを強制終了する） #59
+        for (var key in this._resources){
+            this._resources[key]._finish(this, "N_EoS", this._end);
+        }
+        
         return this.eTat;
     };
 
@@ -1713,25 +1819,35 @@ HJN.util.VirtualApp = (function() { // #53
      * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
+     * @param {Object}
+     *            holdedResource アベンドさせたVirtualResource
      * @param {String}
      *            [logID="E_600"] ログID（ログメッセージの先頭文字）
      * @param {Number}
      *            [time=sytem.getTime()] abend時刻
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
      */
-    VirtualApp.prototype.abend = function(system, logID, time) {
+    VirtualApp.prototype.abend = function(system, holdedResource, logID, time) {
         logID = logID || "E_600";
         var events = []; // 戻り値
-        // holdしているリソースを開放する
-        // TODO
+        var holdings;
+        // holdしているリソースを開放する #59
+        if(this._sequence[this._sequenceIdx]){
+            // holdしているリソース一覧を取得する
+            holdings = this._sequence[this._sequenceIdx].holding;
+        }
+        if (holdings) { // holdリソースがあるとき
+            holdings.forEach(function(e,i){
+                // holdしていたリソースを開放し、使用リソース減に伴い新たにスケジュールするvAppを取得する #59
+                events = events.concat(system._resources[e].free(this));
+            },this);   
+        }
 
-        // リソース開放に伴うスケジュールするvAppを取得する
-        // TODO
         // 自処理(this)の終了時処理を行う
         this._sequenceTime = time || system.getTime(); // #59
         var vApp = this._finish(system, logID);
         // 自処理に継続処理があればスケジュールする
-        if (vApp) events.push(this);
+        if (vApp) events = events.concat([this]);
         return events;
     };
     
@@ -1808,6 +1924,7 @@ HJN.util.VirtualResource = (function() { // #53
         }
         this._name = name || "unlimited";   // リソース名
         this._log = (typeof(log) === "boolean") ? log : false; // #59
+
         // 処理待ち管理用
         this._queueTimeout = (typeof(queueWait) !== "undefined")
                            ? queueWait : 10000;   // キュー滞留時間上限
@@ -1817,15 +1934,19 @@ HJN.util.VirtualResource = (function() { // #53
         this._waitQueue = HJN.util.Heap(    // リソース解放待ちキュー（登録時間順）
                 function(obj){ return obj.getTime(); });
         
-        // 処理管理用
-        this._transactionTimeout  = (typeof(timeout)  !== "undefined") 
-                                  ? timeout : 10000;   // 処理のタイムアウト時間（未使用）
+        // リソース管理用
+        this._holdTimeout  = (typeof(timeout)  !== "undefined") 
+                                  ? timeout : 10000;   // 処理のタイムアウト時間
         this._capacity = (typeof(capacity) !== "undefined") ? capacity : 1.0;   // 保有リソース量（数）
         this._remaining = this._capacity;   // 残リソース量（数）
-        
+        this._timeoutHeap = HJN.util.Heap( // 処理のタイムアウト管理用ヒープ{obj:,val:} #59
+                function(node){ return node.val; },  // valはタイムアウト時刻
+                function(node){ return node.obj; }); // objはvApp
+
         // イベントスケジュール制御用
         this._sequenceTime = 0;   // シミュレータに登録したイベントの時刻（タイムアウトチェック用）
         this._isScheduled = false; // シミュレータにタイムアウトチェックイベントをスケジュールしたか
+        this._interval = Math.max(this._queueTimeout || 0, this._holdTimeout || 0);
     }
 
     /** @private */
@@ -1843,7 +1964,7 @@ HJN.util.VirtualResource = (function() { // #53
      * @return {Object} イベント(this)
      */
     VirtualResource.prototype.start = function(startTime, system) { // #59
-        this._sequenceTime = startTime + this._queueTimeout; // シミュレータに登録するイベントの時刻
+        this._sequenceTime = startTime + this._interval; // シミュレータに登録するイベントの時刻
         system.setEvent(this);    // シミュレータにタイムアウトチェックイベントをスケジュールする
         this._isScheduled = true; // 「シミュレータにタイムアウトチェックイベントをスケジュールしたかフラグ」をON
         return this;
@@ -1871,27 +1992,55 @@ HJN.util.VirtualResource = (function() { // #53
         var events = []; // 戻り値
         var now = this._sequenceTime;
 
-        // タイムアウトしたvAppをタイムアウトさせる
-        var holdTime = Number.MIN_SAFE_INTEGER; 
-        while (0 &lt; this._waitQueue.size() &amp;&amp; this._queueTimeout &lt;= now - holdTime) {
-            holdTime = this._waitQueue.top().getTime();
-            if (this._queueTimeout &lt;= now - holdTime) { // キューイング取引がタイムアウトしているとき
+        // 開放待ちタイムアウトしたvAppをタイムアウトさせる
+        var queuedTime = Number.MIN_SAFE_INTEGER; 
+        while (0 &lt; this._waitQueue.size() &amp;&amp; this._queueTimeout &lt;= now - queuedTime) {
+            queuedTime = this._waitQueue.top().getTime();
+            if (this._queueTimeout &lt;= now - queuedTime) { // キューイング取引がタイムアウトしているとき
                 var app = this._waitQueue.pop(); // リソース解放待ちキューからfreeするappを取り出す
-                var apps = app.abend(system, "E_0TO "+this._name+" queue timeout", 
-                        holdTime + this._queueTimeout); // appにfree時刻をセットする
-                if(this._log)console.log("%o(%o) %o TIMEOUT %o", 
+                if(this._log)console.log("call abend queue timeout", this._name, app._userName, app._sequenceIdx,
+                        HJN.util.D2S(app._sequenceTime,"hh:mm:ss.ppp",true), this._queueLength, this._remaining); // ★
+                var apps = app.abend(system, this, "E_0TO "+this._name+" queue timeout", 
+                        queuedTime + this._queueTimeout); // appにfree時刻をセットする
+                if(this._log)console.log("%o(%o) %o QUEUE TIMEOUT %o", 
                         app._sequenceTime, app._startTime, app._userName, this._name);
                 if (apps.length){
                     events = events.concat(apps);  // appsをスケジュールイベント登録対象に加える
-                    if(this._log)console.log("%o(%o) %o RESHEDUED by %o", 
+                    if(this._log)console.log("%o(%o) %o RESHEDULED by %o", 
                             apps[0]._sequenceTime, apps[0]._startTime, apps[0]._userName, this._name);
                 }
             }
         }
+        // hold時間がタイムアウトしたvAppをタイムアウトさせる #59
+        var holdedTime = Number.MIN_SAFE_INTEGER;
+        while (0 &lt; this._timeoutHeap.size() &amp;&amp; this._holdTimeout &lt;= now - holdedTime) {
+            holdedTime = this._timeoutHeap.top().val;
+            if (this._holdTimeout &lt;= now - holdedTime) { // キューイング取引がタイムアウトしているとき
+                var app = this._timeoutHeap.pop().obj; // Heapからfreeするappを取り出す
+                if(this._log)console.log("call abend hold timeout ", this._name, app._userName, app._sequenceIdx,
+                        HJN.util.D2S(app._sequenceTime,"hh:mm:ss.ppp",true), this._queueLength, this._remaining); // ★
+                var apps = app.abend(system, this, "E_0TO "+this._name+" hold timeout", 
+                                            holdedTime); // appにfree時刻をセットする
+                if(this._log)console.log("%o(%o) %o HOLD TIMEOUT %o", 
+                        app._sequenceTime, app._startTime, app._userName, this._name);
+                if (apps.length){
+                    events = events.concat(apps);  // appsをスケジュールイベント登録対象に加える
+                    if(this._log)console.log("%o(%o) %o RESHEDULED by %o", 
+                            apps[0]._sequenceTime, apps[0]._startTime, apps[0]._userName, this._name);
+                }
+            }
+        }
+        
         // 次回タイムアウトチェック時刻を設定する
-        if (0 &lt; this._waitQueue.size()) {
+        if (0 &lt; this._waitQueue.size() || 0 &lt; this._timeoutHeap.size()) {
             // リソース解放待ちvAppがあるとき、タイムアウトしていない最古vAppのタイムアウト時刻
-            this._sequenceTime = holdTime + this._queueTimeout;
+            var nextQueueTimeout = (0 &lt; this._waitQueue.size())
+                    ? queuedTime + this._queueTimeout : Number.MAX_SAFE_INTEGER;
+            var nextTranTimeout = (0 &lt; this._timeoutHeap.size())
+                    ? holdedTime + this._holdTimeout : Number.MAX_SAFE_INTEGER;
+            if(this._log)console.log("%o %o timeout-check re-sheduled to ",
+                    this._sequenceTime, this._name, Math.min(nextQueueTimeout, nextTranTimeout));
+            this._sequenceTime = Math.min(nextQueueTimeout, nextTranTimeout);
             events.push(this); // タイムアウトチェックイベントをケジュールイベント登録対象に加える
         } else { 
             // リソース解放待ちvAppがないとき、シミュレータにタイムアウトチェックイベントを再スケジュールしない
@@ -1915,32 +2064,39 @@ HJN.util.VirtualResource = (function() { // #53
     VirtualResource.prototype.hold = function(system, vApp) {
         if (this._name === "unlimited") return [vApp]; // リソース解放待ちを管理しないとき
         
-        var amount = vApp.getAmount(this); // 消費リソース量(デフォルト1.0）
+        // タイムアウトチェックイベントがスケジュールされていないとき、スケジュールする
+        if (!this._isScheduled &amp;&amp; ((0 &lt; this._queueTimeout) || (0 &lt; this._holdTimeout))) {
+            this.start(vApp.getTime(), system);
+        }
         // リソースを取得できるとき、残リソース量（数）を減らし、実行中処理管理ヒープに登録する
+        var amount = vApp.getAmount(this); // 消費リソース量(デフォルト1.0）
         if (amount &lt;= this._remaining) {
+            // 残リソースを減らす
             this._remaining -= amount;
-            // 処理中にタイムアウトする場合、タイムアウト時刻を指定して登録する : TODO
+            // vAppをタイムアウト管理対象に加える #59
+            if (0 &lt; this._holdTimeout) {
+                this._timeoutHeap.push({obj: vApp,
+                    val : vApp._sequenceTime + this._holdTimeout});
+            }
             if(this._log)console.log("%o(%o) %o hold %o", 
                     vApp._sequenceTime, vApp._startTime, vApp._userName, this._name);
             return [vApp];         
         }
         // リソース解放待ちキューが溢れていないとき、vAppをキューに 登録する
         if (this._queueLength &lt; this._queueDepth &amp;&amp; 0 &lt; this._queueTimeout){
-            this._waitQueue.push(vApp);
+            this._waitQueue.push(vApp);  // リソース解放待ちタイムアウト管理対象に加える
             this._queueLength++;
-            // タイムアウトチェックイベントがスケジュールされていないとき、スケジュールする
-            if (!this._isScheduled &amp;&amp; 0 &lt; this._queueTimeout) {
-                this.start(vApp.getTime(), system);
-            }
             if(this._log)console.log("%o(%o) %o hold/queued(%o) %o > %o",
                     vApp._sequenceTime, vApp._startTime, vApp._userName, 
                     this._waitQueue._heap.length, this._name, this._waitQueue._heap[0]._userName);
-            return []; // リソース解放待ちタイムアウトイベント : TODO
+            return [];
         }
         // リソース解放待ちキューが溢れていた時、リソースを取得できずにエラー終了
         if(this._log)console.log("%o(%o) %o hold/abend %o",
                 vApp._sequenceTime, vApp._startTime, vApp._userName, this._name);
-        return vApp.abend(system, "E_001");
+        if(this._log)console.log("call abend queue over flow", this._name, vApp._userName, vApp._sequenceIdx,
+                HJN.util.D2S(vApp._sequenceTime,"hh:mm:ss.ppp",true), this._queueLength, this._remaining); // ★
+        return vApp.abend(system, this, "E_QOF");
     };
 
     /**
@@ -1949,13 +2105,27 @@ HJN.util.VirtualResource = (function() { // #53
      * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            vApp リソースにfree要求する仮想AP
+     * @param {Boolean}
+     *            [isHolding=true] 該当vAppが自リソースをholdしているか否か&lt;br>
+     *            false指定時、指定vAppはリソースをholdしていない前提で、hold vApp一覧からの削除処理を行わない
      * @return {Array} スケジューラに登録するイベントの配列([vApp] | [])
      */
-    VirtualResource.prototype.free = function(vApp) { // #59
+    VirtualResource.prototype.free = function(vApp, isHolding) { // #59
+        isHolding = (typeof(isHolding) === "boolean") ? isHolding : true;
         if (this._name === "unlimited") return []; // リソース解放待ちを管理しないとき
         var vApps = []; // 戻り値
+        // vAppをタイムアウト管理対象から削除する #59
+        if (isHolding === true &amp;&amp; 0 &lt; this._holdTimeout) {
+            var app = this._timeoutHeap.del(vApp);
+            if (!app &amp;&amp; vApp._sequenceIdx !== 6){
+                console.log(vApp._sequenceIdx, HJN.util.D2S(vApp._sequenceTime,"hh:mm:ss.ppp",true),
+                        vApp._userName, this._name);
+            }
+        }
+
         // 解放したvAppが使用していたリソース量(デフォルト1.0）を、残リソース量（数）に加える
         this._remaining += vApp.getAmount(this);
+        
         // リソース解放待ちキューから、空きリソースで処理できるようになったvAppを取り出しスケジュールする
         var amount = this._waitQueue.top() 
                    ? this._waitQueue.top().getAmount(this) // 次のリソース解放待ちキューの使用量
@@ -1967,11 +2137,34 @@ HJN.util.VirtualResource = (function() { // #53
             app.nextByFree(vApp.getTime());
             vApps.push(app);
         }
-        if(this._log) console.log("%o(%o) %o FREE %o --> %o %o",
+        if(this._log) console.log("%o(%o) %o FREE %o (waitQueue: %o ) --> free app %o %o",
                 vApp._sequenceTime, vApp._startTime, vApp._userName, 
-                this._name, vApps.length, app? app._userName : "");
+                this._name, vApps.length, this._waitQueue.size(), app? app._userName : "");
         return vApps;
     };
+
+    /**
+     * イベント終了時処理（リソースが管理しているvAppを_finishさせる（強制終了させ処理中vAppはTATログ出力する）
+     * 
+     * @memberof HJN.util.VirtualResource
+     * @param {Object}
+     *            system VirtualSystem
+     * @param {String}
+     *            [logID="N_000"] ログID（ログメッセージの先頭文字）
+     * @param {Number}
+     *            forceTime 強制終了時刻を指定する（ミシュレーション停止後のeTat強制出力用）
+     * @return {null}
+     */
+    VirtualResource.prototype._finish = function(system, logID, forceTime) { // #59
+        // シミュレーション終了後処理（処理中のvAppを強制終了する）
+        logID = logID || "N_EoS";
+        while(0 &lt; this._waitQueue.size()){
+            event = this._waitQueue.pop();
+            if (event._finish) {
+                event._finish(system, logID +"[" + this._name + "]", forceTime);
+            }
+        }
+    }
 
     /* new */
     return VirtualResource;
@@ -2028,13 +2221,15 @@ HJN.util.virtualSystemByJson = (function() { // #53
         var models = json.models;
         for (var i = 0; i &lt; models.length; i++) {
             var model = models[i];
-            var name = Object.keys(model)[0];
-            var m = model[name];
-            var baseModel = m.baseModel;
+            var name = Object.keys(model)[0]; // モデルの名称
+            var m = model[name]; // モデル
+            var baseModel = m.baseModel; // baseModel
             for (var j = 0; j &lt; m.sequence.length; j++) {
+                // 時間指定文字列を、ミリ秒数値に変換する（例："3*sec"->3000)
                 m.sequence[j].tatMin = HJN.util.S2N(m.sequence[j].tatMin);
                 m.sequence[j].tat = HJN.util.S2N(m.sequence[j].tat);
             }
+            // sequenceに、baseModelを展開し、未開放リソースの開放処理を登録する
             models[name] = HJN.util.VirtualSystem.getModel(
                         baseModel.holds, 
                         HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
@@ -2113,7 +2308,7 @@ HJN.util.virtualSystemByJson = (function() { // #53
                 + '"end"   : "30.0*sec",\n'
                 + '\n'
                 + '"resources" : [\n'
-                + '  {"type" :"DB",  "thread":10,  "timeout": "10*sec", "q":100,  "qWait":"6*sec"}\n'
+                + '  {"type" :"DB",  "thread":1,  "timeout": "10*sec", "q":1,  "qWait":"6*sec"}\n'
                 + '],\n'
                 + '"models" : [\n' // 取引モデル一覧
                 + ' { "TEST-1" : {\n' // テスト取引
@@ -2151,7 +2346,7 @@ HJN.util.virtualSystemByJson = (function() { // #53
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 25 2017 00:00:45 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 27 2017 03:22:04 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
