@@ -711,16 +711,19 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
     }
     // dygraph表示時間帯を設定する（上段グラフは全期間が処理対象）
     var xRangeMin = Number.MIN_VALUE,
-        xRangeMax = Number.MAX_VALUE;
+        xRangeMax = Number.MAX_VALUE,
+        xRangeUnit = HJN.detailRangeUnit; // #61
     if (HJN.chartD === this) { // 詳細（下段グラフ）のとき画面で指定された期間を設定する // ミリ秒
-        if (n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N){ // #57
-            var dt = Math.floor(+HJN.detailDateTime / HJN.chartD.cycle) * HJN.chartD.cycle
+        if ((n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N)  // #57
+                && xRangeUnit < HJN.chartD.cycle){ // #61
+            var dt = Math.floor(+HJN.detailDateTime / HJN.chartD.cycle) * HJN.chartD.cycle;
             xRangeMin = dt - HJN.detailRangeMinus * HJN.detailRangeUnit;
             xRangeMax = dt + HJN.detailRangePlus * HJN.detailRangeUnit;
-        } else {
-            xRangeMin = +HJN.detailDateTime - HJN.detailRangeMinus * HJN.detailRangeUnit; // #48
-            xRangeMax = +HJN.detailDateTime + HJN.detailRangePlus * HJN.detailRangeUnit; // #48
-        } 
+        } else { // undefined, HJN.CTPS.N, HJN.CONC.N, HJN.STAT.N, HJN.ETAT.N
+            var dt = Math.floor(+HJN.detailDateTime / xRangeUnit) * xRangeUnit; // #61
+            xRangeMin = dt - HJN.detailRangeMinus * HJN.detailRangeUnit; // #48
+            xRangeMax = dt + HJN.detailRangePlus * HJN.detailRangeUnit; // #48
+        }
     }
 
     // dygraph用arrayを空にする
@@ -1677,9 +1680,11 @@ HJN.Graph.prototype.menuDownloadLog = function (menuId, fileName) {
         if (typeof eTat[0].pos === "undefined") { // 生成データのとき
             // 生成データをCSVに編集する
             var eTatCsv = "";
+            var delimiter = '"';
+            var separator = delimiter + HJN.chart.fileReader.getValue("SEP") + delimiter;
             eTat.forEach(function (e) {
-                eTatCsv += HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") + ","
-                        + e.y + "\r\n";
+                eTatCsv += delimiter + HJN.util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') + separator
+                        + e.y + separator + e.message + delimiter + '\r\n'; // #61
             });
             // ダウンロードする
             this.menuDownloadBlob(this.menuBuffToBlob(eTatCsv), menuId,

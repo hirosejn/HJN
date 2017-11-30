@@ -318,21 +318,19 @@ HJN.init.ChartRegistDetail = function(cTps){
 HJN.init.GetSliderRangedEtat = function(n) {
 	"use strict";
 	// 指定時刻（ｄｔ ± range）を取得する
-	var rangeTagPlus  = document.getElementById("DetailRangePlus"),
-		rangeTagMinus = document.getElementById("DetailRangeMinus"),
-        rangeTagUnit  = document.getElementById("DetailRangeUnit"), // #48
-		rangeCycle = HJN.chart.cTpsUnit.unit / 1000; // #38
+	var rangeTagPlus  = document.getElementById("DetailRangePlus");
+	var	rangeTagMinus = document.getElementById("DetailRangeMinus");
+    var rangeTagUnit  = document.getElementById("DetailRangeUnit"); // #48
+	var	rangeCycle = HJN.chart.cTpsUnit.unit / 1000; // #38
     // HJNグローバル変数に退避する
     HJN.detailRangePlus  = rangeTagPlus  ? +rangeTagPlus.value  : 1 + rangeCycle; // 幅（秒）
     HJN.detailRangeMinus = rangeTagMinus ? +rangeTagMinus.value : rangeCycle;     // 幅（秒）
     HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : HJN.chart.cycle; // #48
 
 	var rangeUnit = HJN.detailRangeUnit; // #48
-	var dt = Math.floor(HJN.detailDateTime / rangeUnit) * rangeUnit, // 中央時刻(ミリ秒)
-		rangePlus  = HJN.detailRangePlus  * rangeUnit,  // 幅（ミリ秒）
-		rangeMinus = HJN.detailRangeMinus * rangeUnit,  // #48
-		from = dt - rangeMinus,
-		to = dt + rangePlus;
+	var dt = Math.floor(HJN.detailDateTime / rangeUnit) * rangeUnit; // 中央時刻(ミリ秒)
+	var	from = dt - HJN.detailRangeMinus * rangeUnit;  // #48
+	var	to = dt + HJN.detailRangePlus  * rangeUnit;  // 幅（ミリ秒）
 	var eTatDetail = [{x: 0, y: 0.001, sTatIdx: 0}];	// tatMapが無い場合の返却値
 	if (HJN.chart.eTat.tatMap){	// #18
 		// eTatDetailがレンジキャッシュにあるか確認する #30
@@ -486,7 +484,7 @@ HJN.Plot.Add=function(n, x, y) {
 	HJN.Plot.List.forEach(function(e){e.radio = false;});
 	// ラベルフォーマットの設定
 	var format = (n === HJN.ETPS.N || n === HJN.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.ppp",
-		label = HJN.util.D2S(x, format) + " " +
+		label = HJN.util.D2S(x, format, true) + " " + // #61
 				HJN.seriesConfig[n].label.replace("%N",HJN.util.N2S(y));
 	// 幅(range)を取り込む（秒）
 	var	rangePlusTag  =  document.getElementById("DetailRangePlus"),
@@ -557,7 +555,7 @@ HJN.Plot.Add=function(n, x, y) {
 		if (concMax === y) { // 補正すべき時刻が求まったときCONC,ETATを追加する #23
             x = maxTime;
             format = "hh:mm:ss.ppp";
-            label = HJN.util.D2S(x, format) + " " +
+            label = HJN.util.D2S(x, format, true) + " " + // #61
                     HJN.seriesConfig[n].label.replace("%N",HJN.util.N2S(y));
             HJN.Plot.List.push( {label: label, ckBox:false,
                  radio:true, n: n, x: x, y: y, 
@@ -786,8 +784,9 @@ HJN.util.FileReader = (function() {
         .name("S_SIMU")
             .radio("S_SIMU_000", null, 
                     "1 hour with table(B) lock.<br>- online[100-500ms 2-5tps]<br>- batch[2-5sec evry3min]", 
-                    true ,null, func_S_SIMU_000).n()
-            .radio("S_SIMU_001", null, "for test", false ,null, func_S_SIMU_001).n()
+                    false ,null, func_S_SIMU_000).n()
+            .radio("S_SIMU_001", null, "for test", 
+                    true ,null, func_S_SIMU_001).n()
         ;
 	}
 
