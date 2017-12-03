@@ -1755,14 +1755,16 @@ HJN.util.VirtualApp = (function() { // #53
         var errCode = 0;
         if (resource && ((resource._waitHeap.size() !== resource._waitingQty)
                       || (resource._holdHeap.size() !== resource._holdingQty))) {
-            // エラー時
+            // エラー時★
             errCode = 1;
             highText = highText ? highText + "　unkown error!!" : "　unkown error!!";
         } else if (logLv > +isLog) {
             return; 
         }
+        
+        // エラーログ編集
         var user = vApp ? " " + vApp._userName : " ";
-        var resourceText = resource ? (" [" + resource._name + " " 
+        var resourceText = resource ? (" [" + resource._name + " "
                 + resource._waitHeap.size() + "="
                 + resource._waitingQty + " "
                 + resource._holdHeap.size() + "="
@@ -1773,14 +1775,27 @@ HJN.util.VirtualApp = (function() { // #53
                     + resourceText 
                     + text;
         highText = highText || "";
-        if (highText){
-            console.log(logText + " %o", highText);
+
+        // エラー時の強制補正★
+        var modify = "";
+        if (errCode === 1) { // リソースヒープもしくはリソース量を強制補正する
+            var deleted = undefined;
+            if (resource._holdHeap.size() < resource._holdingQty) {
+                deleted = resource._holdHeap.del(this);
+            }
+            if (deleted){
+                modify = "FORCE★: holdHeap.del(" + deleted.userName + ")";
+            } else {
+                modify = "FORCE★: holdingQty modified"
+                    resource._holdingQty = resource._holdHeap.size();
+            }
+        }
+                
+        // エラーログ出力
+        if (highText || modify){
+            console.log(logText + " %o", highText + " " + modify);
         } else {
             console.log(logText);
-        }
-        // エラー時の強制補正
-        if (errCode === 1) { // リソース量を強制補正する
-            resource._holdingQty = resource._holdHeap.size(); 
         }
     }
 
@@ -1937,10 +1952,13 @@ HJN.util.VirtualApp = (function() { // #53
         }
         if (holdings) { // シーケンス上holdリソースがあるとき(undefined対策） #61
             for (var i = holdings.length - 1; 0 < i; i--) {
-                // holdしていたリソースを開放する
-                var apps = system._resources[holdings[i]].free(this);
-                // 使用リソース減に伴い新たにスケジュールするvAppを取得する #59
-                events = events.concat(apps);
+                // 呼出し元リソース以外のとき（呼出し前に既に削除済なので）
+                if (holdings[i] !== holdedResource._name){ 
+                    // holdしていたリソースを開放する
+                    var apps = system._resources[holdings[i]].free(this);
+                    // 使用リソース減に伴い新たにスケジュールするvAppを取得する #59
+                    events = events.concat(apps);
+                }
             }
         }
 
@@ -2395,7 +2413,8 @@ HJN.util.virtualSystemByJson = (function() { // #53
             models[name] = HJN.util.VirtualSystem.getModel(
                         baseModel.holds, 
                         HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
-                        m.sequence, m.times, 
+                        m.sequence, 
+                        (typeof(m.times) === "number") ? m.times : 1, // #61
                         HJN.util.S2N(m.thinkTimeMin), HJN.util.S2N(m.thinkTime)); 
         }
         // client の設定
