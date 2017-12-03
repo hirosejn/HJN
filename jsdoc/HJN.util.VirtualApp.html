@@ -47,7 +47,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1660">line 1660</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1696">line 1696</a>
     </dir>
     
 
@@ -307,12 +307,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1838">line 1838</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1971">line 1971</a>
     </dir>
     
 
     <h4 class="name" id="_finish">
-    <span class="type-signature">(static) </span>VirtualApp#_finish<span class="signature">(system, logID<span class="signature-attributes">opt</span>, forceTime<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object|null}</span>
+    <span class="type-signature">(static) </span>VirtualApp#_finish<span class="signature">(system, logID<span class="signature-attributes">opt</span>, logMesseage<span class="signature-attributes">opt</span>, forceTime<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object|undefined}</span>
     </h4>
     
     
@@ -412,6 +412,45 @@
 		
         <ul class="params"><li>
             
+                <td class="name"><code>logMesseage</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ログメッセージ</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
                 <td class="name"><code>forceTime</code></td>
             
 
@@ -473,14 +512,14 @@
 <span class="param-type">Object</span>
 |
 
-<span class="param-type">null</span>
+<span class="param-type">undefined</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    再スケジュールするときthis、再スケジュールしないときnull
+		    再スケジュールするときthis、再スケジュールしないときundefined
 		</div>
 		
 	</li></ul>
@@ -533,17 +572,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1802">line 1802</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1914">line 1914</a>
     </dir>
     
 
     <h4 class="name" id="abend">
-    <span class="type-signature">(static) </span>VirtualApp#abend<span class="signature">(system, holdedResource, logID<span class="signature-attributes">opt</span>, time<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span>
+    <span class="type-signature">(static) </span>VirtualApp#abend<span class="signature">(system, holdedResource, logID<span class="signature-attributes">opt</span>, logMesseage<span class="signature-attributes">opt</span>, isHolding<span class="signature-attributes">opt</span>, abendTime<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span>
     </h4>
     
     
 	<div class="description">
-		アベンド処理（イベントシーケンスを強制終了し、TATログを出力する）
+		アベンド処理（holdしている可能性のあるリソースを解放し、イベントシーケンスを強制終了する）
 	</div>
 	
     
@@ -666,14 +705,92 @@
                 </span>
             
 
-            <div class="description last">ログID（ログメッセージの先頭文字）</div>
+            <div class="description last">ログID</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>time</code></td>
+                <td class="name"><code>logMesseage</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ログメッセージ</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>isHolding</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    true
+                
+                </span>
+            
+
+            <div class="description last">リソース(holdedResource)をholdしているか否か<br>           true指定時、指定vAppはリソース待ちではない状態のため、Abendに伴いスケジューラのvAppを削除する<br>           false指定時は、vAppはリソース待ちもしくはリソース取得失敗の状態のため、スケジューラ管理下にない</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>abendTime</code></td>
             
 
             <span class="type">
@@ -793,7 +910,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1726">line 1726</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1821">line 1821</a>
     </dir>
     
 
@@ -938,7 +1055,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1714">line 1714</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1809">line 1809</a>
     </dir>
     
 
@@ -1044,7 +1161,258 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1738">line 1738</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1752">line 1752</a>
+    </dir>
+    
+
+    <h4 class="name" id="logger">
+    <span class="type-signature">(static) </span>VirtualApp#logger<span class="signature">(logLv, isLog, time, vApp, resource, text, highText)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		シミュレータのログを出力する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>logLv</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">ログレベル（isLog <= logLvのときログ出力する）<br>           (0:なし, 1:エラー時のみ, 2:+ETAT, 3:+push/pop, 4:+HOLD/FREE)</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>isLog</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">ログ出力レベル</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">日時を表す数値（ミリ秒）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>vApp</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">仮想アプリ</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>resource</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">リソース</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">ログテキスト</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>highText</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">強調表示テキスト</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1833">line 1833</a>
     </dir>
     
 
@@ -1179,12 +1547,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1782">line 1782</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1887">line 1887</a>
     </dir>
     
 
-    <h4 class="name" id="nextByFree">
-    <span class="type-signature">(static) </span>VirtualApp#nextByFree<span class="signature">(time)</span><span class="type-signature"> &rarr; {Object}</span>
+    <h4 class="name" id="nextForExec">
+    <span class="type-signature">(static) </span>VirtualApp#nextForExec<span class="signature">(time)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
@@ -1314,7 +1682,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1700">line 1700</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1795">line 1795</a>
     </dir>
     
 
@@ -1464,7 +1832,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 27 2017 03:22:04 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Dec 04 2017 00:39:28 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

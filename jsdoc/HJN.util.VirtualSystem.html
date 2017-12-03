@@ -47,7 +47,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1414">line 1414</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1427">line 1427</a>
     </dir>
     
 
@@ -310,12 +310,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1587">line 1587</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1622">line 1622</a>
     </dir>
     
 
     <h4 class="name" id=".VirtualSystem.getModel">
-    <span class="type-signature">(static) </span>VirtualSystem.getModel<span class="signature">(baseModel<span class="signature-attributes">opt</span>, tat<span class="signature-attributes">opt</span>, tatMin<span class="signature-attributes">opt</span>, sequence<span class="signature-attributes">opt</span>, times<span class="signature-attributes">opt</span>, thinkTime<span class="signature-attributes">opt</span>, thinkTimeMin<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    <span class="type-signature">(static) </span>VirtualSystem.getModel<span class="signature">(baseModel<span class="signature-attributes">opt</span>, tat<span class="signature-attributes">opt</span>, tatMin<span class="signature-attributes">opt</span>, sequence<span class="signature-attributes">opt</span>, times<span class="signature-attributes">opt</span>, thinkTime<span class="signature-attributes">opt</span>, thinkTimeMin<span class="signature-attributes">opt</span>, message<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
@@ -605,6 +605,45 @@
         </li></ul>
 
     
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">自動生成ログの末尾に追加する文字列</div>
+        </li></ul>
+
+    
 
 
 
@@ -689,7 +728,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1510">line 1510</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1543">line 1543</a>
     </dir>
     
 
@@ -795,7 +834,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1547">line 1547</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1580">line 1580</a>
     </dir>
     
 
@@ -893,7 +932,7 @@
 	    </span>
 		
 		<div class="param-desc">
-		    仮想リソース（登録されていないときは、新たにcapacity=1の仮想リソースを登録）
+		    仮想リソース（登録されていないときは、新たにholdCapacity=1の仮想リソースを登録）
 		</div>
 		
 	</li></ul>
@@ -946,7 +985,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1560">line 1560</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1593">line 1593</a>
     </dir>
     
 
@@ -1052,12 +1091,125 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1469">line 1469</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1533">line 1533</a>
+    </dir>
+    
+
+    <h4 class="name" id="removeEvent">
+    <span class="type-signature">(static) </span>VirtualSystem#removeEvent<span class="signature">(event)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		スケジューラからイベントを削除する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">仮想クライアントもしくは仮想リソースのイベント</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1484">line 1484</a>
     </dir>
     
 
     <h4 class="name" id="setClients">
-    <span class="type-signature">(static) </span>VirtualSystem#setClients<span class="signature">(userName<span class="signature-attributes">opt</span>, num<span class="signature-attributes">opt</span>, start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, model)</span><span class="type-signature"></span>
+    <span class="type-signature">(static) </span>VirtualSystem#setClients<span class="signature">(userName<span class="signature-attributes">opt</span>, message<span class="signature-attributes">opt</span>, num<span class="signature-attributes">opt</span>, start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, model)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -1110,12 +1262,51 @@
             
                 <span class="default">
                 
-                    "sampleSeq"
+                    "Default_"
                 
                 </span>
             
 
             <div class="description last">ログに出力するユーザ名</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ログの末尾に出力するデータ</div>
         </li></ul>
 
     
@@ -1232,7 +1423,7 @@
                 </span>
             
 
-            <div class="description last">仮想クライアント生成終了時刻（UNIX時刻の数値、ミリ秒）</div>
+            <div class="description last">仮想アプリケーション強制終了時刻（UNIX時刻の数値、ミリ秒）</div>
         </li></ul>
 
     
@@ -1333,7 +1524,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1500">line 1500</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1522">line 1522</a>
     </dir>
     
 
@@ -1461,7 +1652,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 27 2017 03:22:04 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Dec 04 2017 00:39:28 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

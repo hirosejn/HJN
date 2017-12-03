@@ -784,9 +784,9 @@ HJN.util.FileReader = (function() {
         .name("S_SIMU")
             .radio("S_SIMU_000", null, 
                     "1 hour with table(B) lock.<br>- online[100-500ms 2-5tps]<br>- batch[2-5sec evry3min]", 
-                    false ,null, func_S_SIMU_000).n()
+                    true ,null, func_S_SIMU_000).n()
             .radio("S_SIMU_001", null, "for test", 
-                    true ,null, func_S_SIMU_001).n()
+                    false ,null, func_S_SIMU_001).n()
         ;
 	}
 

@@ -15,20 +15,32 @@ HJN.util = {};
 <nav><header style="color:blue;">UnitTest : HJN.util.heap</header></nav>
 
 <section><div id="res"></div></section>
-
+<style type="text/css">
+<!--
+table tr:nth-child(odd)  td{background-color: #EEEEEE;}
+table tr:nth-child(even) td{background-color: #FFFFFF;}
+-->
+</style>
 <script>
 var div_res = document.getElementById("res");
 var time = new Date();
 var resTable = "";
+function validate(a,b){
+    return (a === b)
+    ? ("<td>" + true + "</td>")
+	: ('<td style="color: red;"><strong>' + false + "</strong></td>");
+}
 
-function newTable(name){
+function newTable(name, id){
     resTable += (resTable==="") ? time : "</table>"; 
     resTable += '<br><table rules="rows">'
-        resTable +="<tr><th>" + name + "</th>" +
-				"<th>" + "ret" + "</th>" +
+        resTable += "<tr>";
+        if (id) resTable += "<th>" + id + "</th>";
+        resTable += "<th>" + name + "</th>";
+        resTable += "<th>" + "ret" + "</th>" +
 				"<th>" + "validate(ret)" + "</th>" +
-        		"<th>" + "heap" + "</th>" +
         		"<th>" + "correct" + "</th>" +
+        		"<th>" + "heap" + "</th>" +
         		"<th>" + "validate(heap)" + "</th><tr>";
 }
 
@@ -36,12 +48,12 @@ function test(func, retAns, heapAns){
 	var ret = eval(func);
     var retRow = "<tr><td>" + func + "</td>" +
 					"<td>" + ret + "</td>" +
-    				"<td>" + (ret === retAns) + "</td>" +
-    				"<td>[" + h._heap.toString() + "]</td>" + 
+					validate(ret, retAns) +
     				"<td>[" + heapAns + "]</td>" +
-    				"<td>" + (h._heap.toString() === heapAns.toString()) + "</td><tr>";
+    				"<td>[" + h._heap.toString() + "]</td>" + 
+    				validate(h._heap.toString(), heapAns.toString()) + "</tr>";
     resTable += retRow;
-    console.log(retRow);
+//    console.log(retRow);
     div_res.innerHTML = resTable + "</table>";
     return retRow
 }
@@ -61,7 +73,7 @@ test("h.pop()", 4, [5]);
 test("h.pop()", 5, []);
 test("h.pop()", undefined, []);
 
-newTable("_delete");
+newTable("_del");
 var h = HJN.util.Heap();
 test("h._del(0)", undefined, []);
 test("h.push(2)", undefined, [2]);
@@ -71,11 +83,19 @@ test("h.push(4)", undefined, [1,4,2,5]);
 test("h.push(3)", undefined, [1,3,2,5,4]);
 test("h.push(0)", undefined, [0,3,1,5,4,2]);
 test("h._del(6)", undefined, [0,3,1,5,4,2]);
-test("h._del(0)", 0, [2,3,1,5,4]);
-test("h._del(1)", 3, [2,4,1,5]);
-test("h._del(3)", 5, [2,4,1]);
-test("h.push(5)", undefined, [2,4,1,5]);
-test("h._del(2)", 1, [2,4,5]);
+test("h._del(0)", 0, [1,3,2,5,4]);
+test("h._del(1)", 3, [1,4,2,5]);
+test("h._del(3)", 5, [1,4,2]);
+test("h.push(3)", undefined, [1,3,2,4]);
+test("h._del(2)", 2, [1,3,4]);
+test("h.push(2)", undefined, [1,2,4,3]);
+test("h._del(2)", 4, [1,2,3]);
+test("h.push(4)", undefined, [1,2,3,4]);
+test("h._del(1)", 2, [1,4,3]);
+test("h._del(1)", 4, [1,3]);
+test("h._del(1)", 3, [1]);
+test("h._del(0)", 1, []);
+test("h._del(0)", undefined, []);
 
 newTable("del");
 var h = HJN.util.Heap();
@@ -87,11 +107,11 @@ test("h.push('4')", undefined, [1,4,2,5]);
 test("h.push('3')", undefined, [1,3,2,5,4]);
 test("h.push('0')", undefined, [0,3,1,5,4,2]);
 test("h.del('6')", undefined, [0,3,1,5,4,2]);
-test("h.del('0')", 0, [2,3,1,5,4]);
-test("h.del('1')", 3, [2,3,4,5]);
-test("h.del('3')", 5, [2,5,4]);
-test("h.push('5')", undefined, [2,5,4,5]);
-test("h.del('5')", 5, [2,5,4]);
+test("h.del('0')", '0', [1,3,2,5,4]);
+test("h.del('3')", '3', [1,4,2,5]);
+test("h.del('5')", '5', [1,4,2]);
+test("h.push('5')", undefined, [1,4,2,5]);
+test("h.del('2')", '2', [1,4,5]);
 
 
 var A2S = function(a){
@@ -99,21 +119,26 @@ var A2S = function(a){
 	    a.forEach(function(e,i,a){ ret += e.val + ","; }, this);
 	    return ret; 
     }; 
-function test2(func, retAns, heapAns){
+function test2(id, func, retAns, heapAns){
 	var ret = eval(func);
-    var retRow = "<tr><td>" + func + "</td>" +
-					"<td>" + ret + "</td>" +
-    				"<td>" + (ret === retAns) + "</td>" +
-    				"<td>[" + A2S(h._heap)+ "]</td>" + 
-    				"<td>[" + A2S(heapAns) + "]</td>" +
-    				"<td>" + (A2S(h._heap) === A2S(heapAns)) + "</td><tr>";
+    var retRow = "<tr><td>" + id + "</td>" +
+    				"<td>" + func + "</td>" +
+					"<td>"; 
+	retRow += (typeof(ret)==="undefined") ? undefined :ret.val
+    retRow += "</td>";
+    retRow += (typeof(ret)==="undefined") ? validate(ret, retAns) :validate(ret.val, retAns);
+    retRow += 	"<td>[" + A2S(heapAns) + "]</td>" +
+				"<td>[" + A2S(h._heap)+ "]</td>" + 
+    			validate(A2S(h._heap), A2S(heapAns)) + "</tr>";
     resTable += retRow;
-    console.log(retRow);
+//    console.log(retRow);
     div_res.innerHTML = resTable + "</table>";
     return retRow
+    
 }
+
 var app = function(v){return [v]};
-var v = function(app){return {val:app[0], obj:app}};
+var v = function(e){return {val:e[0], obj:e}};
 var valFunc = function(o){return o ? o.val : undefined};
 var delFunc = function(o){return o ? o.obj : undefined};
 var h = HJN.util.Heap(valFunc, delFunc);
@@ -124,21 +149,23 @@ var a3 = app(3), v3 = v(a3);
 var a4 = app(4), v4 = v(a4);
 var a5 = app(5), v5 = v(a5);
 var a6 = app(6), v6 = v(a6);
-newTable("delFunc");
-test2("h.del(a0)", undefined, []);
-test2("h.push(v2)", undefined, [v2]);
-test2("h.push(v5)", undefined, [v2,v5]);
-test2("h.push(v1)", undefined, [v1,v5,v2]);
-test2("h.push(v4)", undefined, [v1,v4,v2,v5]);
-test2("h.push(v3)", undefined, [v1,v3,v2,v5,v4]);
-test2("h.push(v0)", undefined, [v0,v3,v1,v5,v4,v2]);
-test2("h.del(a6)", undefined, [v0,v3,v1,v5,v4,v2]);
-test2("h.del(a0)", 0, [v2,v3,v1,v5,v4]);
-test2("h.del(a1)", 3, [v2,v3,v4,v5]);
-test2("h.del(a3)", 5, [v2,v5,v4]);
-test2("h.push(v5)", undefined, [v2,v5,v4,v5]);
-test2("h.push(v6)", undefined, [v2,v5,v4,v5,v6]);
-test2("h.del(a6)", 6, [v2,v5,v4,v5]);
+newTable("delFunc","--ID--");
+test2("0-1", "h.del(a0)", undefined, []);
+test2("0-2", "h.push(v2)", undefined, [v2]);
+test2("0-3", "h.push(v5)", undefined, [v2,v5]);
+test2("0-4", "h.push(v1)", undefined, [v1,v5,v2]);
+test2("0-5", "h.push(v4)", undefined, [v1,v4,v2,v5]);
+test2("0-6", "h.push(v3)", undefined, [v1,v3,v2,v5,v4]);
+test2("0-7", "h.push(v0)", undefined, [v0,v3,v1,v5,v4,v2]);
+test2("1-0", "h.del(a6)", undefined, [v0,v3,v1,v5,v4,v2]);
+test2("1-1", "h.del(a0)", 0, [v1,v3,v2,v5,v4]);
+test2("", "h.push(v0)", undefined, [v0,v3,v1,v5,v4,v2]);
+test2("1-3", "h.del(a3)", 3, [v0,v2,v1,v5,v4]);
+test2("1-4", "h.del(a1)", 1, [v0,v2,v4,v5]);
+test2("1-5", "h.del(a2)", 2, [v0,v5,v4]);
+test2("", "h.push(v5)", undefined, [v0,v5,v4,v5]);
+test2("", "h.push(v6)", undefined, [v0,v5,v4,v5,v6]);
+test2("1-8", "h.del(a5)", 5, [v0,v5,v4,v6]);
 
 </script>
 
