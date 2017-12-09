@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2063">line 2063</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2055">line 2055</a>
     </dir>
     
 
     <h4 class="name" id="VirtualResource">
-    <span class="type-signature"></span>new VirtualResource<span class="signature">(name<span class="signature-attributes">opt</span>, holdCapacity<span class="signature-attributes">opt</span>, timeout<span class="signature-attributes">opt</span>, waitCapacity<span class="signature-attributes">opt</span>, queueWait<span class="signature-attributes">opt</span>, log<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <span class="type-signature"></span>new VirtualResource<span class="signature">(system, name<span class="signature-attributes">opt</span>, holdCapacity<span class="signature-attributes">opt</span>, timeout<span class="signature-attributes">opt</span>, waitCapacity<span class="signature-attributes">opt</span>, queueWait<span class="signature-attributes">opt</span>, log<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -69,6 +69,41 @@
 
     <h5>Parameters:</h5>
     
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>system</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">仮想システム（シミュレーション中の現在時刻取得等に用いる）</div>
+        </li></ul>
 
     
 		
@@ -385,7 +420,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2336">line 2336</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2322">line 2322</a>
     </dir>
     
 
@@ -395,7 +430,7 @@
     
     
 	<div class="description">
-		イベント終了時処理（リソースが管理しているvAppを_finishさせる（強制終了させ処理中vAppはTATログ出力する）
+		イベント終了時処理（リソースが管理しているvAppをfinishさせる（強制終了させ処理中vAppはTATログ出力する）
 	</div>
 	
     
@@ -640,7 +675,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2287">line 2287</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2273">line 2273</a>
     </dir>
     
 
@@ -826,7 +861,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2132">line 2132</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2125">line 2125</a>
     </dir>
     
 
@@ -932,12 +967,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2239">line 2239</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2225">line 2225</a>
     </dir>
     
 
     <h4 class="name" id="hold">
-    <span class="type-signature">(static) </span>VirtualResource#hold<span class="signature">(system, vApp)</span><span class="type-signature"> &rarr; {Objcet|Array}</span>
+    <span class="type-signature">(static) </span>VirtualResource#hold<span class="signature">(system, vApp)</span><span class="type-signature"> &rarr; {Objcet}</span>
     </h4>
     
     
@@ -1022,8 +1057,8 @@
 
 
 <h5>Returns:</h5>
-<ul>
-        <li>
+
+        
 
 
 	<ul class="params"><li>
@@ -1037,32 +1072,12 @@
 	    </span>
 		
 		<div class="param-desc">
-		    処理結果{result:boolean, events:Array}<br>        {boolean} result : true:正常（リソース取得、取得待ち、取得不要）、false:エラー（リソース枯渇）        {Array} :events リソース取得後、スケジューラに登録するイベントの配列<br>        リソースを取得できたとき、もしくはリソース枯渇時でvApp再処理の場合、スケジュール対象の vApp        が登録された配列[vApp]を返却<br>        リソース待ちに登録されたとき、既にリソースが管理するスケジューラに登録さているので、空の配列[]を返却<br>        もしくはリソース枯渇時で繰返し完了時、再スケジュールしないので[]を返却
+		    処理結果{result:boolean, events:Array}<br>        {boolean} result :        true:正常（リソース取得、取得待ち、取得不要）、false:エラー（リソース枯渇E_QOF)）<br>        {Array} :events リソース取得後、スケジューラに登録するイベントの配列<br>        [vApp]： リソースを取得できたとき、もしくはリソース枯渇時でvApp再処理の場合、スケジュール対象の vApp        が登録された配列[vApp]を返却<br>        []： リソース待ちに登録されたとき、既にリソースが管理するスケジューラに登録さているので、空の配列[]を返却<br>        もしくはリソース枯渇時で繰返し完了時、再スケジュールしないので[]を返却
 		</div>
 		
 	</li></ul>
-</li>
+
     
-        <li>
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Array</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    リソース取得後、スケジューラに登録するイベントの配列<br>        [vApp] ：リソースを取得できたとき、もしくはリソース枯渇時でvApp再処理の場合、スケジュール対象の vApp        が登録された配列を返却<br>        []：リソース待ちに登録されたとき、既にリソースが管理するスケジューラに登録さているので、空の配列を返却<br>        もしくはリソース枯渇時で繰返し完了時、再スケジュールしないので[]を返却
-		</div>
-		
-	</li></ul>
-</li>
-    </ul>
 
 <h6>
 
@@ -1110,7 +1125,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2144">line 2144</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2137">line 2137</a>
     </dir>
     
 
@@ -1245,7 +1260,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2119">line 2119</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2112">line 2112</a>
     </dir>
     
 
@@ -1418,7 +1433,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Dec 04 2017 04:02:57 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Dec 10 2017 04:54:05 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
