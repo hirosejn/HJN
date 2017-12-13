@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.12.10";
+HJN.ver = "v0.12.13";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -401,9 +401,11 @@ HJN.Graph.prototype.init = function () {
 
     // legendを追加する（内部関数）
     function addLegend(that) { // arg0 : this
-        var chartIdName = that.chartIdName, serieses = that.SERIESES, divLegend = document
-                .getElementById(chartIdName + "_legend"), formName = chartIdName
-                + "_LegendForm", htmlText = '<form name="' + formName + '">';
+        var chartIdName = that.chartIdName;
+        var serieses = that.SERIESES;
+        var divLegend = document.getElementById(chartIdName + "_legend");
+        var formName = chartIdName + "_LegendForm";
+        var htmlText = '<form name="' + formName + '">';
         for (var i = 0; i < serieses.length; i++) {
             var ckBox = serieses[i].visiblity ? 'checked="checked"' : '';
             htmlText += '<label class="legend" style="background:'
@@ -425,7 +427,8 @@ HJN.Graph.prototype.init = function () {
  */
 HJN.Graph.prototype.onClickSetVisibility = function (i) { //
     "use strict";
-    var formName = this.chartIdName + "_LegendForm", ck = document[formName].elements[i].checked;
+    var formName = this.chartIdName + "_LegendForm";
+    var ck = document[formName].elements[i].checked;
     this.graph.setVisibility(i, ck);
 };
 
@@ -902,29 +905,27 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             // eTatの配列位置をを求める
             if (name === HJN.ETAT.key) {
                 // ETATのとき、終了時刻(x)からeTatの配列位置(n)を検索する
-                n = HJN.util.binarySearch(x, eTat, function (e) {
-                    return e.x;
-                });
+                n = HJN.util.binarySearch(x, eTat, 
+                                    function (e) { return e.x; });
             } else {
                 // STATのとき、開始時刻(x)からsTatの配列位置(sTatN)を検索し、sTatからeTatの配列位置を取得する
-                var sTatN = HJN.util.binarySearch(x, sTat, function (e) {
-                    return e.x;
-                });
+                var sTatN = HJN.util.binarySearch(x, sTat, 
+                                    function (e) { return e.x; });
                 n = sTat[sTatN].eTatIdx;
             }
             // ログデータを表示し、線を引く
             if (0 <= n) {
                 var e = eTat[n], logHtml = "";
                 if (typeof e.pos === "undefined") { // 生成データのとき
-                    // 生成データをCSVのログデータとして編集する
+                    // 生成データをCSVのログデータとして編集する #61
                     logHtml = HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
                             + ", " + e.y + ", " + e.message; // #53
                 } else { // ファイル読込のとき
                     // ファイルの該当行を Uint8Arrayに登録する
                     var buff = new Uint8Array(e.len + 2);
                     var file = HJN.filesArrayBuffer[e.fileIdx]; // #23
-                    buff.set(new Uint8Array(file, e.pos, Math.min(e.len + 2,
-                            file.byteLength - e.pos)));
+                    buff.set(new Uint8Array(file, e.pos,
+                            Math.min(e.len + 2, file.byteLength - e.pos)));
                     // ログデータを編集する
                     logHtml = String.fromCharCode.apply(null, buff);
                 }
@@ -1541,7 +1542,7 @@ HJN.Graph.prototype.menuLoadConfig = function (evt) { // #10
  */
 HJN.Graph.prototype.menuFilterApply = function () { // #34
     "use strict";
-    if (HJN.files === undefined) {
+    if (HJN.files && HJN.files.length === 0) {
         // 自動生成データのグラフを表示しているとき
         HJN.init.ChartShow(HJN.chart.eTatOriginal)
     } else {
@@ -1585,6 +1586,7 @@ HJN.Graph.prototype.menuSimulatorSimulate = function () { // #53
     "use strict";
     // グラフを再生成する
     var json = document.getElementById("SimulatorEditor").value;
+    HJN.files = []; // #61
     HJN.Plot.List = [];
     HJN.init.CreateSampleTatLogAndChartShow(json);
 

@@ -86,15 +86,17 @@ HJN.util.S2D = function(str, conf){ // #34
 
     // 内部関数：構造体オブジェクトで指定された条件でパースする
     function parse(str, conf){
-        var y   = (0 <= conf.YYYY) ? parseInt( str.substr( conf.YYYY, 4), 10) : 1970,  // デフォルト1970年
-                m   = (0 <= conf.MM)   ? parseInt( str.substr( conf.MM, 2), 10) - 1 : 0,   // デフォルト1月
+        var y   = (0 <= conf.YYYY) ? parseInt( str.substr( conf.YYYY, 4), 10) : 1970,
+                m   = (0 <= conf.MM)   ? parseInt( str.substr( conf.MM, 2), 10) - 1 : 0, // デフォルト1月
                 // 1970/1/1だと時差でマイナスになることがあるので日付のデフォルトは2日
                 d   = (0 <= conf.DD)   ? parseInt( str.substr( conf.DD, 2), 10) : 2,
                 h   = (0 <= conf.hh)   ? parseInt( str.substr( conf.hh, 2), 10) : 0,
                 min = (0 <= conf.mm)   ? parseInt( str.substr( conf.mm, 2), 10) : 0,
                 sec = (0 <= conf.ss)   ? parseInt( str.substr( conf.ss, 2), 10) : 0,
                 // ミリ秒以下を指定すると丸め誤差が生じるため、秒以下のミリ秒は個別に加算
-                p   = (0 <= conf.ppp)  ? ("0." + str.substr( conf.ppp).match(/[0-9]*/)[0]) * 1000.0 : 0;
+                p   = (0 <= conf.ppp)  
+                    ? ("0." + str.substr( conf.ppp).match(/[0-9]*/)[0]) * 1000.0 
+                    : 0;
         return +(new Date( y, m, d, h, min, sec )) + p;  // #14
     }
 };
@@ -460,10 +462,12 @@ HJN.util.Logger = (function() { // #27
             // 処理時間情報を追加する
             var lastTimestamp = HJN.util.Logger._timestamp;
             HJN.util.Logger._timestamp = new Date();
-            text = (Math.round( HJN.util.Logger._timestamp - lastTimestamp ) / 1000.0) + "s " + text;
+            text = (Math.round( HJN.util.Logger._timestamp - lastTimestamp ) / 1000.0)
+                    + "s " + text;
             // 数値のカンマ編集（小数部もカンマが入る）
             text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            text = HJN.util.D2S(HJN.util.Logger._timestamp, "hh:mm:ss.ppp     ") + text; // #60
+            text = HJN.util.D2S(HJN.util.Logger._timestamp, "hh:mm:ss.ppp     ")
+                    + text; // #60
         }
         HJN.util.Logger._logText.push(text);
         HJN.util.Logger.ShowText(HJN.util.Logger._logText);
@@ -505,27 +509,18 @@ HJN.util.Logger = (function() { // #27
     return Logger;
 }());
 
-
-/*
- * 指定されたtextareaを使って、クリップボードにコピーする ************************************
- * HJN.CopyToClipboard = function(elementId) { // arg0:textareaのID名 "use
- * strict"; var area = document.getElementById(elementId); area.select();
- * document.execCommand("copy"); } //詳細表示対象の元データ(eTat)をコピー用領域にテキストで出力する
- * HJN.init.GetSliderRangedEtatText = function(elementId) { "use strict"; //
- * 開始メッセージを画面に設定する document.getElementById(elementId).value = "データの収集を開始しました
- * しばらくお待ち下さい"; // ブラウザに開始メッセージを描画させるために、集計処理は非同期でキックする
- * HJN.util.setZeroTimeout(function(){ // コピーデータを集計する var eTatDetail =
- * HJN.chartD.eTat; var eTatCsv = ""; if(0 < eTatDetail.length){ if(typeof
- * eTatDetail[0].pos === "undefined"){ eTatDetail.forEach(function(e){ eTatCsv +=
- * HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") + "," + e.y + "\r\n"; }); }else{
- * eTatDetail.forEach(function(e){ eTatCsv += String.fromCharCode.apply(null,
- * new Uint8Array(HJN.file, e.pos, e.len)) + "\r\n"; }) } }else{ eTatCsv += "No
- * log in the time." } // 画面にコピー対象データのテキストを設定する
- * document.getElementById(elementId).value = eTatCsv; // クリップボードにコピーする
- * HJN.CopyToClipboard(elementId); }); }
+/**
+ * 指定されたtextareaを使って、クリップボードにコピーする
+ * 
+ * @param {Object}
+ *            elementID textareaのID名
  */
-
-
+HJN.util.CopyToClipboard = function(elementId) { // #61
+    "usestrict";
+    var area = document.getElementById(elementId);
+    area.select();
+    document.execCommand("copy");
+}
 
 /**
  * @class
@@ -909,7 +904,7 @@ HJN.util.Config = (function() { // #24
      * @memberof HJN.util.Config
      */
     Config.on = function(t) {
-        if (t.type === "radio") {           // radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
+        if (t.type === "radio") { // radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
             this.prototype.__config[t.name] = t.id.substr(t.id.indexOf(".") + 1);
             // on呼出し関数が登録されているとき、登録関数を呼び出す #51
             var func = HJN.util.Config.GetConfig().getFunctionById(t.id); // #59
@@ -948,7 +943,8 @@ HJN.util.Config = (function() { // #24
      * @memberof HJN.util.Config
      */
     Config.prototype.getFunctionByKey = function(key) { // #59
-        return Config.prototype.__config._onFunctions[this._pre + this.getValueByKey(key)];
+        return Config.prototype.__config
+                ._onFunctions[this._pre + this.getValueByKey(key)];
     };
     /**
      * configの指定Idに登録されている関数を取得する
@@ -1631,17 +1627,17 @@ HJN.util.VirtualSystem = (function() { // #53
         if (typeof(thinkTimeMin) === "number") model.thinkTimeMin = thinkTimeMin;
         if (typeof(thinkTime) === "number") model.thinkTime = thinkTime;
         
-        // リソース（baseModel)取得処理を登録する
+        // baseModelを返却用シーケンスに展開する
         baseModel.forEach( function(e) {
             model.sequence.push({hold:e, tatMin:tatMin, tat:tat, free:[]});
         });
-        // 指定シーケンスを登録する
+        // 指定シーケンスを返却用シーケンスに追加する
         model.sequence = model.sequence.concat(sequence);
 
-        // 指定シーケンスの未開放リソースを取得する
-        var resources = baseModel;
+        // 返却用シーケンスに、holdingを追加するとともにシーケンス終了時未開放リソースを取得する
+        var resources = []; // #61
         var holding = []; // #59
-        sequence.forEach( function(tran) {
+        model.sequence.forEach( function(tran) { // #61
             // tatMinがtatより大きいとき、tatをtatMin一定とする #59
             if (tran.tat < tran.tatMin) tran.tat = tran.tatMin;
             // 処理開始時にholdしているリソース一覧をholdingに登録する #59
@@ -1662,7 +1658,7 @@ HJN.util.VirtualSystem = (function() { // #53
                 })
             }
         }, this);
-        // 未開放リソースが残っているとき開放処理を登録する
+        // シーケンス終了時未開放リソースが残っているとき、返却用シーケンスにリソース開放処理を追加する
         if (0 < resources.length){
             model.sequence = model.sequence.concat(
                     [{hold: "", tatMin: tatMin * baseModel.length, tat: tat * baseModel.length,
@@ -1711,7 +1707,7 @@ HJN.util.VirtualApp = (function() { // #53
         this._thinkTimeMin = Math.max(0,
                 (typeof(model.thinkTimeMin) !== "undefined") ? model.thinkTimeMin : 500);
         // メッセージ（ログ末尾に付与する文字列）
-        this._baseMessage = model.message + "<BR>";
+        this._baseMessage = model.message + "\n";
         this._message = "";
 
         // 変数の設定
@@ -1750,8 +1746,7 @@ HJN.util.VirtualApp = (function() { // #53
         // 0:なしの時
         if (!isLog) return;
         var errCode = 0;
-        if (resource && ((resource._waitHeap.size() !== resource._waitingQty)
-                      || (resource._holdHeap.size() !== resource._holdingQty))) {
+        if (resource && (resource._holdHeap.size() !== resource._holdingQty)) {
             // エラー時★
             errCode = 1;
             highText = highText ? highText + "　unkown error!!" : "　unkown error!!";
@@ -1761,11 +1756,10 @@ HJN.util.VirtualApp = (function() { // #53
         
         // エラーログ編集
         var user = vApp ? " " + vApp._userName : " ";
-        var resourceText = resource ? (" [" + resource._name + " "
-                + resource._waitHeap.size() + "="
-                + resource._waitingQty + " "
+        var resourceText = resource ? (" [" + resource._name + " wait:"
+                + resource._waitHeap.size() + "hold:"
                 + resource._holdHeap.size() + "="
-                + resource._holdingQty + "] ") : " ";
+                + resource._holdingQty + " qty] ") : " ";
         text = text || "";
         var logText = HJN.util.D2S(this.getTime(),"hh:mm:ss.ppp",true) 
                     + user +"(" + this._times + "-" + this._sequenceIdx + ")"
@@ -1944,7 +1938,8 @@ HJN.util.VirtualApp = (function() { // #53
      *            [abendTime=sytem.getTime()] abend時刻
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
      */
-    VirtualApp.prototype.abend = function(system, holdedResource, logID, logMesseage, isHolding, abendTime) {
+    VirtualApp.prototype.abend = function(system, holdedResource, 
+                                    logID, logMesseage, isHolding, abendTime) {
         logID = logID || "E_600";
         abendTime = abendTime || system.getTime();
         isHolding = (typeof(isHolding) === "boolean") ? isHolding : true; // #61
@@ -2004,7 +1999,8 @@ HJN.util.VirtualApp = (function() { // #53
             // 起動済処理はTATログを出力する #59
             if (this._startTime <= forceTime) { 
                 // TATログを出力する
-                system.eTat.push( {x: forceTime, y: Math.round(forceTime - this._startTime),
+                system.eTat.push( { x: forceTime, 
+                                    y: Math.round(forceTime - this._startTime),
                                     sTatIdx: 0, message: logText} );
                 this.logger(2, system._log, forceTime, this, undefined, 'finish() FORCE"', logText);
             }
@@ -2074,9 +2070,11 @@ HJN.util.VirtualApp = (function() { // #53
 HJN.util.VirtualResource = (function() { // #53
     "use strict";
     /** @constructor */
-    function VirtualResource(system, name, holdCapacity, timeout, waitCapacity, queueWait, log){
+    function VirtualResource(system, name,
+                        holdCapacity, timeout, waitCapacity, queueWait, log){
         if(!(this instanceof VirtualResource)){
-            return new VirtualResource(system, name, holdCapacity, timeout, waitCapacity, queueWait, log);
+            return new VirtualResource(system, name,
+                        holdCapacity, timeout, waitCapacity, queueWait, log);
         }
         this._system = system;
         this._name = name || "unlimited";
@@ -2084,17 +2082,17 @@ HJN.util.VirtualResource = (function() { // #53
 
         // 処理待ち管理用
         this._waitTimeout = (typeof(queueWait) !== "undefined")
-                           ? queueWait : 10000;   // キュー滞留時間上限
+                                ? queueWait : 10000;   // キュー滞留時間上限
         this._waitCapacity  = (typeof(waitCapacity) !== "undefined")
-                          ? waitCapacity : Number.MAX_SAFE_INTEGER; // キューの深さ
-        this._waitingQty = 0;   // キューの残りの深さ（キューイング数）
+                                ? waitCapacity : Number.MAX_SAFE_INTEGER; // キューの深さ
         this._waitHeap = HJN.util.Heap(    // リソース解放待ちキュー（登録時間順）
                 function(obj){ return obj.getTime(); });
         
         // リソース管理用
         this._holdTimeout  = (typeof(timeout)  !== "undefined") 
-                                  ? timeout : 10000;   // 処理のタイムアウト時間
-        this._holdCapacity = (typeof(holdCapacity) !== "undefined") ? holdCapacity : 1.0;   // 保有リソース量（数）
+                                ? timeout : 10000;   // 処理のタイムアウト時間
+        this._holdCapacity = (typeof(holdCapacity) !== "undefined")
+                                ? holdCapacity : 1.0;   // 保有リソース量（数）
         this._holdingQty = 0;   // 使用リソース量
         this._holdHeap = HJN.util.Heap( // 処理のタイムアウト管理用ヒープ{obj:,val:} #59
                  function(node){ return node.val; }, // valはタイムアウト時刻
@@ -2163,7 +2161,6 @@ HJN.util.VirtualResource = (function() { // #53
             if (this._waitTimeout <= now - queuedTime) { // キューイング取引がタイムアウトしているとき
                 // リソース解放待ちHeapからfreeするappを取り出す
                 var app = this._waitHeap.pop();
-                this._waitingQty--; // #61
                 // appをアベンドさせる(holdリソース解放なし）
                 var apps = app.abend(system, this, "E_QTO", this._name + " queue timeout",
                         false, queuedTime + this._waitTimeout); // appにfree時刻をセットする
@@ -2264,17 +2261,17 @@ HJN.util.VirtualResource = (function() { // #53
         }
 
         // リソース解放待ちキューに空きがあるとき、vAppをリソース解放待ちに 登録する（スケジュールしない）
-        if ((this._waitingQty < this._waitCapacity) && (0 < this._waitTimeout)){
+        if ((this._waitHeap.size() < this._waitCapacity) && (0 < this._waitTimeout)){
             // リソース解放待ちタイムアウト管理対象に加える
             this._waitHeap.push(vApp);
-            this._waitingQty++; // #61
             vApp.addMessage("wait:" + this._name, system.getTime()); // #61
             vApp.logger(3, this._log, system.getTime(), vApp, this, 'wait' , undefined);
             return { result: true, events: [] };
         }
         
         // リソース解放待ちキューが溢れていた時、リソースを取得できずにアベンド（リソース解放なし、自AP継続の場合[vApp]をリターン） #61
-        var apps = vApp.abend(system, this, "E_QOF", "[" + this._name + "] over flow", false);
+        var apps = vApp.abend(system, this, "E_QOF",
+                    "[" + this._name + "] over flow", false);
         vApp.logger(3, this._log, system.getTime(), vApp, this, 'over' , undefined);
         return { result: false, events: apps }; // #61
     };
@@ -2314,8 +2311,8 @@ HJN.util.VirtualResource = (function() { // #53
         for (var i = this._waitHeap.size() && addQty <= marginQty; 0 < i; i--) {
             // リソース解放待ちキューからfreeするappを取り出す
             var app = this._waitHeap.pop();
-            this._waitingQty--; // #61
-            // appにfree時刻をセットし、スケジュールイベント登録対象に加える(注：リソース取得はスケジュール後、E_HTOに伴う他のリソースの時刻は将来）
+            // appにfree時刻をセットし、スケジュールイベント登録対象に加える
+            // (注：リソース取得はスケジュール後、E_HTOに伴う他のリソースの時刻は将来）
             app.setSequenceTime(this._system.getTime(), "release:" + this._name);
             vApps.push(app);
             // 次のappのリソース量を加える
@@ -2357,15 +2354,16 @@ HJN.util.VirtualResource = (function() { // #53
      *            forceTime 強制終了時刻を指定する（ミシュレーション停止後のeTat強制出力用）
      * @return {null}
      */
-    VirtualResource.prototype._finish = function(system, logID, logMesseage, forceTime) { // #59
+    VirtualResource.prototype._finish = function(system, logID,
+                                        logMesseage, forceTime) { // #59
         // シミュレーション終了後処理（処理中のvAppを強制終了する）
         logID = logID || "N_EoS";
         logMesseage = logMesseage || "";
         while(0 < this._waitHeap.size()){
             event = this._waitHeap.pop();
-            this._waitingQty--; // #61
             if (event._finish) {
-                event._finish(system, logID, "[" + this._name + "] " + logMesseage , forceTime);
+                event._finish(system, logID,
+                        "[" + this._name + "] " + logMesseage , forceTime);
             }
         }
     }
@@ -2413,7 +2411,8 @@ HJN.util.virtualSystemByJson = (function() { // #53
         var json = JSON.parse(jsonText)
         // virtual system と resources の設定
         var log = (json.log !== undefined) ? json.log : false; // #59
-        var start = (json.start !== undefined) ? HJN.util.S2D(json.start) : new Date(1970,1,2);
+        var start = (json.start !== undefined) 
+                    ? HJN.util.S2D(json.start) : new Date(1970,1,2);
         var end = start + HJN.util.S2N(json.end, "24*h");
         var resources = json.resources;
         for (var i = 0; i < resources.length; i++) {
@@ -2511,7 +2510,7 @@ HJN.util.virtualSystemByJson = (function() { // #53
             jsonText =  '{\n'
                 + '"//" : "log（任意、デフォルト3）:詳細ログ出力指定(0:なし, 1:エラー時のみ, 2:+ETAT, 3:+push/pop, 4:+HOLD/FREE)",\n'
                 + '"//" : "start/end:シミュレーション開始時刻/終了時刻",\n'
-                + '"log" : 3,\n'
+                + '"log" : 1,\n'
                 + '"start" : "1970/01/02 00:00:00.000",\n'
                 + '"end"   : "30.0*sec",\n'
                 + '\n'
