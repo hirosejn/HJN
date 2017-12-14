@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.12.13";
+HJN.ver = "v0.12.14";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -915,22 +915,10 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             }
             // ログデータを表示し、線を引く
             if (0 <= n) {
-                var e = eTat[n], logHtml = "";
-                if (typeof e.pos === "undefined") { // 生成データのとき
-                    // 生成データをCSVのログデータとして編集する #61
-                    logHtml = HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
-                            + ", " + e.y + ", " + e.message; // #53
-                } else { // ファイル読込のとき
-                    // ファイルの該当行を Uint8Arrayに登録する
-                    var buff = new Uint8Array(e.len + 2);
-                    var file = HJN.filesArrayBuffer[e.fileIdx]; // #23
-                    buff.set(new Uint8Array(file, e.pos,
-                            Math.min(e.len + 2, file.byteLength - e.pos)));
-                    // ログデータを編集する
-                    logHtml = String.fromCharCode.apply(null, buff);
-                }
+                var e = eTat[n];
                 // ログデータを表示する
-                document.getElementById("lineViewer").innerHTML = logHtml;
+                document.getElementById("lineViewer").innerHTML =
+                            this.HJN.fileReader.getRecordAsText(e); // #62
                 // 線を引く #30
                 drawTatLine(ctx, e.x, e.y, 2, color);
                 ctx.stroke();

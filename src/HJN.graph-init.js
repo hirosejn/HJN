@@ -883,16 +883,16 @@ HJN.util.FileReader = (function() {
          *          console.error("改行コードの無いファイルは扱えません]%o",e); }
          */
 		function GetterOfLine(file, maxLength){ /* constructor */
-				if(!(this instanceof GetterOfLine)) return new GetterOfLine(file, maxLength);
+			if(!(this instanceof GetterOfLine)) return new GetterOfLine(file, maxLength);
 
-				this.file = file;
-				this.buf = new Uint8Array(file);
-				this.maxLength = maxLength || this.buf.length,
-				this.confLF = HJN.chart.fileReader.getValue("LF");	// 改行コードor固定レコード長
-				this.from = 0;
-				this.to = 0;
-				this.len = 0;
-				this.line = {file: this.file, pos: 0, array: null, str: "", isEoF: false };
+			this.file = file;
+			this.buf = new Uint8Array(file);
+			this.maxLength = maxLength || this.buf.length,
+			this.confLF = HJN.chart.fileReader.getValue("LF");	// 改行コードor固定レコード長
+			this.from = 0;
+			this.to = 0;
+			this.len = 0;
+			this.line = {file: this.file, pos: 0, array: null, str: "", isEoF: false };
 		}
 		// public
         /**
@@ -903,40 +903,40 @@ HJN.util.FileReader = (function() {
          */
 		if (HJN.chart.fileReader.getValueByKey("LF") === "LF_FIX"){	// 固定長のとき
 			GetterOfLine.prototype.next = function () {	// 次の1レコードを取得する
-					if(this.from >= this.maxLength ){	// ファイル末尾のとき
-						this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
-					} else {
-						this.len = Math.min(this.maxLength - this.from, this.confLF);
-						var array = new Uint8Array(this.file, this.from, this.len);
-						this.line = {
-								file: this.file,
-								pos: this.from,
-								array: array,
-								str: String.fromCharCode.apply(null, array),
-								isEoF: false };
-					}
-					this.from += this.confLF;	// 次の行を指しておく
-					return this.line;
-				};
+				if(this.from >= this.maxLength ){	// ファイル末尾のとき
+					this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
+				} else {
+					this.len = Math.min(this.maxLength - this.from, this.confLF);
+					var array = new Uint8Array(this.file, this.from, this.len);
+					this.line = {
+							file: this.file,
+							pos: this.from,
+							array: array,
+							str: String.fromCharCode.apply(null, array),
+							isEoF: false };
+				}
+				this.from += this.confLF;	// 次の行を指しておく
+				return this.line;
+			};
 		} else { // 可変長のとき
 			GetterOfLine.prototype.next = function () {	// 次の1レコードを取得する
-					if(this.from >= this.maxLength ){	// ファイル末尾のとき
-						this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
-					} else {
-						this.to = this.buf.indexOf(this.confLF, this.from);
-						if(this.to < 0) this.to = this.maxLength;	// 最終レコード（EOFで改行コードなし）のとき
-						this.len = Math.min(this.to - this.from, 1024);
-						var array = new Uint8Array(this.file, this.from, this.len);
-						this.line = {
-								file: this.file,
-								pos: this.from,
-								array: array,
-								str: String.fromCharCode.apply(null, array),
-								isEoF: false };
-					}
-					this.from = this.to + 2;	// 次の行を指しておく
-					return this.line;
-				};
+				if(this.from >= this.maxLength ){	// ファイル末尾のとき
+					this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
+				} else {
+					this.to = this.buf.indexOf(this.confLF, this.from);
+					if(this.to < 0) this.to = this.maxLength;	// 最終レコード（EOFで改行コードなし）のとき
+					this.len = Math.min(this.to - this.from, 1024);
+					var array = new Uint8Array(this.file, this.from, this.len);
+					this.line = {
+							file: this.file,
+							pos: this.from,
+							array: array,
+							str: String.fromCharCode.apply(null, array),
+							isEoF: false };
+				}
+				this.from = this.to + 2;	// 次の行を指しておく
+				return this.line;
+			};
 		}
 		return new GetterOfLine(file);
 	};
@@ -957,40 +957,40 @@ HJN.util.FileReader = (function() {
          * @memberof HJN.util.FileReader
          */
         function Filter(){ /* constructor */
-                if(!(this instanceof Filter)) return new Filter();
+            if(!(this instanceof Filter)) return new Filter();
+            this._fileReader = HJN.chart.fileReader; // #62
+            var c = HJN.util.FileReader.Property(this._fileReader, "Filter");
 
-                var c = HJN.util.FileReader.Property(HJN.chart.fileReader, "Filter");
+            this.confF_TIME_FROM = HJN.util.S2D(c.getValue("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
+            this.confF_TIME_TO   = HJN.util.S2D(c.getValue("F_TIME_TO"));      // 時刻(X)の最大値フィルター
+            this.confF_TIME = (isNaN(this.confF_TIME_FROM) && isNaN(this.confF_TIME_TO))
+                            ? false : true; // 時刻(x）フィルター指定の有無
+            
+            this.confF_TAT_FROM = c.getValue("F_TAT_FROM") || 0; // 時間(Y)の最小値フィルター
+            this.confF_TAT_TO   = c.getValue("F_TAT_TO") || Number.MAX_VALUE; // 時間(Y)の最大値フィルター
+            this.confF_TAT = (this.confF_TAT_FROM === 0 && this.confF_TAT_TO === Number.MAX_VALUE)
+                            ? false : true; // 時間(ｙ）フィルター指定の有無
 
-                this.confF_TIME_FROM = HJN.util.S2D(c.getValue("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
-                this.confF_TIME_TO   = HJN.util.S2D(c.getValue("F_TIME_TO"));      // 時刻(X)の最大値フィルター
-                this.confF_TIME = (isNaN(this.confF_TIME_FROM) && isNaN(this.confF_TIME_TO))
-                                ? false : true; // 時刻(x）フィルター指定の有無
-                
-                this.confF_TAT_FROM = c.getValue("F_TAT_FROM") || 0; // 時間(Y)の最小値フィルター
-                this.confF_TAT_TO   = c.getValue("F_TAT_TO") || Number.MAX_VALUE; // 時間(Y)の最大値フィルター
-                this.confF_TAT = (this.confF_TAT_FROM === 0 && this.confF_TAT_TO === Number.MAX_VALUE)
-                                ? false : true; // 時間(ｙ）フィルター指定の有無
-
-                this.confF_TEXT = c.getValue("F_TEXT") || null; // テキストフィルタの条件（使用しない、Include,Exclude
-                if (this.confF_TEXT === "F_TEXT_INCLUDE") {
-                    this.confF_TEXT = true;
-                } else if (this.confF_TEXT === "F_TEXT_EXCLUDE") {
-                    this.confF_TEXT = false;
-                } else { // "F_TEXT_NON"
-                    this.confF_TEXT = null;
-                }
-                
-                this.confF_TEXT_LEN = c.getValue("F_TEXT_LEN") || null;    // フィルタテキストのバイト長
-                this.confF_TEXT_POS = c.getValue("F_TEXT_POS") || 0;       // フィルタテキストの先頭バイト位置
-                this.confF_TEXT_COL = (c.getValue("F_TEXT_COL") || 3) - 1; // フィルタテキストのカラム位置（先頭：０）
-                this.confF_TEXT_REG = new RegExp(c.getValue("F_TEXT_REG") || ".*");    // フィルタテキストの正規表現
-                
-                this.confF_IS = (this.confF_TIME === true 
-                                || this.confF_TAT === true || this.confF_TEXT != null)
-                              ? true : false; // フィルタ指定の有無
-                
-                c = HJN.util.FileReader.Property(HJN.chart.fileReader, "File");
-                this.confF_SEP = c.getValue("SEP").charCodeAt(0);
+            this.confF_TEXT = c.getValue("F_TEXT") || null; // テキストフィルタの条件（使用しない、Include,Exclude
+            if (this.confF_TEXT === "F_TEXT_INCLUDE") {
+                this.confF_TEXT = true;
+            } else if (this.confF_TEXT === "F_TEXT_EXCLUDE") {
+                this.confF_TEXT = false;
+            } else { // "F_TEXT_NON"
+                this.confF_TEXT = null;
+            }
+            
+            this.confF_TEXT_LEN = c.getValue("F_TEXT_LEN") || null;    // フィルタテキストのバイト長
+            this.confF_TEXT_POS = c.getValue("F_TEXT_POS") || 0;       // フィルタテキストの先頭バイト位置
+            this.confF_TEXT_COL = (c.getValue("F_TEXT_COL") || 3) - 1; // フィルタテキストのカラム位置（先頭：０）
+            this.confF_TEXT_REG = new RegExp(c.getValue("F_TEXT_REG") || ".*");    // フィルタテキストの正規表現
+            
+            this.confF_IS = (this.confF_TIME === true 
+                            || this.confF_TAT === true || this.confF_TEXT != null)
+                          ? true : false; // フィルタ指定の有無
+            
+            c = HJN.util.FileReader.Property(HJN.chart.fileReader, "File");
+            this.confF_SEP = c.getValue("SEP").charCodeAt(0);
         }
         
         // class method
@@ -1001,7 +1001,7 @@ HJN.util.FileReader = (function() {
          * @memberof HJN.util.FileReader.Filter
          */
         Filter.prototype._isIn = function (e) {
-            // フィルタ指定が無いときフィルタしない（最速判定）
+            // フィルタ指定が無いときフィルタしない（初期表示時に無駄な処理をしない）
             if (this.confF_IS === false) return true;
             // 時刻（ｘ）フィルタの判定 （conf指定なしのとき NaNとの比較となりfalseとなる）
             if (e.x < this.confF_TIME_FROM || this.confF_TIME_TO < e.x ) {
@@ -1017,7 +1017,8 @@ HJN.util.FileReader = (function() {
             }
             var text = "";
             if (e.pos === undefined) { // テキスト読み込みでないとき（自動生成データのとき）
-                text = e.message; // #61
+                // レコードを取得する #62
+                text = this._fileReader.getRecordAsText(e); // #61
                 // 指定正規表現に合致するか判定し、Include/Exclude指定に応じてリターンする
                 return this.confF_TEXT === this.confF_TEXT_REG.test(text);
             } else { // ファイル読み込みのとき
@@ -1046,12 +1047,16 @@ HJN.util.FileReader = (function() {
          * eTatをフィルターする
          * 
          * @memberof HJN.util.FileReader.Filter
+         * @param {eTat}
+         *            eTat フィルター処理対象のeTat
+         * @return {eTat} eTat フィルターされたeTat
+         * 
          */
         Filter.prototype.filter = function (eTat) {
             if (!eTat) return [];
             return eTat.filter(this._isIn, this);
         };
-        
+
         return new Filter();
     };
 
@@ -1072,47 +1077,48 @@ HJN.util.FileReader = (function() {
          * @memberof HJN.util.FileReader
          */
 		function GetterOfXY(){ /* constructor */
-				if(!(this instanceof GetterOfXY)) return new GetterOfXY();
+			if(!(this instanceof GetterOfXY)) return new GetterOfXY();
 
-				var c = HJN.chart.fileReader;
-				this.configId = "_config_" + "Filter"; // #53
-				this.confSEP = c.getValue("SEP");	// セパレータ
-				
-				this.confTIME_COL = c.getValue("TIME_COL") - 1 || 0;	// 時刻(X)のカラム位置
-				this.confTIME_POS = (c.getValue("TIME_POS") || 1) - 1;	// 時刻(X)の先頭バイト位置
-				this.confTIME_LEN = (c.getValue("TIME_LEN") || 0);		// 時刻(X)のバイト長
-				this.confTIME_FORM = c.getValue("TIME_FORM");			// 時刻(X)の文字フォーマット指定
-				this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
-				                                                        // 時刻(X)のYMDフォーマット
-				this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
-						YYYY: this.confTIME_YMD.indexOf("YYYY"),
-						MM: this.confTIME_YMD.indexOf("MM"),
-						DD: this.confTIME_YMD.indexOf("DD"),
-						hh: this.confTIME_YMD.indexOf("hh"),
-						mm: this.confTIME_YMD.indexOf("mm"),
-						ss: this.confTIME_YMD.indexOf("ss"),
-						ppp: this.confTIME_YMD.indexOf("p"),};
-				this.isYMD = (this.confTIME_FORM === "TIME_FORM_YMD");
-				// 時刻(X)の数値単位(1or1000,YMDのとき1)
-				this.confTIME_UNIT = this.isYMD? 1 : (c.getValue("TIME_UNIT") || 1);
-				
-				
-				this.confTAT_COL = c.getValue("TAT_COL") - 1 || 1;		// 時間(Y)のカラム位置
-				this.confTAT_POS = (c.getValue("TAT_POS") || 1) - 1;	// 時間(Y)の先頭バイト位置
-				this.confTAT_LEN = (c.getValue("TAT_LEN") || 0);		// 時間(Y)のバイト長
-				this.confTAT_FORM = c.getValue("TAT_FORM");				// 時間(Y)のフォーマット指定
-				this.confTAT_UNIT = c.getValue("TAT_UNIT") || 1;		// 時間(Y)の数値単位(1/1000)
-				this.confENDIAN =  c.getValue("ENDIAN");    // リトルエンディアンはtrue、ビッグエンディアンはfalse
-				this.isLittle = (function(){
-				        // long用に4バイト取得する
-						var buf = new ArrayBuffer(4);				
-						// true:bufに、リトルエンディアン指定で1を書き込む
-						new DataView(buf).setUint32(0, 1, true);
-						// プラットフォームのエンディアンを使用するUint32Arrayと比較する
-						return (new Uint32Array(buf)[0] === 1);		
-					}());
-				
-				this.dateAndValue = {date: 0, value: 0, isError: false };
+			var c = HJN.chart.fileReader;
+			this.configId = "_config_" + "Filter"; // #53
+			this.confSEP = c.getValue("SEP");	// セパレータ
+			
+			this.confTIME_COL = c.getValue("TIME_COL") - 1 || 0;	// 時刻(X)のカラム位置
+			this.confTIME_POS = (c.getValue("TIME_POS") || 1) - 1;	// 時刻(X)の先頭バイト位置
+			this.confTIME_LEN = (c.getValue("TIME_LEN") || 0);		// 時刻(X)のバイト長
+			this.confTIME_FORM = c.getValue("TIME_FORM");			// 時刻(X)の文字フォーマット指定
+			this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
+			                                                        // 時刻(X)のYMDフォーマット
+			this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
+				YYYY: this.confTIME_YMD.indexOf("YYYY"),
+				MM: this.confTIME_YMD.indexOf("MM"),
+				DD: this.confTIME_YMD.indexOf("DD"),
+				hh: this.confTIME_YMD.indexOf("hh"),
+				mm: this.confTIME_YMD.indexOf("mm"),
+				ss: this.confTIME_YMD.indexOf("ss"),
+				ppp: this.confTIME_YMD.indexOf("p"),
+			};
+			this.isYMD = (this.confTIME_FORM === "TIME_FORM_YMD");
+			// 時刻(X)の数値単位(1or1000,YMDのとき1)
+			this.confTIME_UNIT = this.isYMD? 1 : (c.getValue("TIME_UNIT") || 1);
+			
+			
+			this.confTAT_COL = c.getValue("TAT_COL") - 1 || 1;		// 時間(Y)のカラム位置
+			this.confTAT_POS = (c.getValue("TAT_POS") || 1) - 1;	// 時間(Y)の先頭バイト位置
+			this.confTAT_LEN = (c.getValue("TAT_LEN") || 0);		// 時間(Y)のバイト長
+			this.confTAT_FORM = c.getValue("TAT_FORM");				// 時間(Y)のフォーマット指定
+			this.confTAT_UNIT = c.getValue("TAT_UNIT") || 1;		// 時間(Y)の数値単位(1/1000)
+			this.confENDIAN =  c.getValue("ENDIAN");    // リトルエンディアンはtrue、ビッグエンディアンはfalse
+			this.isLittle = (function(){
+		        // long用に4バイト取得する
+				var buf = new ArrayBuffer(4);				
+				// true:bufに、リトルエンディアン指定で1を書き込む
+				new DataView(buf).setUint32(0, 1, true);
+				// プラットフォームのエンディアンを使用するUint32Arrayと比較する
+				return (new Uint32Array(buf)[0] === 1);		
+			}());
+			
+			this.dateAndValue = {date: 0, value: 0, isError: false };
 		}
 		
 		// class method
@@ -1269,6 +1275,44 @@ HJN.util.FileReader = (function() {
 			return this.__keyConfig[cKey].func;	// keyの設定値のfuncが定義されているとき
 		}
 	};
+    /**
+     * eTatの指定行の編集元レコードを、テキストフォーマットに変換して取得する
+     * 
+     * @memberof HJN.util.FileReader
+     * @param {Object}
+     *            e eTat[n]：eTatの指定行
+     * @return {String} eTatの指定行の表示用テキスト
+     */
+	FileReader.prototype.getRecordAsText = function (e) { // #62 ADD
+        if (!e) return "";
+        var text = "";
+        if (typeof e.pos === "undefined") { // 生成データのとき
+            // 生成データをCSVのログデータとして編集する #61
+            text = HJN.util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
+                    + ", " + e.y + ", " + e.message; // #53
+            // 状態遷移履歴を追加する #62
+            if (e.history){
+                e.history.forEach(function(h){
+                    var timeStr = "";
+                    if (typeof(h.time) === "number") {
+                        timeStr = HJN.util.D2S(h.time, "mm:ss.ppp", true) + " seq:"
+                    }
+                    text += " [" + h.sequenceIdx + ":" + h.status + "]" // #61
+                        + timeStr + HJN.util.D2S(h.sequenceTime, "mm:ss.ppp", true);
+                }, this);
+            }
+        } else { // ファイル読込のとき
+            // ファイルの該当行を Uint8Arrayに登録する
+            var buff = new Uint8Array(e.len + 2);
+            var file = HJN.filesArrayBuffer[e.fileIdx]; // #23
+            buff.set(new Uint8Array(file, e.pos,
+                    Math.min(e.len + 2, file.byteLength - e.pos)));
+            // ログデータを編集する
+            text = String.fromCharCode.apply(null, buff);
+        }
+        return text;
+        
+    };
     /**
      * keyの値に指定されたvalue（なければkey値）を返却する
      * 
