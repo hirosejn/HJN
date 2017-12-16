@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.12.14";
+HJN.ver = "v0.12.15";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -824,25 +824,32 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
         this.graph = new Dygraph(this.chartId, this.dyData, {
             height : this.resize(),
             labels : this.labels,
+            title : this === HJN.chart ? '' : '', // タイトル
+            titleHeight : 10, // タイトルの高さ＆フォントサイズ（デフォルト18px)
             legend : 'always', // 'follow', //
             showLabelsOnHighlight : false, // 効果不明
             labelsDiv : document.getElementById(HJN.chartName + 'Labels'),
             labelsSeparateLines : false,
             // legendFormatter: this.legendFormatter, // コメントアウトでlegendが非表示
-            axes : {
-                x : {
-                    axisLabelFormatter : axisLabelFormatter,
-                    axisLabelWidth : 100
+            axes : {  // 軸の設定
+                x : { // X軸の設定
+                    axisLabelFormatter : xAxisLabelFormatter, // ラベル表示文字列編集関数
+                    axisLabelWidth : 100        // X軸ラベルの表示幅（幅が不足すると文字が切れる）
                 },
-                y : {
-                    axisLabelWidth : 30,
-                    logscale : false
+                y : { // Y2（左）軸の設定
+                    independentTicks : true,    // 目盛合わせ（falseはY2軸に合わせる）
+                    axisLabelWidth : 40,        // ラベル表示幅
+                    // axisLineColor : 'rgb(0,0,0)',// 軸の色
+                    // axisLabelFontSize : 14, // ラベルのフォントサイズ(デフォルト:14)
+                    logscale : false            // 対数軸
                 },
-                y2 : {
-                    drawGrid : true,
-                    logscale : false,
-                    independentTicks : true,
-                    gridLinePattern : [ 1, 2 ]
+                y2 : { // Y2（右）軸の設定
+                    axisLabelFormatter : yAxisLabelFormatter, // ラベル表示文字列編集関数
+                    independentTicks : true,    // 目盛合わせ（falseはY1軸に合わせる）
+                    axisLabelWidth : 65,        // ラベル表示幅
+                    drawGrid : true,            // 横罫線
+                    gridLinePattern : [ 1, 2 ], // 罫線形状（破線）
+                    logscale : false            // 対数軸
                 }
             },
             includeZero : true,
@@ -851,8 +858,8 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             gridLineColor : 'rgba(0, 0, 0, 0.2)',
             strokeWidth : 2,
             pointSize : 3,
-            // ylabel: 'Primary y-axis',
-            y2label : this === HJN.chart ? '' : 'ms',
+            ylabel: 'Number of transactions',
+            y2label : 'Sec', // this === HJN.chart ? '' : 'Sec',
             // rollPeriod: 7,
             // errorBars: true,
             // showRangeSelector: true
@@ -873,16 +880,47 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             series : this.dySeries,
             labelsKMB : true,
             visibility : visibility,
+            animatedZooms : true, // ズームするときのアニメーション有無（デフォルト:false）
             connectSeparatedPoints : true
         });
         this.graph.HJN = this; // dygraphイベント処理でHJJを取れるように（注：循環参照）
     }
-
-    // 初期表示の不活性グラフを設定
-    function axisLabelFormatter(d, gran, opts) {
-        return Dygraph.dateAxisLabelFormatter(new Date(d), gran, opts);
-    }
     HJN.util.Logger.ShowLogText("[8:dygraph showen] ", "calc");
+
+    // 初期表示の不活性グラフの設定
+    function xAxisLabelFormatter(d, gran, opts) {
+        // return Dygraph.dateAxisLabelFormatter(new Date(d), gran, opts); #63
+        var isTop = (this.xAxisRange()[0] === d);
+        var format = "";
+        var diffTime = this.xAxisRange()[1] - this.xAxisRange()[0];
+        if (diffTime < 60000) { 
+            format = isTop ? "hh:mm:ss.ppp" : "ss.ppp";
+        } else if (diffTime < 86400000) { // 1日未満
+            format = "hh:mm:ss";
+        } else if (diffTime < 31536000000) { // 365日未満
+            format = isTop ? "yyyy/MM/dd": "MM/dd hh";
+        } else { // 365日以上
+            format = "yyyy/MM/dd";
+        }
+        return HJN.util.D2S(d,format,true);
+    }
+    function yAxisLabelFormatter(d, gran, opts) { // #63
+        var range = this.yAxisRanges()[1];
+        var format = "";
+        var diff = range[1] - range[0];
+        if (diff < 300000) { // 300秒未満
+            return "" + d / 1000;
+        } else if (diff < 86400000) { // 1日未満
+            return HJN.util.D2S(d, "hh:mm:ss", true);
+        } else if (diff < 172800000) { // 2日未満
+            var hours = Math.ceil(d / 3600000) + ":";
+            return hours + HJN.util.D2S(d, "mm:ss", true);
+        } else { // 2日以上
+            var days = Math.ceil(d / 86400000) + " days+";
+            var time = HJN.util.D2S(d, " hh:mm:ss", false);
+            return (d < 172800000) ? time : days; // 2日未満？
+        }
+    }
 
     // 再描画する
     this.showBalloon();

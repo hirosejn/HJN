@@ -2483,7 +2483,7 @@ HJN.util.virtualSystemByJson = (function() { // #53
         if (n === 0) {
             jsonText =  '{\n'
                 + '"log" : 1,\n'
-                + '"start" : "1970/01/02 00:00:00.000",\n'
+                + '"start" : "2017/01/02 00:00:00.000",\n'
                 + '"end"   : "17.0*h",\n'
                 + '"resources" : [\n'
                 + '  {"type" :"WEB", "thread":1024,"timeout":"300*sec", "q":1280, "qWait":0},\n'
