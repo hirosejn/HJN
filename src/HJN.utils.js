@@ -47,6 +47,40 @@ if (!Array.prototype.find) {
     };
   }
 
+
+/**
+ * タッチパネル操作をマウス操作に転送する
+ * <p>
+ * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
+ * 
+ * @example HJN.util.DispatchEventTouchToMouse();
+ */
+HJN.util.DispatchEventTouchToMouse = function() { // #22
+    "use strict";
+    document.addEventListener("touchstart",  touchHandler, true);
+    document.addEventListener("touchmove",   touchHandler, true);
+    document.addEventListener("touchend",    touchHandler, true);
+    document.addEventListener("touchcancel", touchHandler, true);
+
+    function touchHandler(event) {
+        var touch = event.changedTouches[0];
+        var simulatedEvent = document.createEvent("MouseEvent");
+        simulatedEvent.initMouseEvent({
+                touchstart: "mousedown",
+                touchmove:  "mousemove",
+                touchend:   "mouseup"
+            }[event.type], 
+            true, true, window, 1,
+            touch.screenX, touch.screenY,
+            touch.clientX, touch.clientY,
+            false, false, false, false, 0, null);
+
+        touch.target.dispatchEvent(simulatedEvent);
+        event.preventDefault();
+    }
+};
+
+
 /**
  * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
  * 
@@ -100,7 +134,6 @@ HJN.util.S2D = function(str, conf){ // #34
         return +(new Date( y, m, d, h, min, sec )) + p;  // #14
     }
 };
-
 
 /**
  * 日時(Date)から、ローカル時刻に基づく、指定フォーマットの文字列を取得する

@@ -12,6 +12,8 @@ HJN.init.ChartRegist = function(chartName){
 	"use strict";
 	// 引数１ ：デフォルトHJN.chartName("chart")
 	HJN.chartName = chartName = chartName || HJN.chartName;
+	// タッチパネルイベントをマウスイベントに転送する
+	HJN.util.DispatchEventTouchToMouse(); // #22
 	// タイトルを設定する #57
 	document.title = "tat log diver " + HJN.ver; 
 	// htmlを作成する #52
@@ -45,7 +47,7 @@ HJN.init.ChartRegist = function(chartName){
         + '    <div class="hjnAccordion">'
         + '      <div id="' + chartName + '_menu"></div>'
         + '      <div id="' + chartName + 'Detail_menu"></div>'
-        + '      <div id="' + chartName + 'Labels"></div>'
+        // + ' <div id="' + chartName + 'Labels"></div>' // #22
         + '    </div>'
         + '  </div>'
         + '</div>'

@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.12.15";
+HJN.ver = "v0.12.16";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -828,7 +828,8 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             titleHeight : 10, // タイトルの高さ＆フォントサイズ（デフォルト18px)
             legend : 'always', // 'follow', //
             showLabelsOnHighlight : false, // 効果不明
-            labelsDiv : document.getElementById(HJN.chartName + 'Labels'),
+            // labelsDiv : document.getElementById(HJN.chartName + 'Labels'), //
+            // ラベル表示先の変更
             labelsSeparateLines : false,
             // legendFormatter: this.legendFormatter, // コメントアウトでlegendが非表示
             axes : {  // 軸の設定
