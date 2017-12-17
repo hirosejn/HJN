@@ -815,9 +815,14 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
     // グラフの作成
     if (this.graph) {
         // 既にグラフがあるときはデータのみ変更する（注：ここでdestroy()すると下段のpointClickCallback時にエラー）
-        this.graph.updateOptions({
-            file : this.dyData
-        });
+        this.graph.updateOptions( {
+            file : this.dyData,
+            interactionModel: { // #22
+                touchstart: function(){},
+                touchmove:  function(){},
+                touchend:   function(){}
+            }
+        } );
         this.graph.resetZoom(); // #51
     } else {
         // グラフが無いときは新規作成する
@@ -1304,6 +1309,7 @@ HJN.Graph.prototype.addMenu = function () {
             + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
+        divSimulatorEditor.readOnly = true; // #22
         divSimulatorEditor.value = HJN.util.virtualSystemByJson.GetJsonConfig(); // デフォルトJSON
         
         // View Menu

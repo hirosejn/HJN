@@ -69,12 +69,23 @@ HJN.util.DispatchEventTouchToMouse = function() { // #22
                 touchstart: "mousedown",
                 touchmove:  "mousemove",
                 touchend:   "mouseup"
-            }[event.type], 
-            true, true, window, 1,
-            touch.screenX, touch.screenY,
-            touch.clientX, touch.clientY,
-            false, false, false, false, 0, null);
-
+            }[event.type],    // type
+            true,             // bubbles
+            true,             // cancelable
+            window,           // view
+            1,                // detail
+            touch.screenX,    // screenX
+            touch.screenY,    // screenY
+            touch.clientX,    // clientX
+            touch.clientY,    // clientY
+            false,            // ctrlKey
+            false,            // altKey
+            false,            // shiftKey
+            false,            // metaKey
+            0,                // button
+            null              // relatedTarget
+          );
+        
         touch.target.dispatchEvent(simulatedEvent);
         event.preventDefault();
     }
