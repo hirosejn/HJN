@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Filter</title>
+    <title>JSDoc: Class: virtualSystemByJson</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Filter</h1>
+    <h1 class="page-title">Class: virtualSystemByJson</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.util.html">.util</a><a href="HJN.util.FileReader.html">.FileReader</a>.</span>Filter</h2>
+            <span class="ancestors"><a href="HJN.util.html">.util</a>.</span>virtualSystemByJson</h2>
         
-            <div class="class-description">FileReaderのフィルター           <p>           ファクトリのFileReaderが保持するフィルタ条件を用いるフィルターを取得する</div>
+            <div class="class-description">仮想システム生成ツール(virtualSystemByJson)           <p>           util管理用クラス（スタティックメソッドのみ）のためコンストラクタは使用しない</div>
         
     
 </header>
@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line959">line 959</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2397">line 2397</a>
     </dir>
     
 
-    <h4 class="name" id="Filter">
-    <span class="type-signature"></span>new Filter<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id="virtualSystemByJson">
+    <span class="type-signature"></span>new virtualSystemByJson<span class="signature">()</span><span class="type-signature"></span>
     </h4>
     
     
@@ -145,17 +145,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line1003">line 1003</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2422">line 2422</a>
     </dir>
     
 
-    <h4 class="name" id="_isIn">
-    <span class="type-signature">(static) </span>Filter#_isIn<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id=".virtualSystemByJson.Execute">
+    <span class="type-signature">(static) </span>virtualSystemByJson.Execute<span class="signature">(jsonText<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ETAT">ETAT</a>}</span>
     </h4>
     
     
 	<div class="description">
-		フィルター条件で判定する
+		初期表示用サンプルデータ(ETAT)を自動生成する
 	</div>
 	
     
@@ -169,6 +169,43 @@
 
 
 
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>jsonText</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+
+            <div class="description last">シミュレーション条件JSONテキスト</div>
+        </li></ul>
+
+    
 
 
 
@@ -182,6 +219,30 @@
 
 
 
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type"><a href="global.html#ETAT">ETAT</a></span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)),        y:レスポンス(秒)}]
+		</div>
+		
+	</li></ul>
+
+    
 
 <h6>
 
@@ -229,17 +290,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line1055">line 1055</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line2479">line 2479</a>
     </dir>
     
 
-    <h4 class="name" id="filter">
-    <span class="type-signature">(static) </span>Filter#filter<span class="signature">(eTat)</span><span class="type-signature"> &rarr; {eTat}</span>
+    <h4 class="name" id=".virtualSystemByJson.GetJsonConfig">
+    <span class="type-signature">(static) </span>virtualSystemByJson.GetJsonConfig<span class="signature">(n<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
     </h4>
     
     
 	<div class="description">
-		eTatをフィルターする
+		シミュレーション条件JSONテキストを作成する
 	</div>
 	
     
@@ -260,23 +321,39 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>eTat</code></td>
+                <td class="name"><code>n</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">eTat</span>
+<span class="param-type">Number</span>
 
 
             
             </span>
 
             
+                <span class="attributes">
+                
+                    &lt;optional>
+                
 
+                
+
+                
+                </span>
             
 
-            <div class="description last">フィルター処理対象のeTat</div>
+            
+                <span class="default">
+                
+                    0
+                
+                </span>
+            
+
+            <div class="description last">シナリオ番号</div>
         </li></ul>
 
     
@@ -304,14 +381,14 @@
 	    <span>
 	    	
 	        
-<span class="param-type">eTat</span>
+<span class="param-type">String</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    eTat フィルターされたeTat
+		    シミュレーション条件JSONテキスト
 		</div>
 		
 	</li></ul>

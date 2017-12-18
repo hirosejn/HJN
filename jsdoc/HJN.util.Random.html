@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: binarySearch</title>
+    <title>JSDoc: Class: Random</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: binarySearch</h1>
+    <h1 class="page-title">Class: Random</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.util.html">.util</a>.</span>binarySearch</h2>
+            <span class="ancestors"><a href="HJN.util.html">.util</a>.</span>Random</h2>
         
-            <div class="class-description">配列二分木検索</div>
+            <div class="class-description">Random 乱数取得           <p>           ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>           M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う           <p>           参考 <a href="http://www.ishikawa-lab.com/montecarlo/4shou.html">http://www.ishikawa-lab.com/montecarlo/4shou.html</a></div>
         
     
 </header>
@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line543">line 543</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1332">line 1332</a>
     </dir>
     
 
-    <h4 class="name" id="binarySearch">
-    <span class="type-signature"></span>new binarySearch<span class="signature">(val, arr, func<span class="signature-attributes">opt</span>, low<span class="signature-attributes">opt</span>, high<span class="signature-attributes">opt</span>, isEqual<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="Random">
+    <span class="type-signature"></span>new Random<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -74,7 +74,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>val</code></td>
+                <td class="name"><code>average</code></td>
             
 
             <span class="type">
@@ -89,76 +89,6 @@
             
                 <span class="attributes">
                 
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                </span>
-            
-
-            <div class="description last">検索する値</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>arr</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                </span>
-            
-
-            <div class="description last">検索対象の配列</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>func</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
                     &lt;optional>
                 
 
@@ -171,129 +101,12 @@
             
                 <span class="default">
                 
-                    function(val){return val.valueOf();}
+                    0.5
                 
                 </span>
             
 
-            <div class="description last">配列要素に対して、値を取得する関数</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>low</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Index</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    0
-                
-                </span>
-            
-
-            <div class="description last">配列の検査範囲の下限</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>high</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Index</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    arr.length-1
-                
-                </span>
-            
-
-            <div class="description last">配列の下限検査範囲の上限</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>isEqual</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    false
-                
-                </span>
-            
-
-            <div class="description last">完全一致しないときのリターン値：trueのとき-1、falseのとき値との差が最も少ない位置</div>
+            <div class="description last">平均値</div>
         </li></ul>
 
     
@@ -353,7 +166,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>i=HJN.util.binarySearch(x,arrXY,function(e){return e.x;});</code></pre>
+    <pre class="prettyprint"><code>var r = HJN.util.Random(10), val = r.exponential();</code></pre>
 
 
 
@@ -372,6 +185,463 @@
 
     
 
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1364">line 1364</a>
+    </dir>
+    
+
+    <h4 class="name" id="exponential">
+    <span class="type-signature">(static) </span>Random#exponential<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		指数分布となる乱数を返却する(lambda = 1/average)
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値=1/λ、分散=1/(λ^2)<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1377">line 1377</a>
+    </dir>
+    
+
+    <h4 class="name" id="poisson">
+    <span class="type-signature">(static) </span>Random#poisson<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		ポアソン分布となる乱数を返却する(lambda = average)
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値=分散=λ<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1351">line 1351</a>
+    </dir>
+    
+
+    <h4 class="name" id="uniform">
+    <span class="type-signature">(static) </span>Random#uniform<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		一様分布となる乱数を返却する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
     
 
     

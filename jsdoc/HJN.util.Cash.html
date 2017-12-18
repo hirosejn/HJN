@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.html">HJN</a><a href="HJN.util.html">.util</a>.</span>Cash</h2>
+            <span class="ancestors"><a href="HJN.util.html">.util</a>.</span>Cash</h2>
         
-            <div class="class-description">キャッシュを保持させるオブジェクト</div>
+            <div class="class-description">キャッシュ           <p>           キャッシュを保持させるオブジェクト</div>
         
     
 </header>
@@ -47,7 +47,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line161">line 161</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line217">line 217</a>
     </dir>
     
 
@@ -56,10 +56,6 @@
     </h4>
     
     
-	<div class="description">
-		キャッシュ
-	</div>
-	
     
     
 
@@ -194,7 +190,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line188">line 188</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line239">line 239</a>
     </dir>
     
 
@@ -329,7 +325,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line201">line 201</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line251">line 251</a>
     </dir>
     
 
@@ -464,12 +460,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line219">line 219</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line268">line 268</a>
     </dir>
     
 
-    <h4 class="name" id=".proto.getCash">
-    <span class="type-signature">(static) </span>proto.getCash<span class="signature">(arguments)</span><span class="type-signature"> &rarr; {Number|undefined}</span>
+    <h4 class="name" id="getCash">
+    <span class="type-signature">(static) </span>Cash#getCash<span class="signature">(arguments)</span><span class="type-signature"> &rarr; {Number|undefined}</span>
     </h4>
     
     
@@ -596,6 +592,503 @@
 
 
         
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line311">line 311</a>
+    </dir>
+    
+
+    <h4 class="name" id="getRangedCash">
+    <span class="type-signature">(static) </span>Cash#getRangedCash<span class="signature">(from, to)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		レンジキー(form,to)範囲内でキーマッチするcashを、cashが無いときはundefinedを返却する<br>キーは大小比較できる数値であることが前提
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">抽出するキャッシュキー最小値</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>to</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">抽出するキャッシュキーの最大値</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    キャッシュデータ（デーがが無い場合は undefined)
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line291">line 291</a>
+    </dir>
+    
+
+    <h4 class="name" id="setCash">
+    <span class="type-signature">(static) </span>Cash#setCash<span class="signature">(cashVal, arguments)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		オブジェクトをcashする
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>cashVal</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">キャッシュするオブジェクト</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>arguments</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">第二引数以降の、引数からキー文字列を定める</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    キャッシュデータ（デーがが無い場合は undefined)
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line330">line 330</a>
+    </dir>
+    
+
+    <h4 class="name" id="setRangedCash">
+    <span class="type-signature">(static) </span>Cash#setRangedCash<span class="signature">(cashVal, from, to)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		レンジキー(from,to)指定でキャッシュする<br>キーは大小比較できること（通常、数値）、from-to期間内の既存のキャッシュは削除される
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>cashVal</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">キャッシュするオブジェクト</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">抽出するキャッシュキー最小値</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>to</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">抽出するキャッシュキーの最大値</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    キャッシュデータ（デーがが無い場合は undefined)
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
     
 
     
@@ -611,13 +1104,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li><li><a href="HJN.util.virtualSystemByJson.html">HJN.util.virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 03 2017 17:19:38 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Dec 16 2017 19:54:43 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

@@ -28,8 +28,7 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="HJN.html">HJN</a>.</span>init</h2>
+        <h2>init</h2>
         
     
 </header>
@@ -258,7 +257,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line300">line 300</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line284">line 284</a>
     </dir>
     
 
@@ -393,7 +392,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line122">line 122</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line100">line 100</a>
     </dir>
     
 
@@ -506,7 +505,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line1226">line 1226</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line1341">line 1341</a>
     </dir>
     
 
@@ -612,17 +611,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line85">line 85</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line78">line 78</a>
     </dir>
     
 
-    <h4 class="name" id=".CreateSampleTatLog">
-    <span class="type-signature">(static) </span>CreateSampleTatLog<span class="signature">(num<span class="signature-attributes">opt</span>, response<span class="signature-attributes">opt</span>, freq<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ETAT">ETAT</a>}</span>
+    <h4 class="name" id=".CreateSampleTatLogAndChartShow">
+    <span class="type-signature">(static) </span>CreateSampleTatLogAndChartShow<span class="signature">(json<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		初期表示用サンプルデータ(ETAT)を自動生成する
+		データを自動生成し表示する
 	</div>
 	
     
@@ -643,12 +642,15 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>num</code></td>
+                <td class="name"><code>json</code></td>
             
 
             <span class="type">
             
                 
+<span class="param-type">String</span>
+|
+
 <span class="param-type">Number</span>
 
 
@@ -670,90 +672,12 @@
             
                 <span class="default">
                 
-                    10000
+                    HJN.util.virtualSystemByJson.GetJsonConfig(0)
                 
                 </span>
             
 
-            <div class="description last">生成データ数（デフォルト:100、50*100*100)</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>response</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    1500
-                
-                </span>
-            
-
-            <div class="description last">最大応答時間振れ幅（ミリ秒) ※ 乱数を二乗して長時間ほど長くする</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>freq</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Blob</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    10
-                
-                </span>
-            
-
-            <div class="description last">データ発生頻度の目安（tps)</div>
+            <div class="description last">シミュレーション条件JSONテキスト、もしくはサンプルJSON番号</div>
         </li></ul>
 
     
@@ -772,28 +696,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type"><a href="global.html#ETAT">ETAT</a></span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(JulianDayからの経過時間(秒)),        y:レスポンス(秒)}]
-		</div>
-		
-	</li></ul>
-
-    
 
 <h6>
 
@@ -841,7 +743,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line151">line 151</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line134">line 134</a>
     </dir>
     
 
@@ -954,7 +856,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line177">line 177</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line160">line 160</a>
     </dir>
     
 
@@ -1067,7 +969,7 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line334">line 334</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line318">line 318</a>
     </dir>
     
 
@@ -1173,202 +1075,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line1216">line 1216</a>
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line377">line 377</a>
     </dir>
     
 
-    <h4 class="name" id=".HowToUse">
-    <span class="type-signature">(static) </span>HowToUse<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span>
-    </h4>
-    
-    
-	<div class="description">
-		使い方を記載したHTMLを取得する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">String</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    html 使い方を記載したHTML（未実装）
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line368">line 368</a>
-    </dir>
-    
-
-    <h4 class="name" id=".setDetailRange">
-    <span class="type-signature">(static) </span>setDetailRange<span class="signature">()</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		詳細グラフ用機能： 表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line390">line 390</a>
-    </dir>
-    
-
-    <h4 class="name" id=".SetSliderRange">
-    <span class="type-signature">(static) </span>SetSliderRange<span class="signature">(date)</span><span class="type-signature"></span>
+    <h4 class="name" id=".SetDetailDateTime">
+    <span class="type-signature">(static) </span>SetDetailDateTime<span class="signature">(date)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -1470,6 +1182,90 @@
 
 
         
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="HJN.graph-init.js.html">HJN.graph-init.js</a>, <a href="HJN.graph-init.js.html#line351">line 351</a>
+    </dir>
+    
+
+    <h4 class="name" id=".setDetailRange">
+    <span class="type-signature">(static) </span>setDetailRange<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		詳細グラフ用機能： 表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
     
 
     
@@ -1485,13 +1281,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li><li><a href="HJN.util.virtualSystemByJson.html">HJN.util.virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 03 2017 17:19:38 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Dec 16 2017 19:54:43 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
