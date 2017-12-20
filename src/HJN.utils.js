@@ -49,48 +49,128 @@ if (!Array.prototype.find) {
 
 
 /**
- * タッチパネル操作をマウス操作に転送する
- * <p>
- * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
+ * @class
+ * @classdesc タッチパネル用ツール
+ *            <p>
+ *            参考 {@https://code.i-harness.com/ja/q/4f2389}
  * 
- * @example HJN.util.DispatchEventTouchToMouse();
+ * @param {Number}
+ *            [average=0.5] 平均値
+ * @example var r = HJN.util.TouchPanel(10), val = r.exponential();
  */
-HJN.util.DispatchEventTouchToMouse = function() { // #22
+HJN.util.TouchPanel = (function() { // #56
     "use strict";
-    document.addEventListener("touchstart",  touchHandler, true);
-    document.addEventListener("touchmove",   touchHandler, true);
-    document.addEventListener("touchend",    touchHandler, true);
-    document.addEventListener("touchcancel", touchHandler, true);
-
-    function touchHandler(event) {
-        var touch = event.changedTouches[0];
-        var simulatedEvent = document.createEvent("MouseEvent");
-        simulatedEvent.initMouseEvent({
-                touchstart: "mousedown",
-                touchmove:  "mousemove",
-                touchend:   "mouseup"
-            }[event.type],    // type
-            true,             // bubbles
-            true,             // cancelable
-            window,           // view
-            1,                // detail
-            touch.screenX,    // screenX
-            touch.screenY,    // screenY
-            touch.clientX,    // clientX
-            touch.clientY,    // clientY
-            false,            // ctrlKey
-            false,            // altKey
-            false,            // shiftKey
-            false,            // metaKey
-            0,                // button
-            null              // relatedTarget
-          );
-        
-        touch.target.dispatchEvent(simulatedEvent);
-        event.preventDefault();
+    /** @constructor */
+    function TouchPanel(average){
+        if(!(this instanceof TouchPanel)) return new TouchPanel(average);
+        this._average = average || 0.5;
     }
-};
+    /** @private */
+    
+    // public
+    /**
+     * タッチデバイスか判定する
+     * <p>
+     * クラスロード後、touchstart と mouosemove の初回のイベントがどちらが先に発生したかにより判定する 参考
+     * {@link https://lab.syncer.jp/Web/JavaScript/Snippet/44/}
+     * 
+     * @memberof HJN.util.TouchPanel
+     * @return {String} 先に検出したイベントがマウス移動のとき false、以外のときtrue
+     * 
+     */
+    TouchPanel.isTouchableDevice = function() {
+        return (TouchPanel._deviceType === "MOUSE") ? false : true;
+    }
+    // タッチデバイスか判定する（クラス定数）
+    TouchPanel._deviceType = "SHIMULATED_TOUCH";
+    function detectDeviceType(event) {
+        TouchPanel._deviceType = event.changedTouches ? "TOUCH" : "MOUSE" ;
+        document.removeEventListener("touchstart", detectDeviceType) ;
+        document.removeEventListener("mousemove", detectDeviceType) ;
+    }
+    document.addEventListener("touchstart", detectDeviceType) ;
+    document.addEventListener("mousemove", detectDeviceType) ;
 
+    /**
+     * タッチパネル操作をマウス操作に転送する
+     * <p>
+     * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
+     * 
+     * @memberof HJN.util.TouchPanel
+     * @param {Object}
+     *            element 対象dom要素
+     * @example HJN.util.DispatchEventTouchToMouse();
+     */
+    TouchPanel.DispatchEventTouchToMouse = function(element) { // #22
+        "use strict";
+        element.addEventListener("touchstart",  touchHandler, true);
+        element.addEventListener("touchmove",   touchHandler, true);
+        element.addEventListener("touchend",    touchHandler, true);
+        element.addEventListener("touchcancel", touchHandler, true);
+        return;
+
+        function touchHandler(ev) {
+            var bIgnoreChilds = false;
+            
+            if( !window.__touchTypes )
+            {
+              window.__touchTypes  = {touchstart:'mousedown',touchmove:'mousemove',touchend:'mouseup'};
+              window.__touchInputs = {INPUT:1,TEXTAREA:1,SELECT:1,OPTION:1,'input':1,'textarea':1,'select':1,'option':1};
+            }
+            
+            var bSame = (ev.target == this);
+            if( bIgnoreChilds && !bSame ) { return; }
+            // Get if object is already tested or input type
+            var b = (!bSame && ev.target.__ajqmeclk);
+            // allow multi-touch gestures to work
+            if(b === true || !ev.touches || ev.touches.length > 1 || !window.__touchTypes[ev.type]) {
+                return;
+            }
+
+            var oEv = (!bSame && typeof b != 'boolean') ? ev.target.getAttribute('events') : false;
+            var b = (!bSame)
+                  ? (ev.target.__ajqmeclk = oEv
+                      ? (oEv['click'] || oEv['mousedown'] || oEv['mouseup'] || oEv['mousemove']) 
+                      : false )
+                  :false;
+            // allow default clicks to work (and on inputs)
+            if( b || window.__touchInputs[ev.target.tagName] ) { return; } 
+
+            var touch = ev.changedTouches[0];
+            var newEvent = document.createEvent("MouseEvent");
+            newEvent.initMouseEvent({
+                    touchstart: "mousedown",
+                    touchmove:  "mousemove",
+                    touchend:   "mouseup"
+                }[ev.type],    // type
+                true,             // bubbles
+                true,             // cancelable
+                window,           // view
+                1,                // detail
+                touch.screenX,    // screenX
+                touch.screenY,    // screenY
+                touch.clientX,    // clientX
+                touch.clientY,    // clientY
+                false,            // ctrlKey
+                false,            // altKey
+                false,            // shiftKey
+                false,            // metaKey
+                0,                // button
+                null              // relatedTarget
+              );
+            
+            touch.target.dispatchEvent(newEvent);
+            ev.stopImmediatePropagation();
+            ev.stopPropagation();
+            ev.preventDefault();
+        }
+    };
+
+    
+    
+    /* new */
+    return TouchPanel;
+}());
 
 /**
  * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
@@ -561,6 +641,7 @@ HJN.util.Logger = (function() { // #27
  */
 HJN.util.CopyToClipboard = function(elementId) { // #61
     "usestrict";
+    // textareaをクリップボードにコピーする
     var area = document.getElementById(elementId);
     area.select();
     document.execCommand("copy");

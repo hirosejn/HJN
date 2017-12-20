@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.12.16";
+HJN.ver = "v0.12.19";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -818,9 +818,12 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
         this.graph.updateOptions( {
             file : this.dyData,
             interactionModel: { // #22
-                touchstart: function(){},
-                touchmove:  function(){},
-                touchend:   function(){}
+                // mousedown: Dygraph.nonInteractiveModel.mousedown,
+                // mousemove: Dygraph.nonInteractiveModel.mousemove,
+                // mouseup: Dygraph.nonInteractiveModel.mouseup,
+                // touchdown: function(){}, // 効いてない
+                // touchmove: function(){}, // 効いてない
+                // touchend: function(){} // 効いてない
             }
         } );
         this.graph.resetZoom(); // #51
@@ -889,7 +892,11 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             animatedZooms : true, // ズームするときのアニメーション有無（デフォルト:false）
             connectSeparatedPoints : true
         });
-        this.graph.HJN = this; // dygraphイベント処理でHJJを取れるように（注：循環参照）
+        // dygraphイベント処理でHJJを取れるように（注：循環参照）
+        this.graph.HJN = this;
+        // スマフォ対応 #22
+        HJN.util.TouchPanel.DispatchEventTouchToMouse(this.graph.canvas_);
+        HJN.util.TouchPanel.DispatchEventTouchToMouse(this.graph.canvas_ctx_.canvas);
     }
     HJN.util.Logger.ShowLogText("[8:dygraph showen] ", "calc");
 

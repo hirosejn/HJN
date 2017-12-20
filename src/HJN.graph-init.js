@@ -12,8 +12,6 @@ HJN.init.ChartRegist = function(chartName){
 	"use strict";
 	// 引数１ ：デフォルトHJN.chartName("chart")
 	HJN.chartName = chartName = chartName || HJN.chartName;
-	// タッチパネルイベントをマウスイベントに転送する
-	HJN.util.DispatchEventTouchToMouse(); // #22
 	// タイトルを設定する #57
 	document.title = "tat log diver " + HJN.ver; 
 	// htmlを作成する #52
@@ -445,8 +443,10 @@ HJN.Plot.PointClickCallback = function(point) {
 	HJN.Plot.Add(n, x, y);
 	// Balloonを再描画する
 	HJN.Plot.ShowBalloon();
-    // lineViewerに表示をクリップボードにコピーする
-	HJN.util.CopyToClipboard("lineViewer"); // #61
+    // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする
+	if (!HJN.util.TouchPanel.isTouchableDevice()) { // #22
+	    HJN.util.CopyToClipboard("lineViewer"); // #61
+	}
 };
 
 /**
