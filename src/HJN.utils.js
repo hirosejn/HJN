@@ -79,7 +79,8 @@ HJN.util.TouchPanel = (function() { // #56
      * 
      */
     TouchPanel.isTouchableDevice = function() {
-        return (TouchPanel._deviceType === "MOUSE") ? false : true;
+        HJN.util.Logger.ShowText([TouchPanel._deviceType]);
+        return true; // (TouchPanel._deviceType === "MOUSE") ? false : true;
     }
     // タッチデバイスか判定する（クラス定数）
     TouchPanel._deviceType = "SHIMULATED_TOUCH";
@@ -137,6 +138,28 @@ HJN.util.TouchPanel = (function() { // #56
             if( b || window.__touchInputs[ev.target.tagName] ) { return; } 
 
             var touch = ev.changedTouches[0];
+            var tmpClientX = touch.clientX;
+            var tmpClientY = touch.clientY;
+            // タッチのクリック判定補完
+            if (ev.type === "touchstart"){
+                // touchstart時の座標と時刻を退避する
+                this.startTouch = {x: touch.clientX, y: touch.clientY, t: +new Date()};
+            } else if (ev.type === "touchend") {
+                // touchstart時の座標と時刻が一定範囲内の時、dygraphがクリックと判定するよう位置補正する
+                if (Math.abs(this.startTouch.x - touch.clientX) < 20 && // タッチ補正幅(px)
+                    Math.abs(this.startTouch.y - touch.clientY) < 20 &&
+                    +new Date() - this.startTouch.t < 1000) { // タッチ時間(ms)
+                    // 位置補正
+                    tmpClientX = this.startTouch.x;
+                    tmpClientY = this.startTouch.y;
+                }
+                this.startTouch = {};
+            }
+            // タッチイベントを止める
+            ev.stopImmediatePropagation();
+            ev.stopPropagation();
+            ev.preventDefault();
+           // マウスイベントを発生させる
             var newEvent = document.createEvent("MouseEvent");
             newEvent.initMouseEvent({
                     touchstart: "mousedown",
@@ -147,10 +170,10 @@ HJN.util.TouchPanel = (function() { // #56
                 true,             // cancelable
                 window,           // view
                 1,                // detail
-                touch.screenX,    // screenX
+                touch.screenX,    // screenX スクリーンサイズ
                 touch.screenY,    // screenY
-                touch.clientX,    // clientX
-                touch.clientY,    // clientY
+                tmpClientX,       // clientX タッチ座標
+                tmpClientY,       // clientY
                 false,            // ctrlKey
                 false,            // altKey
                 false,            // shiftKey
@@ -160,9 +183,6 @@ HJN.util.TouchPanel = (function() { // #56
               );
             
             touch.target.dispatchEvent(newEvent);
-            ev.stopImmediatePropagation();
-            ev.stopPropagation();
-            ev.preventDefault();
         }
     };
 
