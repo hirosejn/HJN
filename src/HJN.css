@@ -70,6 +70,7 @@ footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller
 
 #hjnBoxPlaceOn + label span::before { content: "Place on"; }
 #hjnBoxPlaceOn + label span::after  { content: "side"; }
+#chartZoom + label span::before, #chartDZoom + label span::before  { content: "reset zoom"; }
 /* スイッチラベル */
 .hjnBoxOn { display: none; }
 .hjnBoxOn + label { text-align:center; color: #ddd; }
