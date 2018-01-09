@@ -1,7 +1,7 @@
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 HJN = {};
-HJN.ver = "v0.12.15";
+HJN.ver = "v0.12.23";
 /** @namespace */
 HJN.util = {}; // utils登録変数
 /** @namespace */
@@ -170,47 +170,19 @@ HJN.Graph = function (chartIdName, globalName, config) {
     "use strict";
     /* メンバ変数 */
     this.seriesSet = [];
-    this.chartIdName = chartIdName; // arg0 "chart","chartDetail"
+    this.chartIdName = chartIdName; // arg0 "chart","chartD"
     this.globalName = globalName || "HJN.chartD"; // arg1
     if (!config) { // arg2
         var isMain = (globalName === "HJN.chart") ? true : false;
         config = {
-            SERIESES : [ {
-                n : HJN.CONC.N,
-                process : !isMain,
-                visiblity : !isMain,
-                renderer : 'area'
-            }, {
-                n : HJN.CTPS.N,
-                process : true,
-                visiblity : true,
-                renderer : isMain ? 'scatterplot' : 'bar'
-            }, {
-                n : HJN.ETPS.N,
-                process : true,
-                visiblity : isMain,
-                renderer : 'line'
-            }, {
-                n : HJN.STAT.N,
-                process : !isMain,
-                visiblity : !isMain,
-                renderer : 'scatterplot'
-            }, {
-                n : HJN.ETAT.N,
-                process : !isMain,
-                visiblity : !isMain,
-                renderer : 'scatterplot'
-            }, {
-                n : HJN.EMPS.N,
-                process : true,
-                visiblity : true,
-                renderer : 'line'
-            }, {
-                n : HJN.EAPS.N,
-                process : true,
-                visiblity : isMain,
-                renderer : 'line'
-            } ],
+            SERIESES: [ 
+                { n: HJN.CONC.N, process: !isMain, visiblity: !isMain, renderer: 'area' },
+                { n: HJN.CTPS.N, process: true,    visiblity: true,    renderer: isMain ? 'scatterplot' : 'bar' },
+                { n: HJN.ETPS.N, process: true,    visiblity: isMain,  renderer: 'line' },
+                { n: HJN.STAT.N, process: !isMain, visiblity: !isMain, renderer: 'scatterplot' },
+                { n: HJN.ETAT.N, process: !isMain, visiblity: !isMain, renderer: 'scatterplot' },
+                { n: HJN.EMPS.N, process: true,    visiblity: true,    renderer: 'line' }, 
+                { n: HJN.EAPS.N, process: true,    visiblity: isMain,  renderer: 'line' } ],
             height : 0.40,
             isVisiblity : true
         };
@@ -301,47 +273,20 @@ HJN.Graph = function (chartIdName, globalName, config) {
  * クラス定数
  */
 HJN.Graph.prototype = {
-    UNIT_RANGE : [ // #48
-    {
-        label : "sec",
-        val : "1000"
-    }, {
-        label : "10sec",
-        val : "10000",
-        selected : "selected"
-    }, {
-        label : "min",
-        val : "60000"
-    }, {
-        label : "10min",
-        val : "600000"
-    }, {
-        label : "hour",
-        val : "3600000"
-    }, {
-        label : "6hours",
-        val : "21600000"
-    }, {
-        label : "day",
-        val : "86400000"
-    }, {
-        label : "year",
-        val : "31536000000"
-    } ],
-
-    UNIT_CTPS : [ {
-        label : "/sec",
-        unit : 1000
-    }, {
-        label : "/min",
-        unit : 60000
-    }, {
-        label : "/hour",
-        unit : 3600000
-    }, {
-        label : "/day",
-        unit : 86400000
-    } ]
+    UNIT_RANGE: [ // #48
+        { label: "sec",    val: "1000" },
+        { label: "10sec",  val: "10000", selected: "selected" },
+        { label: "min",    val: "60000" },
+        { label: "10min",  val: "600000" }, 
+        { label: "hour",   val: "3600000" },
+        { label: "6hours", val: "21600000" },
+        { label: "day",    val: "86400000" }, 
+        { label: "year",   val: "31536000000" } ],
+    UNIT_CTPS: [
+        { label: "/sec",   unit: 1000 },
+        { label: "/min",   unit: 60000 },
+        { label: "/hour",  unit: 3600000 },
+        { label: "/day",   unit: 86400000 } ]
 };
 
 /**
@@ -815,9 +760,9 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
     // グラフの作成
     if (this.graph) {
         // 既にグラフがあるときはデータのみ変更する（注：ここでdestroy()すると下段のpointClickCallback時にエラー）
-        this.graph.updateOptions({
+        this.graph.updateOptions( {
             file : this.dyData
-        });
+        } );
         this.graph.resetZoom(); // #51
     } else {
         // グラフが無いときは新規作成する
@@ -828,7 +773,8 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             titleHeight : 10, // タイトルの高さ＆フォントサイズ（デフォルト18px)
             legend : 'always', // 'follow', //
             showLabelsOnHighlight : false, // 効果不明
-            labelsDiv : document.getElementById(HJN.chartName + 'Labels'),
+            // labelsDiv : document.getElementById(HJN.chartName + 'Labels'), //
+            // ラベル表示先の変更
             labelsSeparateLines : false,
             // legendFormatter: this.legendFormatter, // コメントアウトでlegendが非表示
             axes : {  // 軸の設定
@@ -880,11 +826,25 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
             series : this.dySeries,
             labelsKMB : true,
             visibility : visibility,
+            interactionModel: { // #22
+                mousedown: Dygraph.defaultInteractionModel.mousedown,
+                willDestroyContextMyself: true,
+                // touchstart: function(){}, 空functionと未登録は同じ効果
+                // touchmove: function(){},
+                // touchend: function(){},
+                dblclick: Dygraph.defaultInteractionModel.dblclick
+            },
             animatedZooms : true, // ズームするときのアニメーション有無（デフォルト:false）
             connectSeparatedPoints : true
         });
-        this.graph.HJN = this; // dygraphイベント処理でHJJを取れるように（注：循環参照）
+        // dygraphイベント処理でHJJを取れるように（注：循環参照）
+        this.graph.HJN = this;
+        // スマフォ対応 #22
+        HJN.util.TouchPanel.DispatchEventTouchToMouse(this.graph.canvas_);
+        HJN.util.TouchPanel.DispatchEventTouchToMouse(this.graph.canvas_ctx_.canvas);
     }
+    // zoom reset ボタン追加 #22
+    this.addIcon_ZoomReset();
     HJN.util.Logger.ShowLogText("[8:dygraph showen] ", "calc");
 
     // 初期表示の不活性グラフの設定
@@ -1303,6 +1263,7 @@ HJN.Graph.prototype.addMenu = function () {
             + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
+        divSimulatorEditor.readOnly = true; // #22
         divSimulatorEditor.value = HJN.util.virtualSystemByJson.GetJsonConfig(); // デフォルトJSON
         
         // View Menu
@@ -1844,4 +1805,40 @@ HJN.Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
     } else { // Chrome, FireFoxのとき
         document.getElementById(menuId).href = window.URL.createObjectURL(blob);
     }
+};
+
+HJN.Graph.prototype.addIcon_ZoomReset = function () {
+    "use strict";
+    var divChart = this.chartId; // document.getElementById("Icons");
+    var idName = this.chartIdName + "Zoom";
+    var input = document.getElementById(idName);
+    if (input !== null) { // 既にある場合削除する
+        var div = input.parentElement;
+        div.parentElement.removeChild(div);
+    }
+
+    if (divChart) {
+        var div = document.createElement('div');
+        var htmlText = '<input id="' + idName + '" type="buttom" class="hjnBoxSwitch hjnResize" '
+                                + 'onClick="HJN.' + this.chartIdName + '.graph.resetZoom()">'
+                     + '<label for="' + idName + '" class="hjnCtrlBox"><span></span></label>';
+        div.innerHTML = htmlText;
+        divChart.insertBefore(div, divChart.firstChild);
+    }
+    
+    // divIcons.appendChild(div);
+
+    // div.id = id;
+    // div.className = "menuBar";
+// div = element.parentElement;
+    /*
+     * var divIcons = document.getElementById("Icons"); var idName =
+     * this.chartIdName + "Zoom"; if (divIcons) { var div =
+     * document.createElement('div'); var htmlText = '<input id="' + idName + '"
+     * type="buttom" class="hjnBoxSwitch hjnResize" ' + 'onClick="HJN.' +
+     * this.chartIdName + '.graph.resetZoom()">' + '<label for="' + idName + '"
+     * class="hjnCtrlBox"><span></span></label>'; div.innerHTML = htmlText;
+     * divIcons.appendChild(div); }
+     */
+
 };

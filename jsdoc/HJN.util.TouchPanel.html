@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Random</title>
+    <title>JSDoc: Class: TouchPanel</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Random</h1>
+    <h1 class="page-title">Class: TouchPanel</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="HJN.util.html">.util</a>.</span>Random</h2>
+            <span class="ancestors"><a href="HJN.util.html">.util</a>.</span>TouchPanel</h2>
         
-            <div class="class-description">Random 乱数取得           <p>           ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>           M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う           <p>           参考 <a href="http://www.ishikawa-lab.com/montecarlo/4shou.html">http://www.ishikawa-lab.com/montecarlo/4shou.html</a></div>
+            <div class="class-description">タッチパネル用ツール           <p>           参考 {@https://code.i-harness.com/ja/q/4f2389}</div>
         
     
 </header>
@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1479">line 1479</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line61">line 61</a>
     </dir>
     
 
-    <h4 class="name" id="Random">
-    <span class="type-signature"></span>new Random<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="TouchPanel">
+    <span class="type-signature"></span>new TouchPanel<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -166,7 +166,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var r = HJN.util.Random(10), val = r.exponential();</code></pre>
+    <pre class="prettyprint"><code>var r = HJN.util.TouchPanel(10), val = r.exponential();</code></pre>
 
 
 
@@ -195,17 +195,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1511">line 1511</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line108">line 108</a>
     </dir>
     
 
-    <h4 class="name" id="exponential">
-    <span class="type-signature">(static) </span>Random#exponential<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    <h4 class="name" id=".TouchPanel.DispatchEventTouchToMouse">
+    <span class="type-signature">(static) </span>TouchPanel.DispatchEventTouchToMouse<span class="signature">(element, isStopTouch<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		指数分布となる乱数を返却する(lambda = 1/average)
+		タッチパネル操作をマウス操作に転送する<p>参考 <a href="https://code.i-harness.com/ja/q/4f2389">https://code.i-harness.com/ja/q/4f2389</a>
 	</div>
 	
     
@@ -226,13 +226,48 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>average</code></td>
+                <td class="name"><code>element</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">対象dom要素</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>isStopTouch</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Boolean</span>
 
 
             
@@ -253,12 +288,12 @@
             
                 <span class="default">
                 
-                    this._average
+                    false
                 
                 </span>
             
 
-            <div class="description last">平均値=1/λ、分散=1/(λ^2)<br></div>
+            <div class="description last">元のタッチのデフォルトイベントを消すか（個別に登録されているリスナーには無関係）</div>
         </li></ul>
 
     
@@ -277,28 +312,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Number</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    乱数
-		</div>
-		
-	</li></ul>
-
-    
 
 <h6>
 
@@ -338,6 +351,11 @@
 </h6>
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>HJN.util.DispatchEventTouchToMouse();</code></pre>
+
+
 
         
             
@@ -346,17 +364,17 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1524">line 1524</a>
+        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line81">line 81</a>
     </dir>
     
 
-    <h4 class="name" id="poisson">
-    <span class="type-signature">(static) </span>Random#poisson<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    <h4 class="name" id=".TouchPanel.isTouchableDevice">
+    <span class="type-signature">(static) </span>TouchPanel.isTouchableDevice<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span>
     </h4>
     
     
 	<div class="description">
-		ポアソン分布となる乱数を返却する(lambda = average)
+		タッチデバイスか判定する<p>クラスロード後、touchstart と mouosemove の初回のイベントがどちらが先に発生したかにより判定する 参考<a href="https://lab.syncer.jp/Web/JavaScript/Snippet/44/">https://lab.syncer.jp/Web/JavaScript/Snippet/44/</a>
 	</div>
 	
     
@@ -368,51 +386,6 @@
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>average</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    this._average
-                
-                </span>
-            
-
-            <div class="description last">平均値=分散=λ<br></div>
-        </li></ul>
-
-    
 
 
 
@@ -437,165 +410,14 @@
 	    <span>
 	    	
 	        
-<span class="param-type">Number</span>
+<span class="param-type">String</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    乱数
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1498">line 1498</a>
-    </dir>
-    
-
-    <h4 class="name" id="uniform">
-    <span class="type-signature">(static) </span>Random#uniform<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
-    </h4>
-    
-    
-	<div class="description">
-		一様分布となる乱数を返却する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>average</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    this._average
-                
-                </span>
-            
-
-            <div class="description last">平均値<br></div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Number</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    乱数
+		    先に検出したイベントがマウス移動のとき false、以外のときtrue
 		</div>
 		
 	</li></ul>

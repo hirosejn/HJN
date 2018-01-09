@@ -18,7 +18,7 @@ HJN.init.ChartRegist = function(chartName){
 	var html_chart = document.getElementById("hjn_" + chartName) || document.body;
 	html_chart.innerHTML = ''
 	    + '<div id="' + chartName + '"></div>'
-        + '<div id="' + chartName + 'Detail"></div>'
+        + '<div id="' + chartName + 'D"></div>'
         + '<textarea id="lineViewer" class="lineViewer">logdata</textarea>';
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
@@ -44,8 +44,7 @@ HJN.init.ChartRegist = function(chartName){
         + '  <div class="hjnBurgerWrap">'
         + '    <div class="hjnAccordion">'
         + '      <div id="' + chartName + '_menu"></div>'
-        + '      <div id="' + chartName + 'Detail_menu"></div>'
-        + '      <div id="' + chartName + 'Labels"></div>'
+        + '      <div id="' + chartName + 'D_menu"></div>'
         + '    </div>'
         + '  </div>'
         + '</div>'
@@ -58,14 +57,15 @@ HJN.init.ChartRegist = function(chartName){
 	// グラフのインスタンスを作成し初期化する
 	HJN.chart = new HJN.Graph(chartName, "HJN.chart");
 	HJN.chart.init();
-	HJN.chartD = new HJN.Graph(chartName + "Detail", "HJN.chartD");
+	HJN.chartD = new HJN.Graph(chartName + "D", "HJN.chartD");
 	HJN.chartD.init();
 	// ドロップフィールドに、処理を登録する(注：dygraphはイベントリスナーを登録しないとクリック時にエラーが出る）
 	HJN.init.DropField(dropFieldName);
-	HJN.init.DropField(dropFieldName+ "Detail");
+	HJN.init.DropField(dropFieldName+ "D");
 
 	// 初期表示データを自動生成する // #53
 	HJN.util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
+	
 }
 
 /**
@@ -443,8 +443,10 @@ HJN.Plot.PointClickCallback = function(point) {
 	HJN.Plot.Add(n, x, y);
 	// Balloonを再描画する
 	HJN.Plot.ShowBalloon();
-    // lineViewerに表示をクリップボードにコピーする
-	HJN.util.CopyToClipboard("lineViewer"); // #61
+    // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする
+	if (!HJN.util.TouchPanel.isTouchableDevice()) { // #22
+	    HJN.util.CopyToClipboard("lineViewer"); // #61
+	}
 };
 
 /**

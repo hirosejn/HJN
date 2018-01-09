@@ -75,6 +75,153 @@ if (!Array.prototype.find) {
     };
   }
 
+
+/**
+ * @class
+ * @classdesc タッチパネル用ツール
+ *            &lt;p>
+ *            参考 {@https://code.i-harness.com/ja/q/4f2389}
+ * 
+ * @param {Number}
+ *            [average=0.5] 平均値
+ * @example var r = HJN.util.TouchPanel(10), val = r.exponential();
+ */
+HJN.util.TouchPanel = (function() { // #56
+    "use strict";
+    /** @constructor */
+    function TouchPanel(average){
+        if(!(this instanceof TouchPanel)) return new TouchPanel(average);
+        this._average = average || 0.5;
+    }
+    /** @private */
+    
+    // public
+    /**
+     * タッチデバイスか判定する
+     * &lt;p>
+     * クラスロード後、touchstart と mouosemove の初回のイベントがどちらが先に発生したかにより判定する 参考
+     * {@link https://lab.syncer.jp/Web/JavaScript/Snippet/44/}
+     * 
+     * @memberof HJN.util.TouchPanel
+     * @return {String} 先に検出したイベントがマウス移動のとき false、以外のときtrue
+     * 
+     */
+    TouchPanel.isTouchableDevice = function() {
+        HJN.util.Logger.ShowText([TouchPanel._deviceType]);
+        return true; // (TouchPanel._deviceType === "MOUSE") ? false : true;
+    }
+    // タッチデバイスか判定する（クラス定数）
+    TouchPanel._deviceType = "SHIMULATED_TOUCH";
+    function detectDeviceType(event) {
+        TouchPanel._deviceType = event.changedTouches ? "TOUCH" : "MOUSE" ;
+        document.removeEventListener("touchstart", detectDeviceType) ;
+        document.removeEventListener("mousemove", detectDeviceType) ;
+    }
+    document.addEventListener("touchstart", detectDeviceType) ;
+    document.addEventListener("mousemove", detectDeviceType) ;
+
+    /**
+     * タッチパネル操作をマウス操作に転送する
+     * &lt;p>
+     * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
+     * 
+     * @memberof HJN.util.TouchPanel
+     * @param {Object}
+     *            element 対象dom要素
+     * @param {Boolean}
+     *            [isStopTouch=false] 元のタッチのデフォルトイベントを消すか（個別に登録されているリスナーには無関係）
+     * 
+     * @example HJN.util.DispatchEventTouchToMouse();
+     */
+    TouchPanel.DispatchEventTouchToMouse = function(element, isStopTouch) { // #22
+        "use strict";
+        element.addEventListener("touchstart", touchHandler, true);
+        element.addEventListener("touchmove", touchHandler, true);
+        element.addEventListener("touchend", touchHandler, true);
+        element.addEventListener("touchcancel", touchHandler, true);
+        return;
+
+        function touchHandler(ev) {
+            var bIgnoreChilds = false;
+            if( !window.__TOUCH_TYPES ) {
+                window.__TOUCH_TYPES  = { touchstart:'mousedown', touchmove:'mousemove', touchend:'mouseup' };
+                window.__TOUCH_INPUTS = { INPUT: 1, TEXTAREA: 1, SELECT: 1, OPTION: 1,
+                                         'input':1,'textarea':1,'select':1,'option':1 };
+            }
+            var bSame = (ev.target == this);
+            if (bIgnoreChilds &amp;&amp; !bSame) { return; }
+            // Get if object is already tested or input type
+            var b = (!bSame &amp;&amp; ev.target.__ajqmeclk);
+            // allow multi-touch gestures to work
+            if (b === true || !ev.touches || ev.touches.length > 1 || !window.__TOUCH_TYPES[ev.type]) { return; }
+
+            var oEv = (!bSame &amp;&amp; typeof b != 'boolean') ? ev.target.getAttribute('events') : false;
+            var b = (!bSame)
+                  ? (ev.target.__ajqmeclk = oEv
+                      ? (oEv['click'] || oEv['mousedown'] || oEv['mouseup'] || oEv['mousemove']) 
+                      : false )
+                  :false;
+            // allow default clicks to work (and on inputs)
+            if (b || window.__TOUCH_INPUTS[ev.target.tagName]) { return; } 
+
+            var touch = ev.changedTouches[0];
+            var tmpClientX = touch.clientX;
+            var tmpClientY = touch.clientY;
+            // クリックに変換するタップ誤差範囲
+            var CLICK_MARGIN = 20; // px
+            var CLICK_DELAY = 1000; // ms
+
+            // 前回touchstart時の座標と時刻が一定範囲内の時、dygraphがクリックと判定するよう補正する
+            if ((ev.type === "touchstart" || ev.type === "touchend") &amp;&amp;
+                    this.startTouch &amp;&amp;
+                    Math.abs(this.startTouch.x - touch.clientX) &lt; CLICK_MARGIN &amp;&amp; // タッチ補正幅(px)
+                    Math.abs(this.startTouch.y - touch.clientY) &lt; CLICK_MARGIN &amp;&amp;
+                    +new Date() - this.startTouch.t &lt; CLICK_DELAY) { // タッチ時間(ms)
+                // 位置補正
+                tmpClientX = this.startTouch.x;
+                tmpClientY = this.startTouch.y;
+            } else if (ev.type === "touchstart"){
+                // touchstart時の座標と時刻を退避する
+                this.startTouch = {x: touch.clientX, y: touch.clientY, t: +new Date()};
+            } else if (ev.type === "touchend") {  
+                // touchstart時の座標と時刻を初期化する
+                this.startTouch = {};
+            }
+            // マウスイベントを発生させる
+            var newEvent = document.createEvent("MouseEvent");
+            newEvent.initMouseEvent(
+                window.__TOUCH_TYPES[ev.type],    // type
+                true,             // bubbles
+                true,             // cancelable
+                window,           // view
+                1,                // detail
+                touch.screenX,    // screenX スクリーンサイズ
+                touch.screenY,    // screenY
+                tmpClientX,       // clientX タッチ座標
+                tmpClientY,       // clientY
+                false,            // ctrlKey
+                false,            // altKey
+                false,            // shiftKey
+                false,            // metaKey
+                0,                // button
+                null              // relatedTarget
+              );
+            touch.target.dispatchEvent(newEvent);
+            
+            // タッチイベントを止める #22
+            if(isStopTouch) {
+                ev.stopImmediatePropagation();
+                ev.stopPropagation();
+                ev.preventDefault();
+                return false;
+            }
+        }
+    };
+
+    /* new */
+    return TouchPanel;
+}());
+
 /**
  * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
  * 
@@ -128,7 +275,6 @@ HJN.util.S2D = function(str, conf){ // #34
         return +(new Date( y, m, d, h, min, sec )) + p;  // #14
     }
 };
-
 
 /**
  * 日時(Date)から、ローカル時刻に基づく、指定フォーマットの文字列を取得する
@@ -545,6 +691,7 @@ HJN.util.Logger = (function() { // #27
  */
 HJN.util.CopyToClipboard = function(elementId) { // #61
     "usestrict";
+    // textareaをクリップボードにコピーする
     var area = document.getElementById(elementId);
     area.select();
     document.execCommand("copy");
@@ -2617,13 +2764,13 @@ HJN.util.virtualSystemByJson = (function() { // #53
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li><li><a href="HJN.util.virtualSystemByJson.html">HJN.util.virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.TouchPanel.html">HJN.util.TouchPanel</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="HJN.util.VirtualSystem.html">HJN.util.VirtualSystem</a></li><li><a href="HJN.util.virtualSystemByJson.html">HJN.util.virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Dec 16 2017 19:54:43 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jan 08 2018 23:09:52 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
