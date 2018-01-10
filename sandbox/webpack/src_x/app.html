@@ -1,0 +1,10 @@
+<meta charset="UTF-8">
+<div id='box'></div>
+<p>css読込み：アンダーラインがあれば成功、画像読：画像があれば成功、JS読込：alertが表示されれば成功</p>
+<p>bundle.jsを読込むscriptタグはhtmlのbodyにあることが必要(htmlのheadではDOM操作できない)</p>
+<p>文字化けするときはmetaタグを指定する、BODYタグ内の指定で効く</p>
+<p>type="module" の指定がないとimportを予約語と認識しないので構文エラーとなる</p>
+<p>ブラウザではパスおよび拡張子 .js の指定が必須（webpackのみなら省略可能）</p>
+<p>ブラウザ(chrome[60以上])では、ファイルサーバ上のjavascriptのimportは、以下のエラーとなるため、webサーバ経由でアクセス要</p>
+<p>Index_module.html:1 Access to Script at 'xxx.js' from origin 'null' has been blocked by CORS policy: Invalid response. </p>
+<p>loader指定(html,CSS,ファイル(画像)）スクリプト内では、importは効かない(JSとみなしてエラーとなる)、HTML内のSCRIPTタグは効かない、LINKタグは読込まれる</p>

@@ -1,0 +1,40 @@
+{
+  "name": "HJN",
+  "version": "1.0.0",
+  "description": "TAT log Diver",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.8",
+    "html-loader": "^0.5.4",
+    "style-loader": "^0.19.1",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.10.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hirosejn/HJN.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hirosejn/HJN/issues"
+  },
+  "homepage": "https://github.com/hirosejn/HJN#readme",
+  "dependencies": {
+    "css-loader": "^0.28.8",
+    "html-loader": "^0.5.4",
+    "style-loader": "^0.19.1",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.10.1"
+  }
+}
