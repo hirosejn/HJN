@@ -1,8 +1,3 @@
-"use strict";
-import {CreateSampleTatLogAndChartShow} from './HJN.graph.init.js';
-import HJN from './HJN.graph.js';
-
-
 /** ie11 互換用 * */
 if(!Number.MAX_SAFE_INTEGER) Number.MAX_SAFE_INTEGER = 9007199254740991; // #59
 if(!Number.MIN_SAFE_INTEGER) Number.MIN_SAFE_INTEGER = -9007199254740991;
@@ -61,9 +56,9 @@ if (!Array.prototype.find) {
  * 
  * @param {Number}
  *            [average=0.5] 平均値
- * @example var r = HJN_util.TouchPanel(10), val = r.exponential();
+ * @example var r = HJN.util.TouchPanel(10), val = r.exponential();
  */
-export var TouchPanel = (function() { // #56
+HJN.util.TouchPanel = (function() { // #56
     "use strict";
     /** @constructor */
     function TouchPanel(average){
@@ -79,12 +74,12 @@ export var TouchPanel = (function() { // #56
      * クラスロード後、touchstart と mouosemove の初回のイベントがどちらが先に発生したかにより判定する 参考
      * {@link https://lab.syncer.jp/Web/JavaScript/Snippet/44/}
      * 
-     * @memberof TouchPanel
+     * @memberof HJN.util.TouchPanel
      * @return {String} 先に検出したイベントがマウス移動のとき false、以外のときtrue
      * 
      */
     TouchPanel.isTouchableDevice = function() {
-        Logger.ShowText([TouchPanel._deviceType]);
+        HJN.util.Logger.ShowText([TouchPanel._deviceType]);
         return true; // (TouchPanel._deviceType === "MOUSE") ? false : true;
     }
     // タッチデバイスか判定する（クラス定数）
@@ -102,13 +97,13 @@ export var TouchPanel = (function() { // #56
      * <p>
      * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
      * 
-     * @memberof HJN_util.TouchPanel
+     * @memberof HJN.util.TouchPanel
      * @param {Object}
      *            element 対象dom要素
      * @param {Boolean}
      *            [isStopTouch=false] 元のタッチのデフォルトイベントを消すか（個別に登録されているリスナーには無関係）
      * 
-     * @example HJN_util.DispatchEventTouchToMouse();
+     * @example HJN.util.DispatchEventTouchToMouse();
      */
     TouchPanel.DispatchEventTouchToMouse = function(element, isStopTouch) { // #22
         "use strict";
@@ -200,695 +195,6 @@ export var TouchPanel = (function() { // #56
 }());
 
 /**
- * @class
- * @classdesc ファイルをパースして読み込む
- *            <p>
- *            パース条件指定画面生成つき
- */
-export var FileReader = (function() {
-    "use strict";
-    /** @static */
-    FileReader.prototype.__keyConfig = {};  // configで使用する値の定義
-
-    /** constructor */
-    function FileReader(){
-        if(!(this instanceof FileReader)) return new FileReader();
-
-        this.configId = "_config_" + "File"; // #53
-
-        // コンストラクタ内部関数：keyを定義する
-        var def = function(key, val, onFunc) {
-                    var _keyConf = FileReader.prototype.__keyConfig[key] = {};
-                    _keyConf.value = (val === undefined) ? key : val; // getValueByKeyの返却値（デフォルト：keyと同じ文字列）
-                    _keyConf.getValue = function () { return (val === undefined) ? key : val; };
-                    _keyConf.onFunc = onFunc || null;   // onイベント時に実行する処理（メニューのa属性などで利用）
-                    return key;
-                };
-        var v = function(key, fieldId) { // fieldIdの値を返却値とする(デフォルト： key+".v")
-                    var _keyConf = FileReader.prototype.__keyConfig[key] = {};
-                    _keyConf.value = key;           // getValueByKeyの返却値（デフォルト：keyと同じ文字列）
-                    _keyConf.getValue = function () {
-                            return Config("m").getValueByKey(fieldId || key + ".v"); // TODO:
-                                                                                                // m
-                                                                                                // の指定
-                        };
-                    return key;
-                };
-
-        // 名称と挙動の定義
-        var env = "File";
-        this["_config_" + env] = Config(env) // #53
-            // File Format Config設定画面定義 #51
-            .name("NEWFILE").label(null,"Registered ") // #23
-                .radio("NEWDATA", null, "newly", true)
-                .radio("ADDDATA", null, "additionally").n()
-            .label(null,"----- File format definition --------").n()
-            .n("<br>")
-            .name("LF").label(null, "[Line feed code]").n()
-            .radio(v("LF_FIX"), null, "Fixed Length")
-                .number("LF_FIX.v",  null, "byte","80",'style="width:60px;"').n()
-            .radio(def("LF_WIN",  13), null, "Windows:CR(13)+LF(10)", true).n()
-            .radio(def("LF_UNIX", 10), null, "Unix/Linux:LF(10)").n()
-            .radio(def("LF_ZOS",  15), null, "zOS:NEL(15)").n()
-            .radio(def("LF_MAC",  13), null, "Mac:CR(13)").n()
-            .radio(v("LF_ELSE"), null, "other charcode")
-                .number("LF_ELSE.v", "(", ")", "10", 'style="width:40px;"').n()
-            .n("<br>")
-            .name("SEP").label(null,"[CSV delimiter]").n()
-            .radio(def("SEP_COMMA", ','), null, "comma", true)
-            .radio(def("SEP_TAB", '\t'),   null,"tab")
-            .radio(v("SEP_ELSE"), null, "other")
-                .text("SEP_ELSE.v", '"', '"', ',', 'size="2" placeholder=","').n()
-            .n("<br>")
-            .name("TIME").label(null, "[Timestamp field]").n()
-            .number("TIME_COL", "", "th column of CSV", "1", 'style="width:40px;"').n()
-            .name("TIME_POS")
-                .number("TIME_POS", "Position(byte): from", null, "1", 'style="width:40px;"')
-                .number("TIME_LEN", "length", null, null, 'style="width:40px;"').n()
-            .name("TIME_FORM").label(null,"Format:").n()
-                .radio("TIME_FORM_YMD", "text", null, true)
-                    .text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
-                .radio("TIME_FORM_TEXT", "(num)", "text")
-                .radio("TIME_FORM_LONG", null, "long").n()
-                .nDown()
-                .name("TIME_UNIT").label(null, "Units of numbers:")
-                    .radio(def("TIME_UNIT_MS", 1), null, "msec")
-                    .radio(def("TIME_UNIT_SEC", 1000), null, "sec", true)
-                .nUp()
-            .n("<br>")
-            .name("TAT").label(null,"[Turnaround time(TAT) field]").n()
-            .number("TAT_COL", "", "th column of CSV", "2", 'style="width:40px;"').n()
-            .name("TAT_POS")
-                .number("TAT_POS", "Position(byte): from", null, "1", 'style="width:40px;"')
-                .number("TAT_LEN", "length", null, null, 'style="width:40px;"').n()
-            .name("TAT_UNIT").label(null, "Units of numbers:")
-                    .radio(def("TAT_UNIT_MS", 1), null, "msec")
-                    .radio(def("TAT_UNIT_SEC", 1000), null, "sec", true).n()
-            .name("TAT_FORM").label(null,"Format: ")
-                .radio("TAT_FORM_TEXT", null, "text", true)
-                .radio("TAT_FORM_LONG", null, "long").n()
-                .nDown()
-                .name("ENDIAN").label(null, "for long Endian: ")
-                    .radio(def("ENDIAN_LIL", true), null, "little", true)
-                    .radio(def("ENDIAN_BIG", false), null, "big")
-                .nUp()
-            .n("<br>")
-        ;
-
-        // Filter Config用関数定義(radio用） #51
-        env = "Filter"
-        var func_F_SYNC_UPPER = function(){ HJN.Graph.DrawCallback(HJN.chart.graph); },
-            func_F_SYNC_DETAIL = function(){ HJN.Graph.DrawCallback(HJN.chartD.graph); };
-        // Filter Config設定画面定義 #51
-        this["_config_" + env] = Config(env) // #53
-            .name("F_SYNC").label(null,"Sync") // #50
-                .radio("F_SYNC_UPPER", null, "Upper", false ,null, func_F_SYNC_UPPER) // #51
-                .radio("F_SYNC_DETAIL", null, "Detail", false, null, func_F_SYNC_DETAIL)
-                .radio("F_ASYNC", null, "Async", true).n()
-            .label(null,"----- Data filter condition--------").n()
-                .n("<br>")
-                .name("F_TIME").label(null, "[Date filter]").n()
-                .label(null,"Include if end time is between").n()
-                    .text("F_TIME_FROM", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"')
-                    .label(null,"and").n()
-                    .text("F_TIME_TO", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
-                .n("<br>")
-                .name("F_TAT").label(null,"[Turnaround time(TAT) filter]").n()
-                .label(null,"Include if TAT is between").n()
-                    .number("F_TAT_FROM", null, null, "0", 'style="width:80px;"')
-                    .number("F_TAT_TO", "and", null, null, 'style="width:80px;"').n()
-                .n("<br>")
-                .name("F_TEXT").label(null,"[Text filter]")
-                    .radio("F_TEXT_NON", null, "Don't use.", true).n()
-                    .radio("F_TEXT_INCLUDE", null, "Include ")
-                    .radio("F_TEXT_EXCLUDE", null, "Exclude ").n()
-                    .number("F_TEXT_LEN", "if ", " bytes", null, 'style="width:40px;"')
-                    .number("F_TEXT_POS", "from the ", "th byte", "1", 'style="width:40px;"').n()
-                    .number("F_TEXT_COL", "from head of the", "th column of CSV", "3", 'style="width:40px;"').n()
-                    .text("F_TEXT_REG", "match the regular expression", null, null, 'size="7" placeholder=".*"').n()
-                .n("<br>")
-        ;
-
-        // Simulator Config用関数定義(radio用） #53
-        env = "Simulator"
-        var func_S_SIMU_000 = function(){ CreateSampleTatLogAndChartShow(0); };
-        var func_S_SIMU_001 = function(){ CreateSampleTatLogAndChartShow(1); };
-        // Simulator Config設定画面定義 #53
-        this["_config_" + env] = Config(env) // #53
-            .n("<br>")
-            .label(null," If you change the scenario below,").n()
-            .label(null,"JSON is initialized and re-simulated.").n()
-            .n("<br>")
-            .name("S_SIMU")
-                .radio("S_SIMU_000", null, 
-                          "1 hour with table(B) lock.<br>"
-                        + "- online[100-500ms 2-5tps]<br>" 
-                        + "- batch[2-5sec evry3min]",
-                        true ,null, func_S_SIMU_000).n()
-                .radio("S_SIMU_001", null, "for test", 
-                        false ,null, func_S_SIMU_001).n()
-        ;
-    }
-
-    // class method
-    /**
-     * ファイルリーダのプロパティ管理インスタンスを取得する
-     * 
-     * @memberof HJN_util.FileReader
-     * @param {Object}
-     *            fileReader ファイルリーダ
-     * @param {String}
-     *            type プロパティ種別名（"File"|"Filter"|"Simulator")
-     * @return {Object} プロパティ
-     */
-    FileReader.Property = (function() {
-        "use strict";
-        /** @constructor */
-        function Property(fileReader, type){ 
-            if(!(this instanceof Property)) return new Property(fileReader, type);
-            this._type = type || "File";
-            this._config     = fileReader["_config_" + this._type];
-            this.__keyConfig = fileReader.__keyConfig;
-        }
-
-        // public
-        /**
-         * keyの値に指定されたvalue（なければkey値）を返却する
-         * 
-         * @memberof HJN_util.FileReader.Property
-         * @param {String}
-         *            key Conginのキー値
-         */
-        Property.prototype.getValue = function(key) {
-            var cKey = this._config.getValueByKey(key);
-            if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
-                return cKey;    // valueが定義されていないとき、keyの設定値を返却
-            }else{
-                return this.__keyConfig[cKey].getValue(); // keyの設定値のvalueが定義されているとき
-            }
-        };
-        /**
-         * configに登録されているkey(prefix補填)の設定値を取得する
-         * 
-         * @memberof HJN_util.FileReader.Property
-         */
-        Property.prototype.getValueByKey = function(key) {
-            return this._config.getValueByKey(key);
-        };
-    
-        /* new */
-        return Property;
-    }());
-    
-    /** @private */
-    //
-    // public
-
-
-    /**
-     * ファイルが新たに指定された時、eTatOriginalを再構築するか否（データを追加する）か
-     * 
-     * @memberof HJN_util.FileReader
-     * @return {boolean} 再構築モードするときtrue、データを追加するときfalse
-     */
-    FileReader.prototype.isNewETAT = function() { // #23
-        return this.getValue("NEWFILE") === "NEWDATA";
-    }
-    
-    /**
-     * 「ファイルから次の1レコードを取得するutil」 を取得する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.createGetterOfLine = function(file) {
-
-        /**
-         * @class
-         * @classdesc ファイルから１レコード取得する
-         *            <p>
-         *            ファクトリのFileReaderが保持する改行コードを用いて、ファイルから１レコードを取得する
-         * 
-         * @memberof HJN_util.FileReader
-         * @example try{ var getterOfLine =
-         *          HJN.chart.fileReader.createGetterOfLine(file), fileInfo;<br>
-         *          for(var i = 0; i < n; i++) { <br>
-         *          line = getterOfLine.next(); fileInfo += line.str + "<BR>"; }<br>
-         *          }catch (e) {<br>
-         *          console.error("改行コードの無いファイルは扱えません]%o",e); }
-         */
-        function GetterOfLine(file, maxLength){ /* constructor */
-            if(!(this instanceof GetterOfLine)) return new GetterOfLine(file, maxLength);
-
-            this.file = file;
-            this.buf = new Uint8Array(file);
-            this.maxLength = maxLength || this.buf.length,
-            this.confLF = HJN.chart.fileReader.getValue("LF");  // 改行コードor固定レコード長
-            this.from = 0;
-            this.to = 0;
-            this.len = 0;
-            this.line = {file: this.file, pos: 0, array: null, str: "", isEoF: false };
-        }
-        // public
-        /**
-         * 次の1レコードを取得する
-         * 
-         * @name getValueByKey
-         * @memberof HJN_util.FileReader.GetterOfLine
-         */
-        if (HJN.chart.fileReader.getValueByKey("LF") === "LF_FIX"){ // 固定長のとき
-            GetterOfLine.prototype.next = function () { // 次の1レコードを取得する
-                if(this.from >= this.maxLength ){   // ファイル末尾のとき
-                    this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
-                } else {
-                    this.len = Math.min(this.maxLength - this.from, this.confLF);
-                    var array = new Uint8Array(this.file, this.from, this.len);
-                    this.line = {
-                            file: this.file,
-                            pos: this.from,
-                            array: array,
-                            str: String.fromCharCode.apply(null, array),
-                            isEoF: false };
-                }
-                this.from += this.confLF;   // 次の行を指しておく
-                return this.line;
-            };
-        } else { // 可変長のとき
-            GetterOfLine.prototype.next = function () { // 次の1レコードを取得する
-                if(this.from >= this.maxLength ){   // ファイル末尾のとき
-                    this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
-                } else {
-                    this.to = this.buf.indexOf(this.confLF, this.from);
-                    if(this.to < 0) this.to = this.maxLength;   // 最終レコード（EOFで改行コードなし）のとき
-                    this.len = Math.min(this.to - this.from, 1024);
-                    var array = new Uint8Array(this.file, this.from, this.len);
-                    this.line = {
-                            file: this.file,
-                            pos: this.from,
-                            array: array,
-                            str: String.fromCharCode.apply(null, array),
-                            isEoF: false };
-                }
-                this.from = this.to + 2;    // 次の行を指しておく
-                return this.line;
-            };
-        }
-        return new GetterOfLine(file);
-    };
-    
-    
-    /**
-     * eTatのフィルター
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.createFilter = function() { // #34
-       /**
-         * @class
-         * @classdesc FileReaderのフィルター
-         *            <p>
-         *            ファクトリのFileReaderが保持するフィルタ条件を用いるフィルターを取得する
-         * 
-         * @memberof HJN_util.FileReader
-         */
-        function Filter(){ /* constructor */
-            if(!(this instanceof Filter)) return new Filter();
-            this._fileReader = HJN.chart.fileReader; // #62
-            var c = FileReader.Property(this._fileReader, "Filter");
-
-            this.confF_TIME_FROM = S2D(c.getValue("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
-            this.confF_TIME_TO   = S2D(c.getValue("F_TIME_TO"));      // 時刻(X)の最大値フィルター
-            this.confF_TIME = (isNaN(this.confF_TIME_FROM) && isNaN(this.confF_TIME_TO))
-                            ? false : true; // 時刻(x）フィルター指定の有無
-            
-            this.confF_TAT_FROM = c.getValue("F_TAT_FROM") || 0; // 時間(Y)の最小値フィルター
-            this.confF_TAT_TO   = c.getValue("F_TAT_TO") || Number.MAX_VALUE; // 時間(Y)の最大値フィルター
-            this.confF_TAT = (this.confF_TAT_FROM === 0 && this.confF_TAT_TO === Number.MAX_VALUE)
-                            ? false : true; // 時間(ｙ）フィルター指定の有無
-
-            this.confF_TEXT = c.getValue("F_TEXT") || null; // テキストフィルタの条件（使用しない、Include,Exclude
-            if (this.confF_TEXT === "F_TEXT_INCLUDE") {
-                this.confF_TEXT = true;
-            } else if (this.confF_TEXT === "F_TEXT_EXCLUDE") {
-                this.confF_TEXT = false;
-            } else { // "F_TEXT_NON"
-                this.confF_TEXT = null;
-            }
-            
-            this.confF_TEXT_LEN = c.getValue("F_TEXT_LEN") || null;    // フィルタテキストのバイト長
-            this.confF_TEXT_POS = c.getValue("F_TEXT_POS") || 0;       // フィルタテキストの先頭バイト位置
-            this.confF_TEXT_COL = (c.getValue("F_TEXT_COL") || 3) - 1; // フィルタテキストのカラム位置（先頭：０）
-            this.confF_TEXT_REG = new RegExp(c.getValue("F_TEXT_REG") || ".*");    // フィルタテキストの正規表現
-            
-            this.confF_IS = (this.confF_TIME === true 
-                            || this.confF_TAT === true || this.confF_TEXT != null)
-                          ? true : false; // フィルタ指定の有無
-            
-            c = FileReader.Property(HJN.chart.fileReader, "File");
-            this.confF_SEP = c.getValue("SEP").charCodeAt(0);
-        }
-        
-        // class method
-        // private
-        /**
-         * フィルター条件で判定する
-         * 
-         * @memberof HJN_util.FileReader.Filter
-         */
-        Filter.prototype._isIn = function (e) {
-            // フィルタ指定が無いときフィルタしない（初期表示時に無駄な処理をしない）
-            if (this.confF_IS === false) return true;
-            // 時刻（ｘ）フィルタの判定 （conf指定なしのとき NaNとの比較となりfalseとなる）
-            if (e.x < this.confF_TIME_FROM || this.confF_TIME_TO < e.x ) {
-                return false;
-            }
-            // 時間（ｙ）フィルタの判定
-            if (e.y < this.confF_TAT_FROM || this.confF_TAT_TO < e.y){
-                return false;
-            }
-            // テキストフィルタの判定
-            if (this.confF_TEXT === null) {
-                return true; // フィルタ指定なし
-            }
-            var text = "";
-            if (e.pos === undefined) { // テキスト読み込みでないとき（自動生成データのとき）
-                // レコードを取得する #62
-                text = this._fileReader.getRecordAsText(e); // #61
-                // 指定正規表現に合致するか判定し、Include/Exclude指定に応じてリターンする
-                return this.confF_TEXT === this.confF_TEXT_REG.test(text);
-            } else { // ファイル読み込みのとき
-                // レコードを取得する
-                var arr = new Uint8Array(HJN.filesArrayBuffer[e.fileIdx+1], e.pos, e.len);
-                // CSVレコードの指定カラムを取得する(arr)
-                var colPos = 0;
-                for (var i = 0; i < this.confF_TEXT_COL; i++) {
-                    colPos = arr.indexOf(this.confF_SEP,colPos + 1);
-                }
-                if (colPos === -1){
-                    // 指定数のカラムが無い場合、Includeは処理対象外、Excludeは処理対象
-                    return !this.confF_TEXT;
-                }
-                var col = arr.slice(colPos, arr.length);
-                // 判定用文字列を取得する
-                text = col.slice(this.confF_TEXT_POS, this.confF_TEXT_POS + this.confF_TEXT_LEN);
-                // 指定正規表現に合致するか判定し、Include/Exclude指定に応じてリターンする
-                return this.confF_TEXT === this.confF_TEXT_REG.test(String.fromCharCode.apply(null, text));
-            }
-            return true;
-        };
-        
-        // public
-        /**
-         * eTatをフィルターする
-         * 
-         * @memberof HJN_util.FileReader.Filter
-         * @param {eTat}
-         *            eTat フィルター処理対象のeTat
-         * @return {eTat} eTat フィルターされたeTat
-         * 
-         */
-        Filter.prototype.filter = function (eTat) {
-            if (!eTat) return [];
-            return eTat.filter(this._isIn, this);
-        };
-
-        return new Filter();
-    };
-
-
-    /**
-     * 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.createGetterOfXY = function() {
-
-        /**
-         * @class
-         * @classdesc １レコードをパースし、XとYをレコード取得する
-         *            <p>
-         *            ファクトリのFileReaderが保持するレコードフォーマット情報を用いて、ファイルの指定レコードからＸ(data)とＹ(value)を取得する
-         * 
-         * @memberof HJN_util.FileReader
-         */
-        function GetterOfXY(){ /* constructor */
-            if(!(this instanceof GetterOfXY)) return new GetterOfXY();
-
-            var c = HJN.chart.fileReader;
-            this.configId = "_config_" + "Filter"; // #53
-            this.confSEP = c.getValue("SEP");   // セパレータ
-            
-            this.confTIME_COL = c.getValue("TIME_COL") - 1 || 0;    // 時刻(X)のカラム位置
-            this.confTIME_POS = (c.getValue("TIME_POS") || 1) - 1;  // 時刻(X)の先頭バイト位置
-            this.confTIME_LEN = (c.getValue("TIME_LEN") || 0);      // 時刻(X)のバイト長
-            this.confTIME_FORM = c.getValue("TIME_FORM");           // 時刻(X)の文字フォーマット指定
-            this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
-                                                                    // 時刻(X)のYMDフォーマット
-            this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
-                YYYY: this.confTIME_YMD.indexOf("YYYY"),
-                MM: this.confTIME_YMD.indexOf("MM"),
-                DD: this.confTIME_YMD.indexOf("DD"),
-                hh: this.confTIME_YMD.indexOf("hh"),
-                mm: this.confTIME_YMD.indexOf("mm"),
-                ss: this.confTIME_YMD.indexOf("ss"),
-                ppp: this.confTIME_YMD.indexOf("p"),
-            };
-            this.isYMD = (this.confTIME_FORM === "TIME_FORM_YMD");
-            // 時刻(X)の数値単位(1or1000,YMDのとき1)
-            this.confTIME_UNIT = this.isYMD? 1 : (c.getValue("TIME_UNIT") || 1);
-            
-            
-            this.confTAT_COL = c.getValue("TAT_COL") - 1 || 1;      // 時間(Y)のカラム位置
-            this.confTAT_POS = (c.getValue("TAT_POS") || 1) - 1;    // 時間(Y)の先頭バイト位置
-            this.confTAT_LEN = (c.getValue("TAT_LEN") || 0);        // 時間(Y)のバイト長
-            this.confTAT_FORM = c.getValue("TAT_FORM");             // 時間(Y)のフォーマット指定
-            this.confTAT_UNIT = c.getValue("TAT_UNIT") || 1;        // 時間(Y)の数値単位(1/1000)
-            this.confENDIAN =  c.getValue("ENDIAN");    // リトルエンディアンはtrue、ビッグエンディアンはfalse
-            this.isLittle = (function(){
-                // long用に4バイト取得する
-                var buf = new ArrayBuffer(4);               
-                // true:bufに、リトルエンディアン指定で1を書き込む
-                new DataView(buf).setUint32(0, 1, true);
-                // プラットフォームのエンディアンを使用するUint32Arrayと比較する
-                return (new Uint32Array(buf)[0] === 1);     
-            }());
-            
-            this.dateAndValue = {date: 0, value: 0, isError: false };
-        }
-        
-        // class method
-        /**
-         * 数字をパースして数値（ミリ秒）を取得する<br>
-         * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
-         * 
-         * @memberof HJN_util.FileReader.GetterOfXY
-         */
-        GetterOfXY.parseNumber = function (){ // str, unit,
-            var str = arguments[0],
-                unit = arguments[1];
-            if(!str) {console.log("data Y parse error"); return 0; }
-            var ds = (str.indexOf(":") < 0) ? [str] : str.split(":"),   // #40
-                pm = (0 <= ds[0]) ? 1 : -1,
-                sec = 0.0;
-            for(var i = 0; i < ds.length; i++){
-                sec += pm * Math.abs(ds[i]) * Math.pow(60, ds.length - i - 1);
-            }
-            return sec * (unit || 1);
-        };
-
-        /**
-         * Long(4バイトバイナリ）数字をパースして数値（ミリ秒）を取得する
-         * 
-         * @private
-         */
-        GetterOfXY.prototype._parseLong = function (arr){
-            if (4 <= arr.length ) { // Long(4byte)以上のときunsigned longとして処理する
-                // bufの先頭4byteを、指定バイトオーダ(endian)で、符号無32bit intとして参照
-                return (new DataView(arr.buffer, 0 , 4)).getUint32(0, this.confENDIAN);
-            } else {
-                // Long(4バイト）より短いとき、Byte単位に処理する
-                if (this.confENDIAN) { // little endianのとき
-                    return arr.reduceRight(function(a, b){ return a*256 + b; });
-                } else {               // big endianのとき
-                    return arr.reduce(function(a, b){ return a*256 + b; });
-                }
-            }
-        };
-
-        // public
-        /**
-         * レコードからXとYを取得する
-         * 
-         * @memberof HJN_util.FileReader.GetterOfXY
-         */
-        GetterOfXY.prototype.parse = function (line) {
-            // セパレータでカラム分割する
-            var posMax = Math.max(this.confTIME_COL, this.confTAT_COL),
-                sep = this.confSEP.charCodeAt(0),   // 区切り文字のUint値
-                pos = 0,
-                nextPos = line.array.indexOf(sep),  // 行末（次の区切り文字位置）
-                x = 0,
-                y = -1;
-            for (var i = 0; i <= posMax; i++) {
-                if (i === this.confTIME_COL){
-                    // パース対象フィールドを切り出す
-                    var posX =  pos + this.confTIME_POS;
-                    var arrX = (0 < this.confTIME_LEN) 
-                             ? line.array.slice(posX, posX + this.confTIME_LEN)
-                             : line.array.slice(posX, nextPos);
-                    var strX = "";
-                    // フィールドをパースする
-                    if (this.isYMD){    // 年月日時分秒の文字列のとき
-                        strX = String.fromCharCode.apply(null,arrX);
-                        x = S2D(strX, this.paseDateConf);
-                    } else if (this.confTIME_FORM === "TIME_FORM_TEXT"){    // テキスト数字のUNIX経過時間のとき
-                        strX = String.fromCharCode.apply(null,arrX);
-                        x = GetterOfXY.parseNumber(strX);
-                    } else{ // this.confTIME_FORM === "TIME_FORM_LONG"
-                            // longのUNIX経過時間のとき
-                        x = this._parseLong(arrX);
-                    }
-                    // 単位を補正する
-                    x *= this.confTIME_UNIT;
-                }
-                if (i === this.confTAT_COL){
-                    // パース対象フィールドを切り出す
-                    var posY =  pos + this.confTAT_POS;
-                    var arrY = (0 < this.confTAT_LEN) 
-                             ? line.array.slice(posY, posY + this.confTAT_LEN)
-                             : line.array.slice(posY, nextPos);
-                    // フィールドをパースする
-                    if (this.confTAT_FORM === "TAT_FORM_TEXT"){
-                        // テキスト数字によるUNIX経過時間のとき
-                        var strY = String.fromCharCode.apply(null,arrY);
-                        y = GetterOfXY.parseNumber(strY);
-                    } else{
-                        // TAT_FORM_TEXT === "TAT_FORM_LONG" 数値によるUNIX経過時間のとき
-                        y = this._parseLong(arrY);
-                    }
-                    // 単位を補正する
-                    y *= this.confTAT_UNIT;
-                }
-                pos = nextPos + 1;
-                nextPos = line.array.indexOf(sep, pos);
-                if (nextPos < 0) nextPos = line.array.length;
-            }
-            
-            if(0 < x && 0 <= y){ // 正常時
-                return {x: x, y: y, isError: false };
-            } else {            // エラー時
-                return {x: x, y: y, isError: true };
-            }
-        };
-        
-        return new GetterOfXY();
-    };
-    
-    /**
-     * configに登録されているid(=prefix+key)の設定値を取得する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.getObjctById = function(id) {
-        return this[this.configId].getObjctById(id);
-    };
-    /**
-     * configに登録されているkey(prefix補填)の設定値を取得する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.getValueByKey = function(key) {
-        return this[this.configId].getValueByKey(key);
-    };
-    /**
-     * 設定値を保有するオブジェクトを返却する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.getConfig = function() {
-        return this[this.configId]._config;
-    };
-    /**
-     * HTML（config設定用）テキストを返却する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.getConfigHtml = function(type) {
-        type = type || "File";
-        return this["_config_" + type].getHtml(); // #53
-    };
-    /**
-     * keyの値に指定された関数（なければ何もしない関数）を返却する
-     * 
-     * @memberof HJN_util.FileReader
-     */
-    FileReader.prototype.getFunction = function(key) {
-        var cKey = this[this.configId].getValueByKey(key);
-        if(!this.__keyConfig[cKey] || !this.__keyConfig[cKey].func){
-            return function(){};    // funcが定義されていないとき、何もしない関数を返却する
-        }else{
-            return this.__keyConfig[cKey].func; // keyの設定値のfuncが定義されているとき
-        }
-    };
-    /**
-     * eTatの指定行の編集元レコードを、テキストフォーマットに変換して取得する
-     * 
-     * @memberof HJN_util.FileReader
-     * @param {Object}
-     *            e eTat[n]：eTatの指定行
-     * @return {String} eTatの指定行の表示用テキスト
-     */
-    FileReader.prototype.getRecordAsText = function (e) { // #62 ADD
-        if (!e) return "";
-        var text = "";
-        if (typeof e.pos === "undefined") { // 生成データのとき
-            // 生成データをCSVのログデータとして編集する #61
-            text = D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
-                    + ", " + e.y + ", " + e.message; // #53
-            // 状態遷移履歴を追加する #62
-            if (e.history){
-                e.history.forEach(function(h){
-                    var timeStr = "";
-                    if (typeof(h.time) === "number") {
-                        timeStr = D2S(h.time, "mm:ss.ppp", true) + " seq:"
-                    }
-                    text += " [" + h.sequenceIdx + ":" + h.status + "]" // #61
-                        + timeStr + D2S(h.sequenceTime, "mm:ss.ppp", true);
-                }, this);
-            }
-        } else { // ファイル読込のとき
-            // ファイルの該当行を Uint8Arrayに登録する
-            var buff = new Uint8Array(e.len + 2);
-            var file = HJN.filesArrayBuffer[e.fileIdx]; // #23
-            buff.set(new Uint8Array(file, e.pos,
-                    Math.min(e.len + 2, file.byteLength - e.pos)));
-            // ログデータを編集する
-            text = String.fromCharCode.apply(null, buff);
-        }
-        return text;
-        
-    };
-    /**
-     * keyの値に指定されたvalue（なければkey値）を返却する
-     * 
-     * @memberof HJN_util.FileReader
-     * @param {String}
-     *            key Conginのキー値
-     */
-    FileReader.prototype.getValue = function(key) {
-        var cKey = this[this.configId].getValueByKey(key);
-        if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
-            return cKey;    // valueが定義されていないとき、keyの設定値を返却
-        }else{
-            return this.__keyConfig[cKey].getValue(); // keyの設定値のvalueが定義されているとき
-        }
-    };
-    
-    // new
-    return FileReader;
-}());
-
-
-/**
  * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
  * 
  * @param {String}
@@ -900,7 +206,7 @@ export var FileReader = (function() {
  *            デフォルト値は、"YYYY/MM/DD hh:mm:ss.ppp"相当
  * @return {Number} timeNum 日時（１ミリ秒を１とする数値、エラーのときNumber.NaN）
  */
-export var S2D = function(str, conf){ // #34
+HJN.util.S2D = function(str, conf){ // #34
     "use strict";
     if(!str) return Number.NaN;
     
@@ -951,7 +257,7 @@ export var S2D = function(str, conf){ // #34
  *            str フォーマット yyyy-MM-dd hh:mm:ss.ppp （戻り値で上書きされる）
  * @return {String} str 編集後文字列
  */
-export var DateToString = function() {
+HJN.util.DateToString=function() {
     "use strict";
     var dt = arguments[0],  // arg0
         str = arguments[1]; // arg1
@@ -981,7 +287,7 @@ export var DateToString = function() {
  *            [isLocal=false] trueのとき時差補正をしない
  * @return {String} str 編集後文字列
  */
-export var D2S = function(ds, str, isLocal){ // #60
+HJN.util.D2S = function(ds, str, isLocal){ // #60
     "use strict";
     var minus = "";
     var ret = "";
@@ -994,18 +300,18 @@ export var D2S = function(ds, str, isLocal){ // #60
         datetime = new Date(+datetime + 60000 * datetime.getTimezoneOffset()); // 環境タイムゾーンの補正
     }
     if(str){ // フォーマット指定があるとき
-        ret = DateToString(datetime, str);
+        ret = HJN.util.DateToString(datetime, str);
     } else if (ds < 1000) { // 自動で1秒(1000)未満のとき
         ret = "0." + Math.round(ds);
     } else if (ds < 60000) { // 自動で1分(1*60*1000)未満のとき
-        ret = DateToString(datetime, "ss.ppp");
+        ret = HJN.util.DateToString(datetime, "ss.ppp");
     } else if (ds < 3600000) { // 自動で1分以上、1時間(1*60*60*1000)未満のとき
-        ret = "0:" + DateToString(datetime, "mm:ss.ppp");
+        ret = "0:" + HJN.util.DateToString(datetime, "mm:ss.ppp");
     } else if (ds < 86400000) { // 自動で1時間以上、1日(1*24*60*60*1000)未満のとき
-        ret = DateToString(datetime, "hh:mm:ss");
+        ret = HJN.util.DateToString(datetime, "hh:mm:ss");
     } else { // 自動で1日以上のとき
         ret = Math.floor(ds / 86400000) + " ";
-        ret += DateToString(datetime, "hh:mm:ss");
+        ret += HJN.util.DateToString(datetime, "hh:mm:ss");
     }
     return minus + ret;
 };
@@ -1019,7 +325,7 @@ export var D2S = function(ds, str, isLocal){ // #60
  * @return {String} str 編集後文字列
  *         {@linkhttps://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat}
  */
-export var N2S = function(y){
+HJN.util.N2S = function(y){
     "use strict";
     return Intl.NumberFormat('en-IN').format(y);
 };
@@ -1034,7 +340,7 @@ export var N2S = function(y){
  * @return {Number} n eval(str||sub)で取得した数値
  * 
  */
-export var S2N = function(str, sub){ // #53
+HJN.util.S2N = function(str, sub){ // #53
     "use strict";
     var s = (typeof(str) !== "undefined") ? str : sub;
     var h = 3600000; // 1時間（ミリ秒）
@@ -1054,7 +360,7 @@ export var S2N = function(str, sub){ // #53
  * @param {Number}
  *            [size=10] キャッシュ最大件数（未対応機能、設定は無視される）
  */
-export var Cash = (function() {
+HJN.util.Cash = (function() {
     "use strict";
     /** constructor */
     function Cash(size){
@@ -1071,7 +377,7 @@ export var Cash = (function() {
      * 第一引数のargumentsを配列に変換する<br>
      * （注：引数が１つ以上あることを前提）
      * 
-     * @memberof HJN_util.Cash
+     * @memberof HJN.util.Cash
      * @param {Number}
      *            args 引数一覧（arguments）
      * @return {Array} 引数の配列
@@ -1083,7 +389,7 @@ export var Cash = (function() {
      * cash判定Keyを取得する<br>
      * （注：引数を'.'でつないだ文字列をkeyとするので、関数名長の上限を超える大きな配列は不可）
      * 
-     * @memberof HJN_util.Cash
+     * @memberof HJN.util.Cash
      * @param {Number}
      *            args 引数一覧（argumentsオブジェクト）
      * @return {String} キャッシュキー用の文字列
@@ -1100,7 +406,7 @@ export var Cash = (function() {
      * cashオブジェクトを、cashが無いときはundefinedを返却する<br>
      * cashヒットした場合、cashの使用回数をカウントアップする
      * 
-     * @memberof HJN_util.Cash
+     * @memberof HJN.util.Cash
      * @param {Object}
      *            arguments 引数からキー文字列を定める
      * @return {Number|undefined} キャッシュデータ（デーがが無い場合は undefined)
@@ -1121,7 +427,7 @@ export var Cash = (function() {
     /**
      * オブジェクトをcashする
      * 
-     * @memberof HJN_util.Cash
+     * @memberof HJN.util.Cash
      * @param {Object}
      *            cashVal キャッシュするオブジェクト
      * @param {Object}
@@ -1141,7 +447,7 @@ export var Cash = (function() {
      * レンジキー(form,to)範囲内でキーマッチするcashを、cashが無いときはundefinedを返却する<br>
      * キーは大小比較できる数値であることが前提
      * 
-     * @memberof HJN_util.Cash
+     * @memberof HJN.util.Cash
      * @param {Number}
      *            from 抽出するキャッシュキー最小値
      * @param {Number}
@@ -1158,7 +464,7 @@ export var Cash = (function() {
      * レンジキー(from,to)指定でキャッシュする<br>
      * キーは大小比較できること（通常、数値）、from-to期間内の既存のキャッシュは削除される
      * 
-     * @memberof HJN_util.Cash
+     * @memberof HJN.util.Cash
      * @param {Object}
      *            cashVal キャッシュするオブジェクト
      * @param {Number}
@@ -1205,7 +511,7 @@ export var Cash = (function() {
  *            {@link https://gist.github.com/mathiasbynens/579895}
  *            {@link http://dbaron.org/log/20100309-faster-timeouts}
  */
-export var setZeroTimeout = (function(global) {
+HJN.util.setZeroTimeout = (function(global) {
     "use strict";
     var timeouts = [], 
         messageName = "zero-timeout-message";
@@ -1239,7 +545,7 @@ export var setZeroTimeout = (function(global) {
  * @param {String}
  *            [mode=0] ログ出力モード
  */
-export var Logger = (function() { // #27
+HJN.util.Logger = (function() { // #27
     "use strict";
     /** @static */
     Logger.prototype = {
@@ -1256,7 +562,7 @@ export var Logger = (function() { // #27
     /**
      * 一定時間（１分）経過後、最初に本メソッドが呼ばれたときのみログ出力する（ループ用）
      * 
-     * @memberof HJN_util.Logger
+     * @memberof HJN.util.Logger
      * @param {Number}
      *            i 参考番号<br>
      *            経過時間内のループ回数などの表示に使用することを想定
@@ -1266,30 +572,30 @@ export var Logger = (function() { // #27
     Logger.ByInterval = function(i, text) {
         var ts = new Date(),
             freq = 60000;   // 1分毎
-        if (freq < ts - Logger._logtime){
-            var t = D2S(ts, "hh:mm:ss.ppp"); // #60
+        if (freq < ts - HJN.util.Logger._logtime){
+            var t = HJN.util.D2S(ts, "hh:mm:ss.ppp"); // #60
             console.log(t + "[" + i + "]~~~~" + text);
-            Logger._logtime = ts;
+            HJN.util.Logger._logtime = ts;
         }
     };
     /**
      * ログ出力： ログテキストを初期化する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof HJN.util.Logger
      * @param {String}
      *            text ログ出力文字列
      * @param {String}
      *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
      */
     Logger.ShowLogTextInit=function(text, type) {
-        Logger._timestamp = new Date();
-        Logger._logText = [];
-        if(text) Logger.ShowLogText(text, type);
+        HJN.util.Logger._timestamp = new Date();
+        HJN.util.Logger._logText = [];
+        if(text) HJN.util.Logger.ShowLogText(text, type);
     };
     /**
      * ログ出力： ログテキストをテキストアレイに追記し、表示する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof HJN.util.Logger
      * @param {String}
      *            text ログ出力文字列
      * @param {String}
@@ -1300,23 +606,23 @@ export var Logger = (function() { // #27
         // "msg"指定のときは経過時間を取らずに、ログのみ出力する
         if (type !== "msg"){
             // 処理時間情報を追加する
-            var lastTimestamp = Logger._timestamp;
-            Logger._timestamp = new Date();
-            text = (Math.round( Logger._timestamp - lastTimestamp ) / 1000.0)
+            var lastTimestamp = HJN.util.Logger._timestamp;
+            HJN.util.Logger._timestamp = new Date();
+            text = (Math.round( HJN.util.Logger._timestamp - lastTimestamp ) / 1000.0)
                     + "s " + text;
             // 数値のカンマ編集（小数部もカンマが入る）
             text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            text = D2S(Logger._timestamp, "hh:mm:ss.ppp     ")
+            text = HJN.util.D2S(HJN.util.Logger._timestamp, "hh:mm:ss.ppp     ")
                     + text; // #60
         }
-        Logger._logText.push(text);
-        Logger.ShowText(Logger._logText);
+        HJN.util.Logger._logText.push(text);
+        HJN.util.Logger.ShowText(HJN.util.Logger._logText);
         if(true) console.log(text);
     };
     /**
      * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof HJN.util.Logger
      * @param {String}
      *            textArray 出力するログ（配列１行がログ１件）
      */
@@ -1325,12 +631,12 @@ export var Logger = (function() { // #27
         for (var i = textArray.length - 1; 0 <= i; i--){
             iHtmlBody += textArray[i] + "<BR>"; 
         }
-        Logger.ShowIHtmlBody('fileInfo',iHtmlBody);
+        HJN.util.Logger.ShowIHtmlBody('fileInfo',iHtmlBody);
     };
     /**
      * 第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof HJN.util.Logger
      * @param {String}
      *            elementId iframeのID名
      * @param {String}
@@ -1355,7 +661,7 @@ export var Logger = (function() { // #27
  * @param {Object}
  *            elementID textareaのID名
  */
-export var CopyToClipboard = function(elementId) { // #61
+HJN.util.CopyToClipboard = function(elementId) { // #61
     "usestrict";
     // textareaをクリップボードにコピーする
     var area = document.getElementById(elementId);
@@ -1379,9 +685,9 @@ export var CopyToClipboard = function(elementId) { // #61
  *            [high=arr.length-1] 配列の下限検査範囲の上限
  * @param {Boolean}
  *            [isEqual=false] 完全一致しないときのリターン値：trueのとき-1、falseのとき値との差が最も少ない位置
- * @example i=HJN_util.binarySearch(x,arrXY,function(e){return e.x;});
+ * @example i=HJN.util.binarySearch(x,arrXY,function(e){return e.x;});
  */
-export var binarySearch = function (val, arr, func, low, high, isEqual) {
+HJN.util.binarySearch = function (val, arr, func, low, high, isEqual) {
     "use strict";
     func = func || function(val){ return val.valueOf(); };
     low = low || 0;
@@ -1439,10 +745,10 @@ export var binarySearch = function (val, arr, func, low, high, isEqual) {
  * 
  * @param {ETAT}
  *            eTat インデックスを追加するETAT
- * @example eTat.tatMap = new HJN_util.MappedETat(eTat); var trans =
+ * @example eTat.tatMap = new HJN.util.MappedETat(eTat); var trans =
  *          eTat.tatMap.search(x, x, 1000);
  */
-export var MappedETat = (function() { // #18
+HJN.util.MappedETat = (function() { // #18
     "use strict";
     /** @static */
     MappedETat.prototype = {
@@ -1465,7 +771,7 @@ export var MappedETat = (function() { // #18
     function MappedETat(eTat){
         if(!(this instanceof MappedETat)) return new MappedETat(eTat);
         // MappedArrayを作成する
-        this._tatMap = new MappedArray(eTat, this._getKey, true);
+        this._tatMap = new HJN.util.MappedArray(eTat, this._getKey, true);
     }
 
     /** @private */
@@ -1523,7 +829,7 @@ export var MappedETat = (function() { // #18
     /**
      * 指定期間に動いているeTatを検索する
      * 
-     * @memberof HJN_util.MappedETat
+     * @memberof HJN.util.MappedETat
      * @parm {Number} from 指定期間(from)
      * @parm {Number} [to=from] 指定期間(to)
      * @parm {Number} [cap] cap件数となったら抽出を終了する（指定なしの時：全件）
@@ -1597,9 +903,9 @@ export var MappedETat = (function() { // #18
  * @param {Boolean}
  *            [isMappedMap] getKeyが2段Map用の配列を返却する
  * @return {object} Index arrに対するインデックス（連想配列名で検索）
- * @example _tatMap = new HJN_util.MappedArray(eTat, this._getKey, true);
+ * @example _tatMap = new HJN.util.MappedArray(eTat, this._getKey, true);
  */
-export var MappedArray = (function() {    // #18
+HJN.util.MappedArray = (function() {    // #18
     /** @constructor */
     function MappedArray(arr, getKey, isMappedMap){
         if(!(this instanceof MappedArray)) return new MappedArray();
@@ -1655,7 +961,7 @@ export var MappedArray = (function() {    // #18
     /**
      * 値の存在チェック
      * 
-     * @meexport var N_util.MappedArray
+     * @memberof HJN.util.MappedArray
      */
     MappedArray.prototype.has = function (keyValue) {
         return keyValue in this._map;
@@ -1663,7 +969,7 @@ export var MappedArray = (function() {    // #18
     /**
      * 該当位置を配列で返す
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberof HJN.util.MappedArray
      */
     MappedArray.prototype.indexes = function (keyValue) {
         return this._map[keyValue] || [];
@@ -1671,7 +977,7 @@ export var MappedArray = (function() {    // #18
     /**
      * 該当する要素を配列で返す
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberof HJN.util.MappedArray
      */
     MappedArray.prototype.search = function (keyValue) {    
         var arr = this._arr;
@@ -1683,7 +989,7 @@ export var MappedArray = (function() {    // #18
     /**
      * Array.prototype.indexOf() 同等
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberof HJN.util.MappedArray
      */
     MappedArray.prototype.indexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
@@ -1693,7 +999,7 @@ export var MappedArray = (function() {    // #18
     /**
      * Array.prototype.lastIndexOf() 同等
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberof HJN.util.MappedArray
      */
     MappedArray.prototype.lastIndexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
@@ -1715,13 +1021,13 @@ export var MappedArray = (function() {    // #18
  *            [prefix=''] 定数の名前空間を一位に指定する文字列、指定しない場合グローバル
  * @param {String}
  *            [ol='ol'] インデント(.nDown() .nUp())に使うHTMLタグ
- * @example this._config = HJN_util.Config("m") // config設定画面定義
+ * @example this._config = HJN.util.Config("m") // config設定画面定義
  *          .label(null,"------").n() // ラベルを表示し、改行
  *          .name("ENDIAN").label(null,"[endian(long field)]") //key:ENDIAN
  *          .radio(def("ENDIAN_LIL", true), null, "little", true) //表示ラベルと選択時設定値
  *          .radio(def("ENDIAN_BIG", false), null, "big");
  */
-export var Config = (function() { // #24
+HJN.util.Config = (function() { // #24
     "use strict";
     /** @static */
     Config.prototype.__config = {};   // config設定コンテナ
@@ -1742,13 +1048,13 @@ export var Config = (function() { // #24
     /**
      * HTML要素の値が変更した時に、configに当該要素を登録する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.on = function(t) {
         if (t.type === "radio") { // radioのとき、nameに対して、選択されたキー値（idからprefixを削除した値）を登録
             this.prototype.__config[t.name] = t.id.substr(t.id.indexOf(".") + 1);
             // on呼出し関数が登録されているとき、登録関数を呼び出す #51
-            var func = Config.GetConfig().getFunctionById(t.id); // #59
+            var func = HJN.util.Config.GetConfig().getFunctionById(t.id); // #59
             if(typeof(func) === "function") func();
         }else if (t.type === "number") {    // numberのとき、idに対する、value(入力値)を数値として登録
             this.prototype.__config[t.id] = +t.value;
@@ -1760,7 +1066,7 @@ export var Config = (function() { // #24
     /**
      * Configリポジトリ管理インスタンスを取得する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.GetConfig = function(prefix) { // #59
         return new Config(prefix);
@@ -1773,7 +1079,7 @@ export var Config = (function() { // #24
     /**
      * configに登録されているid(=prefix+key)の設定値を取得する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.getObjctById = function(id) {
         return this.__config[id];
@@ -1781,7 +1087,7 @@ export var Config = (function() { // #24
     /**
      * configに登録されているkey(prefix補填)の関数を取得する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.getFunctionByKey = function(key) { // #59
         return Config.prototype.__config
@@ -1790,7 +1096,7 @@ export var Config = (function() { // #24
     /**
      * configの指定Idに登録されている関数を取得する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.getFunctionById = function(id) { // #53
         return Config.prototype.__config._onFunctions[id];
@@ -1798,7 +1104,7 @@ export var Config = (function() { // #24
     /**
      * configに登録されているkey(prefix補填)の設定値を取得する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.getValueByKey = function(key) { 
         return this.getObjctById(this._pre + key);
@@ -1806,7 +1112,7 @@ export var Config = (function() { // #24
     /**
      * config設定用HTMLテキストを取得する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.getHtml = function() { 
         return this._html + this._ole;
@@ -1814,7 +1120,7 @@ export var Config = (function() { // #24
     /**
      * keyに値を設定する
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.set = function(key, val) { 
         this.value[this._pre + key] = val;
@@ -1824,7 +1130,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： 改行
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.n = function (str) {
         str = str || "";
@@ -1834,7 +1140,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ネスト一つ下げ
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.nDown = function () {
         this._html += this._ols;
@@ -1843,7 +1149,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ネスト一つ上げ
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.nUp = function () {
         this._html += this._ole;
@@ -1852,7 +1158,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： nameを変更する（radio等の先頭で指定）
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.name = function (str) {
         this._nameHtml = str ? 'name="' + this._pre + str + '" ' : '';
@@ -1862,7 +1168,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ラベル要素(prefix+keyで関連付けるformのid属性となる)
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.label = function (key, str, attribute) {
         this._html += '<label ' +
@@ -1875,7 +1181,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ラベル付された各種入力フォーム
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.labeledForm = function (key, type, typedAttribute,
                                 pLabel, sLabel, val, attribute, check, cssClass) {
@@ -1886,7 +1192,7 @@ export var Config = (function() { // #24
                         (typedAttribute || '') + 
                         this._nameHtml +
                         'id="' + this._pre + key + '" '+        // idがユニークになるようkeyにprefixを付与
-                        'onchange="HJN_util.Config.on(this);" ' +
+                        'onchange="HJN.util.Config.on(this);" ' +
                         (val ? 'value="' + val + '" ' : '') +   // val は、キー値のまま
                         (attribute || '') + 
                         (check ? ' checked="checked;"' : '') +
@@ -1906,7 +1212,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： テキストボックス要素で、文字列を設定
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.number = function (key, pLabel, sLabel, val, attribute) {
         Config.prototype.labeledForm.call(this, key, "number", "", 
@@ -1916,7 +1222,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： テキストボックス要素で、数値を設定
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.text = function (key, pLabel, sLabel, val, attribute) {
         Config.prototype.labeledForm.call(this, key, "text", "", 
@@ -1926,7 +1232,7 @@ export var Config = (function() { // #24
     /**
      * 定義＆設定画面作成用機能： ラジオボタン要素で、選択肢の一つを設定
      * 
-     * @memberof HJN_util.Config
+     * @memberof HJN.util.Config
      */
     Config.prototype.radio = function (key, pLabel, sLabel, check, attribute, func) {
         Config.prototype.labeledForm.call(this, key, "radio", (check ? 'checked="checked;"' : ''),
@@ -1958,7 +1264,7 @@ export var Config = (function() { // #24
  *            [delFunc=function(obj){ return obj; }] 削除対象ノードを特定する関数<br>
  *            「delの引数オブジェクト === delFunc(heapのノードのオブジェクト)」 で判定する
  * 
- * @example h = HJN_util.Heap( function(obj){ return +obj; } );<br>
+ * @example h = HJN.util.Heap( function(obj){ return +obj; } );<br>
  *          h.push("12.34") // データを登録する ;<br>
  *          h.push(0.12) // ;<br>
  *          h.pop() // => 0.12 最小値のオブジェクトを取り出す ;<br>
@@ -1966,7 +1272,7 @@ export var Config = (function() { // #24
  *          h.top() // =>undefined 最小値のオブジェクト ;<br>
  *          h.size() // =>0 登録オブジェクト数
  */
-export var Heap = (function() { // #55
+HJN.util.Heap = (function() { // #55
     "use strict";
     /** @constructor */
     function Heap(func, delFunc){ 
@@ -2077,7 +1383,7 @@ export var Heap = (function() { // #55
     /**
      * データを追加する
      * 
-     * @memberof HJN_util.Heap
+     * @memberof HJN.util.Heap
      * @param {Object}
      *            obj 登録オブジェクト
      */
@@ -2092,7 +1398,7 @@ export var Heap = (function() { // #55
     /**
      * 最小値のデータを取り出す
      * 
-     * @memberof HJN_util.Heap
+     * @memberof HJN.util.Heap
      * @return {Object|undefined} 最小値
      */
     Heap.prototype.pop = function() {
@@ -2110,7 +1416,7 @@ export var Heap = (function() { // #55
     /**
      * 指定データを削除する
      * 
-     * @memberof HJN_util.Heap
+     * @memberof HJN.util.Heap
      * @param {Object}
      *            obj 削除対象と同一オブジェクト(=== で判定)
      * @return {Object|undefined} 削除したオブジェクト（undefined：合致するオブジェクトが無いとき）
@@ -2136,7 +1442,7 @@ export var Heap = (function() { // #55
     /**
      * 最小値を返却する（登録データは変更しない）
      * 
-     * @memberof HJN_util.Heap
+     * @memberof HJN.util.Heap
      * @return {Object|undefined} 最小値
      */
     Heap.prototype.top = function() {
@@ -2145,7 +1451,7 @@ export var Heap = (function() { // #55
     /**
      * ヒープのサイズを返却する
      * 
-     * @memberof HJN_util.Heap
+     * @memberof HJN.util.Heap
      * @return {Number} ヒープサイズ（0以上）
      */
     Heap.prototype.size = function() {
@@ -2168,9 +1474,9 @@ export var Heap = (function() { // #55
  * 
  * @param {Number}
  *            [average=0.5] 平均値
- * @example var r = HJN_util.Random(10), val = r.exponential();
+ * @example var r = HJN.util.Random(10), val = r.exponential();
  */
-export var Random = (function() { // #56
+HJN.util.Random = (function() { // #56
     "use strict";
     /** @constructor */
     function Random(average){
@@ -2184,7 +1490,7 @@ export var Random = (function() { // #56
     /**
      * 一様分布となる乱数を返却する
      * 
-     * @memberof HJN_util.Random
+     * @memberof HJN.util.Random
      * @param {Number}
      *            [average=this._average] 平均値<br>
      * @return {Number} 乱数
@@ -2197,7 +1503,7 @@ export var Random = (function() { // #56
     /**
      * 指数分布となる乱数を返却する(lambda = 1/average)
      * 
-     * @memberof HJN_util.Random
+     * @memberof HJN.util.Random
      * @param {Number}
      *            [average=this._average] 平均値=1/λ、分散=1/(λ^2)<br>
      * @return {Number} 乱数
@@ -2210,7 +1516,7 @@ export var Random = (function() { // #56
     /**
      * ポアソン分布となる乱数を返却する(lambda = average)
      * 
-     * @memberof HJN_util.Random
+     * @memberof HJN.util.Random
      * @param {Number}
      *            [average=this._average] 平均値=分散=λ<br>
      * @return {Number} 乱数
@@ -2255,9 +1561,9 @@ export var Random = (function() { // #56
  *            [resourcesJson] リソース指定JSONテキスト
  * @param {Boolean}
  *            [log=false] 詳細ログ出力有無
- * @example sim = HJN_util.VirtualSystem()
+ * @example sim = HJN.util.VirtualSystem()
  */
-export var VirtualSystem = (function() { // #53
+HJN.util.VirtualSystem = (function() { // #53
     "use strict";
     /** @constructor */
     function VirtualSystem(start, end, resourcesJson, log){
@@ -2277,7 +1583,7 @@ export var VirtualSystem = (function() { // #53
         this._log = log ? log : false; // #53
         this._start = +start || new Date(1970, 1, 2);   // シミュレート開始時刻
         this._end = end || this._start + 24*60*60*1000; // シミュレート終了時刻（デフォルト：24時間後)
-        this._simulator = Heap(                // イベント予約スケジュール（ヒープ）
+        this._simulator = HJN.util.Heap(                // イベント予約スケジュール（ヒープ）
                 function(obj){ return obj.getTime(); }, // プライオリティの判定
                 function(obj){ return obj; });  // 削除対象の判定 #61
         this._now = 0; // シミュレーション時の現在時刻
@@ -2286,10 +1592,10 @@ export var VirtualSystem = (function() { // #53
         for (var i = 0; i < _resources.length; i++) {
             var e = _resources[i];
             e.log = e.log ? e.log : this._log; // #53
-            this._resources[e.type] = VirtualResource(this, // #61
+            this._resources[e.type] = HJN.util.VirtualResource(this, // #61
                     e.type, e.thread, e.timeout, e.q, e.qWait, e.log);
         };
-        VirtualSystem.debug = this; // ★
+        HJN.util.VirtualSystem.debug = this; // ★
     }
 
     /** @private */
@@ -2299,7 +1605,7 @@ export var VirtualSystem = (function() { // #53
     /**
      * 仮想クライアントをスケジューラに登録する
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @param {String}
      *            [userName = "Default_"] ログに出力するユーザ名
      * @param {String}
@@ -2307,7 +1613,7 @@ export var VirtualSystem = (function() { // #53
      * @param {Number}
      *            [num = 3] 期間内に生成する仮想クライアントの数
      * @param {Number}
-     *            [start = HJN_util.S2D("1970/01/02 00:00:00")]
+     *            [start = HJN.util.S2D("1970/01/02 00:00:00")]
      *            仮想クライアント生成開始時刻（UNIX時刻の数値、ミリ秒）
      * @param {Number}
      *            [end = startの0.1秒後] 仮想アプリケーション強制終了時刻（UNIX時刻の数値、ミリ秒）
@@ -2318,11 +1624,11 @@ export var VirtualSystem = (function() { // #53
         userName = userName || "Default_";
         message = message || "";
         num = (typeof(num) === "number") ? num : 1; // #61
-        start = +start || S2D("1970/01/02 00:00:00");
+        start = +start || HJN.util.S2D("1970/01/02 00:00:00");
         end = +end || start + 100;
         // baseModelが指定されているとき、modelに展開する
         if (model.baseModel){
-            model = VirtualSystem.getModel(
+            model = HJN.util.VirtualSystem.getModel(
                 model.baseModel.holds, model.baseModel.tatMin, model.baseModel.tat,
                 model.sequence, model.times, model.thinkTimeMin, model.thinkTime);
         }
@@ -2334,11 +1640,11 @@ export var VirtualSystem = (function() { // #53
         }
         // 仮想APを登録する
         var checkStart = start;
-        var r = Random((end - start) / num);
+        var r = HJN.util.Random((end - start) / num);
         var t = start;
         for (var i = 0; i < num; i++) {
             // 仮想APを作成する
-            var vApp = VirtualApp(userName + i, model);
+            var vApp = HJN.util.VirtualApp(userName + i, model);
             // 仮想APに開始時刻（指数分布）を設定し、登録する
             t += Math.round(r.exponential());
             this.setEvent(vApp.start(t));
@@ -2348,7 +1654,7 @@ export var VirtualSystem = (function() { // #53
     /**
      * イベントをスケジューラに登録する
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @param {Object}
      *            event 仮想クライアントもしくは仮想リソースのイベント
      */
@@ -2359,7 +1665,7 @@ export var VirtualSystem = (function() { // #53
     /**
      * スケジューラからイベントを削除する
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @param {Object}
      *            event 仮想クライアントもしくは仮想リソースのイベント
      */
@@ -2370,7 +1676,7 @@ export var VirtualSystem = (function() { // #53
     /**
      * シミュレーションを実行する
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @return {eTat} シミュレート実行結果のログ（this.eTat）
      */
     VirtualSystem.prototype.execute = function() {
@@ -2405,14 +1711,14 @@ export var VirtualSystem = (function() { // #53
     /**
      * リソースを取得する
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @param {String}
      *            [name = "unlimited"] 仮想リソース名
      * @return {Object} 仮想リソース（登録されていないときは、新たにholdCapacity=1の仮想リソースを登録）
      */
     VirtualSystem.prototype.getResouce = function(name) {
         if (typeof(this._resources[name]) === "undefined") {
-            this._resources[name] = VirtualResource(this, name);
+            this._resources[name] = HJN.util.VirtualResource(this, name);
         }
         return this._resources[name];
     };
@@ -2420,7 +1726,7 @@ export var VirtualSystem = (function() { // #53
     /**
      * シミュレーション現在時刻（処理中のイベントの時刻）を返却する
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
     VirtualSystem.prototype.getTime = function() {
@@ -2432,7 +1738,7 @@ export var VirtualSystem = (function() { // #53
     /**
      * 取引モデルを取得する（ユーティリティ）
      * 
-     * @memberof HJN_util.VirtualSystem
+     * @memberof HJN.util.VirtualSystem
      * @param {Array}
      *            [baseModel = []] 使用リソースの一覧["WEB","AP","DB"]
      * @param {Number}
@@ -2526,7 +1832,7 @@ export var VirtualSystem = (function() { // #53
  * @param {Number}
  *            [thinkTime = 300 ms] 繰返し時の次回処理開始までの平均時間(ミリ秒）
  */
-export var VirtualApp = (function() { // #53
+HJN.util.VirtualApp = (function() { // #53
     "use strict";
     /** @constructor */
     function VirtualApp(userName, model){
@@ -2567,7 +1873,7 @@ export var VirtualApp = (function() { // #53
     /**
      * シミュレータのログを出力する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Number}
      *            logLv ログレベル（isLog <= logLvのときログ出力する）<br>
      *            (0:なし, 1:エラー時のみ, 2:+ETAT, 3:+push/pop, 4:+HOLD/FREE)
@@ -2603,7 +1909,7 @@ export var VirtualApp = (function() { // #53
                 + resource._holdHeap.size() + "="
                 + resource._holdingQty + " qty] ") : " ";
         text = text || "";
-        var logText = D2S(this.getTime(),"hh:mm:ss.ppp",true) 
+        var logText = HJN.util.D2S(this.getTime(),"hh:mm:ss.ppp",true) 
                     + user +"(" + this._times + "-" + this._sequenceIdx + ")"
                     + resourceText 
                     + text;
@@ -2635,7 +1941,7 @@ export var VirtualApp = (function() { // #53
     /**
      * 取引を開始する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Number}
      *            startTime 開始時刻（UNIX時刻：ミリ秒）
      * @return {Object}仮想アプリケーション(this)
@@ -2654,7 +1960,7 @@ export var VirtualApp = (function() { // #53
     /**
      * イベント時刻を返却する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
     VirtualApp.prototype.getTime = function() {
@@ -2664,7 +1970,7 @@ export var VirtualApp = (function() { // #53
     /**
      * リソース使用量を返却する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            [resource| 指定なしのとき1.0を返却する] リソース
      * @return {Number} リソース使用量
@@ -2676,7 +1982,7 @@ export var VirtualApp = (function() { // #53
     /**
      * 次の状態に遷移する、シーケンス終了時TATログを出力する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
@@ -2700,7 +2006,7 @@ export var VirtualApp = (function() { // #53
             // リソースを確保できたとき、該当シーケンスを完了させる
             if (0 < events.length && (0 <= this._times) && ret.result) { // #61
                 // 完了した処理の処理時間を加える
-                var tatAdd = Math.ceil(Random().exponential(seq.tat - seq.tatMin));
+                var tatAdd = Math.ceil(HJN.util.Random().exponential(seq.tat - seq.tatMin));
                 this.setSequenceTime(this._sequenceTime += seq.tatMin + tatAdd, seq.hold); // #61
                 // シーケンスのfreeで指定されているリソースの解放
                 if (seq.free) {
@@ -2729,7 +2035,7 @@ export var VirtualApp = (function() { // #53
     /**
      * Freeに伴い、次の状態に遷移する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Number}
      *            [time | 変更しない} イベント時刻（UNIX時刻：ミリ秒）
      * @param {String}
@@ -2747,7 +2053,7 @@ export var VirtualApp = (function() { // #53
     /**
      * ログにステータス変更履歴を追記する
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {String}
      *            status ログに追記する状態遷移の理由文字列
      * @param {Number}
@@ -2757,10 +2063,10 @@ export var VirtualApp = (function() { // #53
     VirtualApp.prototype.addHistory = function(status, time) {
 // var timeStr = "";
 // if (typeof(time) === "number") {
-// timeStr = D2S(time, "mm:ss.ppp", true) + " seq:"
+// timeStr = HJN.util.D2S(time, "mm:ss.ppp", true) + " seq:"
 // }
 // this._message += " [" + this._sequenceIdx + ":" + status + "]" // #61
-// + timeStr + D2S(this._sequenceTime, "mm:ss.ppp", true);
+// + timeStr + HJN.util.D2S(this._sequenceTime, "mm:ss.ppp", true);
         // 状態遷移履歴（ログ出力用）を追加する
         this._history.push({ // #62
             sequenceIdx : this._sequenceIdx,
@@ -2774,7 +2080,7 @@ export var VirtualApp = (function() { // #53
     /**
      * アベンド処理（holdしている可能性のあるリソースを解放し、イベントシーケンスを強制終了する）
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
      * @param {Object}
@@ -2827,7 +2133,7 @@ export var VirtualApp = (function() { // #53
     /**
      * イベント終了時処理（ログ出力と、繰り返し判定）
      * 
-     * @memberof HJN_util.VirtualApp
+     * @memberof HJN.util.VirtualApp
      * @param {Object}
      *            system VirtualSystem
      * @param {String}
@@ -2874,7 +2180,7 @@ export var VirtualApp = (function() { // #53
         } else  {
             this.logger(0, system._log, now, this, undefined,
                     'finish() Unexpected error★ _startTime > _sequenceTime:'
-                    + D2S(this._startTime, "hh:mm:ss.ppp", true)
+                    + HJN.util.D2S(this._startTime, "hh:mm:ss.ppp", true)
                             + " " + this._startTime + " > " + now
                             + " Idx:" + this._sequenceIdx 
                     , logText);
@@ -2887,7 +2193,7 @@ export var VirtualApp = (function() { // #53
             var nextTime = this.getTime() + this._thinkTimeMin;
             if (this._thinkTimeMin < this._thinkTime) {
                 nextTime += Math.ceil(Math.abs( // #61
-                        Random().exponential(this._thinkTime - this._thinkTimeMin)));
+                        HJN.util.Random().exponential(this._thinkTime - this._thinkTimeMin)));
             }
             // 処理の先頭に戻る
             return this.start(nextTime);
@@ -2923,7 +2229,7 @@ export var VirtualApp = (function() { // #53
  * @param {Boolean}
  *            [log=false] 詳細ログ出力有無
  */
-export var VirtualResource = (function() { // #53
+HJN.util.VirtualResource = (function() { // #53
     "use strict";
     /** @constructor */
     function VirtualResource(system, name,
@@ -2941,7 +2247,7 @@ export var VirtualResource = (function() { // #53
                                 ? queueWait : 10000;   // キュー滞留時間上限
         this._waitCapacity  = (typeof(waitCapacity) !== "undefined")
                                 ? waitCapacity : Number.MAX_SAFE_INTEGER; // キューの深さ
-        this._waitHeap = Heap(    // リソース解放待ちキュー（登録時間順）
+        this._waitHeap = HJN.util.Heap(    // リソース解放待ちキュー（登録時間順）
                 function(obj){ return obj.getTime(); });
         
         // リソース管理用
@@ -2950,7 +2256,7 @@ export var VirtualResource = (function() { // #53
         this._holdCapacity = (typeof(holdCapacity) !== "undefined")
                                 ? holdCapacity : 1.0;   // 保有リソース量（数）
         this._holdingQty = 0;   // 使用リソース量
-        this._holdHeap = Heap( // 処理のタイムアウト管理用ヒープ{obj:,val:} #59
+        this._holdHeap = HJN.util.Heap( // 処理のタイムアウト管理用ヒープ{obj:,val:} #59
                  function(node){ return node.val; }, // valはタイムアウト時刻
                  function(node){ return node.obj; }); // objはvApp
         
@@ -2975,7 +2281,7 @@ export var VirtualResource = (function() { // #53
     /**
      * リソースチェックイベント（タイムアウトチェック）を開始する
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @param {Number}
      *            startTime 開始時刻（UNIX時刻：ミリ秒）
      * @param {Object}
@@ -2992,7 +2298,7 @@ export var VirtualResource = (function() { // #53
     /**
      * イベント時刻を返却する
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @return {Number} イベント時刻（UNIX時刻：ミリ秒）
      */
     VirtualResource.prototype.getTime = function() {
@@ -3002,7 +2308,7 @@ export var VirtualResource = (function() { // #53
     /**
      * タイムアウトチェック用仮想イベント
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            system VirtualSystem
      * @return {Array}再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
@@ -3080,7 +2386,7 @@ export var VirtualResource = (function() { // #53
     /**
      * リソースを取得する
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            system VirtualSystem
      * @param {Object}
@@ -3135,7 +2441,7 @@ export var VirtualResource = (function() { // #53
     /**
      * 引数vAppが使用していたリソースを解放する
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            vApp リソースにfree要求する仮想AP
      * @param {Boolean}
@@ -3183,7 +2489,7 @@ export var VirtualResource = (function() { // #53
     /**
      * 引数vAppをリソース開放待ちキューからリリースする
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            vApp リリースする仮想AP
      * @return {Object | undefined} リリースした仮想AP
@@ -3199,7 +2505,7 @@ export var VirtualResource = (function() { // #53
     /**
      * イベント終了時処理（リソースが管理しているvAppをfinishさせる（強制終了させ処理中vAppはTATログ出力する）
      * 
-     * @memberof HJN_util.VirtualResource
+     * @memberof HJN.util.VirtualResource
      * @param {Object}
      *            system VirtualSystem
      * @param {String}
@@ -3235,7 +2541,7 @@ export var VirtualResource = (function() { // #53
  *            <p>
  *            util管理用クラス（スタティックメソッドのみ）のためコンストラクタは使用しない
  */
-export var virtualSystemByJson = (function() { // #53
+HJN.util.virtualSystemByJson = (function() { // #53
     "use strict";
     /** @constructor */
     function virtualSystemByJson(){
@@ -3253,7 +2559,7 @@ export var virtualSystemByJson = (function() { // #53
     /**
      * 初期表示用サンプルデータ(ETAT)を自動生成する
      * 
-     * @memberof HJN_util.virtualSystemByJson
+     * @memberof HJN.util.virtualSystemByJson
      * @param {String}
      *            [jsonText] シミュレーション条件JSONテキスト
      * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ [{x:終了時刻(UNIX時刻の経過時間(秒)),
@@ -3268,14 +2574,14 @@ export var virtualSystemByJson = (function() { // #53
         // virtual system と resources の設定
         var log = (json.log !== undefined) ? json.log : false; // #59
         var start = (json.start !== undefined) 
-                    ? S2D(json.start) : new Date(1970,1,2);
-        var end = start + S2N(json.end, "24*h");
+                    ? HJN.util.S2D(json.start) : new Date(1970,1,2);
+        var end = start + HJN.util.S2N(json.end, "24*h");
         var resources = json.resources;
         for (var i = 0; i < resources.length; i++) {
-            resources[i].timeout = S2N(resources[i].timeout, "10*sec");
-            resources[i].qWait = S2N(resources[i].qWait, "10*sec");
+            resources[i].timeout = HJN.util.S2N(resources[i].timeout, "10*sec");
+            resources[i].qWait = HJN.util.S2N(resources[i].qWait, "10*sec");
         }
-        vSys = VirtualSystem(start, end, json.resources, log);
+        vSys = HJN.util.VirtualSystem(start, end, json.resources, log);
         // model の取得
         var models = json.models;
         for (var i = 0; i < models.length; i++) {
@@ -3285,23 +2591,23 @@ export var virtualSystemByJson = (function() { // #53
             var baseModel = m.baseModel; // baseModel
             for (var j = 0; j < m.sequence.length; j++) {
                 // 時間指定文字列を、ミリ秒数値に変換する（例："3*sec"->3000)
-                m.sequence[j].tatMin = S2N(m.sequence[j].tatMin);
-                m.sequence[j].tat = S2N(m.sequence[j].tat);
+                m.sequence[j].tatMin = HJN.util.S2N(m.sequence[j].tatMin);
+                m.sequence[j].tat = HJN.util.S2N(m.sequence[j].tat);
             }
             // sequenceに、baseModelを展開し、未開放リソースの開放処理を登録する
-            models[name] = VirtualSystem.getModel(
+            models[name] = HJN.util.VirtualSystem.getModel(
                         baseModel.holds, 
-                        S2N(baseModel.tatMin), S2N(baseModel.tat),
+                        HJN.util.S2N(baseModel.tatMin), HJN.util.S2N(baseModel.tat),
                         m.sequence, 
                         (typeof(m.times) === "number") ? m.times : 1, // #61
-                        S2N(m.thinkTimeMin), S2N(m.thinkTime)); 
+                        HJN.util.S2N(m.thinkTimeMin), HJN.util.S2N(m.thinkTime)); 
         }
         // client の設定
         var clients = json.clients;
         for (var i = 0; i < clients.length; i++) {
             var c = clients[i];
-            var cStart = start + S2N(c.start, 0);
-            var cEnd   = start + S2N(c.end, 24*60*60*1000);
+            var cStart = start + HJN.util.S2N(c.start, 0);
+            var cEnd   = start + HJN.util.S2N(c.end, 24*60*60*1000);
             vSys.setClients(c.user, c.message, c.num, cStart, cEnd, models[c.model]);
         }
         if (log) console.log(vSys); // #59
@@ -3311,7 +2617,7 @@ export var virtualSystemByJson = (function() { // #53
     /**
      * シミュレーション条件JSONテキストを作成する
      * 
-     * @memberof HJN_util.virtualSystemByJson
+     * @memberof HJN.util.virtualSystemByJson
      * @param {Number}
      *            [n = 0] シナリオ番号
      * @return {String} シミュレーション条件JSONテキスト

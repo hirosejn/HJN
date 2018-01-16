@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 /*   ****1**** ****2**** ****3**** ****4**** ****5**** ****6**** ****7***** */
-/* リセットCSS */
+/* リセットCSS　*/
 html, body, h1, h2, h3, h4, ul, ol, dl, li, dt, dd, p, div, span, img, a, table, tr, th, td, selector{
 margin: 0; padding: 0; border: 0; font-weight: normal; font-size: 100%; vertical-align:baseline;
 -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
@@ -21,7 +21,7 @@ select  { background: #eee;}
 			top: 0px; left: 200px; height: 20px; width: 200px; background: #fff; }
 .statusbar > iframe { overflow: hidden; width: 95%; height: 100%; }
 .lineViewer { width: 100%; height: 42px; margin: 25px 0px; padding: 0px; border: 1px #cccccc dotted; }
-footer { position: fixed; bottom: 0%; text-align: right; font-size: smaller; }
+footer		{ position: fixed; bottom: 0%; text-align:　right; font-size:　smaller;　}
 
 /* ハンバーガーメニュー */
 .hjnBurgerTray { position :fixed; display: inline-block; visibility: hidden; z-index: 96;
@@ -140,6 +140,6 @@ footer { position: fixed; bottom: 0%; text-align: right; font-size: smaller; }
 		background: #aaa; height: 3px; width: 9px; padding: 0; border-radius: 2px;}
 .hjnPlot:hover > input[type=checkbox], .hjnPlot:hover > input[type=checkbox] + label 
 		{ visibility: visible; cursor: pointer; }
-.hjnPlot > input[type=radio] { display:none; }
-.hjnPlot > input[type=radio]:checked + label { background-color: #ccc; }
+.hjnPlot > input[type=radio] { display:none;　}
+.hjnPlot > input[type=radio]:checked + label { background-color: #ccc;　}
 .hjnPlot:hover { font-weight: bold; }

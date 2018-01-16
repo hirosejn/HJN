@@ -1,9 +1,9 @@
 const webpack = require('webpack');
 module.exports = {
-  entry: `./sandbox/webpack/src_x/main.js`,         // メインとなるJavaScriptファイル（エントリーポイント）
+  entry: `./src/main.js`, // メインとなるJavaScriptファイル（エントリーポイント）
   output: {                         // ファイルの出力設定
-    path: `${__dirname}/sandbox/webpack/dist_x`,    // 出力ファイルのディレクトリ名
-    filename: 'bundle.js'           // 出力ファイル名
+    path: `${__dirname}/src/dist`,      // 出力ファイルのディレクトリ名
+    filename: 'bundle.min.js'           // 出力ファイル名
   },
   module: {
       loaders: [                    // `-loader`は省略可能
