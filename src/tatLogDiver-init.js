@@ -1,6 +1,8 @@
 "use strict";
-import * as HJN_util from './HJN.utils.js';
-import HJN from './HJN.graph.js';
+import * as Util from './util/utils.js';
+import * as Simulator from './util/simulators.js';
+import {HjnConfig} from './util/hjn-config.js';
+import {HJN} from './tatLogDiver-graph.js';
 // import {Dygraph} from '../libs/dygraph.js';
 // import Dygraph from '../libs/extras/synchronizer.js';
 
@@ -61,7 +63,7 @@ export function HJN_init_ChartRegist(chartName){ // #70
 	html_chart.parentNode.insertBefore(html_nav, html_chart);
 	
 	var dropFieldName = chartName;	// ファイルドロップを受け付けるタグ名
-	HJN_util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
+	Util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
 
 	// グラフのインスタンスを作成し初期化する
 	HJN.chart = new HJN.Graph(chartName, "HJN.chart");
@@ -73,7 +75,7 @@ export function HJN_init_ChartRegist(chartName){ // #70
 	HJN.init.DropField(dropFieldName+ "D");
 
 	// 初期表示データを自動生成する // #53
-	HJN_util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
+	HjnConfig.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
 	
 }
 
@@ -81,21 +83,21 @@ export function HJN_init_ChartRegist(chartName){ // #70
  * データを自動生成し表示する
  * 
  * @param {String|Number}
- *            [json = HJN_util.virtualSystemByJson.GetJsonConfig(0)]
+ *            [json = Simulator.virtualSystemByJson.GetJsonConfig(0)]
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
  */
 export function CreateSampleTatLogAndChartShow(json){ // #53
     "use strict";
     var jsonText;
     if (typeof(json) === "number") { // #53
-        jsonText = HJN_util.virtualSystemByJson.GetJsonConfig(json);
+        jsonText = Simulator.virtualSystemByJson.GetJsonConfig(json);
     } else{
-        jsonText = json || HJN_util.virtualSystemByJson.GetJsonConfig(0);
+        jsonText = json || Simulator.virtualSystemByJson.GetJsonConfig(0);
     }
     // JSON Editorを更新する
     document.getElementById("SimulatorEditor").value = jsonText;
     // 初期表示データを自動生成する
-    HJN.chart.eTatOriginal = HJN_util.virtualSystemByJson.Execute(jsonText);
+    HJN.chart.eTatOriginal = Simulator.virtualSystemByJson.Execute(jsonText);
     // データを表示する
     HJN.init.ChartShow(HJN.chart.eTatOriginal);
 }
@@ -115,18 +117,18 @@ HJN.init.ChartShow = function(eTatOriginal){
     // 上段
     HJN.chart.update(HJN.chart.createSeries(eTat));
     var text = "上段表示 [" + HJN.chart.eTat.length + "]";
-    HJN_util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
+    Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
 
     // 下段(非同期）
-   HJN_util.setZeroTimeout( function(){
+   Util.setZeroTimeout( function(){
         HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
         HJN.chart.showBalloon();    // 上段のBalloonを描画する
         var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
-        HJN_util.Logger.ShowLogText(text, "elaps");
+        Util.Logger.ShowLogText(text, "elaps");
         text = "<mark>Simulated data</mark>["
             + HJN.chart.eTat.length.toString()
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
-        HJN_util.Logger.ShowLogText(text, "msg");
+        Util.Logger.ShowLogText(text, "msg");
         // 上下段のマウス操作同期設定 #49
         var sync = Dygraph.synchronize(
                  [ HJN.chart.graph, HJN.chartD.graph ],
@@ -184,7 +186,7 @@ HJN.init.FileReader = function (files){  // #15
 		}catch(e){
 			// 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
 			var msg = "The " + i + "th dropped object is not a file";
-			HJN_util.Logger.ShowText( ["<mark>"+msg+"</mark>"] );
+			Util.Logger.ShowText( ["<mark>"+msg+"</mark>"] );
 			console.error("[%o]%o",msg,e );
 		}
 	}
@@ -195,8 +197,8 @@ HJN.init.FileReader = function (files){  // #15
             var filesIdx = HJN.files.length;
             // ファイルの先頭2行をログ表示する
             HJN.filesArrayBuffer[filesIdx] = evt.target.result;
-            HJN_util.Logger.ShowLogTextInit();              // 情報表示 : 初期化
-            HJN_util.Logger.ShowLogText(textArray, "msg");  // 情報表示：ドロップファイル情報
+            Util.Logger.ShowLogTextInit();              // 情報表示 : 初期化
+            Util.Logger.ShowLogText(textArray, "msg");  // 情報表示：ドロップファイル情報
             // 指定ファイルを読み込む
             // CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
             if (i === 0 && HJN.chart.fileReader.isNewETAT()){
@@ -216,17 +218,17 @@ HJN.init.FileReader = function (files){  // #15
 
                 // 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
                 HJN.chart.update(HJN.chart.createSeries(eTat));
-                HJN_util.Logger.ShowLogText("上段表示", "elaps");
+                Util.Logger.ShowLogText("上段表示", "elaps");
 
                 // 下段用データの展開とグラフ描画（非同期処理）
                 HJN.Plot.List = [];
-                HJN_util.setZeroTimeout(function(){
+                Util.setZeroTimeout(function(){
                     // 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
                     HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
                     // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
                     HJN.chart.showBalloon();
-                    HJN_util.Logger.ShowLogText("下段表示", "elaps");
-                    HJN_util.Logger.ShowLogText("<mark>"+ HJN.files[0].name +
+                    Util.Logger.ShowLogText("下段表示", "elaps");
+                    Util.Logger.ShowLogText("<mark>"+ HJN.files[0].name +
                             "["+ HJN.chart.eTat.length +
                             "]を表示しました</mark>", "msg");
                 });
@@ -254,7 +256,7 @@ HJN.init.FileReader = function (files){  // #15
     // 内部関数： CSVファイルを読み込み、TatLog用アレイ[{x:日時, y:値, pos:レコード開始位置,
     // len:レコード長},...]に展開する
 	function getTatLogArray(files, idx) { // arg0:csvﾌｧｲﾙのファイルﾊﾟｽ
-	    HJN_util.Logger.ShowLogText("----- read file -----------------------------","calc");
+	    Util.Logger.ShowLogText("----- read file -----------------------------","calc");
 	    var file = files[idx], // #23
 	        eTat = [],
 	        xy = {date: 0, value: 0, isError: false },
@@ -264,7 +266,7 @@ HJN.init.FileReader = function (files){  // #15
 	        line = getterOfLine.next();     // 先頭行の初期処理
 	    while (!line.isEoF) {               // 以降最終行まで処理する
 	        try {
-	            HJN_util.Logger.ByInterval(i++, line); // 一定時刻毎に進捗を出力する
+	            Util.Logger.ByInterval(i++, line); // 一定時刻毎に進捗を出力する
 	            xy = getterOfXY.parse(line);
 	            if(!xy.isError){
 	                eTat.push( {x: xy.x, y: xy.y, fileIdx: idx, // #23
@@ -276,7 +278,7 @@ HJN.init.FileReader = function (files){  // #15
 	            console.err("err: %o",e);
 	        }
 	    }
-	    HJN_util.Logger.ShowLogText("[0:file readed & got eTat]---------------","calc");
+	    Util.Logger.ShowLogText("[0:file readed & got eTat]---------------","calc");
 	    return eTat;
 	}
 };
@@ -315,7 +317,7 @@ HJN.init.ChartRegistDetail = function(cTps){
 		// plotsアイコン用 HJN.Plot.Listに、下段表示したplotを登録する
 		HJN.Plot.Add(HJN.CTPS.N, cTps[maxYIdx].x, cTps[maxYIdx].y);
 	}
-	HJN_util.Logger.ShowLogText("[6:Plot added] " + HJN.Plot.List.length + " plots","calc");
+	Util.Logger.ShowLogText("[6:Plot added] " + HJN.Plot.List.length + " plots","calc");
 
 	return HJN.chartD.seriesSet;
 };
@@ -350,7 +352,7 @@ HJN.init.GetSliderRangedEtat = function(n) {
 			HJN.chart.eTat.cash.setRangedCash(eTatDetail, from, to);
 		}
 	}
-	HJN_util.Logger.ShowLogText("[0:HJN.init.GetSliderRangedEtat] ","calc");
+	Util.Logger.ShowLogText("[0:HJN.init.GetSliderRangedEtat] ","calc");
 	
 	return eTatDetail;	// 詳細グラフ用eTatを返却する
 };
@@ -361,7 +363,7 @@ HJN.init.setDetailRange = function(){
     "use strict";
     clearTimeout(HJN.timer);
     HJN.timer = setTimeout(function(){
-            HJN_util.Logger.ShowLogTextInit("[-:HJN.init.setDetailRange]start---------------","calc");
+            Util.Logger.ShowLogTextInit("[-:HJN.init.setDetailRange]start---------------","calc");
             // 表示中Plotsのrangeを更新する #30
             var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
             var plot = HJN.Plot.List[i];
@@ -422,7 +424,7 @@ HJN.Plot.List = [];
  */
 HJN.Plot.PointClickCallback = function(point) {
 	"use strict";
-	HJN_util.Logger.ShowLogText("[0:PointClickCallback]start---------------","calc");
+	Util.Logger.ShowLogText("[0:PointClickCallback]start---------------","calc");
 	var	n = HJN.seriesConfig.findIndex(function(e){	return e.key === point.name; }),// シリーズ番号
 		x = point.xval,	// ミリ秒
 		y = point.yval; // 秒
@@ -453,8 +455,8 @@ HJN.Plot.PointClickCallback = function(point) {
 	// Balloonを再描画する
 	HJN.Plot.ShowBalloon();
     // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする
-	if (!HJN_util.TouchPanel.isTouchableDevice()) { // #22
-	    HJN_util.CopyToClipboard("lineViewer"); // #61
+	if (!Util.TouchPanel.isTouchableDevice()) { // #22
+	    Util.CopyToClipboard("lineViewer"); // #61
 	}
 };
 
@@ -498,8 +500,8 @@ HJN.Plot.Add=function(n, x, y) {
 	HJN.Plot.List.forEach(function(e){e.radio = false;});
 	// ラベルフォーマットの設定
 	var format = (n === HJN.ETPS.N || n === HJN.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.ppp",
-		label = HJN_util.D2S(x, format, true) + " " + // #61
-				HJN.seriesConfig[n].label.replace("%N",HJN_util.N2S(y));
+		label = Util.D2S(x, format, true) + " " + // #61
+				HJN.seriesConfig[n].label.replace("%N",Util.N2S(y));
 	// 幅(range)を取り込む（秒）
 	var	rangePlusTag  =  document.getElementById("DetailRangePlus"),
 		rangeMinusTag =  document.getElementById("DetailRangeMinus"),
@@ -559,7 +561,7 @@ HJN.Plot.Add=function(n, x, y) {
 	function adjustPlotToY(conc, x, toX, y, n, plot, rangePlus, rangeMinus, rangeUnit){
 		var	maxTime = 0,
 			concMax = 0,
-			i = HJN_util.binarySearch(x, conc, function(e){ return e.x; });
+			i = Util.binarySearch(x, conc, function(e){ return e.x; });
 		for (; i < conc.length && conc[i].x < toX; i++){	// #26
 			if (concMax <= conc[i].y){
     				maxTime = conc[i].x;
@@ -569,8 +571,8 @@ HJN.Plot.Add=function(n, x, y) {
 		if (concMax === y) { // 補正すべき時刻が求まったときCONC,ETATを追加する #23
             x = maxTime;
             format = "hh:mm:ss.ppp";
-            label = HJN_util.D2S(x, format, true) + " " + // #61
-                    HJN.seriesConfig[n].label.replace("%N",HJN_util.N2S(y));
+            label = Util.D2S(x, format, true) + " " + // #61
+                    HJN.seriesConfig[n].label.replace("%N",Util.N2S(y));
             HJN.Plot.List.push( {label: label, ckBox:false,
                  radio:true, n: n, x: x, y: y, 
                  rangePlus: rangePlus , rangeMinus: rangeMinus, rangeUnit: rangeUnit,

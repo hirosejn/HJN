@@ -1,9 +1,12 @@
 const webpack = require('webpack');
 module.exports = {
-  entry: `./src/main.js`, // メインとなるJavaScriptファイル（エントリーポイント）
+  entry: { // メインとなるJavaScriptファイル（エントリーポイント）
+      tatLogDiver: `./src/tatLogDiver.js`,
+      synchronizer: `./libs/extras/synchronizer.js`
+  }, 
   output: {                         // ファイルの出力設定
-    path: `${__dirname}/src/dist`,      // 出力ファイルのディレクトリ名
-    filename: 'bundle.min.js'           // 出力ファイル名
+    path: `${__dirname}/src_min`,      // 出力ファイルのディレクトリ名
+    filename: '[name].min.js'  // 出力ファイル名
   },
   module: {
       loaders: [                    // `-loader`は省略可能
