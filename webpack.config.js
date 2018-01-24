@@ -2,10 +2,9 @@ const webpack = require('webpack');
 module.exports = {
   entry: { // メインとなるJavaScriptファイル（エントリーポイント）
       tatLogDiver: `./src/tatLogDiver.js`,
-      synchronizer: `./libs/extras/synchronizer.js`
   }, 
   output: {                         // ファイルの出力設定
-    path: `${__dirname}/src_min`,      // 出力ファイルのディレクトリ名
+    path: `${__dirname}/dist`,      // 出力ファイルのディレクトリ名
     filename: '[name].min.js'  // 出力ファイル名
   },
   module: {
@@ -16,10 +15,12 @@ module.exports = {
       ]
   },
   devtool: 'source-map',            // ソースマップを有効にする
+  target: "web",    // 生成ソースの実行環境（チャンクの挙動と利用モジュールに影響）
+  externals: { // bundleしないモジュール（別途、ｈｔｍｌで読込）
+      Dygraph: true
+  },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({ // バンドルしたJSをminifyする
-      sourceMap: true               // minify時でもソースマップを利用する
-    })
+    new webpack.optimize.UglifyJsPlugin({sourceMap: true})
   ],
   devServer: {                      // ローカル開発用環境を立ち上げる
     contentBase: './',              // './src'と'./dist'の両方が見える場所

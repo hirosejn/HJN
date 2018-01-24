@@ -1,8 +1,7 @@
-/org.eclipse.wst.common.component
-/org.eclipse.wst.common.project.facet.core.xml
-/org.eclipse.wst.jsdt.ui.superType.container
-/org.eclipse.wst.jsdt.ui.superType.name
-/org.eclipse.core.resources[ç«¶åˆ].prefs
-/org.eclipse.core.resources[ç«¶åˆ].prefs
-/org.eclipse.core.resources[ç«¶åˆ].prefs
-/org.eclipse.core.resources[ç«¶åˆ].prefs
+##‚±‚±‚É–³Ž‹‚µ‚½‚¢ƒtƒ@ƒCƒ‹‚ÌðŒ‚È‚Ç‚ð‹L“ü‚·‚éB
+#classƒtƒ@ƒCƒ‹‚ð–³Ž‹‚·‚é
+*.class
+#.metadataƒfƒBƒŒƒNƒgƒŠ‚ð–³Ž‹‚·‚é
+.metadata/
+#RemoteSystemsTempFilesƒfƒBƒŒƒNƒgƒŠ‚ð–³Ž‹‚·‚é
+RemoteSystemsTempFiles/

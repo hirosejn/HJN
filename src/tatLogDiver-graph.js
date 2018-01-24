@@ -4,16 +4,13 @@ import * as Simulator from './util/simulators.js';
 import {HjnConfig} from './util/hjn-config.js';
 import {FileParser} from './tatLogDiver-fileParser.js';
 
-// import {Dygraph} from '../libs/dygraph.js';
-// import Dygraph from '../libs/extras/synchronizer.js';
-
-
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
 // HJN = {};
 // export default function HJN(){ return this; };
 export var HJN = {};
-HJN.ver = "v0.12.23";
+HJN.ver = "b18.01.25";
+window.HJN = HJN; // #67
 /** @namespace */
 // Util = {}; // utils登録変数
 /** @namespace */
@@ -1278,7 +1275,7 @@ HJN.Graph.prototype.addMenu = function () {
             + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
-        divSimulatorEditor.readOnly = true; // #22
+        // divSimulatorEditor.readOnly = true; // #22
         divSimulatorEditor.value = Simulator.virtualSystemByJson.GetJsonConfig(); // デフォルトJSON
         
         // View Menu
