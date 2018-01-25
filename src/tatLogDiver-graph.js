@@ -3,6 +3,7 @@ import * as Util from './util/utils.js';
 import * as Simulator from './util/simulators.js';
 import {HjnConfig} from './util/hjn-config.js';
 import {FileParser} from './tatLogDiver-fileParser.js';
+import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-init.js';
 
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 /* HJN クラス変数 */
@@ -11,6 +12,7 @@ import {FileParser} from './tatLogDiver-fileParser.js';
 export var HJN = {};
 HJN.ver = "b18.01.25";
 window.HJN = HJN; // #67
+window.Config = HjnConfig; 
 /** @namespace */
 // Util = {}; // utils登録変数
 /** @namespace */
@@ -1587,7 +1589,7 @@ HJN.Graph.prototype.menuSimulatorSimulate = function () { // #53
     var json = document.getElementById("SimulatorEditor").value;
     HJN.files = []; // #61
     HJN.Plot.List = [];
-    HJN.init.CreateSampleTatLogAndChartShow(json);
+    CreateSampleTatLogAndChartShow(json);
 
 };
 /**
