@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Random</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: Random</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="Util.html">Util</a>.</span>Random</h2>
+        
+            <div class="class-description">Random 乱数取得           <p>           ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>           M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う           <p>           参考 <a href="http://www.ishikawa-lab.com/montecarlo/4shou.html">http://www.ishikawa-lab.com/montecarlo/4shou.html</a></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_utils.js.html">util/utils.js</a>, <a href="util_utils.js.html#line366">line 366</a>
+    </dir>
+    
+
+    <h4 class="name" id="Random">
+    <span class="type-signature"></span>new Random<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    0.5
+                
+                </span>
+            
+
+            <div class="description last">平均値</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var r = HJN_util.Random(10), val = r.exponential();</code></pre>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_utils.js.html">util/utils.js</a>, <a href="util_utils.js.html#line412">line 412</a>
+    </dir>
+    
+
+    <h4 class="name" id="exponential">
+    <span class="type-signature">(static) </span>Random#exponential<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		指数分布となる乱数を返却する(lambda = 1/average)
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値=1/λ、分散=1/(λ^2)<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_utils.js.html">util/utils.js</a>, <a href="util_utils.js.html#line425">line 425</a>
+    </dir>
+    
+
+    <h4 class="name" id="poisson">
+    <span class="type-signature">(static) </span>Random#poisson<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		ポアソン分布となる乱数を返却する(lambda = average)
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値=分散=λ<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_utils.js.html">util/utils.js</a>, <a href="util_utils.js.html#line399">line 399</a>
+    </dir>
+    
+
+    <h4 class="name" id="uniform">
+    <span class="type-signature">(static) </span>Random#uniform<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    </h4>
+    
+    
+	<div class="description">
+		一様分布となる乱数を返却する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>average</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    this._average
+                
+                </span>
+            
+
+            <div class="description last">平均値<br></div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Number</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    乱数
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Config.html">Config</a></li><li><a href="tatLogDiver.FileParser.html">tatLogDiver.FileParser</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li><li><a href="VirtualApp.html">VirtualApp</a></li><li><a href="VirtualResource.html">VirtualResource</a></li><li><a href="VirtualSystem.html">VirtualSystem</a></li><li><a href="virtualSystemByJson.html">virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CreateSampleTatLogAndChartShow">CreateSampleTatLogAndChartShow</a></li><li><a href="global.html#HJN_init_ChartRegist">HJN_init_ChartRegist</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jan 27 2018 06:45:46 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

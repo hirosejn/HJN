@@ -1,0 +1,7 @@
+#無視するディレクトリ
+/.metadata/
+/RemoteSystemsTempFiles/
+
+#無視するファイル
+/npm-debug.log
+*.class

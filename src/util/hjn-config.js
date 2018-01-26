@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @class
+ * @class　Config
  * @classdesc 定数設定機能（設定HTML作成機能付き）
  *            <p>
  *            日時、TATフォーマット指定機能追加用に作成

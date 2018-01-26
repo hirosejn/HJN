@@ -1,7 +1,0 @@
-##ここに無視したいファイルの条件などを記入する。
-#classファイルを無視する
-*.class
-#.metadataディレクトリを無視する
-.metadata/
-#RemoteSystemsTempFilesディレクトリを無視する
-RemoteSystemsTempFiles/

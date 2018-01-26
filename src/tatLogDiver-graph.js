@@ -6,16 +6,13 @@ import {FileParser} from './tatLogDiver-fileParser.js';
 import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-init.js';
 
 /* ******1*********2*********3*********4*********5*********6*********7****** */
-/* HJN クラス変数 */
-// HJN = {};
-// export default function HJN(){ return this; };
+
+/** @namespace */
 export var HJN = {};
-HJN.ver = "b18.01.25";
 window.HJN = HJN; // #67
 window.Config = HjnConfig; 
-/** @namespace */
-// Util = {}; // utils登録変数
-/** @namespace */
+
+HJN.ver = "b18.01.25";
 HJN.init = {}; // 初期登録処理関連
 
 HJN.chart = HJN.chartD = null;
@@ -164,8 +161,8 @@ HJN.timer = {};
 /**
  * インスタンス内の定数を設定する。併せて性能対策として頻繁に使うDOM要素を取り込む
  * 
- * @namespace
- * @class
+ * @memberof tatLogDiver
+ * @class Graph
  * @classdesc TAT(Turnaround time)ログ分析用グラフ
  * @param {string}
  *            chartIdName グラフを作成するHTML要素のID
@@ -304,6 +301,8 @@ HJN.Graph.prototype = {
  * クラスメソッド：menuのFilterのｘｙ幅指定エリアにグラフのｘｙ幅を設定する<br>
  * dygraphのdrawCallbackに設定する関数<br>
  * menuのRadio(F_SYNC)選択時に呼び出す関数（このためにクラスメソッド）
+ * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.DrawCallback = function (g, is_initial) { // #50 #51
     // 初期表示時は、メニューを設定しない
@@ -332,6 +331,8 @@ HJN.Graph.DrawCallback = function (g, is_initial) { // #50 #51
 
 /**
  * グラフを初期化する
+ * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.prototype.init = function () {
     "use strict";
@@ -381,6 +382,7 @@ HJN.Graph.prototype.init = function () {
 /**
  * legendの表示指定をグラフに反映する(onclick呼出用）
  * 
+ * @memberof tatLogDiver.Graph
  * @param {index}
  *            i seriesSet配列の設定変更するグラフのインデックス
  */
@@ -393,6 +395,8 @@ HJN.Graph.prototype.onClickSetVisibility = function (i) { //
 
 /**
  * ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動、高さは指定）
+ * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.prototype.resize = function () {
     "use strict";
@@ -415,6 +419,7 @@ HJN.Graph.prototype.resize = function () {
 /**
  * seriesSetを取り込む
  * 
+ * @memberof tatLogDiver.Graph
  * @param {seriesSet}
  *            seriesSet dygraph用時系列データ配列
  */
@@ -429,6 +434,7 @@ HJN.Graph.prototype.setSeriesSet = function (seriesSet) { // #30
 /**
  * 終了時刻のTAT時系列データ(eTat)から、描画用時系列データ配列を作成する
  * 
+ * @memberof tatLogDiver.Graph
  * @param {ETAT}
  *            eTat [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
  * @return {seriesSet} dygraph用時系列データ配列
@@ -652,6 +658,7 @@ HJN.Graph.prototype.createSeries = function (eTat) {
 /**
  * データを変更し描画する
  * 
+ * @memberof tatLogDiver.Graph
  * @param {seriesSet}
  *            seriesSet dygraph用時系列データ配列
  */
@@ -1069,6 +1076,8 @@ HJN.Graph.prototype.update = function (seriesSet, n) {
 
 /**
  * dygraphのBalloonを再描画する
+ * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.prototype.showBalloon = function () {
     "use strict";
@@ -1119,6 +1128,7 @@ HJN.Graph.prototype.showBalloon = function () {
  * dygraphのlegendを編集する(dygraph オプション登録用関数）
  * {@link http://dygraphs.com/options.html#legendFormatter}
  * 
+ * @memberof tatLogDiver.Graph
  * @param {ETAT}
  *            data [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
  * @return {string} dygraphのlegendに表示する文字（HTML)
@@ -1161,6 +1171,7 @@ HJN.Graph.prototype.legendFormatter = function (data) {
 /**
  * メニューを追加する
  * 
+ * @memberof tatLogDiver.Graph
  * @param {ETAT}
  *            eTat [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
  * @return {seriesSet} dygraph用時系列データ配列
@@ -1427,6 +1438,7 @@ HJN.Graph.prototype.addMenu = function () {
 /**
  * メニュー機能：CSVデータファイルを開く
  * 
+ * @memberof tatLogDiver.Graph
  * @param {evt}
  *            evt ファイルオープンイペント
  */
@@ -1440,6 +1452,7 @@ HJN.Graph.prototype.menuOpenCsv = function (evt) {
 /**
  * メニュー機能：画面設定をJSON形式のセーブファイルとしてダウンロードする
  * 
+ * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
  * @param {String}
@@ -1460,6 +1473,7 @@ HJN.Graph.prototype.menuSaveConfig = function (menuId, fileName) {
 /**
  * メニュー機能：JSON形式の画面設定ファイルをロードし画面表示に反映する TODO
  * 
+ * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ？
  * @param {String}
@@ -1540,6 +1554,7 @@ HJN.Graph.prototype.menuLoadConfig = function (evt) { // #10
 /**
  * メニュー機能：メニューで指定されたフィルタの条件で再描画する
  * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.prototype.menuFilterApply = function () { // #34
     "use strict";
@@ -1554,6 +1569,7 @@ HJN.Graph.prototype.menuFilterApply = function () { // #34
 /**
  * メニュー機能：フィルタ条件を初期値にし、再描画する
  * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.prototype.menuFilterClear = function () { // #34
     "use strict";
@@ -1582,6 +1598,7 @@ HJN.Graph.prototype.menuFilterClear = function () { // #34
 /**
  * メニュー機能：シミュレータ 指定JSONでシミュレートする
  * 
+ * @memberof tatLogDiver.Graph
  */
 HJN.Graph.prototype.menuSimulatorSimulate = function () { // #53
     "use strict";
@@ -1618,6 +1635,7 @@ HJN.Graph.prototype.menuSimulatorEditor = function () { // #53
 /**
  * メニュー機能：canvas画像をファイルとしてダウンロードする
  * 
+ * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
  * @param {String}
@@ -1649,6 +1667,7 @@ HJN.Graph.prototype.menuDownloadImg = function (menuId, fileName) {
 /**
  * メニュー機能：グラフ全データをCSVファイルとしてダウンロードする
  * 
+ * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
  * @param {String}
@@ -1671,6 +1690,7 @@ HJN.Graph.prototype.menuDownloadCsv = function (menuId, fileName) {
 /**
  * メニュー機能：グラフ全データの編集元に該当するTATログの該当行をCSVファイルとしてダウンロードする
  * 
+ * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
  * @param {String}
@@ -1725,6 +1745,7 @@ HJN.Graph.prototype.menuDownloadLog = function (menuId, fileName) {
 /**
  * メニュー機能：plotsでconcが選択されているとき、同時処理に該当するTATログの該当行をCSVファイルとしてダウンロードする
  * 
+ * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
  * @param {String}
@@ -1788,6 +1809,7 @@ HJN.Graph.prototype.menuDownloadConc = function (menuId, fileName) {
 /**
  * メニュー共通機能：BinaryString, UintXXArray, ArrayBuffer をBlobに変換する
  * 
+ * @memberof tatLogDiver.Graph
  * @param {Object}
  *            arrayBuffer 変換元
  * @param {Blob} -
@@ -1803,6 +1825,7 @@ HJN.Graph.prototype.menuBuffToBlob = function (arrayBuffer) {
 /**
  * メニュー共通機能：指定blobをファイルとしてダウンロードする
  * 
+ * @memberof tatLogDiver.Graph
  * @param {Objcet}
  *            blob ダウンロードさせるblogデータ
  * @param {String}
@@ -1821,6 +1844,11 @@ HJN.Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
     }
 };
 
+/**
+ * Zoomリセットアイコンを追加する
+ * 
+ * @memberof tatLogDiver.Graph
+ */
 HJN.Graph.prototype.addIcon_ZoomReset = function () {
     "use strict";
     var divChart = this.chartId; // document.getElementById("Icons");
@@ -1844,7 +1872,7 @@ HJN.Graph.prototype.addIcon_ZoomReset = function () {
 
     // div.id = id;
     // div.className = "menuBar";
-// div = element.parentElement;
+    // div = element.parentElement;
     /*
      * var divIcons = document.getElementById("Icons"); var idName =
      * this.chartIdName + "Zoom"; if (divIcons) { var div =

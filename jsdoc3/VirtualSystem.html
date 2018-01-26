@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: VirtualSystem</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: VirtualSystem</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>VirtualSystem</h2>
+        
+            <div class="class-description">仮想システム(VirtualSystem)           <p>           Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する           <p>           Webサーバ<br>           最大スレッド数： Apache 2.4 [MaxClients = 1024]<br>           JBossトランザクションタイムアウト [default-timeout = 300 秒]<br>           キュー長 ： Apache 2.4 ListenBackLog (511) + Linux           tcp_max_syn_backlog(769=1024*0.75+1)、タイムアウトなし<br>           APサーバ<br>           最大スレッド数(maxThreads)<br>           JBossトランザクションタイムアウト [default-timeout=300 秒]<br>           DBサーバ 最大コネクション数(max_connections)</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_simulators.js.html">util/simulators.js</a>, <a href="util_simulators.js.html#line30">line 30</a>
+    </dir>
+    
+
+    <h4 class="name" id="VirtualSystem">
+    <span class="type-signature"></span>new VirtualSystem<span class="signature">(start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, resourcesJson<span class="signature-attributes">opt</span>, log<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>start</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    1970/01/02 00:00:00)
+                
+                </span>
+            
+
+            <div class="description last">シミュレート開始時刻（UNIX日付（ミリ秒））</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>end</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    startの24時間後
+                
+                </span>
+            
+
+            <div class="description last">シミュレート終了時刻（UNIX日付（ミリ秒））</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>resourcesJson</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">リソース指定JSONテキスト</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>log</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    false
+                
+                </span>
+            
+
+            <div class="description last">詳細ログ出力有無</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>sim = simulator.VirtualSystem()</code></pre>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Config.html">Config</a></li><li><a href="tatLogDiver.FileParser.html">tatLogDiver.FileParser</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li><li><a href="VirtualApp.html">VirtualApp</a></li><li><a href="VirtualResource.html">VirtualResource</a></li><li><a href="VirtualSystem.html">VirtualSystem</a></li><li><a href="virtualSystemByJson.html">virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CreateSampleTatLogAndChartShow">CreateSampleTatLogAndChartShow</a></li><li><a href="global.html#HJN_init_ChartRegist">HJN_init_ChartRegist</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jan 27 2018 06:45:46 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

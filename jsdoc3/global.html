@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Global</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Global</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line107">line 107</a>
+    </dir>
+    
+
+    <h4 class="name" id="CreateSampleTatLogAndChartShow">
+    <span class="type-signature"></span>CreateSampleTatLogAndChartShow<span class="signature">(json<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		データを自動生成し表示する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>json</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    Simulator.virtualSystemByJson.GetJsonConfig(0)
+                
+                </span>
+            
+
+            <div class="description last">シミュレーション条件JSONテキスト、もしくはサンプルJSON番号</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line39">line 39</a>
+    </dir>
+    
+
+    <h4 class="name" id="HJN_init_ChartRegist">
+    <span class="type-signature"></span>HJN_init_ChartRegist<span class="signature">(chartName<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ETAT">ETAT</a>}</span>
+    </h4>
+    
+    
+	<div class="description">
+		HTMLから呼び出すAPI
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>chartName</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    HJN.chartName="chart"
+                
+                </span>
+            
+
+            <div class="description last">グラフを作成するHTMLタグ名</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type"><a href="global.html#ETAT">ETAT</a></span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    終了時刻のTAT（応答時間）時系列データ
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;!doctype html>&lt;html>&lt;head>&lt;meta charset="UTF-8">&lt;link type="text/css" rel="stylesheet" href="../libs/dygraph.css">&lt;link type="text/css" rel="stylesheet" href="./tatLogDiver.css">&lt;/head>&lt;body>&lt;div id="hjn_chart">&lt;/div>&lt;script src="../libs/dygraph.js">&lt;/script>&lt;script src="../libs/extras/synchronizer.js">&lt;/script>&lt;script type="module">import {HJN_init_ChartRegist} from "./tatLogDiver-init.js";window.addEventListener("DOMContentLoaded",function(eve){　　HJN_init_ChartRegist("chart");      // チャートを作成する});&lt;/script>&lt;/body>&lt;/html></code></pre>
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="CONC">CONC</h4>
+
+
+
+
+<div class="description">
+    CONC:多重度の時系列データ<br>[{x:変化時刻(ms) ,y:多重度数 }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#yInt">yInt</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="CTPS">CTPS</h4>
+
+
+
+
+<div class="description">
+    CTPS: 秒間最大多重度の時系列データ<br>[{x:秒毎時刻(ms), y:秒内最大多重度数 }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#index">index</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="EAPS">EAPS</h4>
+
+
+
+
+<div class="description">
+    EAPS: 秒間平均TAT（応答時間）時系列データ（終了時刻ベース）<br>[{x:秒毎時刻(ms), y:秒内平均レスポンス(sec) }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#ySec">ySec</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="EMPS">EMPS</h4>
+
+
+
+
+<div class="description">
+    EMPS: 秒間最大TAT（応答時間）時系列データ（終了時刻ベース）<br>[{x:秒毎時刻(ms), y:秒内最大レスポンス(sec) }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#ySec">ySec</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="ETAT">ETAT</h4>
+
+
+
+
+<div class="description">
+    ETAT: 終了時刻のTAT（応答時間）時系列データ<br>[{x:変化時刻(ms) ,y:レスポンス(sec), fileIdx:ファイル配列位置, pos:レコード位置, len:レコード長, sTatIdx:sTatの配列位置 }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#ySec">ySec</a>, <a href="global.html#index">index</a>, <a href="global.html#index">index</a>, number, <a href="global.html#index">index</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="ETPS">ETPS</h4>
+
+
+
+
+<div class="description">
+    ETPS: 秒間終了件数の時系列データ<br>[{x:秒毎時刻(ms), y:秒内終了件数 }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#yInt">yInt</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="index">index</h4>
+
+
+
+
+<div class="description">
+    index: 配列の位置（インデックス）に用いる整数
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="seriesSet">seriesSet</h4>
+
+
+
+
+<div class="description">
+    seriesSet: dygraph用時系列データ配列
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#CONC">CONC</a>, <a href="global.html#CTPS">CTPS</a>, <a href="global.html#ETPS">ETPS</a>, <a href="global.html#STAT">STAT</a>, <a href="global.html#ETAT">ETAT</a>, <a href="global.html#EMPS">EMPS</a>, <a href="global.html#EAPS">EAPS</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="STAT">STAT</h4>
+
+
+
+
+<div class="description">
+    STAT: 開始時刻のTAT（応答時間）時系列データ<br>[{x:開始時刻(ms) ,y:レスポンス(sec), eTatIdx: eTatの配列位置 }]
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;<a href="global.html#xMs">xMs</a>, <a href="global.html#ySec">ySec</a>, <a href="global.html#index">index</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="xMs">xMs</h4>
+
+
+
+
+<div class="description">
+    xMs: x軸に用いる時刻(ms)
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="yInt">yInt</h4>
+
+
+
+
+<div class="description">
+    yInt: y軸に用いる整数（個数など）
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="ySec">ySec</h4>
+
+
+
+
+<div class="description">
+    ySec: y軸に用いる秒単位の時間（応答時間など）
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Config.html">Config</a></li><li><a href="tatLogDiver.FileParser.html">tatLogDiver.FileParser</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li><li><a href="VirtualApp.html">VirtualApp</a></li><li><a href="VirtualResource.html">VirtualResource</a></li><li><a href="VirtualSystem.html">VirtualSystem</a></li><li><a href="virtualSystemByJson.html">virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CreateSampleTatLogAndChartShow">CreateSampleTatLogAndChartShow</a></li><li><a href="global.html#HJN_init_ChartRegist">HJN_init_ChartRegist</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jan 27 2018 06:45:46 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

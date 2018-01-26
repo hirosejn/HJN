@@ -1,0 +1,17 @@
+{
+    "source": {
+        "include":  ["C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\util"]
+    },
+    "opts": {
+        "template":  "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\jsdoc_templates",
+        "destination": "\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\jsdoc3",
+        "recurese": true,
+        "private": false
+    },
+    "templates": {
+        "default": {
+            "useLongnameInNav": true
+        }
+    }
+}

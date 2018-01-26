@@ -5,7 +5,8 @@ import {CreateSampleTatLogAndChartShow} from './tatLogDiver-init.js';
 import {HJN} from './tatLogDiver-graph.js';
 
 /**
- * @class
+ * @memberof tatLogDiver
+ * @class FileParser
  * @classdesc ファイルをパースして読み込む
  *            <p>
  *            パース条件指定画面生成つき
@@ -157,7 +158,7 @@ export var FileParser = (function() {
     /**
      * ファイルリーダのプロパティ管理インスタンスを取得する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser
      * @param {Object}
      *            fileReader ファイルリーダ
      * @param {String}
@@ -178,7 +179,7 @@ export var FileParser = (function() {
         /**
          * keyの値に指定されたvalue（なければkey値）を返却する
          * 
-         * @memberof HJN_util.FileParser.Property
+         * @memberof tatLogDiver.FileParser.Property
          * @param {String}
          *            key Conginのキー値
          */
@@ -193,7 +194,7 @@ export var FileParser = (function() {
         /**
          * configに登録されているkey(prefix補填)の設定値を取得する
          * 
-         * @memberof HJN_util.FileParser.Property
+         * @memberof tatLogDiver.FileParser.Property
          */
         Property.prototype.getValueByKey = function(key) {
             return this._config.getValueByKey(key);
@@ -211,7 +212,7 @@ export var FileParser = (function() {
     /**
      * ファイルが新たに指定された時、eTatOriginalを再構築するか否（データを追加する）か
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser
      * @return {boolean} 再構築モードするときtrue、データを追加するときfalse
      */
     FileParser.prototype.isNewETAT = function() { // #23
@@ -221,17 +222,17 @@ export var FileParser = (function() {
     /**
      * 「ファイルから次の1レコードを取得するutil」 を取得する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser
      */
     FileParser.prototype.createGetterOfLine = function(file) {
 
         /**
-         * @class
+         * @memberof tatLogDiver.FileParser
+         * @class GetterOfLine
          * @classdesc ファイルから１レコード取得する
          *            <p>
          *            ファクトリのFileParserが保持する改行コードを用いて、ファイルから１レコードを取得する
          * 
-         * @memberof HJN_util.FileParser
          * @example try{ var getterOfLine =
          *          HJN.chart.fileReader.createGetterOfLine(file), fileInfo;<br>
          *          for(var i = 0; i < n; i++) { <br>
@@ -255,8 +256,8 @@ export var FileParser = (function() {
         /**
          * 次の1レコードを取得する
          * 
+         * @memberof tatLogDiver.FileParser.GetterOfLine
          * @name getValueByKey
-         * @memberof HJN_util.FileParser.GetterOfLine
          */
         if (HJN.chart.fileReader.getValueByKey("LF") === "LF_FIX"){ // 固定長のとき
             GetterOfLine.prototype.next = function () { // 次の1レコードを取得する
@@ -302,16 +303,16 @@ export var FileParser = (function() {
     /**
      * eTatのフィルター
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser
      */
     FileParser.prototype.createFilter = function() { // #34
        /**
-         * @class
+         * @memberof tatLogDiver.FileParser
+         * @class Filter
          * @classdesc FileParserのフィルター
          *            <p>
          *            ファクトリのFileParserが保持するフィルタ条件を用いるフィルターを取得する
          * 
-         * @memberof HJN_util.FileParser
          */
         function Filter(){ /* constructor */
             if(!(this instanceof Filter)) return new Filter();
@@ -355,7 +356,7 @@ export var FileParser = (function() {
         /**
          * フィルター条件で判定する
          * 
-         * @memberof HJN_util.FileParser.Filter
+         * @memberof tatLogDiver.FileParser.Filter
          */
         Filter.prototype._isIn = function (e) {
             // フィルタ指定が無いときフィルタしない（初期表示時に無駄な処理をしない）
@@ -403,7 +404,7 @@ export var FileParser = (function() {
         /**
          * eTatをフィルターする
          * 
-         * @memberof HJN_util.FileParser.Filter
+         * @memberof tatLogDiver.FileParser.Filter
          * @param {eTat}
          *            eTat フィルター処理対象のeTat
          * @return {eTat} eTat フィルターされたeTat
@@ -421,17 +422,16 @@ export var FileParser = (function() {
     /**
      * 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.Filter
      */
     FileParser.prototype.createGetterOfXY = function() {
 
         /**
-         * @class
+         * @memberof tatLogDiver.FileParser.Filter
+         * @class GetterOfXY
          * @classdesc １レコードをパースし、XとYをレコード取得する
          *            <p>
          *            ファクトリのFileParserが保持するレコードフォーマット情報を用いて、ファイルの指定レコードからＸ(data)とＹ(value)を取得する
-         * 
-         * @memberof HJN_util.FileParser
          */
         function GetterOfXY(){ /* constructor */
             if(!(this instanceof GetterOfXY)) return new GetterOfXY();
@@ -483,7 +483,7 @@ export var FileParser = (function() {
          * 数字をパースして数値（ミリ秒）を取得する<br>
          * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
          * 
-         * @memberof HJN_util.FileParser.GetterOfXY
+         * @memberof tatLogDiver.FileParser.GetterOfXY
          */
         GetterOfXY.parseNumber = function (){ // str, unit,
             var str = arguments[0],
@@ -521,7 +521,7 @@ export var FileParser = (function() {
         /**
          * レコードからXとYを取得する
          * 
-         * @memberof HJN_util.FileParser.GetterOfXY
+         * @memberof tatLogDiver.FileParser.GetterOfXY
          */
         GetterOfXY.prototype.parse = function (line) {
             // セパレータでカラム分割する
@@ -589,7 +589,7 @@ export var FileParser = (function() {
     /**
      * configに登録されているid(=prefix+key)の設定値を取得する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      */
     FileParser.prototype.getObjctById = function(id) {
         return this[this.configId].getObjctById(id);
@@ -597,7 +597,7 @@ export var FileParser = (function() {
     /**
      * configに登録されているkey(prefix補填)の設定値を取得する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      */
     FileParser.prototype.getValueByKey = function(key) {
         return this[this.configId].getValueByKey(key);
@@ -605,7 +605,7 @@ export var FileParser = (function() {
     /**
      * 設定値を保有するオブジェクトを返却する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      */
     FileParser.prototype.getConfig = function() {
         return this[this.configId]._config;
@@ -613,7 +613,7 @@ export var FileParser = (function() {
     /**
      * HTML（config設定用）テキストを返却する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      */
     FileParser.prototype.getConfigHtml = function(type) {
         type = type || "File";
@@ -622,7 +622,7 @@ export var FileParser = (function() {
     /**
      * keyの値に指定された関数（なければ何もしない関数）を返却する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      */
     FileParser.prototype.getFunction = function(key) {
         var cKey = this[this.configId].getValueByKey(key);
@@ -635,7 +635,7 @@ export var FileParser = (function() {
     /**
      * eTatの指定行の編集元レコードを、テキストフォーマットに変換して取得する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      * @param {Object}
      *            e eTat[n]：eTatの指定行
      * @return {String} eTatの指定行の表示用テキスト
@@ -673,7 +673,7 @@ export var FileParser = (function() {
     /**
      * keyの値に指定されたvalue（なければkey値）を返却する
      * 
-     * @memberof HJN_util.FileParser
+     * @memberof tatLogDiver.FileParser.GetterOfXY
      * @param {String}
      *            key Conginのキー値
      */

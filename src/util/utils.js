@@ -49,9 +49,12 @@ if (!Array.prototype.find) {
     };
   }
 
+/** @namespace */
+var Util = {}; // utils登録変数
 
 /**
- * @class
+ * @memberOf Util
+ * @class TouchPanel
  * @classdesc タッチパネル用ツール
  *            <p>
  *            参考 {@https://code.i-harness.com/ja/q/4f2389}
@@ -99,7 +102,7 @@ export var TouchPanel = (function() { // #56
      * <p>
      * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
      * 
-     * @memberof HJN_util.TouchPanel
+     * @memberof Util.TouchPanel
      * @param {Object}
      *            element 対象dom要素
      * @param {Boolean}
@@ -199,7 +202,7 @@ export var TouchPanel = (function() { // #56
 
 /**
  * 日時文字列を指定フォーマットでパースして数値(ミリ秒単位）を取得する
- * 
+ * @memberOf Util
  * @param {String}
  *            str
  * @param {Object|String}
@@ -254,6 +257,7 @@ export var S2D = function(str, conf){ // #34
 /**
  * 日時(Date)から、ローカル時刻に基づく、指定フォーマットの文字列を取得する
  * 
+ * @memberOf Util
  * @param {Date}
  *            dt Date型（内部実装はミリ秒単位）
  * @param {String}
@@ -280,6 +284,7 @@ export var DateToString = function() {
 /**
  * 日時(ミリ秒：Ｘ軸用）から、時差補正のない、指定フォーマットの文字列を取得する
  * 
+ * @memberOf Util
  * @param {Number|Date}
  *            ds 時刻をUNIX経過時間（ミリ秒）で表した数値、もしくはDate(日付）
  * @param {String}
@@ -323,6 +328,7 @@ export var D2S = function(ds, str, isLocal){ // #60
  * 数値(Ｙ軸用）から、誤差のない表示用文字列を取得する<br>
  * （hover、legendなどでY軸の値を使うときに使用する）
  * 
+ * @memberOf Util
  * @param {Number|Date}
  *            y 時刻をUNIX経過時間（ミリ秒）で表した数値、もしくはDate(日付）
  * @return {String} str 編集後文字列
@@ -336,6 +342,7 @@ export var N2S = function(y){
 /**
  * 文字列を数値に変換する
  * 
+ * @memberOf Util
  * @param {String|Number}
  *            [str = sub] 計算式（日時分秒ミリ秒(d,h,mim,sec,ms)の文字は、ミリ秒に変換する）
  * @param {String|Number}
@@ -357,7 +364,8 @@ export var S2N = function(str, sub){ // #53
 
 
 /**
- * @class
+ * @memberOf Util
+ * @class Random
  * @classdesc Random 乱数取得
  *            <p>
  *            ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>
@@ -383,7 +391,7 @@ export var Random = (function() { // #56
     /**
      * 一様分布となる乱数を返却する
      * 
-     * @memberof HJN_util.Random
+     * @memberof Util.Random
      * @param {Number}
      *            [average=this._average] 平均値<br>
      * @return {Number} 乱数
@@ -396,7 +404,7 @@ export var Random = (function() { // #56
     /**
      * 指数分布となる乱数を返却する(lambda = 1/average)
      * 
-     * @memberof HJN_util.Random
+     * @memberof Util.Random
      * @param {Number}
      *            [average=this._average] 平均値=1/λ、分散=1/(λ^2)<br>
      * @return {Number} 乱数
@@ -409,7 +417,7 @@ export var Random = (function() { // #56
     /**
      * ポアソン分布となる乱数を返却する(lambda = average)
      * 
-     * @memberof HJN_util.Random
+     * @memberof Util.Random
      * @param {Number}
      *            [average=this._average] 平均値=分散=λ<br>
      * @return {Number} 乱数
@@ -432,7 +440,8 @@ export var Random = (function() { // #56
 
 
 /**
- * @class
+ * @memberOf Util
+ * @class Cash
  * @classdesc キャッシュ
  *            <p>
  *            キャッシュを保持させるオブジェクト
@@ -456,7 +465,7 @@ export var Cash = (function() {
      * 第一引数のargumentsを配列に変換する<br>
      * （注：引数が１つ以上あることを前提）
      * 
-     * @memberof HJN_util.Cash
+     * @memberof Util.Cash
      * @param {Number}
      *            args 引数一覧（arguments）
      * @return {Array} 引数の配列
@@ -468,7 +477,7 @@ export var Cash = (function() {
      * cash判定Keyを取得する<br>
      * （注：引数を'.'でつないだ文字列をkeyとするので、関数名長の上限を超える大きな配列は不可）
      * 
-     * @memberof HJN_util.Cash
+     * @memberof Util.Cash
      * @param {Number}
      *            args 引数一覧（argumentsオブジェクト）
      * @return {String} キャッシュキー用の文字列
@@ -485,7 +494,7 @@ export var Cash = (function() {
      * cashオブジェクトを、cashが無いときはundefinedを返却する<br>
      * cashヒットした場合、cashの使用回数をカウントアップする
      * 
-     * @memberof HJN_util.Cash
+     * @memberof Util.Cash
      * @param {Object}
      *            arguments 引数からキー文字列を定める
      * @return {Number|undefined} キャッシュデータ（デーがが無い場合は undefined)
@@ -506,7 +515,7 @@ export var Cash = (function() {
     /**
      * オブジェクトをcashする
      * 
-     * @memberof HJN_util.Cash
+     * @memberof Util.Cash
      * @param {Object}
      *            cashVal キャッシュするオブジェクト
      * @param {Object}
@@ -526,7 +535,7 @@ export var Cash = (function() {
      * レンジキー(form,to)範囲内でキーマッチするcashを、cashが無いときはundefinedを返却する<br>
      * キーは大小比較できる数値であることが前提
      * 
-     * @memberof HJN_util.Cash
+     * @memberof Util.Cash
      * @param {Number}
      *            from 抽出するキャッシュキー最小値
      * @param {Number}
@@ -543,7 +552,7 @@ export var Cash = (function() {
      * レンジキー(from,to)指定でキャッシュする<br>
      * キーは大小比較できること（通常、数値）、from-to期間内の既存のキャッシュは削除される
      * 
-     * @memberof HJN_util.Cash
+     * @memberof Util.Cash
      * @param {Object}
      *            cashVal キャッシュするオブジェクト
      * @param {Number}
@@ -580,8 +589,8 @@ export var Cash = (function() {
 
 
 /**
- * @class
- * @classdesc 非同期化
+ * @memberOf Util
+ * 非同期化
  * 
  * @param {function}
  *            global 非同期化して実行する関数
@@ -616,7 +625,8 @@ export var setZeroTimeout = (function(global) {
 
 
 /**
- * @class
+ * @memberOf Util
+ * @class Logger
  * @classdesc ロガー
  *            <p>
  *            モードに応じたログを出力する。画面ログ表示領域、コンソールログへの出力に対応
@@ -641,7 +651,7 @@ export var Logger = (function() { // #27
     /**
      * 一定時間（１分）経過後、最初に本メソッドが呼ばれたときのみログ出力する（ループ用）
      * 
-     * @memberof HJN_util.Logger
+     * @memberof Util.Logger
      * @param {Number}
      *            i 参考番号<br>
      *            経過時間内のループ回数などの表示に使用することを想定
@@ -660,7 +670,7 @@ export var Logger = (function() { // #27
     /**
      * ログ出力： ログテキストを初期化する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof Util.Logger
      * @param {String}
      *            text ログ出力文字列
      * @param {String}
@@ -674,7 +684,7 @@ export var Logger = (function() { // #27
     /**
      * ログ出力： ログテキストをテキストアレイに追記し、表示する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof Util.Logger
      * @param {String}
      *            text ログ出力文字列
      * @param {String}
@@ -701,7 +711,7 @@ export var Logger = (function() { // #27
     /**
      * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof Util.Logger
      * @param {String}
      *            textArray 出力するログ（配列１行がログ１件）
      */
@@ -715,7 +725,7 @@ export var Logger = (function() { // #27
     /**
      * 第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
      * 
-     * @memberof HJN_util.Logger
+     * @memberof Util.Logger
      * @param {String}
      *            elementId iframeのID名
      * @param {String}
@@ -737,6 +747,7 @@ export var Logger = (function() { // #27
 /**
  * 指定されたtextareaを使って、クリップボードにコピーする
  * 
+ * @memberof Util
  * @param {Object}
  *            elementID textareaのID名
  */
@@ -749,7 +760,8 @@ export var CopyToClipboard = function(elementId) { // #61
 }
 
 /**
- * @class
+ * @memberOf Util
+ * @class binarySearch
  * @classdesc 配列二分木検索
  * 
  * @param {Number}
@@ -817,11 +829,11 @@ export var binarySearch = function (val, arr, func, low, high, isEqual) {
 
 
 /**
- * @class
+ * @memberOf Util
+ * @class MappedETat
  * @classdesc 期間指定eTat取得用Map
  *            <p>
  *            指定期間に動いているeTatの一覧を、高速に取得するマップ
- * 
  * @param {ETAT}
  *            eTat インデックスを追加するETAT
  * @example eTat.tatMap = new HJN_util.MappedETat(eTat); var trans =
@@ -908,7 +920,7 @@ export var MappedETat = (function() { // #18
     /**
      * 指定期間に動いているeTatを検索する
      * 
-     * @memberof HJN_util.MappedETat
+     * @memberOf Util.MappedETat
      * @parm {Number} from 指定期間(from)
      * @parm {Number} [to=from] 指定期間(to)
      * @parm {Number} [cap] cap件数となったら抽出を終了する（指定なしの時：全件）
@@ -959,7 +971,8 @@ export var MappedETat = (function() { // #18
 
 
 /**
- * @class
+ * @memberOf Util
+ * @class MappedArray
  * @classdesc 配列位置逆引きマップ
  *            <p>
  *            配列に格納されているオブジェクトのx値で、配列位置を高速検索するマップ<br>
@@ -1040,7 +1053,7 @@ export var MappedArray = (function() {    // #18
     /**
      * 値の存在チェック
      * 
-     * @meexport var N_util.MappedArray
+     * @memberOf Util.MappedArray
      */
     MappedArray.prototype.has = function (keyValue) {
         return keyValue in this._map;
@@ -1048,7 +1061,7 @@ export var MappedArray = (function() {    // #18
     /**
      * 該当位置を配列で返す
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberOf Util.MappedArray
      */
     MappedArray.prototype.indexes = function (keyValue) {
         return this._map[keyValue] || [];
@@ -1056,7 +1069,7 @@ export var MappedArray = (function() {    // #18
     /**
      * 該当する要素を配列で返す
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberOf Util.MappedArray
      */
     MappedArray.prototype.search = function (keyValue) {    
         var arr = this._arr;
@@ -1068,7 +1081,7 @@ export var MappedArray = (function() {    // #18
     /**
      * Array.prototype.indexOf() 同等
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberOf Util.MappedArray
      */
     MappedArray.prototype.indexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
@@ -1078,7 +1091,7 @@ export var MappedArray = (function() {    // #18
     /**
      * Array.prototype.lastIndexOf() 同等
      * 
-     * @memberof HJN_util.MappedArray
+     * @memberOf Util.MappedArray
      */
     MappedArray.prototype.lastIndexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
@@ -1091,7 +1104,8 @@ export var MappedArray = (function() {    // #18
 
 
 /**
- * @class
+ * @memberOf Util
+ * @class Heap
  * @classdesc Heap ヒープ(二分ヒープ)
  *            <p>
  *            最小値(最大値)を効率よく取り出すことができるデータ構造
@@ -1224,7 +1238,7 @@ export var Heap = (function() { // #55
     /**
      * データを追加する
      * 
-     * @memberof HJN_util.Heap
+     * @memberOf Util.Heap
      * @param {Object}
      *            obj 登録オブジェクト
      */
@@ -1239,7 +1253,7 @@ export var Heap = (function() { // #55
     /**
      * 最小値のデータを取り出す
      * 
-     * @memberof HJN_util.Heap
+     * @memberOf Util.Heap
      * @return {Object|undefined} 最小値
      */
     Heap.prototype.pop = function() {
@@ -1257,7 +1271,7 @@ export var Heap = (function() { // #55
     /**
      * 指定データを削除する
      * 
-     * @memberof HJN_util.Heap
+     * @memberOf Util.Heap
      * @param {Object}
      *            obj 削除対象と同一オブジェクト(=== で判定)
      * @return {Object|undefined} 削除したオブジェクト（undefined：合致するオブジェクトが無いとき）
@@ -1283,7 +1297,7 @@ export var Heap = (function() { // #55
     /**
      * 最小値を返却する（登録データは変更しない）
      * 
-     * @memberof HJN_util.Heap
+     * @memberOf Util.Heap
      * @return {Object|undefined} 最小値
      */
     Heap.prototype.top = function() {
@@ -1292,7 +1306,7 @@ export var Heap = (function() { // #55
     /**
      * ヒープのサイズを返却する
      * 
-     * @memberof HJN_util.Heap
+     * @memberOf Util.Heap
      * @return {Number} ヒープサイズ（0以上）
      */
     Heap.prototype.size = function() {

@@ -3,21 +3,35 @@ import * as Util from './util/utils.js';
 import * as Simulator from './util/simulators.js';
 import {HjnConfig} from './util/hjn-config.js';
 import {HJN} from './tatLogDiver-graph.js';
-// import {Dygraph} from '../libs/dygraph.js';
-// import Dygraph from '../libs/extras/synchronizer.js';
-
 
 /* *****1*********2*********3*********4*********5*********6*********7******* */
 /**
- * HTMLから呼ばれるサンプル実装
+ * HTMLから呼び出すAPI
  * 
  * @param {string}
  *            [chartName=HJN.chartName="chart"] グラフを作成するHTMLタグ名
  * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ
- * @example window.addEventListener("DOMContentLoaded",function(eve){
- *          HJN.init.ChartRegist("chart"); });
+ * @example
+ * <!doctype html>
+ * <html>
+ * <head>
+ * <meta charset="UTF-8">
+ * <link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+ * <link type="text/css" rel="stylesheet" href="./tatLogDiver.css">
+ * </head>
+ * <body>
+ * <div id="hjn_chart"></div>
+ * <script src="../libs/dygraph.js"></script>
+ * <script src="../libs/extras/synchronizer.js"></script>
+ * <script type="module">
+ * import {HJN_init_ChartRegist} from "./tatLogDiver-init.js";
+ * window.addEventListener("DOMContentLoaded",function(eve){
+ * 　　HJN_init_ChartRegist("chart");      // チャートを作成する
+ * });
+ * </script>
+ * </body>
+ * </html>
  */
-// export {HJN_init_ChartRegist};
 export function HJN_init_ChartRegist(chartName){ // #70
 
 	"use strict";
@@ -103,7 +117,7 @@ export function CreateSampleTatLogAndChartShow(json){ // #53
 }
 
 /**
- * HJN.init.ChartShow: 終了時刻とtatの配列をグラフ表示する
+ * 終了時刻とtatの配列をグラフ表示する
  * 
  * @param {ETAT}
  *            HJN.chart.eTatOriginal 終了時刻とtatを含む配列
@@ -137,7 +151,7 @@ HJN.init.ChartShow = function(eTatOriginal){
 }
 
 /**
- * HJN.init.DropField: HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
+ * HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
  * 
  * @param {string}
  *            dropFieldName ファイルのドロップイベントを受けるフィールド名
@@ -163,7 +177,7 @@ HJN.init.DropField = function (dropFieldName) {
 };
 
 /**
- * HJN.init.FileReader: 指定されたファイルを読込んで処理する
+ * 指定されたファイルを読込んで処理する
  * 
  * @param {Object}
  *            files ファイルハンドラ
