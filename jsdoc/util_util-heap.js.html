@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: util/util-heap.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: util/util-heap.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @memberOf Util
+ * @class Heap
+ * @classdesc Heap ヒープ(二分ヒープ)
+ *            &lt;p>
+ *            最小値(最大値)を効率よく取り出すことができるデータ構造
+ *            &lt;p>
+ *            参考 {@link http://d.hatena.ne.jp/otaks/20121220/1355993039}
+ * 
+ * @param {Function}
+ *            [func=function(obj){ return +obj; }]
+ *            pushで登録するオブジェクトからヒープの大小比較判定値を取り出す関数
+ * @param {Function}
+ *            [delFunc=function(obj){ return obj; }] 削除対象ノードを特定する関数&lt;br>
+ *            「delの引数オブジェクト === delFunc(heapのノードのオブジェクト)」 で判定する
+ * 
+ * @example h = HJN_util.Heap( function(obj){ return +obj; } );&lt;br>
+ *          h.push("12.34") // データを登録する ;&lt;br>
+ *          h.push(0.12) // ;&lt;br>
+ *          h.pop() // => 0.12 最小値のオブジェクトを取り出す ;&lt;br>
+ *          h.pop() // => "12.34" ;&lt;br>
+ *          h.top() // =>undefined 最小値のオブジェクト ;&lt;br>
+ *          h.size() // =>0 登録オブジェクト数
+ */
+export default (function() { // #55
+    "use strict";
+    /** @constructor */
+    function Heap(func, delFunc){ 
+        if(!(this instanceof Heap)) return new Heap(func, delFunc);
+        
+        this._func = (typeof(func) === "function")
+                ? func
+                : function(node){
+                    if (typeof(node.val) === "undefined") { return node }
+                    else { return node.val}; 
+                  };
+        this._delFunc = (typeof(delFunc) === "function")
+                ? delFunc
+                : function(node){
+                    if(typeof(node.obj) === "undefined"){ return node }
+                    else { return node.obj};
+                  };
+        this._heap = []; // Heap構造体（大小比較数値用）
+    }
+
+    //
+    /**
+     * upheap：root方向へheapを再構築する
+     * 
+     * @private
+     * @param {Number}
+     *            k 起点の_heap配列位置
+     */
+    Heap.prototype._upHeap = function(k) {
+        // 指定位置のオブジェクトとその値の控えを取る
+        var obj = this._heap[k];
+        var val = this._func(obj);
+        while( 0 &lt; k ) {
+            // 親ノードの配列位置を求める
+            var p = Math.floor( (k - 1) / 2 );
+            // 逆転していなければ処理終了
+            if( this._func(this._heap[p]) &lt;= val ) break;
+            // 親ノードと処理対象を入れ替える
+            this._heap[k] = this._heap[p];
+            this._heap[p] = obj;
+            k = p;
+        }
+    };
+    /**
+     * downheap：reaf方向へheapを再構築する
+     * 
+     * @private
+     * @param {Number}
+     *            k 起点の_heap配列位置
+     */
+    Heap.prototype._downHeap = function(k) {
+        // 指定位置のオブジェクトとその値を控えを取る
+        var obj = this._heap[k];
+        var val = this._func(obj);
+        var size = this._heap.length;
+        // 子ノードが無くなるまで繰り返す
+        while( k * 2 + 1 &lt; size) {
+            var a = k * 2 + 1;  // 子ノード（左）
+            var b = a + 1;      // 子ノード（右）
+            // aが大小比較対象先となる小さい子ノードを指すようにする
+            if( b &lt; size &amp;&amp; this._func(this._heap[a]) > this._func(this._heap[b]) ) a = b;
+            // 逆転していなければ処理終了
+            if( val &lt; this._func(this._heap[a]) ) break;
+            // 子ノード（比較対象）と処理対象を入れ替える
+            this._heap[k] = this._heap[a];
+            this._heap[a] = obj;
+            k = a;
+        }
+    };
+    /**
+     * _heapのk番目を削除し、_heapを再構築する
+     * 
+     * @private
+     * @param {Number}
+     *            k 起点の_heap配列位置
+     * @return {object|undefined} 削除したオブジェクト（削除対象が無いとき undefined）
+     */
+    Heap.prototype._del = function(k) {
+        if (this._heap.length &lt;= k) return undefined; // ヒープ外を指定したとき
+
+        var ret = this._heap[k]; // 削除したオブジェクト
+        var obj = this._heap.pop(); // 末尾ノードを取り出す
+        var size = this._heap.length;
+        if (k === size) return ret; // 末尾ノードを削除したとき再構築不要
+
+        this._heap[k] = obj; // 末尾ノードを指定位置に移動する
+        if (size === 1) return ret; // ヒープが１個のとき、再構築不要
+
+        // upHeapの判定
+        var val = this._func(obj); // 末尾ノードにあったオブジェクトの値
+        var p = Math.floor( (k - 1) / 2 );
+        if (0 &lt; k &amp;&amp; val &lt; this._func(this._heap[p])) {
+            // 親ノードより小さいときupheapする
+            this._upHeap(k);
+        } else {
+            var a = k * 2 + 1;  // 子ノード（左）
+            var b = a + 1;      // 子ノード（右）
+            if (a &lt; size) { // 子ノードがあるとき（末端の枝葉でないとき）のみdownHeapする
+                // aに、子ノードの小さい方のノードを設定する
+                if( b &lt; size &amp;&amp; (this._func(this._heap[a]) > this._func(this._heap[b])) ) a = b;
+                // 自分より小さい子ノードがあるとき、downheapする
+                if( this._func(this._heap[a]) &lt; val ) this._downHeap(k);
+            }
+        }
+        return ret;
+    };
+    // public
+    /**
+     * データを追加する
+     * 
+     * @memberOf Util.Heap
+     * @param {Object}
+     *            obj 登録オブジェクト
+     */
+    Heap.prototype.push = function(obj) {
+        // 末尾に追加し、upHeapする
+        this._heap.push(obj);
+        this._upHeap(this._heap.length - 1);
+        if (this._deletable) {
+            this._deleteMap = {};
+        }
+    };
+    /**
+     * 最小値のデータを取り出す
+     * 
+     * @memberOf Util.Heap
+     * @return {Object|undefined} 最小値
+     */
+    Heap.prototype.pop = function() {
+        // 先頭ノードを戻り値用に退避する
+        var ret = this._heap[0];
+        // 末尾ノードを退避し削除する
+        var obj = this._heap.pop();
+        if(0 &lt; this._heap.length){
+            // ヒープが空でないとき、末尾ノードを先頭に移動し、downHeapする
+            this._heap[0] = obj;
+            this._downHeap(0);
+        }
+        return ret;
+    };
+    /**
+     * 指定データを削除する
+     * 
+     * @memberOf Util.Heap
+     * @param {Object}
+     *            obj 削除対象と同一オブジェクト(=== で判定)
+     * @return {Object|undefined} 削除したオブジェクト（undefined：合致するオブジェクトが無いとき）
+     */
+    Heap.prototype.del = function(obj) { // #59
+        // 削除対象オブジェクトのHeap配列位置を取得する
+        var k = -1;
+        if (this._heap.some(find, this)){
+            // 合致するオブジェクトのノードを削除し、合致ノードをリターンする
+            return this._del(k);
+        }
+        // 合致するオブジェクトが無いとき
+        return undefined;
+        
+        function find(e, i) {
+            if(this._delFunc(e) === obj){
+                k = i;
+                return true;
+            }
+            return false;
+        }
+    };
+    /**
+     * 最小値を返却する（登録データは変更しない）
+     * 
+     * @memberOf Util.Heap
+     * @return {Object|undefined} 最小値
+     */
+    Heap.prototype.top = function() {
+        return this._heap[0];
+    };
+    /**
+     * ヒープのサイズを返却する
+     * 
+     * @memberOf Util.Heap
+     * @return {Number} ヒープサイズ（0以上）
+     */
+    Heap.prototype.size = function() {
+        return this._heap.length;
+    };
+    
+    /* new */
+    return Heap;
+}());</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="Simulator.html">Simulator</a></li><li><a href="Util.html">Util</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Jan 28 2018 23:57:45 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

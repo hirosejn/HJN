@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Plot</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Plot</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="HJN.html">HJN</a>.</span>Plot</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Plot一覧（過去にクリックしたplotの一覧）およびグラフのplot(点)のクリック時の処理群</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".List"><span class="type-signature">(static) </span>List<span class="type-signature"> :array.&lt;String, Boolean, Boolean, <a href="global.html#index">index</a>, <a href="global.html#xMs">xMs</a>, Number, Number, Number></span></h4>
+
+
+
+
+<div class="description">
+    Plotの一覧
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">array.&lt;String, Boolean, Boolean, <a href="global.html#index">index</a>, <a href="global.html#xMs">xMs</a>, Number, Number, Number></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Plot一覧に表示する文字列</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ckBox</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">チェックボックスの選択状態<br>      （選択後すぐに削除されるのでtrueとなることはない）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>radio</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ラジオボタンの選択状態</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#index">index</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">グラフ番号</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#xMs">xMs</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">xの値</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">yの値</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rangeMinus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">表示幅時間マイナス（秒）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rangePlus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">表示幅時間プラス（秒）</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rangeUnit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">表示幅時間 単位（sec:1/min:60/hour:3600/day:86400)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line510">line 510</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Add">
+    <span class="type-signature">(static) </span>Add<span class="signature">(n, x, y)</span><span class="type-signature"> &rarr; {<a href="global.html#index">index</a>}</span>
+    </h4>
+    
+    
+	<div class="description">
+		クリック時のHoverからHJN.Plot.Listを設定する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type"><a href="global.html#index">index</a></span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">グラフのシリーズ番号</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type"><a href="global.html#xMs">xMs</a></span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">マウスクリック時のxの値（ミリ秒）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">マウスクリック時のyの値</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type"><a href="global.html#index">index</a></span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    i plots内のplotの位置
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line633">line 633</a>
+    </dir>
+    
+
+    <h4 class="name" id=".CheckBox">
+    <span class="type-signature">(static) </span>CheckBox<span class="signature">(i)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		PlotのChekBox変更時呼出用関数<br>指定Plotを削除し、PlotsとBaloonを再描画する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>i</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type"><a href="global.html#index">index</a></span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">削除対象plotの、plots内位置</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line646">line 646</a>
+    </dir>
+    
+
+    <h4 class="name" id=".CheckRadio">
+    <span class="type-signature">(static) </span>CheckRadio<span class="signature">(i)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		PlotのRadioボタン変更時呼出用関数<br>radio選択時に下段グラフを更新する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>i</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type"><a href="global.html#index">index</a></span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">選択されたplotの、plots内位置</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line438">line 438</a>
+    </dir>
+    
+
+    <h4 class="name" id=".PointClickCallback">
+    <span class="type-signature">(static) </span>PointClickCallback<span class="signature">(point)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		point/baloonクリック時呼出し用関数<br>詳細グラフを描画し、Plotを更新する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>point</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Objcet</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">dygraph の point</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line483">line 483</a>
+    </dir>
+    
+
+    <h4 class="name" id=".PointDblClickCallback">
+    <span class="type-signature">(static) </span>PointDblClickCallback<span class="signature">(plot)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		point/baloonダブルクリック時呼出し用関数<br>Plotを削除する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>plot</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">dygraphのpoint</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line603">line 603</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Render">
+    <span class="type-signature">(static) </span>Render<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		HJN.Plot.Listを再表示する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line667">line 667</a>
+    </dir>
+    
+
+    <h4 class="name" id=".ShowBalloon">
+    <span class="type-signature">(static) </span>ShowBalloon<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		Balloonを再描画する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.FileParser.html">tatLogDiver.FileParser</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CreateSampleTatLogAndChartShow">CreateSampleTatLogAndChartShow</a></li><li><a href="global.html#HJN_init_ChartRegist">HJN_init_ChartRegist</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Jan 28 2018 18:21:40 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
-<link type="text/css" rel="stylesheet" href="./tatLogDiver.css">
+<link type="text/css" rel="stylesheet" href="./tatLogDiver/tatLogDiver.css">
 </head>
 
 <body>
@@ -14,9 +14,9 @@
 <script src="../libs/extras/synchronizer.js"></script>
 
 <script type="module">
-import {HJN_init_ChartRegist} from "./tatLogDiver-init.js";
+import Init from "./tatLogDiver/tatLogDiver-init.js";
 window.addEventListener("DOMContentLoaded",function(eve){
-    HJN_init_ChartRegist("chart");      // チャートを作成する
+    Init("chart");      // チャートを作成する
 });
 </script>
 </body>
