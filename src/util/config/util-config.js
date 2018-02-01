@@ -1,6 +1,6 @@
 /**
  * @memberOf Util
- * @class　Config
+ * @class Config
  * @classdesc 定数設定機能（設定HTML作成機能付き）
  *            <p>
  *            日時、TATフォーマット指定機能追加用に作成
@@ -9,6 +9,8 @@
  *            [prefix=''] 定数の名前空間を一位に指定する文字列、指定しない場合グローバル
  * @param {String}
  *            [ol='ol'] インデント(.nDown() .nUp())に使うHTMLタグ
+ * @param {String}
+ *            [globalName='HJN'] Configを登録するグローバル変数(window)の変数名
  * @example this._config = HjnConfig("m") // config設定画面定義
  *          .label(null,"------").n() // ラベルを表示し、改行
  *          .name("ENDIAN").label(null,"[endian(long field)]") //key:ENDIAN
@@ -22,15 +24,23 @@ export default (function() { // #24
     Config.prototype.__config._onFunctions = {}; // 関数登録用
 
     /** @constructor */
-    function Config(prefix, ol){ 
-        if(!(this instanceof Config)) return new Config(prefix, ol);
+    function Config(prefix, ol, globalName){ 
+        if(!(this instanceof Config)) return new Config(prefix, ol, globalName);
+        
         this._pre = (prefix || '') + "."; // 各フィールド、要素の名称のプレフィックス(区切り文字".")
         this._ols = ol ? '<' + ol + '>' : '<ol>';   // リストに使用する要素（初期値 ol )
         this._ole = ol ? '</' + ol + '>' : '</ol>';
         this._html = this._ols; // config設定画面のHtml
         this._nameHtml = '';    // HTMLタグの name属性指定
         this._name = '';        // radioのConfig.get用
-// this._onFunctions = {}; // onイベント時に呼び出す関数の設定用 #51
+        this._addEventList = []; // HTMLに設定するイベント一覧{id,func,type} #74
+
+        // グローバル変数(window)にConfigを登録する #74
+        this._globalName = globalName || "HJN";
+        if (window[this._globalName].Config === undefined){
+            window[this._globalName].Config = Config;
+        }
+        window[this._globalName].Config[prefix] = this;
     }
 
     /**
@@ -179,8 +189,8 @@ export default (function() { // #24
                     '<input type="' +type + '" ' +
                         (typedAttribute || '') + 
                         this._nameHtml +
-                        'id="' + this._pre + key + '" '+        // idがユニークになるようkeyにprefixを付与
-                        'onchange="Config.on(this);" ' +
+                        'id="' + this._pre + key + '" '+ // idがユニークになるようkeyにprefixを付与
+                        'onchange="' + this._globalName + '.Config.on(this);" ' + // #74
                         (val ? 'value="' + val + '" ' : '') +   // val は、キー値のまま
                         (attribute || '') + 
                         (check ? ' checked="checked;"' : '') +
@@ -195,6 +205,11 @@ export default (function() { // #24
         } else {    // text,numberのとき、keyに対する、val(入力値)を登録
             Config.prototype.__config[this._pre + key] = val;
         }
+        // HTML生成時に設定するイベントを退避する #74
+        this._addEventList.push({
+            id: this._pre + key,
+            func: Config.on,
+            type: "click"});
         return this;
     };
     /**

@@ -1,8 +1,11 @@
 "use strict";
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
-import FileParser from './tatLogDiver-fileParser.js';
+import * as File from '../file/file.js';
+import Menu from'./tatLogDiver-menu.js';
 import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-init.js';
+import * as TimeSeries from '../timeSeries/timeSeries.js';
+
 
 /* ******1*********2*********3*********4*********5*********6*********7****** */
 
@@ -44,8 +47,8 @@ export default function Graph(chartIdName, globalName, config) {
         };
     }
 
-    // FileParserを設定する
-    this.fileReader = FileParser(); // #24
+    // File.Parserを設定する
+    this.fileReader = File.Parser(); // #24
 
     // グラフ定義領域の宣言
     this.windowId = document.getElementById("hjn_chart");
@@ -57,8 +60,7 @@ export default function Graph(chartIdName, globalName, config) {
 
     this.scale = [ null, null ];
     this.graph = null;
-    this.cycle = 1000 * 60; // ミリ秒 #57
-    this.cTpsUnit = Graph.prototype.UNIT_CTPS[0];
+    this.cTpsUnit = TimeSeries.Tat.prototype.UNIT_CTPS[0]; // #75
 
     this.cash = null; // キャッシュオブジェクト
 
@@ -128,22 +130,7 @@ export default function Graph(chartIdName, globalName, config) {
 /**
  * クラス定数
  */
-Graph.prototype = {
-    UNIT_RANGE: [ // #48
-        { label: "sec",    val: "1000" },
-        { label: "10sec",  val: "10000", selected: "selected" },
-        { label: "min",    val: "60000" },
-        { label: "10min",  val: "600000" }, 
-        { label: "hour",   val: "3600000" },
-        { label: "6hours", val: "21600000" },
-        { label: "day",    val: "86400000" }, 
-        { label: "year",   val: "31536000000" } ],
-    UNIT_CTPS: [
-        { label: "/sec",   unit: 1000 },
-        { label: "/min",   unit: 60000 },
-        { label: "/hour",  unit: 3600000 },
-        { label: "/day",   unit: 86400000 } ]
-};
+// Graph.prototype = {};
 
 /**
  * クラスメソッド：menuのFilterのｘｙ幅指定エリアにグラフのｘｙ幅を設定する<br>
@@ -185,7 +172,7 @@ Graph.DrawCallback = function (g, is_initial) { // #50 #51
 Graph.prototype.init = function () {
     "use strict";
     // メニューを作成する
-    this.addMenu();
+    Menu(this);
     // 凡例を作成する
     if (this.isVisiblity)
         addLegend(this);
@@ -270,238 +257,19 @@ Graph.prototype.resize = function () {
  * @memberof tatLogDiver.Graph
  * @param {seriesSet}
  *            seriesSet dygraph用時系列データ配列
+ * @param {cTpsUnit}
+ *            [cTpsUnit=this.cTpsUnit] cTpsの集計単位（デフォルト：秒{label:"/sec",
+ *            unit:1000}）
  */
-Graph.prototype.setSeriesSet = function (seriesSet) { // #30
+Graph.prototype.setSeriesSet = function (seriesSet, cTpsUnit) { // #30
     "use strict";
     this.seriesSet = seriesSet;
+    if(cTpsUnit) this.cTpsUnit = cTpsUnit; // #75
     HJN.seriesConfig.forEach(function (e) {
         this[e.key] = seriesSet[e.N];
     }, this);
 };
 
-/**
- * 終了時刻のTAT時系列データ(eTat)から、描画用時系列データ配列を作成する
- * 
- * @memberof tatLogDiver.Graph
- * @param {ETAT}
- *            eTat [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
- * @return {seriesSet} dygraph用時系列データ配列
- */
-Graph.prototype.createSeries = function (eTat) {
-    "use strict";
-    // 時系列データを初期化する
-    var conc = [], cTps = [], eTps = [], sTat = [], eMps = [], eAps = [];
-
-    // 集計対象データがないとき
-    if (eTat.length === 0)
-        return [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
-
-    /** eTatをソートする * */
-    // 開始時刻でソートする #35
-    eTat.sort(function (a, b) {
-        return a.x - b.x;
-    });
-    Util.Logger.ShowLogText("[1:eTat sorten ] " + eTat.length + " plots",
-            "calc");
-
-    /** eTps(時間あたり処理件数),eMps,eAps(時間あたり最大/平均応答時間)時系列データを作成する * */
-    var dFrom = Math.floor(eTat[0].x / this.cycle) * this.cycle,
-        dTo = dFrom + this.cycle,
-        num = 0, // #39
-        maxTat = 0.0, // #19
-        aveTmp = 0.0;
-    eTat.forEach(function (e) {
-        if (e.x < dTo) {
-            num += 1;
-            if (maxTat < e.y)
-                maxTat = e.y; // #19
-            aveTmp += e.y;
-        } else {
-            eTps.push({
-                x : dFrom,
-                y : num * 1000 / this.cycle // #57
-            });
-            eMps.push({
-                x : dFrom,
-                y : maxTat
-            }); // #19
-            eAps.push({
-                x : dFrom,
-                y : aveTmp / num
-            });
-            dFrom = Math.floor(e.x / this.cycle) * this.cycle;
-            dTo = dFrom + this.cycle;
-            num = 1;
-            maxTat = e.y; // #19 #39
-            aveTmp = e.y; // #39
-        }
-    }, this);
-
-    eTps.push({
-        x : dFrom,
-        y : num * 1000 / this.cycle // #57
-    });
-    eTps.push({ // #57
-        x : dFrom + this.cycle,
-        y : num * 1000 / this.cycle
-    });
-
-    eMps.push({ // #19
-        x : dFrom,
-        y : maxTat
-    });
-    eMps.push({ // #57
-        x : dFrom + this.cycle,
-        y : maxTat
-    });
-
-    eAps.push({
-        x : dFrom,
-        y : aveTmp / num
-    });
-    eAps.push({ // #57
-        x : dFrom + this.cycle,
-        y : aveTmp / num
-    });
-
-    
-    Util.Logger.ShowLogText("[3:eTps,eMps,eAps created] " + eTps.length
-            + " plots", "calc");
-
-    /** sTat（開始時間）時系列データを作成する,同時に入力eTatを補正する * */
-    // eTatからsTatを登録する
-    eTat.forEach(function (e, i) {
-        // 処理時間=0 のとき、1マイクロ秒とみなす(有効桁0.2マイクロ秒に切上される）
-        if (e.y === 0) {
-            e.y = 0.001;
-            e.x += e.y;
-        } // ミリ秒
-        // sTatにeTatデータを登録する
-        sTat.push({
-            x : e.x - e.y,
-            y : e.y,
-            eTatIdx : i
-        });
-    });
-    // 開始時刻でソートする
-    sTat.sort(function (a, b) {
-        return a.x - b.x;
-    });
-    // eTatにsTatの位置を設定する
-    sTat.forEach(function (s, i) {
-        eTat[s.eTatIdx].sTatIdx = i;
-    });
-    Util.Logger.ShowLogText("[2:sTat created] " + sTat.length + " plots",
-            "calc");
-
-    /** CONC(多重度)時系列データを作成する * */
-    var concTmp = [];
-    // eTatから、多重度が変化した時刻の一覧を作成する
-    eTat.map(function (e, i) {
-        // 開始時刻にカウントアップ情報を追加する
-        concTmp.push({
-            x : e.x - e.y,
-            y : 1
-        });
-        // 終了時刻をカウントダウン情報を追加する
-        concTmp.push({
-            x : e.x,
-            y : -1
-        });
-    });
-    // concを変化した時刻（開始or終了）でソートする
-    concTmp.sort(function (a, b) {
-        return a.x - b.x;
-    });
-    // concに同時取引数を設定する
-    var concNum = 0;
-    concTmp.forEach(function (c, i, a) {
-        // 重複削除用フラグを立てる #23
-        if (i > 0 && c.x === a[i - 1].x) {
-            a[i - 1].del = true;
-        }
-        // 同時取引数を集計する(前提：c.y に、開始なら1、終了なら(-1)が設定されている)
-        concNum += c.y;
-        c.y = concNum;
-    });
-    // concの同じ時刻の点を削除する #23
-    conc = concTmp.filter(function (c) {
-        return !c.del;
-    });
-    Util.Logger.ShowLogText("[4:conc created] " + conc.length + " plots",
-            "calc");
-
-    /** cTPS秒間同時処理件数（concurrent transactions/sec）時系列データを作成する #18 * */
-    var XSec = floorTime(conc[0].x, this.cycle), // ミリ秒
-    YMax = conc[0].y, YNext = conc[0].y;
-    // concの先頭と末尾の時刻(x)の差よりPlot数を求め、Plot数が規定数(8000個)を超えたら、桁上げする #38
-    var cTpsMaxPlots = 8000, // 桁上げするPlot数
-    cTpsUnits = Graph.prototype.UNIT_CTPS, // #48
-    concTerm = conc[conc.length - 1].x - conc[0].x, // ミリ秒
-    cTpsIdx = 0;
-    while (cTpsIdx < cTpsUnits.length
-            && concTerm / cTpsUnits[cTpsIdx].unit > cTpsMaxPlots) {
-        cTpsIdx++;
-    }
-    cTpsIdx = (cTpsUnits.length > cTpsIdx) ? cTpsIdx : cTpsUnits.length - 1;
-    this.cTpsUnit = cTpsUnits[cTpsIdx];
-    // メニューのViewのcTPSのラベルに単位を追加する
-    var pos = (this === HJN.chart) ? 0 : 1;
-    document.getElementsByName("cTps")[pos].parentNode.lastChild.data = HJN.CTPS.name
-            + this.cTpsUnit.label;
-
-    // 規定時間単位の最大同時処理数cTPSを作成する
-    conc.forEach(function (c) {
-        if (floorTime(c.x, this.cTpsUnit.unit) === XSec) { // c.xは ミリ秒
-            YMax = Math.max(YMax, c.y);
-        } else {
-            cTps.push({
-                x : XSec,
-                y : Math.max(YMax, YNext)
-            });
-            for (var t = XSec + this.cTpsUnit.unit; t < floorTime(c.x,
-                    this.cTpsUnit.unit); t += this.cTpsUnit.unit) { // c.xはミリ秒
-                cTps.push({
-                    x : t,
-                    y : YNext
-                });
-                if (YNext === 0)
-                    break;
-            }
-            XSec = floorTime(c.x, this.cTpsUnit.unit);
-            YMax = Math.max(YNext, c.y);
-        }
-        YNext = c.y;
-    }, this);
-    cTps.push({
-        x : XSec,
-        y : YMax
-    });
-    cTps.push({
-        x : XSec + this.cTpsUnit.unit,
-        y : YNext
-    });
-
-    // Util.Logger.ShowLogText("[5-1:cTps created] " + cTps.length + "
-    // plots","calc");
-
-    // cTpsのxからindexを引くMapを作成する #18
-    eTat.tatMap = new Util.MappedETat(eTat);
-    eTat.cash = Util.Cash();
-    Util.Logger.ShowLogText("[5:cTps created] " + cTps.length + " plots("
-            + +Math.floor(concTerm / 1000) + "sec" + cTpsUnits[cTpsIdx].label
-            + ")", "calc");
-
-    // 集計結果をHJN.Graphに設定する 注）this.SERIESESと同じ順番にすること
-    var seriesSet = [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
-    this.setSeriesSet(seriesSet);
-    return seriesSet;
-
-    // 時刻を指定ミリ秒間隔で切り捨てる（内部関数）
-    function floorTime(t, cycle) {
-        return Math.floor(Math.floor(t / cycle) * cycle);
-    }
-};
 
 /**
  * データを変更し描画する
@@ -513,8 +281,7 @@ Graph.prototype.createSeries = function (eTat) {
 Graph.prototype.update = function (seriesSet, n) {
     "use strict";
     // 指定データがあるとき取り込む
-    if (seriesSet)
-        this.setSeriesSet(seriesSet);
+    if (seriesSet) this.setSeriesSet(seriesSet);
     // dygraph用表示データを作成する
     var xy = [], // グラフデータ({x:,y:}ペアの配列）の一覧（グラフ１本が配列要素）
     idx = [], // グラフデータの処理中配列位置を保有する配列
@@ -1013,275 +780,7 @@ Graph.prototype.legendFormatter = function (data) {
     }
 };
 
-/*
- * メニュー関連機能 ************************************
- */
-/**
- * メニューを追加する
- * 
- * @memberof tatLogDiver.Graph
- * @param {ETAT}
- *            eTat [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
- * @return {seriesSet} dygraph用時系列データ配列
- */
-Graph.prototype.addMenu = function () {
-    "use strict";
-    // メニュー用のエレメントを取得する
-    var divMenuId = this.chartIdName + "_menu";
-    var divMenu = document.getElementById(divMenuId);
-    // menu用divがないとき、chartの直前に追加する #13
-    if (!divMenu) {
-        var div = document.createElement('div');
-        div.id = divMenuId;
-        div.className = "menuBar";
-        divMenu = this.chartId.parentNode.insertBefore(div, this.chartId);
-    }
-    // メニューボタン定義を登録する
-    var g = this.globalName;
-    // 上下段共通ボタンの定義(Download Menu)
-    var menuDownloadImg = { // getATag
-        menuLabel : "graph image(.png)",
-        funcName : g + ".menuDownloadImg",
-        menuId : divMenuId + "_DownloadImg",
-        fileName : "graph.png"
-    };
-    var menuDownloadCsv = { // getATag
-        menuLabel : "graph data(.csv)",
-        funcName : g + ".menuDownloadCsv",
-        menuId : divMenuId + "_DownloadCsv",
-        fileName : "graph.csv"
-    };
-    var menuDownloadLog = { // getATag
-        menuLabel : "graph log records(.csv)",
-        funcName : g + ".menuDownloadLog",
-        menuId : divMenuId + "_DownloadLog",
-        fileName : "tatlog.csv"
-    };
-    var menuDownloadConc = { // getATag
-        menuLabel : "conc log records(.csv)",
-        funcName : g + ".menuDownloadConc",
-        menuId : divMenuId + "_DownloadConc",
-        fileName : "conclog.csv"
-    };
 
-    // メニューを追加する
-    var accordion = document.createElement('div'); // 要素の作成
-    var _id = 0;
-    if (HJN.chart.chartId === this.chartId) { // 上段グラフ用機能のメニュー追加
-        // File Menu
-        var menuOpenCsv = { // getInputTag
-            menuLabel : "Open csv data file",
-            funcName : g + ".menuOpenCsv",
-            menuId : divMenuId + "_OpenCsv "
-        };
-        var menuSaveConfig = { // getATag
-            menuLabel : "save format (.json)",
-            funcName : g + ".menuSaveConfig",
-            menuId : divMenuId + "_SaveCongig",
-            fileName : "hjnconfig.json"
-        };
-        var menuLoadConfig = { // getInputTag #10
-            menuLabel : "load format (.json)",
-            funcName : g + ".menuLoadConfig",
-            menuId : divMenuId + "_LoadCongig"
-        };
-        accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, ++_id, "File") + '<ul class="hjnMenuLv2">'
-                + getInputTag(menuOpenCsv)
-                + this.fileReader.getConfigHtml("File") // #24
-                + getATag(menuSaveConfig) + getInputTag(menuLoadConfig) // #10
-                + '</ul>' + '</li>';
-
-        // Filter Menu #34
-        var menuFilterApply = { // getFuncTag #34
-            menuLabel : "Apply filter & reload",
-            funcName : g + ".menuFilterApply",
-            menuId : divMenuId + "_FilterApply"
-        };
-        var menuFilterClear = { // getFuncTag #34
-            menuLabel : "Clear filter condition",
-            funcName : g + ".menuFilterClear",
-            menuId : divMenuId + "_FilterClear"
-        };
-        accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Filter">'
-                + getAccordionTag(this, ++_id, "Filter")
-                + '<ul class="hjnMenuLv2">'
-                + this.fileReader.getConfigHtml("Filter") // #24
-                + getFuncTag(menuFilterApply)
-                + getFuncTag(menuFilterClear)
-                + '</ul>' + '</li>';
-
-        // Simulator Menu #53
-        var menuSimulatorSimulate = {
-            menuLabel : "Simulate",
-            funcName : g + ".menuSimulatorSimulate",
-            menuId : divMenuId + "_SimulatorSimulate"
-        };
-        var menuSimulatorEditor = {
-                menuLabel : "JSON Editor(Open/Close)",
-                funcName : g + ".menuSimulatorEditor",
-                menuId : divMenuId + "_SimulatorEditor"
-            };
-        accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Simulator">'
-                + getAccordionTag(this, ++_id, "Simulator")
-                + '<ul class="hjnMenuLv2">'
-                + getFuncTag(menuSimulatorSimulate)
-                + getFuncTag(menuSimulatorEditor)
-                + this.fileReader.getConfigHtml("Simulator") // #53
-                + '</ul>' + '</li>';
-        // シミュレーション条件JSON Editエリアを設定する
-        var divSimulator = document.getElementById("Simulator");
-        var jsonEditor = document.createElement('div'); // 要素の作成
-        jsonEditor.innerHTML = '<textarea id="SimulatorEditor" '
-            + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
-        divSimulator.appendChild(jsonEditor);
-        var divSimulatorEditor = document.getElementById("SimulatorEditor");
-        // divSimulatorEditor.readOnly = true; // #22
-        divSimulatorEditor.value = Simulator.virtualSystemByJson.GetJsonConfig(); // デフォルトJSON
-        
-        // View Menu
-        accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_View">'
-                + getAccordionTag(this, ++_id, "View", true)
-                + '<ul class="hjnMenuLv2">' // 
-                + '<li><div id="' + this.chartIdName + '_legend"></div></li>'
-                + '</ul>' + '</li>';
-
-        // Download Menu
-        accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Download">'
-                + getAccordionTag(this, ++_id, "Download")
-                + '<ul class="hjnMenuLv2">' //
-                + getATag(menuDownloadImg, "Upper ")
-                + getATag(menuDownloadCsv, "Upper ")
-                + getATag(menuDownloadLog, "Upper ")
-                + '</ul>' + '</li>';
-
-        // メニュー登録
-        divMenu.appendChild(accordion);
-        // イベントリスナー登録
-        document.getElementById(menuOpenCsv.menuId).addEventListener('change',
-                this.menuOpenCsv.bind(this), false); // File Open用
-        document.getElementById(menuLoadConfig.menuId).addEventListener(
-                'change', this.menuLoadConfig.bind(this), false); // LoadConfig用
-
-    } else { // 下段用グラフ機能のメニュー追加
-        _id += 100;
-        // Download Menu
-        var chartDownloadUl = document.createElement('ul');
-        chartDownloadUl.className = "hjnMenuLv2";
-        chartDownloadUl.innerHTML = '' //
-                + getATag(menuDownloadImg, "Detail ")
-                + getATag(menuDownloadCsv, "Detail ")
-                + getATag(menuDownloadLog, "Detail ")
-                + getATag(menuDownloadConc, "Detail ");
-        var chartDownload = document.getElementById("menu_Download");
-        chartDownload.appendChild(chartDownloadUl);
-
-        // View Menu
-        var chartViewUl = document.createElement('ul');
-        chartViewUl.className = "hjnMenuLv2";
-        chartViewUl.innerHTML = '<li><div id="' + this.chartIdName
-                + '_legend"></div></li>';
-        var chartView = document.getElementById("menu_View");
-        chartView.appendChild(chartViewUl);
-
-        // "Bottom detail graph" Menu
-        accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, ++_id, "Bottom detail graph", true)
-                + '<ul class="hjnMenuLv2">' //
-                + '<ol><div id="detailTimeRange">' + getDetailTimeRangeTag()
-                + '</div></ol>' // #51
-                + '<li><div id="chartPlots"></div></li>' //
-                + '</ul>' + '</li>';
-
-        // Help Menu
-        var menuHelpAbout = { // getAlertTag
-            menuLabel : "about TAT log diver",
-            menuId : divMenuId + "_HelpAbout",
-            strFuncName : "HJN.init.Copyright()"
-        };
-        accordion.innerHTML += '<li class="hjnMenuLv1">'
-                + getAccordionTag(this, ++_id, "Help")
-                + '<ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpAbout)
-                + '</ul>' + '</li>';
-
-        // メニュー登録
-        divMenu.appendChild(accordion);
-    }
-
-    // アコーディオンラベル用<input><label>タグ編集（内部関数宣言） #31
-    // idは、ユニークな英数字なら何でもよい（ラベル押下時のアコーディオン開閉ラジオボタン連動用の接尾語）
-    function getAccordionTag(that, id, labelText, isChecked) {
-        var isAccordion = true, // true:アコーディオン型 false:折りたたみ型 #21
-        typeStr = isAccordion ? ' type="checkbox" name="accordion" '
-                : ' type="radio" name="accordion" ', //
-        checkedStr = ' checked="checked" ';
-        return '' + '<input id="ac-' + that.chartIdName + id + '"' + typeStr
-                + (isChecked ? checkedStr : '') + '">' + '<label for="ac-'
-                + that.chartIdName + id + '">' + labelText + '</label>';
-    }
-
-    // File Open用<input>タグ編集（内部関数宣言）
-    // '<ol><a><label>Child Menu<input type="file" id="xxx"
-    // multiple/></label></a></ol>
-    function getInputTag(arg) {
-        return '' + '<ol><a><label class="hjnButton4Input">' + arg.menuLabel // #51
-                + '<input type="file" id="' + arg.menuId + '"  multiple />'
-                + '</label></a></ol>';
-    }
-
-    // ダウンロード用<A>タグ編集（内部関数宣言）
-    // '<li><a id="xxx" href="#">Child Menu</a><li/>'
-    function getATag(arg, preLabel) {
-        preLabel = preLabel || "";
-        return '' + '<li><a id="' + arg.menuId + '" '
-                + 'class="hjnButton4Input" href="#" ' // #51
-                + 'download="' + arg.fileName + '" ' //
-                + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '"
-                + arg.fileName + "'" + ')" ' + '>' + preLabel + arg.menuLabel
-                + '</a></li>';
-    }
-
-    // グローバルメソッド呼出用<A>タグ編集（内部関数宣言） #34
-    // '<li><a id="xxx" href="#">Child Menu</a></li>'
-    function getFuncTag(arg, preLabel) {
-        preLabel = preLabel || "";
-        return '' + '<li><a id="' + arg.menuId + ' "'
-                + 'class="hjnButton4Input" href="#" ' // #51
-                + 'onclick="' + arg.funcName + '()">' //
-                + preLabel + arg.menuLabel + '</a></li>';
-    }
-
-    // Alert用<A>タグ編集（内部関数宣言）
-    // '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
-    function getAlertTag(arg) {
-        return '' + '<ol><a id="' + arg.menuId + '"'
-                + 'class="hjnButton4Input" ' // #51
-                + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
-                + '<label>' + arg.menuLabel + '</label></a></ol>';
-    }
-
-    // 下段表示幅指定用<div>タグ編集
-    function getDetailTimeRangeTag() {
-        var initPlus = 1, initMinus = 2; // #3
-        return 'Range: '
-                + '- <input type="number" id="DetailRangeMinus" min="0" step="1"'
-                + 'value="'
-                + initPlus
-                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
-                + '+ <input type="number" id="DetailRangePlus" min="0" step="1"'
-                + 'value="'
-                + initMinus
-                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
-                + '<select id="DetailRangeUnit" class="hjnLabel4Input" onchange="HJN.init.setDetailRange()">' // #48
-                + Graph.prototype.UNIT_RANGE.reduce(
-                        function (prev, e, i, a) {
-                            return prev + '<option value="' + e.val + '" '
-                                    + (e.selected || "") + '>' + e.label // #53
-                                    + '</option>';
-                        }, '') + '</select>';
-    }
-};
 
 /**
  * メニュー機能：CSVデータファイルを開く

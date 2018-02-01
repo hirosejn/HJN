@@ -1,10 +1,9 @@
-"use strict";
 import * as Util from '../util/util.js';
-import {HJN} from './tatLogDiver-hjn.js';
-import {CreateSampleTatLogAndChartShow} from './tatLogDiver-init.js';
+import {HJN} from '../tatLogDiver/tatLogDiver-hjn.js';
+import Graph from '../tatLogDiver/tatLogDiver-graph.js';
 
 /**
- * @memberof tatLogDiver
+ * @memberof file
  * @class FileParser
  * @classdesc ファイルをパースして読み込む
  *            <p>
@@ -100,8 +99,8 @@ export default (function() {
 
         // Filter Config用関数定義(radio用） #51
         env = "Filter"
-        var func_F_SYNC_UPPER = function(){ HJN.Graph.DrawCallback(HJN.chart.graph); },
-            func_F_SYNC_DETAIL = function(){ HJN.Graph.DrawCallback(HJN.chartD.graph); };
+        var func_F_SYNC_UPPER = function(){ Graph.DrawCallback(HJN.chart.graph); },
+            func_F_SYNC_DETAIL = function(){ Graph.DrawCallback(HJN.chartD.graph); };
         // Filter Config設定画面定義 #51
         this["_config_" + env] = Util.Config(env) // #53
             .name("F_SYNC").label(null,"Sync") // #50
@@ -130,26 +129,6 @@ export default (function() {
                     .number("F_TEXT_COL", "from head of the", "th column of CSV", "3", 'style="width:40px;"').n()
                     .text("F_TEXT_REG", "match the regular expression", null, null, 'size="7" placeholder=".*"').n()
                 .n("<br>")
-        ;
-
-        // Simulator Config用関数定義(radio用） #53
-        env = "Simulator"
-        var func_S_SIMU_000 = function(){ CreateSampleTatLogAndChartShow(0); };
-        var func_S_SIMU_001 = function(){ CreateSampleTatLogAndChartShow(1); };
-        // Simulator Config設定画面定義 #53
-        this["_config_" + env] = Util.Config(env) // #53
-            .n("<br>")
-            .label(null," If you change the scenario below,").n()
-            .label(null,"JSON is initialized and re-simulated.").n()
-            .n("<br>")
-            .name("S_SIMU")
-                .radio("S_SIMU_000", null, 
-                          "1 hour with table(B) lock.<br>"
-                        + "- online[100-500ms 2-5tps]<br>" 
-                        + "- batch[2-5sec evry3min]",
-                        true ,null, func_S_SIMU_000).n()
-                .radio("S_SIMU_001", null, "for test", 
-                        false ,null, func_S_SIMU_001).n()
         ;
     }
 

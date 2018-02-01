@@ -4,9 +4,7 @@ import * as Util from '../util/util.js';
 /** @namespace */
 export var HJN = {};
 window.HJN = HJN; // #67
-window.Config = Util.Config;
 
-HJN.ver = "b18.01.28";
 HJN.init = {}; // 初期登録処理関連
 
 HJN.chart = HJN.chartD = null;

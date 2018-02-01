@@ -2,13 +2,14 @@ import TouchPanel         from './util-touchPanel.js';
 import {DateToString, S2D, D2S, N2S, S2N} from './util-string.js';
 import Random             from './util-random.js';
 import Cash               from './util-cash.js';
+import addEventListener   from './util-addEventListener.js';
 import setZeroTimeout     from './util-setZeroTimeout.js';
 import Logger             from './util-logger.js';
 import CopyToClipboard    from './util-copyToClipboard.js';
 import binarySearch       from './util-binarySearch.js';
 import MappedETat         from './util-mappedETat.js';
 import Heap               from './util-heap.js';
-import Config             from './util-config.js';
+import {Config}           from './config/config.js';
 
 /** @namespace Util */
 export {
@@ -20,11 +21,12 @@ export {
     S2N,
     Random,
     Cash,
+    addEventListener,
     setZeroTimeout,
     Logger,
     CopyToClipboard,
     binarySearch,
-    MappedETat, //    MappedArray,
+    MappedETat, // MappedArray,
     Heap,
     Config
 };

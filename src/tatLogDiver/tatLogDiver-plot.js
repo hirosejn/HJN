@@ -171,6 +171,7 @@ Plot.Add=function(n, x, y) {
     
     // 内部関数：プロット位置を、指定秒から詳細グラフの最大時刻に変更する #19
     function adjustPlotToY(conc, x, toX, y, n, plot, rangePlus, rangeMinus, rangeUnit){
+        if (!conc) return;
         var maxTime = 0,
             concMax = 0,
             i = Util.binarySearch(x, conc, function(e){ return e.x; });

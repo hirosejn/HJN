@@ -4,34 +4,27 @@ import * as Simulator from '../simulator/simulator.js';
 import {HJN} from './tatLogDiver-hjn.js';
 import Graph from './tatLogDiver-graph.js';
 import Plot  from './tatLogDiver-plot.js';
+import * as TimeSeries from '../timeSeries/timeSeries.js';
+import {Copyright} from "./tatLogDiver-Copyright.js";
+
 
 /* *****1*********2*********3*********4*********5*********6*********7******* */
 /**
  * HTMLから呼び出すAPI
  * 
+ * @memberof Init
  * @param {string}
  *            [chartName=HJN.chartName="chart"] グラフを作成するHTMLタグ名
  * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ
- * @example
- * <!doctype html>
- * <html>
- * <head>
- * <meta charset="UTF-8">
- * <link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
- * <link type="text/css" rel="stylesheet" href="./tatLogDiver.css">
- * </head>
- * <body>
- * <div id="hjn_chart"></div>
- * <script src="../libs/dygraph.js"></script>
- * <script src="../libs/extras/synchronizer.js"></script>
- * <script type="module">
- * import {HJN_init_ChartRegist} from "./tatLogDiver-init.js";
- * window.addEventListener("DOMContentLoaded",function(eve){
- * 　　Bundle("chart");      // チャートを作成する
- * });
- * </script>
- * </body>
- * </html>
+ * @example <!doctype html> <html> <head> <meta charset="UTF-8"> <link
+ *          type="text/css" rel="stylesheet" href="../libs/dygraph.css"> <link
+ *          type="text/css" rel="stylesheet" href="./tatLogDiver.css"> </head>
+ *          <body> <div id="hjn_chart"></div> <script src="../libs/dygraph.js"></script>
+ *          <script src="../libs/extras/synchronizer.js"></script> <script
+ *          type="module"> import {HJN_init_ChartRegist} from
+ *          "./tatLogDiver-init.js";
+ *          window.addEventListener("DOMContentLoaded",function(eve){
+ *          Bundle("chart"); // チャートを作成する }); </script> </body> </html>
  */
 export default function Init(chartName){ // #70
 
@@ -39,7 +32,7 @@ export default function Init(chartName){ // #70
 	// 引数１ ：デフォルトHJN.chartName("chart")
 	HJN.chartName = chartName = chartName || HJN.chartName;
 	// タイトルを設定する #57
-	document.title = "tat log diver " + HJN.ver; 
+	document.title = "tat log diver " + Copyright.Version; 
 	// htmlを作成する #52
 	var html_chart = document.getElementById("hjn_" + chartName) || document.body;
 	html_chart.innerHTML = ''
@@ -86,17 +79,17 @@ export default function Init(chartName){ // #70
 	HJN.chartD = new Graph(chartName + "D", "HJN.chartD");
 	HJN.chartD.init();
 	// ドロップフィールドに、処理を登録する(注：dygraphはイベントリスナーを登録しないとクリック時にエラーが出る）
-	HJN.init.DropField(dropFieldName);
-	HJN.init.DropField(dropFieldName+ "D");
+	Init.DropField(dropFieldName);
+	Init.DropField(dropFieldName+ "D");
 
 	// 初期表示データを自動生成する // #53
 	Util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
-	
 }
 
 /**
  * データを自動生成し表示する
  * 
+ * @memberof Init
  * @param {String|Number}
  *            [json = Simulator.virtualSystemByJson.GetJsonConfig(0)]
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
@@ -114,38 +107,41 @@ export function CreateSampleTatLogAndChartShow(json){ // #53
     // 初期表示データを自動生成する
     HJN.chart.eTatOriginal = Simulator.virtualSystemByJson.Execute(jsonText);
     // データを表示する
-    HJN.init.ChartShow(HJN.chart.eTatOriginal);
+    Init.ChartShow(HJN.chart.eTatOriginal);
 }
 
 /**
- * 終了時刻とtatの配列をグラフ表示する
+ * 終了時刻とtatの配列をグラフ表示する（Menuイベントから呼び出される）
  * 
+ * @memberof Init
  * @param {ETAT}
  *            HJN.chart.eTatOriginal 終了時刻とtatを含む配列
  */
-HJN.init.ChartShow = function(eTatOriginal){
+Init.ChartShow = function(eTatOriginal){
     // フィルタしたeTatを取得する #34
     var eTat = HJN.chart.fileReader.createFilter().filter(eTatOriginal);
     
     // グラフを初期表示する
     HJN.Plot.List = []; // #53
     // 上段
-    HJN.chart.update(HJN.chart.createSeries(eTat));
+    var tatSet = (new TimeSeries.Tat()).createSeries(eTat); // #75
+    HJN.chart.setSeriesSet(tatSet.seriesSet, tatSet.cTpsUnit);
+    HJN.chart.update();
     var text = "上段表示 [" + HJN.chart.eTat.length + "]";
     Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
 
     // 下段(非同期）
    Util.setZeroTimeout( function(){
-        HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
-        HJN.chart.showBalloon();    // 上段のBalloonを描画する
-        var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
-        Util.Logger.ShowLogText(text, "elaps");
-        text = "<mark>Simulated data</mark>["
+       HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
+       HJN.chart.showBalloon();    // 上段のBalloonを描画する
+       var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
+       Util.Logger.ShowLogText(text, "elaps");
+       text = "<mark>Simulated data</mark>["
             + HJN.chart.eTat.length.toString()
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
-        Util.Logger.ShowLogText(text, "msg");
-        // 上下段のマウス操作同期設定 #49
-        var sync = Dygraph.synchronize(
+       Util.Logger.ShowLogText(text, "msg");
+       // 上下段のマウス操作同期設定 #49
+       var sync = Dygraph.synchronize(
                  [ HJN.chart.graph, HJN.chartD.graph ],
                  {selection: true, zoom: false});
     });
@@ -154,10 +150,11 @@ HJN.init.ChartShow = function(eTatOriginal){
 /**
  * HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
  * 
+ * @memberof Init
  * @param {string}
  *            dropFieldName ファイルのドロップイベントを受けるフィールド名
  */
-HJN.init.DropField = function (dropFieldName) {
+Init.DropField = function (dropFieldName) {
 	"use strict";
 	// 第一引数で指定された名前の ID 属性のエレメントを取得する
 	var element = document.getElementById(dropFieldName);
@@ -172,7 +169,7 @@ HJN.init.DropField = function (dropFieldName) {
 			var data_transfer = e.dataTransfer;		// DataTransfer オブジェクトを取得する
 			if(!data_transfer.types) return;		// ファイルのコンテンツタイプを取得できたことを確認する
 			var files = data_transfer.files;	// ファイルのリストを取得する
-			HJN.init.FileReader(files);
+			Init.FileReader(files);
 			e.preventDefault();		// デフォルトのドロップ機能を無効化
 	});
 };
@@ -180,10 +177,11 @@ HJN.init.DropField = function (dropFieldName) {
 /**
  * 指定されたファイルを読込んで処理する
  * 
+ * @memberof Init
  * @param {Object}
  *            files ファイルハンドラ
  */
-HJN.init.FileReader = function (files){  // #15
+Init.FileReader = function (files){  // #15
 	"use strict";
 	for(var i = 0; i < files.length; i++){	// データを順番に取得する
 		try{
@@ -232,14 +230,16 @@ HJN.init.FileReader = function (files){  // #15
                 var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
 
                 // 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
-                HJN.chart.update(HJN.chart.createSeries(eTat));
+                var tatSet = (new TimeSeries.Tat()).createSeries(eTat); // #75
+                HJN.chart.setSeriesSet(tatSet.seriesSet, tatSet.cTpsUnit);
+                HJN.chart.update();
                 Util.Logger.ShowLogText("上段表示", "elaps");
 
                 // 下段用データの展開とグラフ描画（非同期処理）
                 HJN.Plot.List = [];
                 Util.setZeroTimeout(function(){
                     // 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
-                    HJN.chartD.update(HJN.init.ChartRegistDetail(HJN.chart.cTps));
+                    HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
                     // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
                     HJN.chart.showBalloon();
                     Util.Logger.ShowLogText("下段表示", "elaps");
@@ -262,7 +262,7 @@ HJN.init.FileReader = function (files){  // #15
 	            fileInfo += line.str + "<BR>";
 	        }
 	    }catch (e) {
-	        alert("[HJN.init.DropField 改行コードの無いファイルは扱えません]");
+	        alert("[Init.DropField 改行コードの無いファイルは扱えません]");
 	        console.error(e);
 	    }
 	    return fileInfo;
@@ -303,11 +303,12 @@ HJN.init.FileReader = function (files){  // #15
 /**
  * 詳細グラフ用機能： 表示対象期間のcTpsから、eTps範囲を取得し、詳細Seriesを生成する。併せてPlotsを登録する。
  * 
+ * @memberof Init
  * @param {xMs}
  *            cTps 日時（ミリ秒単位）
  * @return {seriesSet} dygraph用時系列データ配列
  */
-HJN.init.ChartRegistDetail = function(cTps){
+Init.ChartRegistDetail = function(cTps){
 	"use strict";
 	// CTPSの最大値となるplotを取得する
 	var maxY =Number.MIN_VALUE,
@@ -328,7 +329,8 @@ HJN.init.ChartRegistDetail = function(cTps){
 		// slider rangeに、下段の表示時刻を設定する
 		HJN.init.SetDetailDateTime(x);
 		// eTpsの範囲を取得し、詳細用seriesSet(HJN.chartD.seriesSet）を設定する
-		HJN.chartD.createSeries(HJN.init.GetSliderRangedEtat());
+	    var tatSet = (new TimeSeries.Tat()).createSeries(Init.GetSliderRangedEtat()); // #75
+	    HJN.chartD.setSeriesSet(tatSet.seriesSet, tatSet.cTpsUnit);
 		// plotsアイコン用 HJN.Plot.Listに、下段表示したplotを登録する
 		HJN.Plot.Add(HJN.CTPS.N, cTps[maxYIdx].x, cTps[maxYIdx].y);
 	}
@@ -339,9 +341,10 @@ HJN.init.ChartRegistDetail = function(cTps){
 /**
  * 詳細グラフ用機能： sliderRangeで指定された範囲のeTatを返却する
  * 
+ * @memberof Init
  * @return {ETAT} 詳細グラフ用eTat
  */
-HJN.init.GetSliderRangedEtat = function(n) {
+Init.GetSliderRangedEtat = function(n) {
 	"use strict";
 	// 指定時刻（ｄｔ ± range）を取得する
 	var rangeTagPlus  = document.getElementById("DetailRangePlus");
@@ -367,12 +370,14 @@ HJN.init.GetSliderRangedEtat = function(n) {
 			HJN.chart.eTat.cash.setRangedCash(eTatDetail, from, to);
 		}
 	}
-	Util.Logger.ShowLogText("[0:HJN.init.GetSliderRangedEtat] ","calc");
+	Util.Logger.ShowLogText("[0:Init.GetSliderRangedEtat] ","calc");
 	
 	return eTatDetail;	// 詳細グラフ用eTatを返却する
 };
 /**
  * 詳細グラフ用機能： 表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）
+ * 
+ * @memberof Init
  */
 HJN.init.setDetailRange = function(){
     "use strict";
@@ -389,14 +394,15 @@ HJN.init.setDetailRange = function(){
             plot.rangeUnit  = HJN.detailRangeUnit; // #48
 
             // 下段データを登録する
-            HJN.chartD.seriesSet = HJN.chartD.createSeries( HJN.init.GetSliderRangedEtat() );
+            HJN.chartD.seriesSet = HJN.chartD.createSeries( Init.GetSliderRangedEtat() );
             // 下段グラフを描画する
-            HJN.Graph.prototype.update.call(HJN.chartD, HJN.chartD.seriesSet);
+            Graph.prototype.update.call(HJN.chartD, HJN.chartD.seriesSet);
         }, 750);    // 750ms 値の変更がなかった時に、処理を開始する
 };
 /**
- * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する
+ * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する（Plotから呼び出される）
  * 
+ * @memberof Init
  * @param {xMs}
  *            date 日時（ミリ秒単位）
  */
@@ -407,13 +413,12 @@ HJN.init.SetDetailDateTime=function(date) {
 
 
 /**
- * 著作権表記文字を取得する
+ * 著作権表記文字を取得する（Menuイベントから呼び出される）
  * 
+ * @memberof Init
  * @return {String} str 著作権表記文字
  */
 HJN.init.Copyright=function(){
     "use strict";
-    var str =   "&copy; 2017 Junichiroh Hirose\n" +
-            "https://github.com/hirosejn/HJN";
-    return str;
+    return Copyright.text;
 };

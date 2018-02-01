@@ -21,6 +21,7 @@ export default function (val, arr, func, low, high, isEqual) {
     "use strict";
     func = func || function(val){ return val.valueOf(); };
     low = low || 0;
+    if (!arr) return -1;
     high = high || arr.length - 1;
     isEqual = isEqual || false;
     var middle,
