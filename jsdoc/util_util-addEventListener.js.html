@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: Simulator</title>
+    <title>JSDoc: Source: util/util-addEventListener.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,107 +17,42 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: Simulator</h1>
+    <h1 class="page-title">Source: util/util-addEventListener.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>Simulator</h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Simulator.SimulatorMenuConfig.html">SimulatorMenuConfig</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.VirtualApp.html">VirtualApp</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.VirtualResource.html">VirtualResource</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.VirtualSystem.html">VirtualSystem</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.virtualSystemByJson.html">virtualSystemByJson</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @memberOf Util
+ * @class addEventListener
+ * 
+ * 1つのイベントターゲットにイベントリスナーを1つ登録する
+ * 
+ * @param {dom}
+ *            element DOM要素、document.getElementById("xx");などで取得
+ * @param {string}
+ *            [type="click"] イベントの種類
+ *            {@link https://developer.mozilla.org/en-US/docs/Web/Events}
+ * @param {function}
+ *            func 実行する関数
+ */
+export default function(element, type, func) { // #74
+    type = type || "click";
+    if (element.addEventListener) {
+        element.addEventListener(type, func, false);
+    } else if (element.attachEvent) {
+        element.attachEvent("on" + type, func); 
+    } else {
+        console.log("unable addEventListner %o", element);
+    }
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

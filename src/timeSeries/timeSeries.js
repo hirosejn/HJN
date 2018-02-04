@@ -1,6 +1,6 @@
 import Tat from "./timeSeries-tat.js";
 
-/** @namespace timeSeries */
+/** @namespace TimeSeries */
 export {
     Tat
 };

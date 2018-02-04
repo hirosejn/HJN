@@ -2,7 +2,10 @@
     "source": {
         "include":  ["C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src",
 					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\util",
-					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\simulator"
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\simulator",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\file",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\timeSeries",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\tatLogDiver"
 					 ]
     },
     "opts": {

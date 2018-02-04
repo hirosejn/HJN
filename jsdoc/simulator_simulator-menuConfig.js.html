@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: Simulator</title>
+    <title>JSDoc: Source: simulator/simulator-menuConfig.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,107 +17,48 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: Simulator</h1>
+    <h1 class="page-title">Source: simulator/simulator-menuConfig.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>Simulator</h2>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as Util from '../util/util.js';
+import {CreateSampleTatLogAndChartShow} from '../tatLogDiver/tatLogDiver-init.js';
 
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Simulator.SimulatorMenuConfig.html">SimulatorMenuConfig</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.VirtualApp.html">VirtualApp</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.VirtualResource.html">VirtualResource</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.VirtualSystem.html">VirtualSystem</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Simulator.virtualSystemByJson.html">virtualSystemByJson</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+/**
+ * @memberOf Simulator
+ * @class SimulatorMenuConfig
+ * @classdesc シミュレータ用メニューHTML定義
+ * 
+ */
+export default function() { // #74
+    // Simulator Config用関数定義(radio用） #53
+    var env = "Simulator"
+    var func_S_SIMU_000 = function(){ CreateSampleTatLogAndChartShow(0); };
+    var func_S_SIMU_001 = function(){ CreateSampleTatLogAndChartShow(1); };
+    // Simulator Config設定画面定義 #53
+    // this["_config_" + env] = Util.Config(env) // #53
+    HJN.Config[env] = Util.Config(env)
+         .n("&lt;br>")
+         .label(null," If you change the scenario below,").n()
+         .label(null,"JSON is initialized and re-simulated.").n()
+         .n("&lt;br>")
+         .name("S_SIMU")
+             .radio("S_SIMU_000", null, 
+                       "1 hour with table(B) lock.&lt;br>"
+                     + "- online[100-500ms 2-5tps]&lt;br>" 
+                     + "- batch[2-5sec evry3min]",
+                     true ,null, func_S_SIMU_000).n()
+             .radio("S_SIMU_001", null, "for test", 
+                     false ,null, func_S_SIMU_001).n()
+     ;
+}</code></pre>
+        </article>
+    </section>
 
 
 

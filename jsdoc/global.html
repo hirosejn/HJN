@@ -92,298 +92,6 @@
     
 
     
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line102">line 102</a>
-    </dir>
-    
-
-    <h4 class="name" id="CreateSampleTatLogAndChartShow">
-    <span class="type-signature"></span>CreateSampleTatLogAndChartShow<span class="signature">(json<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		データを自動生成し表示する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>json</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    Simulator.virtualSystemByJson.GetJsonConfig(0)
-                
-                </span>
-            
-
-            <div class="description last">シミュレーション条件JSONテキスト、もしくはサンプルJSON番号</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="tatLogDiver-init.js.html">tatLogDiver-init.js</a>, <a href="tatLogDiver-init.js.html#line34">line 34</a>
-    </dir>
-    
-
-    <h4 class="name" id="HJN_init_ChartRegist">
-    <span class="type-signature"></span>HJN_init_ChartRegist<span class="signature">(chartName<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ETAT">ETAT</a>}</span>
-    </h4>
-    
-    
-	<div class="description">
-		HTMLから呼び出すAPI
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>chartName</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    HJN.chartName="chart"
-                
-                </span>
-            
-
-            <div class="description last">グラフを作成するHTMLタグ名</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type"><a href="global.html#ETAT">ETAT</a></span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    終了時刻のTAT（応答時間）時系列データ
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>&lt;!doctype html>&lt;html>&lt;head>&lt;meta charset="UTF-8">&lt;link type="text/css" rel="stylesheet" href="../libs/dygraph.css">&lt;link type="text/css" rel="stylesheet" href="./tatLogDiver.css">&lt;/head>&lt;body>&lt;div id="hjn_chart">&lt;/div>&lt;script src="../libs/dygraph.js">&lt;/script>&lt;script src="../libs/extras/synchronizer.js">&lt;/script>&lt;script type="module">import {HJN_init_ChartRegist} from "./tatLogDiver-init.js";window.addEventListener("DOMContentLoaded",function(eve){　　HJN_init_ChartRegist("chart");      // チャートを作成する});&lt;/script>&lt;/body>&lt;/html></code></pre>
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Type Definitions</h3>
@@ -1182,13 +890,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.FileParser.html">tatLogDiver.FileParser</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CreateSampleTatLogAndChartShow">CreateSampleTatLogAndChartShow</a></li><li><a href="global.html#HJN_init_ChartRegist">HJN_init_ChartRegist</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="File.FileParser.html">File.FileParser</a></li><li><a href="Simulator.SimulatorMenuConfig.html">Simulator.SimulatorMenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="File.html">File</a></li><li><a href="HJN.html">HJN</a></li><li><a href="Plot.html">Plot</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Jan 28 2018 18:21:39 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 05 2018 03:32:49 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 
