@@ -1,7 +1,7 @@
-import VirtualSystem    from './simulator-virtualSystem.js';
-import VirtualApp       from './simulator-virtualApp.js';
-import VirtualResource  from './simulator-virtualResource.js';
-import virtualSystemByJson from './simulator-virtualSystemByJson.js';
+import VirtualSystem    from './simulator-VirtualSystem.js';
+import VirtualApp       from './simulator-VirtualApp.js';
+import VirtualResource  from './simulator-VirtualResource.js';
+import virtualSystemByJson from './simulator-VirtualSystemByJson.js';
 import MenuConfig from './simulator-MenuConfig.js';
 
 /** @namespace Simulator */

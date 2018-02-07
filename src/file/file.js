@@ -1,4 +1,4 @@
-import Parser from "./file-parser.js";
+import Parser from "./file-Parser.js";
 
 /** @namespace File */
 export {Parser};

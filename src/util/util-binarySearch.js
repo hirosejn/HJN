@@ -15,7 +15,7 @@
  *            [high=arr.length-1] 配列の下限検査範囲の上限
  * @param {Boolean}
  *            [isEqual=false] 完全一致しないときのリターン値：trueのとき-1、falseのとき値との差が最も少ない位置
- * @example i=HJN_util.binarySearch(x,arrXY,function(e){return e.x;});
+ * @example i=Util.binarySearch(x,arrXY,function(e){return e.x;});
  */
 export default function (val, arr, func, low, high, isEqual) {
     "use strict";

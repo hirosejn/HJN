@@ -1,5 +1,5 @@
 /**
- * @memberOf Util
+ * @memberOf timeSeries
  * @class MappedETat
  * @classdesc 期間指定eTat取得用Map
  *            <p>
@@ -268,6 +268,7 @@ var MappedArray = (function() {    // #18
             i = idxArr ? idxArr.length : -1;
         return (0 < i) ? idxArr[i-1] : -1;
     };
+    
     
     return MappedArray;
 }());

@@ -1,9 +1,9 @@
 import * as Util from '../util/util.js';
-import {CreateSampleTatLogAndChartShow} from '../tatLogDiver/tatLogDiver-init.js';
+import {CreateSampleTatLogAndChartShow} from '../tatLogDiver/tatLogDiver-Init.js';
 
 /**
  * @memberOf Simulator
- * @class SimulatorMenuConfig
+ * @class MenuConfig
  * @classdesc シミュレータ用メニューHTML定義
  * 
  */

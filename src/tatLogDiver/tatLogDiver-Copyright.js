@@ -1,5 +1,5 @@
 export var Copyright = {
-    Version : "b18.02.03",
-    text : "&copy; 2017 Junichiroh Hirose\n" +
+    Version : "b18.02.08",
+    text : "&copy; 2017-2018 Junichiroh Hirose\n" +
                 "https://github.com/hirosejn/HJN"
 };

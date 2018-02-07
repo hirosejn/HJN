@@ -1,4 +1,4 @@
-import VirtualSystem from './simulator-virtualSystem.js';
+import VirtualSystem from './simulator-VirtualSystem.js';
 import * as Util from '../util/util.js';
 /**
  * @memberOf Simulator

@@ -1,6 +1,6 @@
 import * as Util from '../util/util.js';
-import {HJN} from '../tatLogDiver/tatLogDiver-hjn.js';
-import Graph from '../tatLogDiver/tatLogDiver-graph.js';
+import {HJN} from '../tatLogDiver/tatLogDiver-HJN.js';
+import Graph from '../tatLogDiver/tatLogDiver-Graph.js';
 
 /**
  * @memberof File

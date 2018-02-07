@@ -1,5 +1,5 @@
 /**
- * @memberOf Util
+ * @memberOf timeSeries
  * @class Cash
  * @classdesc キャッシュ
  *            <p>
@@ -8,7 +8,6 @@
  *            [size=10] キャッシュ最大件数（未対応機能、設定は無視される）
  */
 export default (function() {
-    "use strict";
     /** constructor */
     function Cash(size){
         size = size || 10;  // TODO 未使用

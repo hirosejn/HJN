@@ -1,11 +1,11 @@
 "use strict";
 import * as Util from '../util/util.js';
-import * as Simulator from '../simulator/simulator.js';
-import {HJN} from './tatLogDiver-hjn.js';
-import Graph from './tatLogDiver-graph.js';
-import Plot  from './tatLogDiver-plot.js';
 import * as TimeSeries from '../timeSeries/timeSeries.js';
+import * as Simulator from '../simulator/simulator.js';
+import {HJN} from './tatLogDiver-HJN.js';
 import {Copyright} from "./tatLogDiver-Copyright.js";
+import Graph from './tatLogDiver-Graph.js';
+import Plot  from './tatLogDiver-Plot.js';
 
 
 /* *****1*********2*********3*********4*********5*********6*********7******* */
@@ -22,7 +22,7 @@ import {Copyright} from "./tatLogDiver-Copyright.js";
  *          <body> <div id="hjn_chart"></div> <script src="../libs/dygraph.js"></script>
  *          <script src="../libs/extras/synchronizer.js"></script> <script
  *          type="module"> import {HJN_init_ChartRegist} from
- *          "./tatLogDiver-init.js";
+ *          "./tatLogDiver-Init.js";
  *          window.addEventListener("DOMContentLoaded",function(eve){
  *          Bundle("chart"); // チャートを作成する }); </script> </body> </html>
  */
@@ -356,23 +356,12 @@ HJN.init.GetSliderRangedEtat = function() {
     HJN.detailRangeMinus = rangeTagMinus ? +rangeTagMinus.value : rangeCycle;     // 幅（秒）
     HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : TimeSeries.Tat.CYCLE; // #48
 
-	var rangeUnit = HJN.detailRangeUnit; // #48
-	var dt = Math.floor(HJN.detailDateTime / rangeUnit) * rangeUnit; // 中央時刻(ミリ秒)
-	var	from = dt - HJN.detailRangeMinus * rangeUnit;  // #48
-	var	to = dt + HJN.detailRangePlus  * rangeUnit;  // 幅（ミリ秒）
-	var eTatDetail = [{x: 0, y: 0.001, sTatIdx: 0}];	// tatMapが無い場合の返却値
-	if (HJN.chart.eTat.tatMap){	// #18
-		// eTatDetailがレンジキャッシュにあるか確認する #30
-		eTatDetail = HJN.chart.eTat.cash.getRangedCash(from, to);
-		if(eTatDetail === undefined){
-			// キャッシュヒットしないとき、eTatDetailを抽出し、キャッシュにセットする
-			eTatDetail = HJN.chart.eTat.tatMap.search(from,to);
-			HJN.chart.eTat.cash.setRangedCash(eTatDetail, from, to);
-		}
-	}
+    var eTatDetail = (new TimeSeries.ETat(HJN.chart.eTat)).sliceByRangeUnit(HJN.detailDateTime, 
+                        HJN.detailRangeMinus, HJN.detailRangePlus, HJN.detailRangeUnit); // #75
+
 	Util.Logger.ShowLogText("[0:HJN.init.GetSliderRangedEtat] ","calc");
-	
 	return eTatDetail;	// 詳細グラフ用eTatを返却する
+
 };
 /**
  * 詳細グラフ用機能： 表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）

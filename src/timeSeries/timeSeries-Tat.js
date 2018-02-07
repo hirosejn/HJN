@@ -1,4 +1,7 @@
 import * as Util from '../util/util.js';
+import MappedETat from './timeSeries-MappedETat.js';
+import ETat from './timeSeries-ETat.js';
+import Cash from './timeSeries-Cash.js';
 
 
 /**
@@ -7,7 +10,7 @@ import * as Util from '../util/util.js';
  * @classdesc Tat 応答時間(Turnaround time)の時系列データ管理クラス
  * @param {ETAT}
  *            [eTat] [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]<br>
- *                  eTatが指定されているとき、this.seriesSet を設定する
+ *            eTatが指定されているとき、this.seriesSet を設定する
  */
 export default function Tat(eTat) {
     
@@ -62,22 +65,12 @@ Tat.prototype.createSeries = function (eTat) {
     eTat.forEach(function (e) {
         if (e.x < dTo) {
             num += 1;
-            if (maxTat < e.y)
-                maxTat = e.y; // #19
+            if (maxTat < e.y) maxTat = e.y; // #19
             aveTmp += e.y;
         } else {
-            eTps.push({
-                x : dFrom,
-                y : num * 1000 / Tat.CYCLE // #57
-            });
-            eMps.push({
-                x : dFrom,
-                y : maxTat
-            }); // #19
-            eAps.push({
-                x : dFrom,
-                y : aveTmp / num
-            });
+            eTps.push({x : dFrom, y : num * 1000 / Tat.CYCLE}); // #57
+            eMps.push({x : dFrom, y : maxTat}); // #19
+            eAps.push({x : dFrom, y : aveTmp / num});
             dFrom = Math.floor(e.x / Tat.CYCLE) * Tat.CYCLE;
             dTo = dFrom + Tat.CYCLE;
             num = 1;
@@ -85,34 +78,12 @@ Tat.prototype.createSeries = function (eTat) {
             aveTmp = e.y; // #39
         }
     }, this);
-
-    eTps.push({
-        x : dFrom,
-        y : num * 1000 / Tat.CYCLE // #57
-    });
-    eTps.push({ // #57
-        x : dFrom + Tat.CYCLE,
-        y : num * 1000 / Tat.CYCLE
-    });
-
-    eMps.push({ // #19
-        x : dFrom,
-        y : maxTat
-    });
-    eMps.push({ // #57
-        x : dFrom + Tat.CYCLE,
-        y : maxTat
-    });
-
-    eAps.push({
-        x : dFrom,
-        y : aveTmp / num
-    });
-    eAps.push({ // #57
-        x : dFrom + Tat.CYCLE,
-        y : aveTmp / num
-    });
-
+    eTps.push({x : dFrom,             y : num * 1000 / Tat.CYCLE}); // #57
+    eTps.push({x : dFrom + Tat.CYCLE, y : num * 1000 / Tat.CYCLE}); // #57
+    eMps.push({x : dFrom,             y : maxTat}); // #19
+    eMps.push({x : dFrom + Tat.CYCLE, y : maxTat}); // #57
+    eAps.push({x : dFrom,             y : aveTmp / num});
+    eAps.push({x : dFrom + Tat.CYCLE, y : aveTmp / num}); // #57
     
     Util.Logger.ShowLogText("[3:eTps,eMps,eAps created] " + eTps.length
             + " plots", "calc");
@@ -148,15 +119,9 @@ Tat.prototype.createSeries = function (eTat) {
     // eTatから、多重度が変化した時刻の一覧を作成する
     eTat.map(function (e, i) {
         // 開始時刻にカウントアップ情報を追加する
-        concTmp.push({
-            x : e.x - e.y,
-            y : 1
-        });
+        concTmp.push({x : e.x - e.y, y : 1});
         // 終了時刻をカウントダウン情報を追加する
-        concTmp.push({
-            x : e.x,
-            y : -1
-        });
+        concTmp.push({x : e.x, y : -1});
     });
     // concを変化した時刻（開始or終了）でソートする
     concTmp.sort(function (a, b) {
@@ -196,47 +161,34 @@ Tat.prototype.createSeries = function (eTat) {
     this.cTpsUnit = cTpsUnits[cTpsIdx];
     // メニューのViewのcTPSのラベルに単位を追加する
     var pos = (this === HJN.chart) ? 0 : 1;
-    document.getElementsByName("cTps")[pos].parentNode.lastChild.data = HJN.CTPS.name
-            + this.cTpsUnit.label;
+    document.getElementsByName("cTps")[pos]
+                .parentNode.lastChild.data = HJN.CTPS.name + this.cTpsUnit.label;
 
     // 規定時間単位の最大同時処理数cTPSを作成する
     conc.forEach(function (c) {
         if (floorTime(c.x, this.cTpsUnit.unit) === XSec) { // c.xは ミリ秒
             YMax = Math.max(YMax, c.y);
         } else {
-            cTps.push({
-                x : XSec,
-                y : Math.max(YMax, YNext)
-            });
-            for (var t = XSec + this.cTpsUnit.unit; t < floorTime(c.x,
-                    this.cTpsUnit.unit); t += this.cTpsUnit.unit) { // c.xはミリ秒
-                cTps.push({
-                    x : t,
-                    y : YNext
-                });
-                if (YNext === 0)
-                    break;
+            cTps.push({x : XSec, y : Math.max(YMax, YNext)});
+            for (var t = XSec + this.cTpsUnit.unit;
+                    t < floorTime(c.x, this.cTpsUnit.unit);
+                    t += this.cTpsUnit.unit) { // c.xはミリ秒
+                        cTps.push({x : t, y : YNext});
+                if (YNext === 0) break;
             }
             XSec = floorTime(c.x, this.cTpsUnit.unit);
             YMax = Math.max(YNext, c.y);
         }
         YNext = c.y;
     }, this);
-    cTps.push({
-        x : XSec,
-        y : YMax
-    });
-    cTps.push({
-        x : XSec + this.cTpsUnit.unit,
-        y : YNext
-    });
+    cTps.push({x : XSec, y : YMax});
+    cTps.push({x : XSec + this.cTpsUnit.unit, y : YNext});
 
     // Util.Logger.ShowLogText("[5-1:cTps created] " + cTps.length + "
     // plots","calc");
 
     // cTpsのxからindexを引くMapを作成する #18
-    eTat.tatMap = new Util.MappedETat(eTat);
-    eTat.cash = Util.Cash();
+    eTat = new ETat(eTat); // #75
     Util.Logger.ShowLogText("[5:cTps created] " + cTps.length + " plots("
             + +Math.floor(concTerm / 1000) + "sec" + cTpsUnits[cTpsIdx].label
             + ")", "calc");
@@ -252,15 +204,17 @@ Tat.prototype.createSeries = function (eTat) {
         return Math.floor(Math.floor(t / cycle) * cycle);
     }
 };
+
 /**
  * cTpsの集計単位を取得する
  * 
  * @memberOf TimeSeries
- * @return {object} 単位構造体 { label: "/sec",   unit: 1000 }
+ * @return {object} 単位構造体 { label: "/sec", unit: 1000 }
  */
 Tat.prototype.getCTpsUnit = function () {
     return this.cTpsUnit;
 }
+
 /**
  * seriesSetを取得する
  * 

@@ -2,8 +2,8 @@
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
 import * as File from '../file/file.js';
-import Menu from'./tatLogDiver-menu.js';
-import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-init.js';
+import Menu from'./tatLogDiver-Menu.js';
+import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-Init.js';
 import * as TimeSeries from '../timeSeries/timeSeries.js';
 
 
@@ -61,8 +61,6 @@ export default function Graph(chartIdName, globalName, config) {
     this.scale = [ null, null ];
     this.graph = null;
     this.cTpsUnit = TimeSeries.Tat.UNIT_CTPS[0]; // #75
-
-    this.cash = null; // キャッシュオブジェクト
 
     // グラフの設定(処理対象データの設定のみ this.SERIESES[] に取り込む）
     this.SERIESES = [];

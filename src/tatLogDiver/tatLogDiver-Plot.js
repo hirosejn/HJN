@@ -1,5 +1,5 @@
 import * as Util from '../util/util.js';
-import {HJN} from './tatLogDiver-hjn.js';
+import {HJN} from './tatLogDiver-HJN.js';
 import * as TimeSeries from '../timeSeries/timeSeries.js';
 
 /**
@@ -60,7 +60,7 @@ Plot.PointClickCallback = function(point) {
 
     // グラフの日時で、詳細グラフを再作成する
     HJN.init.SetDetailDateTime(x);
-    var tat = new TimeSeries.Tat(HJN.init.GetSliderRangedEtat(n)); // #57
+    var tat = new TimeSeries.Tat(HJN.init.GetSliderRangedEtat()); // #57
     HJN.chartD.setSeriesSet(tat); // #75
     
     // 下段の残処理終了後、下段データを登録描画する
