@@ -117,13 +117,14 @@ export function CreateSampleTatLogAndChartShow(json){ // #53
  * @param {ETAT}
  *            HJN.chart.eTatOriginal 終了時刻とtatを含む配列
  */
-Init.ChartShow = function(eTatOriginal){
+HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
     // フィルタしたeTatを取得する #34
-    var eTat = HJN.chart.fileReader.createFilter().filter(eTatOriginal);
+    var eTat = HJN.chart.fileParser.createFilter().filter(eTatOriginal);
     
     // グラフを初期表示する
     HJN.Plot.List = []; // #53
     // 上段
+    if (eTat.length === 0) eTat = [{x:0, y:0}]; // #72
     var tat = new TimeSeries.Tat(eTat); // #75
     HJN.chart.setSeriesSet(tat);
     HJN.chart.update();
@@ -134,12 +135,17 @@ Init.ChartShow = function(eTatOriginal){
    Util.setZeroTimeout( function(){
        HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
        HJN.chart.showBalloon();    // 上段のBalloonを描画する
-       var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
-       Util.Logger.ShowLogText(text, "elaps");
-       text = "<mark>Simulated data</mark>["
-            + HJN.chart.eTat.length.toString()
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
-       Util.Logger.ShowLogText(text, "msg");
+       if (HJN.chartD.eTat){
+           var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
+           Util.Logger.ShowLogText(text, "elaps");
+           text = "<mark>Simulated data</mark>["
+                + HJN.chart.eTat.length.toString()
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
+           Util.Logger.ShowLogText(text, "msg");
+           
+       } else { // #72
+           Util.Logger.ShowLogText("<mark>表示データがありません</mark>", "msg");                        
+       }
        // 上下段のマウス操作同期設定 #49
        var sync = Dygraph.synchronize(
                  [ HJN.chart.graph, HJN.chartD.graph ],
@@ -181,7 +187,7 @@ Init.DropField = function (dropFieldName) {
  * @param {Object}
  *            files ファイルハンドラ
  */
-Init.FileReader = function (files){  // #15
+HJN.init.FileReader = Init.FileReader = function (files){  // #15
 	"use strict";
 	for(var i = 0; i < files.length; i++){	// データを順番に取得する
 		try{
@@ -214,7 +220,7 @@ Init.FileReader = function (files){  // #15
             Util.Logger.ShowLogText(textArray, "msg");  // 情報表示：ドロップファイル情報
             // 指定ファイルを読み込む
             // CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
-            if (i === 0 && HJN.chart.fileReader.isNewETAT()){
+            if (i === 0 && HJN.chart.fileParser.isNewETAT()){
                 // 新規モードかつ、同時複数ファイル指定時の最初のファイルのとき、新たに作成する
                 HJN.files = [file];
                 HJN.chart.eTatOriginal = getTatLogArray(HJN.filesArrayBuffer, filesIdx);
@@ -227,9 +233,10 @@ Init.FileReader = function (files){  // #15
             // 全ファイルを読み込んだらグラフを描画する
             if (HJN.files[HJN.files.length - 1] === file){ // 指定ファイル群の最後のファイルを処理しているとき
                 // フィルタしたeTatを取得する #34
-                var eTat = HJN.chart.fileReader.createFilter().filter(HJN.chart.eTatOriginal);
+                var eTat = HJN.chart.fileParser.createFilter().filter(HJN.chart.eTatOriginal);
 
                 // 上段グラフを描画する（ eTatから上段用 時系列分析データ(seriesSet)を展開する）
+                if (eTat.length === 0) eTat = [{x:0, y:0}]; // #72
                 var tat = new TimeSeries.Tat(eTat); // #75
                 HJN.chart.setSeriesSet(tat);
                 HJN.chart.update();
@@ -238,14 +245,18 @@ Init.FileReader = function (files){  // #15
                 // 下段用データの展開とグラフ描画（非同期処理）
                 HJN.Plot.List = [];
                 Util.setZeroTimeout(function(){
-                    // 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
-                    HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
-                    // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
-                    HJN.chart.showBalloon();
-                    Util.Logger.ShowLogText("下段表示", "elaps");
-                    Util.Logger.ShowLogText("<mark>"+ HJN.files[0].name +
-                            "["+ HJN.chart.eTat.length +
-                            "]を表示しました</mark>", "msg");
+                    if (HJN.chart.cTps) {
+                        // 下段グラフを描画する（下段用 時系列分析データ(seriesSet)を展開する）
+                        HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
+                        // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
+                        HJN.chart.showBalloon();
+                        Util.Logger.ShowLogText("下段表示", "elaps");
+                        Util.Logger.ShowLogText("<mark>"+ HJN.files[0].name +
+                                "["+ HJN.chart.eTat.length +
+                                "]を表示しました</mark>", "msg");
+                    } else { // #72
+                        Util.Logger.ShowLogText("<mark>表示データがありません</mark>", "msg");                        
+                    }
                 });
             }
         }
@@ -256,7 +267,7 @@ Init.FileReader = function (files){  // #15
 	    var fileInfo = "",
 	        line;
 	    try{    // 先頭からnレコード取得
-	        var getterOfLine = HJN.chart.fileReader.createGetterOfLine(file);
+	        var getterOfLine = HJN.chart.fileParser.createGetterOfLine(file);
 	        for (var i = 0; i < n; i++) {
 	            line = getterOfLine.next();
 	            fileInfo += line.str + "<BR>";
@@ -276,8 +287,8 @@ Init.FileReader = function (files){  // #15
 	        eTat = [],
 	        xy = {date: 0, value: 0, isError: false },
 	        i = 0,  // timelog用
-	        getterOfLine = HJN.chart.fileReader.createGetterOfLine(file),
-	        getterOfXY = HJN.chart.fileReader.createGetterOfXY(),
+	        getterOfLine = HJN.chart.fileParser.createGetterOfLine(file),
+	        getterOfXY = HJN.chart.fileParser.createGetterOfXY(),
 	        line = getterOfLine.next();     // 先頭行の初期処理
 	    while (!line.isEoF) {               // 以降最終行まで処理する
 	        try {
@@ -297,7 +308,6 @@ Init.FileReader = function (files){  // #15
 	    return eTat;
 	}
 };
-
 
 
 /**

@@ -9,11 +9,11 @@ import {CreateSampleTatLogAndChartShow} from '../tatLogDiver/tatLogDiver-Init.js
  */
 export default function() { // #74
     // Simulator Config用関数定義(radio用） #53
-    var env = "Simulator"
     var func_S_SIMU_000 = function(){ CreateSampleTatLogAndChartShow(0); };
     var func_S_SIMU_001 = function(){ CreateSampleTatLogAndChartShow(1); };
     // Simulator Config設定画面定義 #53
-    // this["_config_" + env] = Util.Config(env) // #53
+    var env = "Simulator"
+        // this["_config_" + env] = Util.Config(env) // #53
     HJN.Config[env] = Util.Config(env)
          .n("<br>")
          .label(null," If you change the scenario below,").n()

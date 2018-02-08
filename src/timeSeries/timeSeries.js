@@ -1,10 +1,14 @@
 import Tat from "./timeSeries-Tat.js";
 import ETat from "./timeSeries-ETat.js";
+import FileParser from "./timeSeries-FileParser.js";
+import MenuConfig from "./timeSeries-MenuConfig.js";
 
 /** @namespace TimeSeries */
 export {
     Tat,
-    ETat
+    ETat,
+    FileParser,
+    MenuConfig
 };
 
 /**

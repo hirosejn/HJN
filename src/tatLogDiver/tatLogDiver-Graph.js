@@ -1,7 +1,6 @@
 "use strict";
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
-import * as File from '../file/file.js';
 import Menu from'./tatLogDiver-Menu.js';
 import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-Init.js';
 import * as TimeSeries from '../timeSeries/timeSeries.js';
@@ -48,7 +47,7 @@ export default function Graph(chartIdName, globalName, config) {
     }
 
     // File.Parserを設定する
-    this.fileReader = File.Parser(); // #24
+    this.fileParser = TimeSeries.FileParser(); // #24
 
     // グラフ定義領域の宣言
     this.windowId = document.getElementById("hjn_chart");
@@ -287,11 +286,28 @@ Graph.prototype.update = function (seriesSet, n) {
     // 指定データがあるとき取り込む
     if (seriesSet) this.setSeriesSet(undefined, seriesSet);
     // dygraph用表示データを作成する
-    var xy = [], // グラフデータ({x:,y:}ペアの配列）の一覧（グラフ１本が配列要素）
-    idx = [], // グラフデータの処理中配列位置を保有する配列
-    x = [], // グラフデータの処理中配列のｘ(時刻)の値を保有する配列
-    row = [], // dygraph１レコードワーク配列：（[x,y0,y1...]の配列）の一レコード分を保持する配列
-    minX = 0, i = 0; // グラフ番号用ワーク
+    var xy = [[{x:0,y:0}],[{x:0,y:0}],[{x:0,y:0}],[{x:0,y:0}]], // グラフデータの一覧（グラフ１本が配列要素）
+        idx = [], // グラフデータの処理中配列位置を保有する配列
+        x = [], // グラフデータの処理中配列のｘ(時刻)の値を保有する配列
+        row = [], // dygraph１レコードワーク配列：（[x,y0,y1...]の配列）の一レコード分を保持する配列
+        minX = 0,
+        i = 0; // グラフ番号用ワーク
+    // 表示対象データがないとき空データのdygraphを表示する #72
+    if (this.seriesSet.length === 0) {
+        var cols = [0]; // 日時（ミリ秒）
+        for (i = 0; i < this.SERIESES.length; i++) cols[i+1] = null;
+        this.dyData = [cols];
+        if (this.graph) {
+            // 既にグラフがあるときはデータのみ変更する（注：ここでdestroy()すると下段のpointClickCallback時にエラー）
+            this.graph.updateOptions( {
+                file : this.dyData
+            } );
+            this.graph.resetZoom(); // #51
+        }
+        return;
+    }
+    
+    
     // xy[] に処理対象seriesを指定する
     for (i = 0; i < this.SERIESES.length; i++) {
         xy[i] = this.seriesSet[this.SERIESES[i].N];
@@ -556,7 +572,7 @@ Graph.prototype.update = function (seriesSet, n) {
                 var e = eTat[n];
                 // ログデータを表示する
                 document.getElementById("lineViewer").innerHTML =
-                            this.HJN.fileReader.getRecordAsText(e); // #62
+                            this.HJN.fileParser.getRecordAsText(e); // #62
                 // 線を引く #30
                 drawTatLine(ctx, e.x, e.y, 2, color);
                 ctx.stroke();
@@ -814,8 +830,8 @@ Graph.prototype.menuSaveConfig = function (menuId, fileName) {
     // plotsをjsonに変換する
     var save = {
         "HJN.Plot.List" : HJN.Plot.List,
-        "HJN.chart.fileReader" : HJN.chart.fileReader._config_File.__config,
-        "HJN.chartD.fileReader" : HJN.chartD.fileReader._config_File.__config
+        "HJN.chart.fileParser" : HJN.chart.fileParser._config_File.__config,
+        "HJN.chartD.fileParser" : HJN.chartD.fileParser._config_File.__config
     };
     var json = JSON.stringify(save, null, 4);
     // ダウンロードする
@@ -868,11 +884,11 @@ Graph.prototype.menuLoadConfig = function (evt) { // #10
             alert(json);
             var jsonObj = JSON.parse(json);
 
-            // jsonからHJN.chartD.fileReaderに登録されているConfig の定義を作成する
-            var conf = jsonObj["HJN.chart.fileReader"];
-            HJN.chart.fileReader._config_File.__config = conf;
-            var confD = jsonObj["HJN.chartD.fileReader"];
-            HJN.chartD.fileReader._config_File.__config = confD;
+            // jsonからHJN.chartD.fileParserに登録されているConfig の定義を作成する
+            var conf = jsonObj["HJN.chart.fileParser"];
+            HJN.chart.fileParser._config_File.__config = conf;
+            var confD = jsonObj["HJN.chartD.fileParser"];
+            HJN.chartD.fileParser._config_File.__config = confD;
 
             // jsonからHJN.Plot.Listを作成する
             var tmpPlots = jsonObj["HJN.Plot.List"];
@@ -1055,7 +1071,7 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
             // 生成データをCSVに編集する
             var eTatCsv = "";
             var delimiter = '"';
-            var separator = delimiter + HJN.chart.fileReader.getValue("SEP") + delimiter;
+            var separator = delimiter + HJN.chart.fileParser.getValue("SEP") + delimiter;
             eTat.forEach(function (e) {
                 eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') + separator
                         + e.y + separator + e.message + delimiter + '\r\n'; // #61

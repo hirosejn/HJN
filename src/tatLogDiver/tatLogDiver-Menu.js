@@ -69,7 +69,7 @@ export default function Menu(that) {
         accordion.innerHTML = '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "File")
                 + '<ul class="hjnMenuLv2">' + getInputTag(menuOpenCsv)
-                + that.fileReader.getConfigHtml("File") // #24
+                + that.fileParser.getConfigHtml("File") // #24
                 + getATag(menuSaveConfig) + getInputTag(menuLoadConfig) // #10
                 + '</ul>' + '</li>';
 
@@ -87,7 +87,7 @@ export default function Menu(that) {
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Filter">'
                 + getAccordionTag(that, ++_id, "Filter")
                 + '<ul class="hjnMenuLv2">'
-                + that.fileReader.getConfigHtml("Filter") // #24
+                + that.fileParser.getConfigHtml("Filter") // #24
                 + getFuncTag(menuFilterApply) + getFuncTag(menuFilterClear)
                 + '</ul>' + '</li>';
 

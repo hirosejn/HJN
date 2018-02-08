@@ -1,6 +1,7 @@
 import * as Util from '../util/util.js';
 import {HJN} from '../tatLogDiver/tatLogDiver-HJN.js';
 import Graph from '../tatLogDiver/tatLogDiver-Graph.js';
+import MenuConfig from './timeSeries-MenuConfig.js';
 
 /**
  * @memberof File
@@ -138,7 +139,7 @@ export default (function() {
      * 
      * @memberof tatLogDiver.FileParser
      * @param {Object}
-     *            fileReader ファイルリーダ
+     *            fileParser ファイルリーダ
      * @param {String}
      *            type プロパティ種別名（"File"|"Filter"|"Simulator")
      * @return {Object} プロパティ
@@ -146,11 +147,11 @@ export default (function() {
     FileParser.Property = (function() {
         "use strict";
         /** @constructor */
-        function Property(fileReader, type){ 
-            if(!(this instanceof Property)) return new Property(fileReader, type);
+        function Property(fileParser, type){ 
+            if(!(this instanceof Property)) return new Property(fileParser, type);
             this._type = type || "File";
-            this._config     = fileReader["_config_" + this._type];
-            this.__keyConfig = fileReader.__keyConfig;
+            this._config     = fileParser["_config_" + this._type];
+            this.__keyConfig = fileParser.__keyConfig;
         }
 
         // public
@@ -212,7 +213,7 @@ export default (function() {
          *            ファクトリのFileParserが保持する改行コードを用いて、ファイルから１レコードを取得する
          * 
          * @example try{ var getterOfLine =
-         *          HJN.chart.fileReader.createGetterOfLine(file), fileInfo;<br>
+         *          HJN.chart.fileParser.createGetterOfLine(file), fileInfo;<br>
          *          for(var i = 0; i < n; i++) { <br>
          *          line = getterOfLine.next(); fileInfo += line.str + "<BR>"; }<br>
          *          }catch (e) {<br>
@@ -224,7 +225,7 @@ export default (function() {
             this.file = file;
             this.buf = new Uint8Array(file);
             this.maxLength = maxLength || this.buf.length,
-            this.confLF = HJN.chart.fileReader.getValue("LF");  // 改行コードor固定レコード長
+            this.confLF = HJN.chart.fileParser.getValue("LF");  // 改行コードor固定レコード長
             this.from = 0;
             this.to = 0;
             this.len = 0;
@@ -237,7 +238,7 @@ export default (function() {
          * @memberof tatLogDiver.FileParser.GetterOfLine
          * @name getValueByKey
          */
-        if (HJN.chart.fileReader.getValueByKey("LF") === "LF_FIX"){ // 固定長のとき
+        if (HJN.chart.fileParser.getValueByKey("LF") === "LF_FIX"){ // 固定長のとき
             GetterOfLine.prototype.next = function () { // 次の1レコードを取得する
                 if(this.from >= this.maxLength ){   // ファイル末尾のとき
                     this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
@@ -294,8 +295,8 @@ export default (function() {
          */
         function Filter(){ /* constructor */
             if(!(this instanceof Filter)) return new Filter();
-            this._fileReader = HJN.chart.fileReader; // #62
-            var c = FileParser.Property(this._fileReader, "Filter");
+            this._fileParser = HJN.chart.fileParser; // #62
+            var c = FileParser.Property(this._fileParser, "Filter");
 
             this.confF_TIME_FROM = Util.S2D(c.getValue("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
             this.confF_TIME_TO   = Util.S2D(c.getValue("F_TIME_TO"));      // 時刻(X)の最大値フィルター
@@ -325,7 +326,7 @@ export default (function() {
                             || this.confF_TAT === true || this.confF_TEXT != null)
                           ? true : false; // フィルタ指定の有無
             
-            c = FileParser.Property(HJN.chart.fileReader, "File");
+            c = FileParser.Property(HJN.chart.fileParser, "File");
             this.confF_SEP = c.getValue("SEP").charCodeAt(0);
         }
         
@@ -354,7 +355,7 @@ export default (function() {
             var text = "";
             if (e.pos === undefined) { // テキスト読み込みでないとき（自動生成データのとき）
                 // レコードを取得する #62
-                text = this._fileReader.getRecordAsText(e); // #61
+                text = this._fileParser.getRecordAsText(e); // #61
                 // 指定正規表現に合致するか判定し、Include/Exclude指定に応じてリターンする
                 return this.confF_TEXT === this.confF_TEXT_REG.test(text);
             } else { // ファイル読み込みのとき
@@ -414,7 +415,7 @@ export default (function() {
         function GetterOfXY(){ /* constructor */
             if(!(this instanceof GetterOfXY)) return new GetterOfXY();
 
-            var c = HJN.chart.fileReader;
+            var c = HJN.chart.fileParser;
             this.configId = "_config_" + "Filter"; // #53
             this.confSEP = c.getValue("SEP");   // セパレータ
             
