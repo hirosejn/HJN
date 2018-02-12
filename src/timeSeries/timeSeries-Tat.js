@@ -32,6 +32,72 @@ Tat.UNIT_CTPS = [
         { label: "/day",   unit: 86400000 }];
 Tat.CYCLE = 60000;  // ミリ秒 #57
 
+// グラフ定数
+Tat.CONC = {
+        key : 'conc',
+        name : '多重度（詳細）',
+        label : 'conc:%N',
+        N : 0,
+        scale : 0,
+        color : 'rgba(  0,  0,127, 0.3)',
+        tpsN : 1
+    }; // #7
+Tat.CTPS = {
+        key : 'cTps',
+        name : '多重度（区間最大）',
+        label : 'conc(max):%N',
+        N : 1,
+        scale : 0,
+        color : 'rgba(  0,  0,127, 0.1)',
+        detailN : 0
+    };
+Tat.ETPS = {
+        key : 'eTps',
+        name : 'average tps / min (end) [line]', // #57
+        label : 'end:%Ntps',
+        N : 2,
+        scale : 0,
+        color : 'rgba(  0, 127, 127, 0.3)'
+    };
+Tat.STAT = {
+        key : 'sTat',
+        name : 'response by start time [Y2軸:plot]',
+        label : 'start:%Nms',
+        N : 3,
+        scale : 1,
+        color : 'rgba(127, 127, 0, 0.3)'
+    };
+Tat.ETAT = {
+        key : 'eTat',
+        name : 'response by end time   [Y2軸:plot]',
+        label : 'end:%Nms',
+        N : 4,
+        scale : 1,
+        color : 'rgba(127,  0,  0, 0.3)'
+    };
+Tat.EMPS = {
+        key : 'eMps',
+        name : 'max response / min (end) [Y2軸:line]', // #57
+        label : 'max:%Nms',
+        N : 5,
+        scale : 1,
+        color : 'rgba(127,   0,  64, 0.3)'
+    };
+Tat.EAPS = {
+        key : 'eAps',
+        name : 'average response / min (end) [Y2軸:line]', // #57
+        label : 'ave:%Nms',
+        N : 6,
+        scale : 1,
+        color : 'rgba(127,   0,  64, 0.1)'
+    };
+Tat.toSeriesArray = function(conc, cTps, eTps, sTat, eTat, eMps, eAps) {
+    return [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
+}
+Tat.seriesConfig = Tat.toSeriesArray(
+        Tat.CONC, Tat.CTPS, Tat.ETPS, Tat.STAT, Tat.ETAT,
+        Tat.EMPS, Tat.EAPS);
+
 /**
  * 終了時刻のTAT時系列データ(eTat)から、描画用時系列データ配列を作成する
  * 
@@ -46,7 +112,7 @@ Tat.prototype.createSeries = function (eTat) {
 
     // 集計対象データがないとき
     if (eTat.length === 0)
-        return [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
+        return Tat.toSeriesArray(conc, cTps, eTps, sTat, eTat, eMps, eAps);
 
     /** eTatをソートする * */
     // 開始時刻でソートする #35
@@ -162,7 +228,7 @@ Tat.prototype.createSeries = function (eTat) {
     // メニューのViewのcTPSのラベルに単位を追加する
     var pos = (this === HJN.chart) ? 0 : 1;
     document.getElementsByName("cTps")[pos]
-                .parentNode.lastChild.data = HJN.CTPS.name + this.cTpsUnit.label;
+                .parentNode.lastChild.data = HJN.Tat.CTPS.name + this.cTpsUnit.label;
 
     // 規定時間単位の最大同時処理数cTPSを作成する
     conc.forEach(function (c) {
@@ -194,7 +260,7 @@ Tat.prototype.createSeries = function (eTat) {
             + ")", "calc");
 
     // 集計結果をHJN.Graphに設定する 注）this.SERIESESと同じ順番にすること
-    this.seriesSet = [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
+    this.seriesSet = Tat.toSeriesArray(conc, cTps, eTps, sTat, eTat, eMps, eAps);
 
     return this;
 

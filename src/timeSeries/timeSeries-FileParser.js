@@ -1,219 +1,50 @@
 import * as Util from '../util/util.js';
 import {HJN} from '../tatLogDiver/tatLogDiver-HJN.js';
-import Graph from '../tatLogDiver/tatLogDiver-Graph.js';
-import MenuConfig from './timeSeries-MenuConfig.js';
 
 /**
- * @memberof File
+ * @memberof TimeSeries
  * @class FileParser
  * @classdesc ファイルをパースして読み込む
  *            <p>
  *            パース条件指定画面生成つき
  */
 export default (function() {
-    "use strict";
     /** @static */
-    FileParser.prototype.__keyConfig = {};  // configで使用する値の定義
 
     /** constructor */
     function FileParser(){
         if(!(this instanceof FileParser)) return new FileParser();
-
-        this.configId = "_config_" + "File"; // #53
-
-        // コンストラクタ内部関数：keyを定義する
-        var def = function(key, val, onFunc) {
-                    var _keyConf = FileParser.prototype.__keyConfig[key] = {};
-                    _keyConf.value = (val === undefined) ? key : val; // getValueByKeyの返却値（デフォルト：keyと同じ文字列）
-                    _keyConf.getValue = function () { return (val === undefined) ? key : val; };
-                    _keyConf.onFunc = onFunc || null;   // onイベント時に実行する処理（メニューのa属性などで利用）
-                    return key;
-                };
-        var v = function(key, fieldId) { // fieldIdの値を返却値とする(デフォルト： key+".v")
-                    var _keyConf = FileParser.prototype.__keyConfig[key] = {};
-                    _keyConf.value = key;           // getValueByKeyの返却値（デフォルト：keyと同じ文字列）
-                    _keyConf.getValue = function () {
-                            return Util.Config("m").getValueByKey(fieldId || key + ".v"); // TODO:mの指定
-                        };
-                    return key;
-                };
-
-        // 名称と挙動の定義
-        var env = "File";
-        this["_config_" + env] = Util.Config(env) // #53
-            // File Format Config設定画面定義 #51
-            .name("NEWFILE").label(null,"Registered ") // #23
-                .radio("NEWDATA", null, "newly", true)
-                .radio("ADDDATA", null, "additionally").n()
-            .label(null,"----- File format definition --------").n()
-            .n("<br>")
-            .name("LF").label(null, "[Line feed code]").n()
-            .radio(v("LF_FIX"), null, "Fixed Length")
-                .number("LF_FIX.v",  null, "byte","80",'style="width:60px;"').n()
-            .radio(def("LF_WIN",  13), null, "Windows:CR(13)+LF(10)", true).n()
-            .radio(def("LF_UNIX", 10), null, "Unix/Linux:LF(10)").n()
-            .radio(def("LF_ZOS",  15), null, "zOS:NEL(15)").n()
-            .radio(def("LF_MAC",  13), null, "Mac:CR(13)").n()
-            .radio(v("LF_ELSE"), null, "other charcode")
-                .number("LF_ELSE.v", "(", ")", "10", 'style="width:40px;"').n()
-            .n("<br>")
-            .name("SEP").label(null,"[CSV delimiter]").n()
-            .radio(def("SEP_COMMA", ','), null, "comma", true)
-            .radio(def("SEP_TAB", '\t'),   null,"tab")
-            .radio(v("SEP_ELSE"), null, "other")
-                .text("SEP_ELSE.v", '"', '"', ',', 'size="2" placeholder=","').n()
-            .n("<br>")
-            .name("TIME").label(null, "[Timestamp field]").n()
-            .number("TIME_COL", "", "th column of CSV", "1", 'style="width:40px;"').n()
-            .name("TIME_POS")
-                .number("TIME_POS", "Position(byte): from", null, "1", 'style="width:40px;"')
-                .number("TIME_LEN", "length", null, null, 'style="width:40px;"').n()
-            .name("TIME_FORM").label(null,"Format:").n()
-                .radio("TIME_FORM_YMD", "text", null, true)
-                    .text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
-                .radio("TIME_FORM_TEXT", "(num)", "text")
-                .radio("TIME_FORM_LONG", null, "long").n()
-                .nDown()
-                .name("TIME_UNIT").label(null, "Units of numbers:")
-                    .radio(def("TIME_UNIT_MS", 1), null, "msec")
-                    .radio(def("TIME_UNIT_SEC", 1000), null, "sec", true)
-                .nUp()
-            .n("<br>")
-            .name("TAT").label(null,"[Turnaround time(TAT) field]").n()
-            .number("TAT_COL", "", "th column of CSV", "2", 'style="width:40px;"').n()
-            .name("TAT_POS")
-                .number("TAT_POS", "Position(byte): from", null, "1", 'style="width:40px;"')
-                .number("TAT_LEN", "length", null, null, 'style="width:40px;"').n()
-            .name("TAT_UNIT").label(null, "Units of numbers:")
-                    .radio(def("TAT_UNIT_MS", 1), null, "msec")
-                    .radio(def("TAT_UNIT_SEC", 1000), null, "sec", true).n()
-            .name("TAT_FORM").label(null,"Format: ")
-                .radio("TAT_FORM_TEXT", null, "text", true)
-                .radio("TAT_FORM_LONG", null, "long").n()
-                .nDown()
-                .name("ENDIAN").label(null, "for long Endian: ")
-                    .radio(def("ENDIAN_LIL", true), null, "little", true)
-                    .radio(def("ENDIAN_BIG", false), null, "big")
-                .nUp()
-            .n("<br>")
-        ;
-
-        // Filter Config用関数定義(radio用） #51
-        env = "Filter"
-        var func_F_SYNC_UPPER = function(){ Graph.DrawCallback(HJN.chart.graph); },
-            func_F_SYNC_DETAIL = function(){ Graph.DrawCallback(HJN.chartD.graph); };
-        // Filter Config設定画面定義 #51
-        this["_config_" + env] = Util.Config(env) // #53
-            .name("F_SYNC").label(null,"Sync") // #50
-                .radio("F_SYNC_UPPER", null, "Upper", false ,null, func_F_SYNC_UPPER) // #51
-                .radio("F_SYNC_DETAIL", null, "Detail", false, null, func_F_SYNC_DETAIL)
-                .radio("F_ASYNC", null, "Async", true).n()
-            .label(null,"----- Data filter condition--------").n()
-                .n("<br>")
-                .name("F_TIME").label(null, "[Date filter]").n()
-                .label(null,"Include if end time is between").n()
-                    .text("F_TIME_FROM", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"')
-                    .label(null,"and").n()
-                    .text("F_TIME_TO", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
-                .n("<br>")
-                .name("F_TAT").label(null,"[Turnaround time(TAT) filter]").n()
-                .label(null,"Include if TAT is between").n()
-                    .number("F_TAT_FROM", null, null, "0", 'style="width:80px;"')
-                    .number("F_TAT_TO", "and", null, null, 'style="width:80px;"').n()
-                .n("<br>")
-                .name("F_TEXT").label(null,"[Text filter]")
-                    .radio("F_TEXT_NON", null, "Don't use.", true).n()
-                    .radio("F_TEXT_INCLUDE", null, "Include ")
-                    .radio("F_TEXT_EXCLUDE", null, "Exclude ").n()
-                    .number("F_TEXT_LEN", "if ", " bytes", null, 'style="width:40px;"')
-                    .number("F_TEXT_POS", "from the ", "th byte", "1", 'style="width:40px;"').n()
-                    .number("F_TEXT_COL", "from head of the", "th column of CSV", "3", 'style="width:40px;"').n()
-                    .text("F_TEXT_REG", "match the regular expression", null, null, 'size="7" placeholder=".*"').n()
-                .n("<br>")
-        ;
     }
-
-    // class method
-    /**
-     * ファイルリーダのプロパティ管理インスタンスを取得する
-     * 
-     * @memberof tatLogDiver.FileParser
-     * @param {Object}
-     *            fileParser ファイルリーダ
-     * @param {String}
-     *            type プロパティ種別名（"File"|"Filter"|"Simulator")
-     * @return {Object} プロパティ
-     */
-    FileParser.Property = (function() {
-        "use strict";
-        /** @constructor */
-        function Property(fileParser, type){ 
-            if(!(this instanceof Property)) return new Property(fileParser, type);
-            this._type = type || "File";
-            this._config     = fileParser["_config_" + this._type];
-            this.__keyConfig = fileParser.__keyConfig;
-        }
-
-        // public
-        /**
-         * keyの値に指定されたvalue（なければkey値）を返却する
-         * 
-         * @memberof tatLogDiver.FileParser.Property
-         * @param {String}
-         *            key Conginのキー値
-         */
-        Property.prototype.getValue = function(key) {
-            var cKey = this._config.getValueByKey(key);
-            if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
-                return cKey;    // valueが定義されていないとき、keyの設定値を返却
-            }else{
-                return this.__keyConfig[cKey].getValue(); // keyの設定値のvalueが定義されているとき
-            }
-        };
-        /**
-         * configに登録されているkey(prefix補填)の設定値を取得する
-         * 
-         * @memberof tatLogDiver.FileParser.Property
-         */
-        Property.prototype.getValueByKey = function(key) {
-            return this._config.getValueByKey(key);
-        };
-    
-        /* new */
-        return Property;
-    }());
     
     /** @private */
-    //
+
     // public
-
-
     /**
      * ファイルが新たに指定された時、eTatOriginalを再構築するか否（データを追加する）か
      * 
-     * @memberof tatLogDiver.FileParser
+     * @memberof TimeSeries.FileParser
      * @return {boolean} 再構築モードするときtrue、データを追加するときfalse
      */
     FileParser.prototype.isNewETAT = function() { // #23
-        return this.getValue("NEWFILE") === "NEWDATA";
+        return Util.Config.File.getConfig("NEWFILE") === "NEWDATA"; // #76
     }
     
     /**
      * 「ファイルから次の1レコードを取得するutil」 を取得する
      * 
-     * @memberof tatLogDiver.FileParser
+     * @memberof TimeSeries.FileParser
      */
     FileParser.prototype.createGetterOfLine = function(file) {
 
         /**
-         * @memberof tatLogDiver.FileParser
+         * @memberof TimeSeries.FileParser
          * @class GetterOfLine
          * @classdesc ファイルから１レコード取得する
          *            <p>
          *            ファクトリのFileParserが保持する改行コードを用いて、ファイルから１レコードを取得する
          * 
          * @example try{ var getterOfLine =
-         *          HJN.chart.fileParser.createGetterOfLine(file), fileInfo;<br>
+         *          FileParser.createGetterOfLine(file), fileInfo;<br>
          *          for(var i = 0; i < n; i++) { <br>
          *          line = getterOfLine.next(); fileInfo += line.str + "<BR>"; }<br>
          *          }catch (e) {<br>
@@ -225,7 +56,7 @@ export default (function() {
             this.file = file;
             this.buf = new Uint8Array(file);
             this.maxLength = maxLength || this.buf.length,
-            this.confLF = HJN.chart.fileParser.getValue("LF");  // 改行コードor固定レコード長
+            this.confLF = Util.Config.File.getConfig("LF");  // 改行コードor固定レコード長 #76
             this.from = 0;
             this.to = 0;
             this.len = 0;
@@ -235,10 +66,10 @@ export default (function() {
         /**
          * 次の1レコードを取得する
          * 
-         * @memberof tatLogDiver.FileParser.GetterOfLine
-         * @name getValueByKey
+         * @memberof TimeSeries.FileParser.GetterOfLine
+         * @name next
          */
-        if (HJN.chart.fileParser.getValueByKey("LF") === "LF_FIX"){ // 固定長のとき
+        if (Util.Config.File.getValueByKey("LF") === "LF_FIX"){ // 固定長のとき #76
             GetterOfLine.prototype.next = function () { // 次の1レコードを取得する
                 if(this.from >= this.maxLength ){   // ファイル末尾のとき
                     this.line = {file: this.file, pos: this.maxLength, array: null, str: "", isEoF: true };
@@ -282,33 +113,31 @@ export default (function() {
     /**
      * eTatのフィルター
      * 
-     * @memberof tatLogDiver.FileParser
+     * @memberof TimeSeries
      */
     FileParser.prototype.createFilter = function() { // #34
        /**
-         * @memberof tatLogDiver.FileParser
+         * @memberof TimeSeries.FileParser
          * @class Filter
          * @classdesc FileParserのフィルター
          *            <p>
          *            ファクトリのFileParserが保持するフィルタ条件を用いるフィルターを取得する
-         * 
          */
         function Filter(){ /* constructor */
             if(!(this instanceof Filter)) return new Filter();
-            this._fileParser = HJN.chart.fileParser; // #62
-            var c = FileParser.Property(this._fileParser, "Filter");
-
-            this.confF_TIME_FROM = Util.S2D(c.getValue("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
-            this.confF_TIME_TO   = Util.S2D(c.getValue("F_TIME_TO"));      // 時刻(X)の最大値フィルター
+            var c = Util.Config.Filter; // #76
+            
+            this.confF_TIME_FROM = Util.S2D(c.getConfig("F_TIME_FROM"));    // 時刻(X)の最小値フィルター
+            this.confF_TIME_TO   = Util.S2D(c.getConfig("F_TIME_TO"));      // 時刻(X)の最大値フィルター
             this.confF_TIME = (isNaN(this.confF_TIME_FROM) && isNaN(this.confF_TIME_TO))
                             ? false : true; // 時刻(x）フィルター指定の有無
             
-            this.confF_TAT_FROM = c.getValue("F_TAT_FROM") || 0; // 時間(Y)の最小値フィルター
-            this.confF_TAT_TO   = c.getValue("F_TAT_TO") || Number.MAX_VALUE; // 時間(Y)の最大値フィルター
+            this.confF_TAT_FROM = c.getConfig("F_TAT_FROM") || 0; // 時間(Y)の最小値フィルター
+            this.confF_TAT_TO   = c.getConfig("F_TAT_TO") || Number.MAX_VALUE; // 時間(Y)の最大値フィルター
             this.confF_TAT = (this.confF_TAT_FROM === 0 && this.confF_TAT_TO === Number.MAX_VALUE)
                             ? false : true; // 時間(ｙ）フィルター指定の有無
 
-            this.confF_TEXT = c.getValue("F_TEXT") || null; // テキストフィルタの条件（使用しない、Include,Exclude
+            this.confF_TEXT = c.getConfig("F_TEXT") || null; // テキストフィルタの条件（使用しない、Include,Exclude
             if (this.confF_TEXT === "F_TEXT_INCLUDE") {
                 this.confF_TEXT = true;
             } else if (this.confF_TEXT === "F_TEXT_EXCLUDE") {
@@ -317,17 +146,17 @@ export default (function() {
                 this.confF_TEXT = null;
             }
             
-            this.confF_TEXT_LEN = c.getValue("F_TEXT_LEN") || null;    // フィルタテキストのバイト長
-            this.confF_TEXT_POS = c.getValue("F_TEXT_POS") || 0;       // フィルタテキストの先頭バイト位置
-            this.confF_TEXT_COL = (c.getValue("F_TEXT_COL") || 3) - 1; // フィルタテキストのカラム位置（先頭：０）
-            this.confF_TEXT_REG = new RegExp(c.getValue("F_TEXT_REG") || ".*");    // フィルタテキストの正規表現
+            this.confF_TEXT_LEN = c.getConfig("F_TEXT_LEN") || null;    // フィルタテキストのバイト長
+            this.confF_TEXT_POS = c.getConfig("F_TEXT_POS") || 0;       // フィルタテキストの先頭バイト位置
+            this.confF_TEXT_COL = (c.getConfig("F_TEXT_COL") || 3) - 1; // フィルタテキストのカラム位置（先頭：０）
+            this.confF_TEXT_REG = new RegExp(c.getConfig("F_TEXT_REG") || ".*");    // フィルタテキストの正規表現
             
             this.confF_IS = (this.confF_TIME === true 
                             || this.confF_TAT === true || this.confF_TEXT != null)
                           ? true : false; // フィルタ指定の有無
             
-            c = FileParser.Property(HJN.chart.fileParser, "File");
-            this.confF_SEP = c.getValue("SEP").charCodeAt(0);
+            c = new Util.Config("File"); // #76 
+            this.confF_SEP = c.getConfig("SEP").charCodeAt(0);
         }
         
         // class method
@@ -335,7 +164,7 @@ export default (function() {
         /**
          * フィルター条件で判定する
          * 
-         * @memberof tatLogDiver.FileParser.Filter
+         * @memberof TimeSeries.Filter
          */
         Filter.prototype._isIn = function (e) {
             // フィルタ指定が無いときフィルタしない（初期表示時に無駄な処理をしない）
@@ -355,7 +184,7 @@ export default (function() {
             var text = "";
             if (e.pos === undefined) { // テキスト読み込みでないとき（自動生成データのとき）
                 // レコードを取得する #62
-                text = this._fileParser.getRecordAsText(e); // #61
+                text = HJN.chart.fileParser.getRecordAsText(e); // #61
                 // 指定正規表現に合致するか判定し、Include/Exclude指定に応じてリターンする
                 return this.confF_TEXT === this.confF_TEXT_REG.test(text);
             } else { // ファイル読み込みのとき
@@ -383,7 +212,7 @@ export default (function() {
         /**
          * eTatをフィルターする
          * 
-         * @memberof tatLogDiver.FileParser.Filter
+         * @memberof TimeSeries.Filter
          * @param {eTat}
          *            eTat フィルター処理対象のeTat
          * @return {eTat} eTat フィルターされたeTat
@@ -401,12 +230,12 @@ export default (function() {
     /**
      * 「１レコードからx:時刻（数値：ミリ秒）,y:Tat(数値：秒)を取得するutil」を取得する
      * 
-     * @memberof tatLogDiver.FileParser.Filter
+     * @memberof TimeSeries.Filter
      */
     FileParser.prototype.createGetterOfXY = function() {
 
         /**
-         * @memberof tatLogDiver.FileParser.Filter
+         * @memberof TimeSeries.FileParser
          * @class GetterOfXY
          * @classdesc １レコードをパースし、XとYをレコード取得する
          *            <p>
@@ -415,15 +244,14 @@ export default (function() {
         function GetterOfXY(){ /* constructor */
             if(!(this instanceof GetterOfXY)) return new GetterOfXY();
 
-            var c = HJN.chart.fileParser;
-            this.configId = "_config_" + "Filter"; // #53
-            this.confSEP = c.getValue("SEP");   // セパレータ
+            var c = new Util.Config("File"); // #76
+            this.confSEP = c.getConfig("SEP");   // セパレータ
             
-            this.confTIME_COL = c.getValue("TIME_COL") - 1 || 0;    // 時刻(X)のカラム位置
-            this.confTIME_POS = (c.getValue("TIME_POS") || 1) - 1;  // 時刻(X)の先頭バイト位置
-            this.confTIME_LEN = (c.getValue("TIME_LEN") || 0);      // 時刻(X)のバイト長
-            this.confTIME_FORM = c.getValue("TIME_FORM");           // 時刻(X)の文字フォーマット指定
-            this.confTIME_YMD = (c.getValue("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
+            this.confTIME_COL = c.getConfig("TIME_COL") - 1 || 0;    // 時刻(X)のカラム位置
+            this.confTIME_POS = (c.getConfig("TIME_POS") || 1) - 1;  // 時刻(X)の先頭バイト位置
+            this.confTIME_LEN = (c.getConfig("TIME_LEN") || 0);      // 時刻(X)のバイト長
+            this.confTIME_FORM = c.getConfig("TIME_FORM");           // 時刻(X)の文字フォーマット指定
+            this.confTIME_YMD = (c.getConfig("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
                                                                     // 時刻(X)のYMDフォーマット
             this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
                 YYYY: this.confTIME_YMD.indexOf("YYYY"),
@@ -436,15 +264,15 @@ export default (function() {
             };
             this.isYMD = (this.confTIME_FORM === "TIME_FORM_YMD");
             // 時刻(X)の数値単位(1or1000,YMDのとき1)
-            this.confTIME_UNIT = this.isYMD? 1 : (c.getValue("TIME_UNIT") || 1);
+            this.confTIME_UNIT = this.isYMD? 1 : (c.getConfig("TIME_UNIT") || 1);
             
             
-            this.confTAT_COL = c.getValue("TAT_COL") - 1 || 1;      // 時間(Y)のカラム位置
-            this.confTAT_POS = (c.getValue("TAT_POS") || 1) - 1;    // 時間(Y)の先頭バイト位置
-            this.confTAT_LEN = (c.getValue("TAT_LEN") || 0);        // 時間(Y)のバイト長
-            this.confTAT_FORM = c.getValue("TAT_FORM");             // 時間(Y)のフォーマット指定
-            this.confTAT_UNIT = c.getValue("TAT_UNIT") || 1;        // 時間(Y)の数値単位(1/1000)
-            this.confENDIAN =  c.getValue("ENDIAN");    // リトルエンディアンはtrue、ビッグエンディアンはfalse
+            this.confTAT_COL = c.getConfig("TAT_COL") - 1 || 1;      // 時間(Y)のカラム位置
+            this.confTAT_POS = (c.getConfig("TAT_POS") || 1) - 1;    // 時間(Y)の先頭バイト位置
+            this.confTAT_LEN = (c.getConfig("TAT_LEN") || 0);        // 時間(Y)のバイト長
+            this.confTAT_FORM = c.getConfig("TAT_FORM");             // 時間(Y)のフォーマット指定
+            this.confTAT_UNIT = c.getConfig("TAT_UNIT") || 1;        // 時間(Y)の数値単位(1/1000)
+            this.confENDIAN =  c.getConfig("ENDIAN");    // リトルエンディアンはtrue、ビッグエンディアンはfalse
             this.isLittle = (function(){
                 // long用に4バイト取得する
                 var buf = new ArrayBuffer(4);               
@@ -462,7 +290,7 @@ export default (function() {
          * 数字をパースして数値（ミリ秒）を取得する<br>
          * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
          * 
-         * @memberof tatLogDiver.FileParser.GetterOfXY
+         * @memberof TimeSeries.FileParser.GetterOfXY
          */
         GetterOfXY.parseNumber = function (){ // str, unit,
             var str = arguments[0],
@@ -500,7 +328,7 @@ export default (function() {
         /**
          * レコードからXとYを取得する
          * 
-         * @memberof tatLogDiver.FileParser.GetterOfXY
+         * @memberof TimeSeries.FileParser.GetterOfXY
          */
         GetterOfXY.prototype.parse = function (line) {
             // セパレータでカラム分割する
@@ -566,55 +394,9 @@ export default (function() {
     };
     
     /**
-     * configに登録されているid(=prefix+key)の設定値を取得する
-     * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
-     */
-    FileParser.prototype.getObjctById = function(id) {
-        return this[this.configId].getObjctById(id);
-    };
-    /**
-     * configに登録されているkey(prefix補填)の設定値を取得する
-     * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
-     */
-    FileParser.prototype.getValueByKey = function(key) {
-        return this[this.configId].getValueByKey(key);
-    };
-    /**
-     * 設定値を保有するオブジェクトを返却する
-     * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
-     */
-    FileParser.prototype.getConfig = function() {
-        return this[this.configId]._config;
-    };
-    /**
-     * HTML（config設定用）テキストを返却する
-     * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
-     */
-    FileParser.prototype.getConfigHtml = function(type) {
-        type = type || "File";
-        return this["_config_" + type].getHtml(); // #53
-    };
-    /**
-     * keyの値に指定された関数（なければ何もしない関数）を返却する
-     * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
-     */
-    FileParser.prototype.getFunction = function(key) {
-        var cKey = this[this.configId].getValueByKey(key);
-        if(!this.__keyConfig[cKey] || !this.__keyConfig[cKey].func){
-            return function(){};    // funcが定義されていないとき、何もしない関数を返却する
-        }else{
-            return this.__keyConfig[cKey].func; // keyの設定値のfuncが定義されているとき
-        }
-    };
-    /**
      * eTatの指定行の編集元レコードを、テキストフォーマットに変換して取得する
      * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
+     * @memberof TimeSeries.FileParser
      * @param {Object}
      *            e eTat[n]：eTatの指定行
      * @return {String} eTatの指定行の表示用テキスト
@@ -649,22 +431,7 @@ export default (function() {
         return text;
         
     };
-    /**
-     * keyの値に指定されたvalue（なければkey値）を返却する
-     * 
-     * @memberof tatLogDiver.FileParser.GetterOfXY
-     * @param {String}
-     *            key Conginのキー値
-     */
-    FileParser.prototype.getValue = function(key) {
-        var cKey = this[this.configId].getValueByKey(key);
-        if(!this.__keyConfig[cKey] || this.__keyConfig[cKey].value === undefined){
-            return cKey;    // valueが定義されていないとき、keyの設定値を返却
-        }else{
-            return this.__keyConfig[cKey].getValue(); // keyの設定値のvalueが定義されているとき
-        }
-    };
-    
+ 
     // new
     return FileParser;
 }());

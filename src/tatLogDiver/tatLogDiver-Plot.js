@@ -5,7 +5,8 @@ import * as TimeSeries from '../timeSeries/timeSeries.js';
 /**
  * グラフの点をクリックした際に決まる下段グラフの表示条件
  * 
- * @namespace Plot
+ * @memberof tatLogDiver
+ * @class Plot
  */
 export default function Plot(){};
 HJN.Plot = Plot;
@@ -38,22 +39,26 @@ HJN.Plot.List = [];
 Plot.PointClickCallback = function(point) {
     "use strict";
     Util.Logger.ShowLogText("[0:PointClickCallback]start---------------","calc");
-    var n = HJN.seriesConfig.findIndex(function(e){ return e.key === point.name; }),// シリーズ番号
+    var n = HJN.Tat.seriesConfig.findIndex(function(e){ return e.key === point.name; }),// シリーズ番号
         x = point.xval, // ミリ秒
         y = point.yval; // 秒
 
     // ETPS,EMPS,EAPSのとき、TATが幅に含まれるよう、幅(range)を拡大する #57
-    var rangeTagUnit = document.getElementById("DetailRangeUnit");
-    var rangeUnit  = rangeTagUnit  ? +rangeTagUnit.value : TimeSeries.Tat.CYCLE;
-    if ((n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N) 
+    var rangeTagUnit = Util.Config.DetailGraph.getConfig("D_UNIT"); 
+    var rangeUnit  = rangeTagUnit  ? rangeTagUnit : TimeSeries.Tat.CYCLE;
+    if ((n === HJN.Tat.ETPS.N || n === HJN.Tat.EMPS.N || n === HJN.Tat.EAPS.N) 
             && rangeUnit < TimeSeries.Tat.CYCLE) {
         rangeUnit = TimeSeries.Tat.CYCLE;
-        HJN.detailRangeUnit = rangeUnit;
+        Util.Config.DetailGraph.setValueByKey("D_UNIT", rangeUnit);
+
         // selectリストの選択を、rangeUnitに合わせる #57
-        for (var i = 0; i < rangeTagUnit.length; i++) {
-            if(HJN.detailRangeUnit <= rangeTagUnit[i].value){
-                rangeTagUnit[i].selected = true;
-                break;
+        var options = Util.Config.DetailGraph.getKeyConfig("D_UNIT"); // option一覧
+        var valueArray = Object.keys(options).sort(function(a,b){return a - b}); // optionの値の一覧(降順)
+        for (var i = 0; i < valueArray.length; i++) { // #27
+            if (rangeUnit <= +valueArray[i]) {
+               var optionKey = Util.Config.DetailGraph.getOptionKey("D_UNIT", valueArray[i]);
+               Util.Config.DetailGraph.setText("D_UNIT", optionKey)
+               break;
             }
         }
     }
@@ -85,7 +90,7 @@ Plot.PointClickCallback = function(point) {
 Plot.PointDblClickCallback = function(point) {
     "use strict";
     // 指定plotを削除する
-    var n = HJN.seriesConfig.findIndex(function(e){ return e.key === point.name; }),
+    var n = HJN.Tat.seriesConfig.findIndex(function(e){ return e.key === point.name; }),
         x = point.xval, // ミリ秒
         i = HJN.Plot.List.findIndex(function(p){
                 return(p.n === n && p.x === x) ||   // 完全一致
@@ -114,9 +119,9 @@ Plot.Add=function(n, x, y) {
     // 各plotを非選択状態とする
     HJN.Plot.List.forEach(function(e){e.radio = false;});
     // ラベルフォーマットの設定
-    var format = (n === HJN.ETPS.N || n === HJN.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.ppp",
+    var format = (n === HJN.Tat.ETPS.N || n === HJN.Tat.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.ppp",
         label = Util.D2S(x, format, true) + " " + // #61
-                HJN.seriesConfig[n].label.replace("%N",Util.N2S(y));
+                HJN.Tat.seriesConfig[n].label.replace("%N",Util.N2S(y));
     // 幅(range)を取り込む（秒）
     var rangePlusTag  =  document.getElementById("DetailRangePlus"),
         rangeMinusTag =  document.getElementById("DetailRangeMinus"),
@@ -140,11 +145,11 @@ Plot.Add=function(n, x, y) {
         plot.rangeUnit  = rangeUnit; // #48
     }else{      // 既存に無いときPlotを追加する
         // ETAT,STATのとき、TATが幅に含まれるよう、幅(range)を拡大する #30 #48 #57
-        if (n === HJN.ETAT.N){
+        if (n === HJN.Tat.ETAT.N){
             rangeMinus = Math.max(rangeMinus, 
                     Math.floor(x / rangeUnit) - Math.floor((x - y) / rangeUnit)); // #48
             document.getElementById("DetailRangeMinus").value = rangeMinus; 
-        }else if (n === HJN.STAT.N){
+        }else if (n === HJN.Tat.STAT.N){
             rangePlus = Math.max(rangePlus,
                     Math.floor((x + y) / rangeUnit)) - Math.floor(x / rangeUnit) ; // #48
             document.getElementById("DetailRangePlus").value = rangePlus;
@@ -153,12 +158,12 @@ Plot.Add=function(n, x, y) {
         plot = {label: label, ckBox:false,
                  radio:true, n: n, x: x, y: y, 
                  rangePlus: rangePlus, rangeMinus: rangeMinus, rangeUnit: rangeUnit };
-        if (n === HJN.CTPS.N){          // CTPSのとき秒内最大CONCとして登録する
+        if (n === HJN.Tat.CTPS.N){          // CTPSのとき秒内最大CONCとして登録する
             adjustPlotToY(HJN.chartD.conc, x, x + HJN.chart.cTpsUnit.unit, y, 
-                    HJN.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
-        }else if (n === HJN.EMPS.N){    // EMPSのとき秒内最大ETATとして登録する
+                    HJN.Tat.CONC.N, plot, rangePlus, rangeMinus, rangeUnit);
+        }else if (n === HJN.Tat.EMPS.N){    // EMPSのとき秒内最大ETATとして登録する
             adjustPlotToY(HJN.chartD.eTat, x, x + TimeSeries.Tat.CYCLE, y, 
-                    HJN.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
+                    HJN.Tat.ETAT.N, plot, rangePlus, rangeMinus, rangeUnit);
         }else { // CTPS,EMPS以外の時、選択Plotを追加する
             HJN.Plot.List.push(plot);
         }
@@ -188,7 +193,7 @@ Plot.Add=function(n, x, y) {
             x = maxTime;
             format = "hh:mm:ss.ppp";
             label = Util.D2S(x, format, true) + " " + // #61
-                    HJN.seriesConfig[n].label.replace("%N",Util.N2S(y));
+                    HJN.Tat.seriesConfig[n].label.replace("%N",Util.N2S(y));
             HJN.Plot.List.push( {label: label, ckBox:false,
                  radio:true, n: n, x: x, y: y, 
                  rangePlus: rangePlus , rangeMinus: rangeMinus, rangeUnit: rangeUnit,
@@ -254,9 +259,10 @@ Plot.CheckRadio = function(i) {
     plot.radio = true;
     // グラフの日時で、詳細グラフを再作成する
     HJN.init.SetDetailDateTime(plot.x); // 中心時刻に設定する
-    document.getElementById("DetailRangePlus").value = plot.rangePlus;  // 幅を設定する
-    document.getElementById("DetailRangeMinus").value = plot.rangeMinus;
-    document.getElementById("DetailRangeUnit").value = plot.rangeUnit; // #48
+    Util.Config.DetailGraph.setText("D_RANGE_PLUS", plot.rangePlus); // 幅を設定する #74
+    Util.Config.DetailGraph.setText("D_RANGE_MINUS", plot.rangeMinus);
+    Util.Config.DetailGraph.setText("D_UNIT", 
+                Util.Config.DetailGraph.getOptionKey("D_UNIT", plot.rangeUnit)); // #48
     var n = plot.tpsPlot ? plot.tpsPlot.n : plot.n; // #61
     var tat = new TimeSeries.Tat(HJN.init.GetSliderRangedEtat()); // #75
     HJN.chartD.setSeriesSet(tat); // #57

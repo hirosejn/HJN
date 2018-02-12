@@ -1,4 +1,6 @@
+import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
+import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
 
 /**
  * tatLogDiverのメニューを追加する
@@ -68,9 +70,11 @@ export default function Menu(that) {
         };
         accordion.innerHTML = '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "File")
-                + '<ul class="hjnMenuLv2">' + getInputTag(menuOpenCsv)
-                + that.fileParser.getConfigHtml("File") // #24
-                + getATag(menuSaveConfig) + getInputTag(menuLoadConfig) // #10
+                + '<ul class="hjnMenuLv2">'
+                + getInputTag(menuOpenCsv)     // オープンボタン #24
+                + Util.Config.File.getHtml()          // 設定HTML #76
+                + getATag(menuSaveConfig)        // セーブボタン
+                + getInputTag(menuLoadConfig) // ロードボタン #10
                 + '</ul>' + '</li>';
 
         // Filter Menu #34
@@ -79,20 +83,20 @@ export default function Menu(that) {
             funcName : g + ".menuFilterApply",
             menuId : divMenuId + "_FilterApply"
         };
-        var menuFilterClear = { // getFuncTag #34
-            menuLabel : "Clear filter condition",
-            funcName : g + ".menuFilterClear",
+        var menuFilterReset = { // getFuncTag #34
+            menuLabel : "Reset filter condition",
+            funcName : g + ".menuFilterReset",
             menuId : divMenuId + "_FilterClear"
         };
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Filter">'
-                + getAccordionTag(that, ++_id, "Filter")
-                + '<ul class="hjnMenuLv2">'
-                + that.fileParser.getConfigHtml("Filter") // #24
-                + getFuncTag(menuFilterApply) + getFuncTag(menuFilterClear)
+                + getAccordionTag(that, ++_id, "Filter")   
+                + '<ul class="hjnMenuLv2">'   // #24
+                + Util.Config.Filter.getHtml()     // 設定HMTL #76
+                + getFuncTag(menuFilterApply)  // フィルターボタン
+                + getFuncTag(menuFilterReset)   // クリアボタン
                 + '</ul>' + '</li>';
 
         // Simulator Menu #53
-        Simulator.MenuConfig(); // #74
         var menuSimulatorSimulate = {
             menuLabel : "Simulate",
             funcName : g + ".menuSimulatorSimulate",
@@ -105,9 +109,10 @@ export default function Menu(that) {
         };
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Simulator">'
                 + getAccordionTag(that, ++_id, "Simulator")
-                + '<ul class="hjnMenuLv2">' + getFuncTag(menuSimulatorSimulate)
-                + getFuncTag(menuSimulatorEditor)
-                + HJN.Config.Simulator.getHtml() // #74
+                + '<ul class="hjnMenuLv2">' 
+                + getFuncTag(menuSimulatorSimulate) // シミュレート実行ボタン
+                + getFuncTag(menuSimulatorEditor)     // JSONエディタボタン
+                + Util.Config.Simulator.getHtml()        // 設定HTML #74
                 + '</ul>' + '</li>';
         // シミュレーション条件JSON Editエリアを設定する
         var divSimulator = document.getElementById("Simulator");
@@ -130,10 +135,11 @@ export default function Menu(that) {
         // Download Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(that, ++_id, "Download")
-                + '<ul class="hjnMenuLv2">' //
-                + getATag(menuDownloadImg, "Upper ")
-                + getATag(menuDownloadCsv, "Upper ")
-                + getATag(menuDownloadLog, "Upper ") + '</ul>' + '</li>';
+                + '<ul class="hjnMenuLv2">'
+                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン 
+                + getATag(menuDownloadCsv, "Upper ")    // 上段グラフcsvダウンロード ボタン
+                + getATag(menuDownloadLog, "Upper ")    // 上段生データダウンロードボタン
+                + '</ul>' + '</li>';
 
         // メニュー登録
         divMenu.appendChild(accordion);
@@ -149,10 +155,10 @@ export default function Menu(that) {
         var chartDownloadUl = document.createElement('ul');
         chartDownloadUl.className = "hjnMenuLv2";
         chartDownloadUl.innerHTML = '' //
-                + getATag(menuDownloadImg, "Detail ")
-                + getATag(menuDownloadCsv, "Detail ")
-                + getATag(menuDownloadLog, "Detail ")
-                + getATag(menuDownloadConc, "Detail ");
+                + getATag(menuDownloadImg, "Detail ")    // 下段画像ダウンロードボタン
+                + getATag(menuDownloadCsv, "Detail ")     // 下段グラフcsvダウンロードボタン
+                + getATag(menuDownloadLog, "Detail ")     // 下段生データダウンロードボタン
+                + getATag(menuDownloadConc, "Detail "); // 下段conc csvダウンロードボタン
         var chartDownload = document.getElementById("menu_Download");
         chartDownload.appendChild(chartDownloadUl);
 
@@ -168,11 +174,14 @@ export default function Menu(that) {
         accordion.innerHTML = '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "Bottom detail graph", true)
                 + '<ul class="hjnMenuLv2">' //
-                + '<ol><div id="detailTimeRange">' + getDetailTimeRangeTag()
+                
+                + '<ol><div id="detailTimeRange">' 
+                + Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
                 + '</div></ol>' // #51
-                + '<li><div id="chartPlots"></div></li>' //
-                + '</ul>' + '</li>';
 
+                + '<li><div id="chartPlots"></div></li>' // Plot一覧用タグ
+                + '</ul>' + '</li>';
+        
         // Help Menu
         var menuHelpAbout = { // getAlertTag
             menuLabel : "about TAT log diver",
@@ -238,35 +247,5 @@ export default function Menu(that) {
                 + 'class="hjnButton4Input" ' // #51
                 + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
                 + '<label>' + arg.menuLabel + '</label></a></ol>';
-    }
-
-    // 下段表示幅指定用<div>タグ編集
-    function getDetailTimeRangeTag() {
-        var UNIT_RANGE= [ // #48
-            { label: "sec",    val: "1000" },
-            { label: "10sec",  val: "10000", selected: "selected" },
-            { label: "min",    val: "60000" },
-            { label: "10min",  val: "600000" }, 
-            { label: "hour",   val: "3600000" },
-            { label: "6hours", val: "21600000" },
-            { label: "day",    val: "86400000" }, 
-            { label: "year",   val: "31536000000" } ];
-
-        var initPlus = 1, initMinus = 2; // #3
-        return 'Range: '
-                + '- <input type="number" id="DetailRangeMinus" min="0" step="1"'
-                + 'value="'
-                + initPlus
-                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
-                + '+ <input type="number" id="DetailRangePlus" min="0" step="1"'
-                + 'value="'
-                + initMinus
-                + '" style="width:40px; "  onchange="HJN.init.setDetailRange()"> '
-                + '<select id="DetailRangeUnit" class="hjnLabel4Input" onchange="HJN.init.setDetailRange()">' // #48
-                + UNIT_RANGE.reduce(function (prev, e, i, a) {
-                    return prev + '<option value="' + e.val + '" '
-                            + (e.selected || "") + '>' + e.label // #53
-                            + '</option>';
-                }, '') + '</select>';
     }
 };

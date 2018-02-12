@@ -1,5 +1,5 @@
 /**
- * @memberOf timeSeries
+ * @memberOf TimeSeries
  * @class Cash
  * @classdesc キャッシュ
  *            <p>

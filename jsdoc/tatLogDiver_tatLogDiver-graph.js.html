@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: tatLogDiver/tatLogDiver-graph.js</title>
+    <title>JSDoc: Source: tatLogDiver/tatLogDiver-Graph.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: tatLogDiver/tatLogDiver-graph.js</h1>
+    <h1 class="page-title">Source: tatLogDiver/tatLogDiver-Graph.js</h1>
 
     
 
@@ -29,9 +29,8 @@
             <pre class="prettyprint source linenums"><code>"use strict";
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
-import * as File from '../file/file.js';
-import Menu from'./tatLogDiver-menu.js';
-import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-init.js';
+import Menu from'./tatLogDiver-Menu.js';
+import {CreateSampleTatLogAndChartShow} from'./tatLogDiver-Init.js';
 import * as TimeSeries from '../timeSeries/timeSeries.js';
 
 
@@ -63,21 +62,21 @@ export default function Graph(chartIdName, globalName, config) {
         var isMain = (globalName === "HJN.chart") ? true : false;
         config = {
             SERIESES: [ 
-                { n: HJN.CONC.N, process: !isMain, visiblity: !isMain, renderer: 'area' },
-                { n: HJN.CTPS.N, process: true,    visiblity: true,    renderer: isMain ? 'scatterplot' : 'bar' },
-                { n: HJN.ETPS.N, process: true,    visiblity: isMain,  renderer: 'line' },
-                { n: HJN.STAT.N, process: !isMain, visiblity: !isMain, renderer: 'scatterplot' },
-                { n: HJN.ETAT.N, process: !isMain, visiblity: !isMain, renderer: 'scatterplot' },
-                { n: HJN.EMPS.N, process: true,    visiblity: true,    renderer: 'line' }, 
-                { n: HJN.EAPS.N, process: true,    visiblity: isMain,  renderer: 'line' } ],
+                { n: HJN.Tat.CONC.N, process: !isMain, visiblity: !isMain, renderer: 'area' },
+                { n: HJN.Tat.CTPS.N, process: true,    visiblity: true,    renderer: isMain ? 'scatterplot' : 'bar' },
+                { n: HJN.Tat.ETPS.N, process: true,    visiblity: isMain,  renderer: 'line' },
+                { n: HJN.Tat.STAT.N, process: !isMain, visiblity: !isMain, renderer: 'scatterplot' },
+                { n: HJN.Tat.ETAT.N, process: !isMain, visiblity: !isMain, renderer: 'scatterplot' },
+                { n: HJN.Tat.EMPS.N, process: true,    visiblity: true,    renderer: 'line' }, 
+                { n: HJN.Tat.EAPS.N, process: true,    visiblity: isMain,  renderer: 'line' } ],
             height : 0.40,
             isVisiblity : true
         };
     }
 
     // File.Parserを設定する
-    this.fileReader = File.Parser(); // #24
-
+    this.fileParser = TimeSeries.FileParser(); // #24
+   
     // グラフ定義領域の宣言
     this.windowId = document.getElementById("hjn_chart");
     this.menuId = document.getElementById("hjnBoxBuger");
@@ -89,8 +88,6 @@ export default function Graph(chartIdName, globalName, config) {
     this.scale = [ null, null ];
     this.graph = null;
     this.cTpsUnit = TimeSeries.Tat.UNIT_CTPS[0]; // #75
-
-    this.cash = null; // キャッシュオブジェクト
 
     // グラフの設定(処理対象データの設定のみ this.SERIESES[] に取り込む）
     this.SERIESES = [];
@@ -106,9 +103,9 @@ export default function Graph(chartIdName, globalName, config) {
                 scale : 0,
                 color : ''
             };
-            // 定数(HJN.seriesConfig)指定項目を設定する
-            for ( var attr in HJN.seriesConfig[i]) {
-                this.SERIESES[j][attr] = HJN.seriesConfig[i][attr];
+            // 定数(HJN.Tat.seriesConfig)指定項目を設定する
+            for ( var attr in HJN.Tat.seriesConfig[i]) {
+                this.SERIESES[j][attr] = HJN.Tat.seriesConfig[i][attr];
             }
             // 引数(config)指定項目を設定する
             this.SERIESES[j].visiblity = config.SERIESES[i].visiblity;
@@ -172,7 +169,7 @@ Graph.DrawCallback = function (g, is_initial) { // #50 #51
     if (is_initial)
         return;
     // Filterメニューで指定されている F_SYNC の状態を取得する
-    var syncMode = Util.Config("Filter").getValueByKey("F_SYNC"); // #59
+    var syncMode = Util.Config.Filter.getValueByKey("F_SYNC"); // #59
     // "F_SYNC_UPPER"かつ上段グラフ もしくは、"F_SYNC_DETAIL"かつ下段グラフのとき処理する
     if ((syncMode === "F_SYNC_UPPER" &amp;&amp; g.HJN === HJN.chart)
             || (syncMode === "F_SYNC_DETAIL" &amp;&amp; g.HJN === HJN.chartD)) {
@@ -297,7 +294,7 @@ Graph.prototype.setSeriesSet = function (tat, seriesSet) { // #30
     if(seriesSet){
         this.seriesSet = seriesSet;
     }
-    HJN.seriesConfig.forEach(function (e) {
+    HJN.Tat.seriesConfig.forEach(function (e) {
         this[e.key] = this.seriesSet[e.N];
     }, this);
 };
@@ -317,30 +314,51 @@ Graph.prototype.update = function (seriesSet, n) {
     // 指定データがあるとき取り込む
     if (seriesSet) this.setSeriesSet(undefined, seriesSet);
     // dygraph用表示データを作成する
-    var xy = [], // グラフデータ({x:,y:}ペアの配列）の一覧（グラフ１本が配列要素）
-    idx = [], // グラフデータの処理中配列位置を保有する配列
-    x = [], // グラフデータの処理中配列のｘ(時刻)の値を保有する配列
-    row = [], // dygraph１レコードワーク配列：（[x,y0,y1...]の配列）の一レコード分を保持する配列
-    minX = 0, i = 0; // グラフ番号用ワーク
+    var xy = [[{x:0,y:0}],[{x:0,y:0}],[{x:0,y:0}],[{x:0,y:0}]], // グラフデータの一覧（グラフ１本が配列要素）
+        idx = [], // グラフデータの処理中配列位置を保有する配列
+        x = [], // グラフデータの処理中配列のｘ(時刻)の値を保有する配列
+        row = [], // dygraph１レコードワーク配列：（[x,y0,y1...]の配列）の一レコード分を保持する配列
+        minX = 0,
+        i = 0; // グラフ番号用ワーク
+    // 表示対象データがないとき空データのdygraphを表示する #72
+    if (this.seriesSet.length === 0) {
+        var cols = [0]; // 日時（ミリ秒）
+        for (i = 0; i &lt; this.SERIESES.length; i++) cols[i+1] = null;
+        this.dyData = [cols];
+        if (this.graph) {
+            // 既にグラフがあるときはデータのみ変更する（注：ここでdestroy()すると下段のpointClickCallback時にエラー）
+            this.graph.updateOptions( {
+                file : this.dyData
+            } );
+            this.graph.resetZoom(); // #51
+        }
+        return;
+    }
+    
+    
     // xy[] に処理対象seriesを指定する
     for (i = 0; i &lt; this.SERIESES.length; i++) {
         xy[i] = this.seriesSet[this.SERIESES[i].N];
         idx[i] = 0;
     }
     // dygraph表示時間帯を設定する（上段グラフは全期間が処理対象）
-    var xRangeMin = Number.MIN_VALUE,
-        xRangeMax = Number.MAX_VALUE,
-        xRangeUnit = HJN.detailRangeUnit; // #61
+    var xRangeMin = Number.MIN_VALUE;
+    var xRangeMax = Number.MAX_VALUE;
+    var xRangeUnit = Util.Config.DetailGraph.getConfig("D_UNIT"); // #61
     if (HJN.chartD === this) { // 詳細（下段グラフ）のとき画面で指定された期間を設定する // ミリ秒
-        if ((n === HJN.ETPS.N || n === HJN.EMPS.N || n === HJN.EAPS.N)  // #57
+        var detailRangePlus = Util.Config.DetailGraph.getConfig("D_RANGE_PLUS"); // #27
+        var detailRangeMinus = Util.Config.DetailGraph.getConfig("D_RANGE_MINUS");
+        var detailRangeUnit = Util.Config.DetailGraph.getConfig("D_UNIT");
+        var detailDateTime = Util.Config.DetailGraph.getConfig("D_TIME");
+        if ((n === HJN.Tat.ETPS.N || n === HJN.Tat.EMPS.N || n === HJN.Tat.EAPS.N)  // #57
                 &amp;&amp; xRangeUnit &lt; TimeSeries.Tat.CYCLE){ // #61
-            var dt = Math.floor(+HJN.detailDateTime / TimeSeries.Tat.CYCLE) * TimeSeries.Tat.CYCLE;
-            xRangeMin = dt - HJN.detailRangeMinus * HJN.detailRangeUnit;
-            xRangeMax = dt + HJN.detailRangePlus * HJN.detailRangeUnit;
-        } else { // undefined, HJN.CTPS.N, HJN.CONC.N, HJN.STAT.N, HJN.ETAT.N
-            var dt = Math.floor(+HJN.detailDateTime / xRangeUnit) * xRangeUnit; // #61
-            xRangeMin = dt - HJN.detailRangeMinus * HJN.detailRangeUnit; // #48
-            xRangeMax = dt + HJN.detailRangePlus * HJN.detailRangeUnit; // #48
+            var dt = Math.floor(detailDateTime / TimeSeries.Tat.CYCLE) * TimeSeries.Tat.CYCLE;
+            xRangeMin = dt - detailRangeMinus * detailRangeUnit;
+            xRangeMax = dt + detailRangePlus * detailRangeUnit;
+        } else { // undefined, HJN.Tat.CTPS.N, HJN.Tat.CONC.N, HJN.Tat.STAT.N, HJN.Tat.ETAT.N
+            var dt = Math.floor(detailDateTime / xRangeUnit) * xRangeUnit; // #61
+            xRangeMin = dt - detailRangeMinus * detailRangeUnit; // #48
+            xRangeMax = dt + detailRangePlus * detailRangeUnit; // #48
         }
     }
 
@@ -354,7 +372,7 @@ Graph.prototype.update = function (seriesSet, n) {
         xy.forEach(function (xyData, i) {
             // 秒間最大値系のyは最大値or０を、他はnullを設定する
             var yVal = null;
-            if (this.SERIESES[i].key === HJN.CTPS.key) {
+            if (this.SERIESES[i].key === HJN.Tat.CTPS.key) {
                 // 始端時刻を含む秒の値（最大値）を、始端時刻にセットする
                 var j = Util.binarySearch(xVal, xyData, function (e) {
                     return e.x;
@@ -404,7 +422,7 @@ Graph.prototype.update = function (seriesSet, n) {
     xRangeMax !== Math.floor(xRangeMax / 1000) * 1000) {
         var lastRow = [ xRangeMax ]; // 先頭はx（時刻）
         xy.forEach(function (e, i) { // 秒間最大値系のyは始端：最大値、終端：０を、他はnullを設定
-            lastRow.push((this.SERIESES[i].key === HJN.CTPS.key) ? 0 : null);
+            lastRow.push((this.SERIESES[i].key === HJN.Tat.CTPS.key) ? 0 : null);
         }, this);
         this.dyData.push(lastRow);
     }
@@ -562,16 +580,16 @@ Graph.prototype.update = function (seriesSet, n) {
         // file dropのとき、新グラフデータに更新後に、旧グラフのidx値が引き渡されたとき 処理しない #12
         if (!g.rawData_ || g.rawData_.length - 1 &lt; idx)
             return;
-        var x = g.rawData_[idx][HJN.CONC.N]; // 選択されている点(時刻)のCONCのxの値（無いときundefined)
+        var x = g.rawData_[idx][HJN.Tat.CONC.N]; // 選択されている点(時刻)のCONCのxの値（無いときundefined)
         var eTat = HJN.chart.eTat;
         var sTat = HJN.chart.sTat;
         var n = 0;
 
         // ETAT,STATのときlogレコードを表示する #28
-        if ((name === HJN.STAT.key || name === HJN.ETAT.key)
+        if ((name === HJN.Tat.STAT.key || name === HJN.Tat.ETAT.key)
                 &amp;&amp; typeof x != 'undefined') { // #41
             // eTatの配列位置をを求める
-            if (name === HJN.ETAT.key) {
+            if (name === HJN.Tat.ETAT.key) {
                 // ETATのとき、終了時刻(x)からeTatの配列位置(n)を検索する
                 n = Util.binarySearch(x, eTat, 
                                     function (e) { return e.x; });
@@ -586,7 +604,7 @@ Graph.prototype.update = function (seriesSet, n) {
                 var e = eTat[n];
                 // ログデータを表示する
                 document.getElementById("lineViewer").innerHTML =
-                            this.HJN.fileReader.getRecordAsText(e); // #62
+                            this.HJN.fileParser.getRecordAsText(e); // #62
                 // 線を引く #30
                 drawTatLine(ctx, e.x, e.y, 2, color);
                 ctx.stroke();
@@ -594,7 +612,7 @@ Graph.prototype.update = function (seriesSet, n) {
         }
 
         // CONCのとき同時処理の線を引く
-        if (name === HJN.CONC.key &amp;&amp; typeof eTat.tatMap != 'undefined') { // #17
+        if (name === HJN.Tat.CONC.key &amp;&amp; typeof eTat.tatMap != 'undefined') { // #17
             // #41
             // 指定時刻に動いているeTatの一覧(trans)を取得する
             var trans = eTat.tatMap.search(x, x, 1000); // #18
@@ -604,7 +622,7 @@ Graph.prototype.update = function (seriesSet, n) {
             if (0 &lt;= i &amp;&amp; 0 &lt; trans.length) {
                 // TRANS分の線を引く
                 trans.forEach(function (e) {
-                    drawTatLine(ctx, e.x, e.y, 1, HJN.CONC.color);
+                    drawTatLine(ctx, e.x, e.y, 1, HJN.Tat.CONC.color);
                 });
             }
             ctx.stroke();
@@ -617,8 +635,8 @@ Graph.prototype.update = function (seriesSet, n) {
             time = g.rawData_[idx][0]; // #60
             val = name ? g.rawData_[idx][g.setIndexByName_[name]] : "";
             // valが時間のとき、 時間表記に文字列編集する
-            if (name === HJN.STAT.key || name === HJN.ETAT.key 
-                    || name === HJN.EMPS.key || name === HJN.EAPS.key) {
+            if (name === HJN.Tat.STAT.key || name === HJN.Tat.ETAT.key 
+                    || name === HJN.Tat.EMPS.key || name === HJN.Tat.EAPS.key) {
                 val = Util.D2S(val);
             }
         }
@@ -646,8 +664,8 @@ Graph.prototype.update = function (seriesSet, n) {
                 x : tXe,
                 y : tY
             } ], heigth, color);
-            drawPoint(ctx, tXs, tY, r, HJN.STAT.color);
-            drawPoint(ctx, tXe, tY, r, HJN.ETAT.color);
+            drawPoint(ctx, tXs, tY, r, HJN.Tat.STAT.color);
+            drawPoint(ctx, tXe, tY, r, HJN.Tat.ETAT.color);
         }
 
         // 線を表示する（内部関数）
@@ -745,7 +763,7 @@ Graph.prototype.showBalloon = function () {
     HJN.Plot.List.forEach(function (e) {
         if (minX &lt;= e.x &amp;&amp; e.x &lt;= maxX) {
             ann = {
-                series : HJN.seriesConfig[e.n].key,
+                series : HJN.Tat.seriesConfig[e.n].key,
                 xval : e.x, // ミリ秒
                 shortText : e.y,
                 text : e.label
@@ -757,7 +775,7 @@ Graph.prototype.showBalloon = function () {
                     return s.N === e.n;
                 }) &lt; 0) { // 詳細グラフデータが無いとき
                     ann = {
-                        series : HJN.seriesConfig[e.tpsPlot.n].key,
+                        series : HJN.Tat.seriesConfig[e.tpsPlot.n].key,
                         xval : e.tpsPlot.x, // ミリ秒
                         shortText : e.tpsPlot.y,
                         text : e.tpsPlot.label
@@ -807,10 +825,10 @@ Graph.prototype.legendFormatter = function (data) {
     return html;
     // keyに設定された色指定するstyle文字列を取得する（legendFormatter内部関数宣言）
     function getStyle(key) {
-        var i = HJN.seriesConfig.findIndex(function (e) {
+        var i = HJN.Tat.seriesConfig.findIndex(function (e) {
             return (e.key === key);
         });
-        return 'style="background:' + HJN.seriesConfig[i].color + ';';
+        return 'style="background:' + HJN.Tat.seriesConfig[i].color + ';';
     }
 };
 
@@ -844,8 +862,8 @@ Graph.prototype.menuSaveConfig = function (menuId, fileName) {
     // plotsをjsonに変換する
     var save = {
         "HJN.Plot.List" : HJN.Plot.List,
-        "HJN.chart.fileReader" : HJN.chart.fileReader._config_File.__config,
-        "HJN.chartD.fileReader" : HJN.chartD.fileReader._config_File.__config
+        "HJN.Config.File" : HJN.Config.File.__config, // #76
+        "HJN.Config.Filter" : HJN.Config.Filter.__config
     };
     var json = JSON.stringify(save, null, 4);
     // ダウンロードする
@@ -898,11 +916,11 @@ Graph.prototype.menuLoadConfig = function (evt) { // #10
             alert(json);
             var jsonObj = JSON.parse(json);
 
-            // jsonからHJN.chartD.fileReaderに登録されているConfig の定義を作成する
-            var conf = jsonObj["HJN.chart.fileReader"];
-            HJN.chart.fileReader._config_File.__config = conf;
-            var confD = jsonObj["HJN.chartD.fileReader"];
-            HJN.chartD.fileReader._config_File.__config = confD;
+            // jsonからHJN.chartD.fileParserに登録されているConfig の定義を作成する
+            var conf = jsonObj["HJN.chart.fileParser"];
+            HJN.chart.fileParser._config_File.__config = conf;
+            var confD = jsonObj["HJN.chartD.fileParser"];
+            HJN.chartD.fileParser._config_File.__config = confD;
 
             // jsonからHJN.Plot.Listを作成する
             var tmpPlots = jsonObj["HJN.Plot.List"];
@@ -952,28 +970,8 @@ Graph.prototype.menuFilterApply = function () { // #34
  * 
  * @memberof tatLogDiver.Graph
  */
-Graph.prototype.menuFilterClear = function () { // #34
-    "use strict";
-    // メニュー画面おフィルタ条件に、初期値を設定する
-    setText("Filter.F_TIME_FROM", null);
-    setText("Filter.F_TIME_FROM", null);
-    setText("Filter.F_TIME_TO", null);
-    setText("Filter.F_TAT_FROM", 0);
-    setText("Filter.F_TAT_TO", null);
-    setSelector("Filter.F_TEXT_NON");
-    setText("Filter.F_TEXT_LEN", null);
-    setText("Filter.F_TEXT_POS", 1);
-    setText("Filter.F_TEXT_COL", 3);
-    setText("Filter.F_TEXT_REG", null);
-
-    function setText(id, val) {
-        document.getElementById(id).value = val;
-        document.getElementById(id).onchange();
-    }
-    function setSelector(id) {
-        document.getElementById(id).checked = true;
-        document.getElementById(id).onchange();
-    }
+Graph.prototype.menuFilterReset = function () { // #34
+    TimeSeries.MenuConfigFilter.reset();
 };
 
 /**
@@ -1085,7 +1083,7 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
             // 生成データをCSVに編集する
             var eTatCsv = "";
             var delimiter = '"';
-            var separator = delimiter + HJN.chart.fileReader.getValue("SEP") + delimiter;
+            var separator = delimiter + Util.Config.File.getConfig("SEP") + delimiter; // #76
             eTat.forEach(function (e) {
                 eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') + separator
                         + e.y + separator + e.message + delimiter + '\r\n'; // #61
@@ -1137,7 +1135,7 @@ Graph.prototype.menuDownloadConc = function (menuId, fileName) {
     var plot = HJN.Plot.List.find(function (e) {
         return e.radio;
     });
-    if (plot.n === HJN.CONC.N || plot.n === HJN.STAT.N || plot.n === HJN.ETAT.N) {
+    if (plot.n === HJN.Tat.CONC.N || plot.n === HJN.Tat.STAT.N || plot.n === HJN.Tat.ETAT.N) {
         // CONC|STAT|ETATが選択されているとき
         var trans = this.eTat.tatMap.search(plot.x); // #18
         if (0 &lt; trans.length) { // 出力テキストを編集する
@@ -1263,7 +1261,6 @@ Graph.prototype.addIcon_ZoomReset = function () {
      * class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'; div.innerHTML = htmlText;
      * divIcons.appendChild(div); }
      */
-
 };
 </code></pre>
         </article>
@@ -1275,13 +1272,13 @@ Graph.prototype.addIcon_ZoomReset = function () {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="File.FileParser.html">File.FileParser</a></li><li><a href="Simulator.SimulatorMenuConfig.html">Simulator.SimulatorMenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="File.html">File</a></li><li><a href="HJN.html">HJN</a></li><li><a href="Plot.html">Plot</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 05 2018 03:32:49 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

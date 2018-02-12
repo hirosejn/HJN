@@ -1,5 +1,5 @@
 /**
- * @memberOf timeSeries
+ * @memberOf TimeSeries
  * @class MappedETat
  * @classdesc 期間指定eTat取得用Map
  *            <p>
@@ -141,7 +141,7 @@ export default (function() { // #18
 
 
 /**
- * @memberOf Util
+ * @memberOf TimeSeries
  * @class MappedArray
  * @classdesc 配列位置逆引きマップ
  *            <p>
@@ -223,7 +223,7 @@ var MappedArray = (function() {    // #18
     /**
      * 値の存在チェック
      * 
-     * @memberOf Util.MappedArray
+     * @memberOf TimeSeries.MappedArray
      */
     MappedArray.prototype.has = function (keyValue) {
         return keyValue in this._map;
@@ -231,7 +231,7 @@ var MappedArray = (function() {    // #18
     /**
      * 該当位置を配列で返す
      * 
-     * @memberOf Util.MappedArray
+     * @memberOf TimeSeries.MappedArray
      */
     MappedArray.prototype.indexes = function (keyValue) {
         return this._map[keyValue] || [];
@@ -239,7 +239,7 @@ var MappedArray = (function() {    // #18
     /**
      * 該当する要素を配列で返す
      * 
-     * @memberOf Util.MappedArray
+     * @memberOf TimeSeries.MappedArray
      */
     MappedArray.prototype.search = function (keyValue) {    
         var arr = this._arr;
@@ -251,7 +251,7 @@ var MappedArray = (function() {    // #18
     /**
      * Array.prototype.indexOf() 同等
      * 
-     * @memberOf Util.MappedArray
+     * @memberOf TimeSeries.MappedArray
      */
     MappedArray.prototype.indexOf = function (keyValue) {
         var idxArr = this._map[keyValue],
@@ -261,7 +261,7 @@ var MappedArray = (function() {    // #18
     /**
      * Array.prototype.lastIndexOf() 同等
      * 
-     * @memberOf Util.MappedArray
+     * @memberOf TimeSeries.MappedArray
      */
     MappedArray.prototype.lastIndexOf = function (keyValue) {
         var idxArr = this._map[keyValue],

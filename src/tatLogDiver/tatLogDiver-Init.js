@@ -6,6 +6,7 @@ import {HJN} from './tatLogDiver-HJN.js';
 import {Copyright} from "./tatLogDiver-Copyright.js";
 import Graph from './tatLogDiver-Graph.js';
 import Plot  from './tatLogDiver-Plot.js';
+import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
 
 
 /* *****1*********2*********3*********4*********5*********6*********7******* */
@@ -73,6 +74,13 @@ export default function Init(chartName){ // #70
 	var dropFieldName = chartName;	// ファイルドロップを受け付けるタグ名
 	Util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
 
+	// コンフィグプロパティを初期化する #74
+	//     HJN.Config = HJN.Config || Util.Config;
+    TimeSeries.MenuConfigFile.config();
+    TimeSeries.MenuConfigFilter.config();
+    Simulator.MenuConfig.config();
+    MenuConfigDetailGraph.config();
+	
 	// グラフのインスタンスを作成し初期化する
 	HJN.chart = new Graph(chartName, "HJN.chart");
 	HJN.chart.init();
@@ -342,7 +350,7 @@ Init.ChartRegistDetail = function(cTps){
 	    var tat = new TimeSeries.Tat(HJN.init.GetSliderRangedEtat()); // #75
 	    HJN.chartD.setSeriesSet(tat);
 		// plotsアイコン用 HJN.Plot.Listに、下段表示したplotを登録する
-		HJN.Plot.Add(HJN.CTPS.N, cTps[maxYIdx].x, cTps[maxYIdx].y);
+		HJN.Plot.Add(HJN.Tat.CTPS.N, cTps[maxYIdx].x, cTps[maxYIdx].y);
 	}
 	Util.Logger.ShowLogText("[6:Plot added] " + HJN.Plot.List.length + " plots","calc");
 
@@ -355,49 +363,26 @@ Init.ChartRegistDetail = function(cTps){
  * @return {ETAT} 詳細グラフ用eTat
  */
 HJN.init.GetSliderRangedEtat = function() {
-	"use strict";
-	// 指定時刻（ｄｔ ± range）を取得する
-	var rangeTagPlus  = document.getElementById("DetailRangePlus");
-	var	rangeTagMinus = document.getElementById("DetailRangeMinus");
-    var rangeTagUnit  = document.getElementById("DetailRangeUnit"); // #48
-	var	rangeCycle = HJN.chart.cTpsUnit.unit / 1000; // #38
-    // HJNグローバル変数に退避する
-    HJN.detailRangePlus  = rangeTagPlus  ? +rangeTagPlus.value  : 1 + rangeCycle; // 幅（秒）
-    HJN.detailRangeMinus = rangeTagMinus ? +rangeTagMinus.value : rangeCycle;     // 幅（秒）
-    HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : TimeSeries.Tat.CYCLE; // #48
+    // 指定時刻（ｄｔ ± range）を取得し、HJNグローバル変数に退避する #27
+    var rangeTagPlus  = Util.Config.DetailGraph.getConfig("D_RANGE_PLUS");
+    var rangeTagMinus = Util.Config.DetailGraph.getConfig("D_RANGE_MINUS");
+    var rangeTagUnit  = Util.Config.DetailGraph.getConfig("D_UNIT"); // #48
+    var rangeCycle = HJN.chart.cTpsUnit.unit / 1000; // 変動する #38
 
-    var eTatDetail = (new TimeSeries.ETat(HJN.chart.eTat)).sliceByRangeUnit(HJN.detailDateTime, 
-                        HJN.detailRangeMinus, HJN.detailRangePlus, HJN.detailRangeUnit); // #75
+    rangeTagPlus = rangeTagPlus  ? +rangeTagPlus : 1 + rangeCycle;     // 幅（秒）
+    rangeTagMinus = rangeTagMinus ? +rangeTagMinus : rangeCycle;     // 幅（秒）
+    rangeTagUnit = rangeTagUnit  ? +rangeTagUnit : TimeSeries.Tat.CYCLE; // #48
+    
+    Util.Config.DetailGraph.setValueByKey("D_RANGE_PLUS",rangeTagPlus);
+    Util.Config.DetailGraph.setValueByKey("D_RANGE_MINUS",rangeTagMinus);
+    Util.Config.DetailGraph.setValueByKey("D_UNIT",rangeTagUnit);
 
-	Util.Logger.ShowLogText("[0:HJN.init.GetSliderRangedEtat] ","calc");
-	return eTatDetail;	// 詳細グラフ用eTatを返却する
+    var detailDateTime = Util.Config.DetailGraph.getValueByKey("D_TIME");
+    var eTatDetail = (new TimeSeries.ETat(HJN.chart.eTat)).sliceByRangeUnit(detailDateTime,
+                rangeTagMinus, rangeTagPlus, rangeTagUnit); // #75
 
-};
-/**
- * 詳細グラフ用機能： 表示期間変更時に、Detailを再描画する（onChangeイベント時に呼び出される）
- * 
- * @memberof Init
- */
-HJN.init.setDetailRange = function(){
-    "use strict";
-    clearTimeout(HJN.timer);
-    HJN.timer = setTimeout(function(){
-            Util.Logger.ShowLogTextInit("[-:HJN.init.setDetailRange]start---------------","calc");
-            // 表示中Plotsのrangeを更新する #30
-            var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
-            var plot = HJN.Plot.List[i];
-            plot.rangePlus  = document.getElementById("DetailRangePlus").value;
-            plot.rangeMinus = document.getElementById("DetailRangeMinus").value;
-            var rangeTagUnit = document.getElementById("DetailRangeUnit"); // #48
-            HJN.detailRangeUnit  = rangeTagUnit  ? +rangeTagUnit.value  : TimeSeries.Tat.CYCLE; // #57
-            plot.rangeUnit  = HJN.detailRangeUnit; // #48
-
-            // 下段データを登録する
-            var tat = new TimeSeries.Tat(HJN.init.GetSliderRangedEtat()); // #75
-            HJN.chartD.setSeriesSet(tat);
-            // 下段グラフを描画する
-            Graph.prototype.update.call(HJN.chartD, HJN.chartD.seriesSet);
-        }, 750);    // 750ms 値の変更がなかった時に、処理を開始する
+    Util.Logger.ShowLogText("[0:HJN.init.GetSliderRangedEtat] ","calc");
+    return eTatDetail;  // 詳細グラフ用eTatを返却する
 };
 /**
  * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する（Plotから呼び出される）
@@ -407,8 +392,7 @@ HJN.init.setDetailRange = function(){
  *            date 日時（ミリ秒単位）
  */
 HJN.init.SetDetailDateTime=function(date) {
-    "use strict";
-    HJN.detailDateTime = Math.floor(date / 1000) * 1000;    // 秒単位に丸める
+    Util.Config.DetailGraph.setValueByKey("D_TIME", Math.floor(date / 1000) * 1000); // 秒単位に丸める #27
 };
 
 
@@ -419,6 +403,5 @@ HJN.init.SetDetailDateTime=function(date) {
  * @return {String} str 著作権表記文字
  */
 HJN.init.Copyright=function(){
-    "use strict";
     return Copyright.text;
 };

@@ -7,14 +7,16 @@ import {CreateSampleTatLogAndChartShow} from '../tatLogDiver/tatLogDiver-Init.js
  * @classdesc シミュレータ用メニューHTML定義
  * 
  */
-export default function() { // #74
+export default function MenuConfig() {} // #74
+
+MenuConfig.config = function() {
     // Simulator Config用関数定義(radio用） #53
     var func_S_SIMU_000 = function(){ CreateSampleTatLogAndChartShow(0); };
     var func_S_SIMU_001 = function(){ CreateSampleTatLogAndChartShow(1); };
     // Simulator Config設定画面定義 #53
-    var env = "Simulator"
-        // this["_config_" + env] = Util.Config(env) // #53
-    HJN.Config[env] = Util.Config(env)
+    var prefix = "Simulator";
+    var c = new  Util.Config(prefix);
+        c    // #53
          .n("<br>")
          .label(null," If you change the scenario below,").n()
          .label(null,"JSON is initialized and re-simulated.").n()
