@@ -1,0 +1,23 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link type="text/css" rel="stylesheet" href="../libs/dygraph.css">
+<link type="text/css" rel="stylesheet" href="./tatLogDiver/tatLogDiver.css">
+</head>
+
+<body>
+	<div id="hjn_chart"></div>
+
+
+<script src="../libs/dygraph.js"></script>
+<script src="../libs/extras/synchronizer.js"></script>
+
+<script type="module">
+import Init from "./tatLogDiver/tatLogDiver-Init.js";
+window.addEventListener("DOMContentLoaded",function(eve){
+    Init("chart");      // チャートを作成する
+});
+</script>
+</body>
+</html>

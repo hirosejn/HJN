@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: util/util-cash.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: util/util-cash.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @memberOf Util
+ * @class Cash
+ * @classdesc キャッシュ
+ *            &lt;p>
+ *            キャッシュを保持させるオブジェクト
+ * @param {Number}
+ *            [size=10] キャッシュ最大件数（未対応機能、設定は無視される）
+ */
+export default (function() {
+    "use strict";
+    /** constructor */
+    function Cash(size){
+        size = size || 10;  // TODO 未使用
+        if(!(this instanceof Cash)) return new Cash(size);
+        // インスタンス変数
+        this._cash = {};    // キャッシュ {data:, count:, lastTime:}
+        this._ranges = [];  // RangedCash用 {key: ,from: , to:, }
+        this._size = size;  // キャッシュ最大件数
+    }
+    
+    /* method */
+    /**
+     * 第一引数のargumentsを配列に変換する&lt;br>
+     * （注：引数が１つ以上あることを前提）
+     * 
+     * @memberof Util.Cash
+     * @param {Number}
+     *            args 引数一覧（arguments）
+     * @return {Array} 引数の配列
+     */
+    Cash._arg2arr = function(args) {
+            return args.length === 1 ? [args[0]] : Array.apply(null, args);
+        };
+    /**
+     * cash判定Keyを取得する&lt;br>
+     * （注：引数を'.'でつないだ文字列をkeyとするので、関数名長の上限を超える大きな配列は不可）
+     * 
+     * @memberof Util.Cash
+     * @param {Number}
+     *            args 引数一覧（argumentsオブジェクト）
+     * @return {String} キャッシュキー用の文字列
+     */
+    Cash._getKey = function(args) {
+            var argsArr = this._arg2arr(args);
+            return argsArr.reduce(function(a,b){return a+'.'+b; });
+        };
+        
+    /* private */
+
+    /* public */
+    /**
+     * cashオブジェクトを、cashが無いときはundefinedを返却する&lt;br>
+     * cashヒットした場合、cashの使用回数をカウントアップする
+     * 
+     * @memberof Util.Cash
+     * @param {Object}
+     *            arguments 引数からキー文字列を定める
+     * @return {Number|undefined} キャッシュデータ（デーがが無い場合は undefined)
+     */
+    Cash.prototype.getCash = function () {
+            if (arguments.length &lt; 1) return undefined;
+            var args = Cash._arg2arr(arguments),
+                key = Cash._getKey(args);
+            if (key in this._cash){
+                var cash = this._cash[key];
+                cash.lastTime = new Date();
+                cash.count++;
+                return cash.data;
+            }else{
+                return undefined;
+            }
+        };
+    /**
+     * オブジェクトをcashする
+     * 
+     * @memberof Util.Cash
+     * @param {Object}
+     *            cashVal キャッシュするオブジェクト
+     * @param {Object}
+     *            arguments 第二引数以降の、引数からキー文字列を定める
+     * @return {Object} キャッシュデータ（デーがが無い場合は undefined)
+     */
+    Cash.prototype.setCash = function () {
+            if (arguments.length &lt; 2) return undefined;
+            var cashVal = arguments[0],
+                args = Cash._arg2arr(arguments).slice(1, arguments.length),
+                key = Cash._getKey(args);
+            this._cash[key] = {data: cashVal, count: 0, lastTime:new Date()};
+            return cashVal;
+        };
+
+    /**
+     * レンジキー(form,to)範囲内でキーマッチするcashを、cashが無いときはundefinedを返却する&lt;br>
+     * キーは大小比較できる数値であることが前提
+     * 
+     * @memberof Util.Cash
+     * @param {Number}
+     *            from 抽出するキャッシュキー最小値
+     * @param {Number}
+     *            to 抽出するキャッシュキーの最大値
+     * @return {Object} キャッシュデータ（デーがが無い場合は undefined)
+     */
+    Cash.prototype.getRangedCash = function (from, to) {
+            var range = this._ranges.find(function(e){
+                    return (e.from &lt;= from &amp;&amp; to &lt;= e.to);
+                });
+            return (range !== undefined) ? this.getCash(range.from,range.to) : undefined;
+        };
+    /**
+     * レンジキー(from,to)指定でキャッシュする&lt;br>
+     * キーは大小比較できること（通常、数値）、from-to期間内の既存のキャッシュは削除される
+     * 
+     * @memberof Util.Cash
+     * @param {Object}
+     *            cashVal キャッシュするオブジェクト
+     * @param {Number}
+     *            from 抽出するキャッシュキー最小値
+     * @param {Number}
+     *            to 抽出するキャッシュキーの最大値
+     * @return {Object} キャッシュデータ（デーがが無い場合は undefined)
+     */
+    Cash.prototype.setRangedCash = function (cashVal, from, to) {
+            if (arguments.length &lt; 3) return undefined;
+            // 登録キー範囲に包含される既存キャッシュを削除する
+            var count = 0;
+            this._ranges = this._ranges.filter(function(e){
+                    if (from &lt;= e.from &amp;&amp; e.to &lt;= to){
+                        // 登録キャッシュ範囲内のキャッシュを削除する
+                        count += this._cash[e.key].count;   // 削除分のカウンタ合算
+                        delete this._cash[e.key];
+                        return false;
+                    }else{  // 登録キャッシュの範囲外の一覧を返却する
+                        return true;
+                    }
+                }, this);
+            // 引数をキャッシュに登録する
+            var key = Cash._getKey([from, to]);
+            this._ranges.push( {from: from, to: to, key: key} );
+            this.setCash(cashVal, from, to);
+            this._cash[key].count= count + 1;   // 再作成時はカウンタ合算値
+            return cashVal;
+        };
+
+    // newの戻り値
+    return Cash;
+}());</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="File.FileParser.html">File.FileParser</a></li><li><a href="Simulator.SimulatorMenuConfig.html">Simulator.SimulatorMenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="File.html">File</a></li><li><a href="HJN.html">HJN</a></li><li><a href="Plot.html">Plot</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 05 2018 03:32:49 GMT+0900 (東京 (標準時))
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

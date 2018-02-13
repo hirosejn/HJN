@@ -30,7 +30,7 @@
     
         <h2>VirtualSystem</h2>
         
-            <div class="class-description">Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する<br>           Webサーバ 最大スレッド数： Apache 2.4 [MaxClients = 1024]<br>           JBossトランザクションタイムアウト [default-timeout = 300 秒] キュー長 ： Apache 2.4           ListenBackLog (511) + Linux tcp_max_syn_backlog(769=1024*0.75+1)、           タイムアウトなしAPサーバ 最大スレッド数(maxThreads),JBossトランザクションタイムアウト [default-timeout = 300 秒] DBサーバ最大コネクション数(max_connections)</div>
+            <div class="class-description">仮想システム(VirtualSystem)           <p>           Web3層(Web-AP-DB)をシミュレートしたWebのTATログ生成する           <p>           Webサーバ<br>           最大スレッド数： Apache 2.4 [MaxClients = 1024]<br>           JBossトランザクションタイムアウト [default-timeout = 300 秒]<br>           キュー長 ： Apache 2.4 ListenBackLog (511) + Linux           tcp_max_syn_backlog(769=1024*0.75+1)、タイムアウトなし<br>           APサーバ<br>           最大スレッド数(maxThreads)<br>           JBossトランザクションタイムアウト [default-timeout=300 秒]<br>           DBサーバ 最大コネクション数(max_connections)</div>
         
     
 </header>
@@ -46,19 +46,15 @@
 
 	
     <dir class="tag-source">
-        <a href="HJN.utils.js.html">HJN.utils.js</a>, <a href="HJN.utils.js.html#line1257">line 1257</a>
+        <a href="simulator_simulator-virtualSystem.js.html">simulator/simulator-virtualSystem.js</a>, <a href="simulator_simulator-virtualSystem.js.html#line30">line 30</a>
     </dir>
     
 
     <h4 class="name" id="VirtualSystem">
-    <span class="type-signature"></span>new VirtualSystem<span class="signature">(start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, resourcesJson<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <span class="type-signature"></span>new VirtualSystem<span class="signature">(start<span class="signature-attributes">opt</span>, end<span class="signature-attributes">opt</span>, resourcesJson<span class="signature-attributes">opt</span>, log<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
-	<div class="description">
-		VirtualSystem
-	</div>
-	
     
     
 
@@ -189,6 +185,45 @@
         </li></ul>
 
     
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>log</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    false
+                
+                </span>
+            
+
+            <div class="description last">詳細ログ出力有無</div>
+        </li></ul>
+
+    
 
 
 
@@ -245,7 +280,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>sim = HJN.util.VirtualSystem()</code></pre>
+    <pre class="prettyprint"><code>sim = simulator.VirtualSystem()</code></pre>
 
 
 
@@ -279,13 +314,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Graph.html">HJN.Graph</a></li><li><a href="HJN.util.binarySearch.html">HJN.util.binarySearch</a></li><li><a href="HJN.util.Cash.html">HJN.util.Cash</a></li><li><a href="HJN.util.Config.html">HJN.util.Config</a></li><li><a href="HJN.util.FileReader.html">HJN.util.FileReader</a></li><li><a href="HJN.util.FileReader.Filter.html">HJN.util.FileReader.Filter</a></li><li><a href="HJN.util.FileReader.GetterOfLine.html">HJN.util.FileReader.GetterOfLine</a></li><li><a href="HJN.util.FileReader.GetterOfXY.html">HJN.util.FileReader.GetterOfXY</a></li><li><a href="HJN.util.Heap.html">HJN.util.Heap</a></li><li><a href="HJN.util.Logger.html">HJN.util.Logger</a></li><li><a href="HJN.util.MappedArray.html">HJN.util.MappedArray</a></li><li><a href="HJN.util.MappedETat.html">HJN.util.MappedETat</a></li><li><a href="HJN.util.Random.html">HJN.util.Random</a></li><li><a href="HJN.util.setZeroTimeout.html">HJN.util.setZeroTimeout</a></li><li><a href="HJN.util.VirtualApp.html">HJN.util.VirtualApp</a></li><li><a href="HJN.util.VirtualResource.html">HJN.util.VirtualResource</a></li><li><a href="VirtualSystem.html">VirtualSystem</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.init.html">HJN.init</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="HJN.util.html">HJN.util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Config.html">Config</a></li><li><a href="tatLogDiver.FileParser.html">tatLogDiver.FileParser</a></li><li><a href="tatLogDiver.FileParser.Filter.html">tatLogDiver.FileParser.Filter</a></li><li><a href="tatLogDiver.FileParser.Filter.GetterOfXY.html">tatLogDiver.FileParser.Filter.GetterOfXY</a></li><li><a href="tatLogDiver.FileParser.GetterOfLine.html">tatLogDiver.FileParser.GetterOfLine</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Cash.html">Util.Cash</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.MappedArray.html">Util.MappedArray</a></li><li><a href="Util.MappedETat.html">Util.MappedETat</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li><li><a href="VirtualApp.html">VirtualApp</a></li><li><a href="VirtualResource.html">VirtualResource</a></li><li><a href="VirtualSystem.html">VirtualSystem</a></li><li><a href="virtualSystemByJson.html">virtualSystemByJson</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.Plot.html">HJN.Plot</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CreateSampleTatLogAndChartShow">CreateSampleTatLogAndChartShow</a></li><li><a href="global.html#HJN_init_ChartRegist">HJN_init_ChartRegist</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Nov 23 2017 21:43:10 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Jan 28 2018 13:50:33 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

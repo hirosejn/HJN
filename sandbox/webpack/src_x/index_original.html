@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>index_html</title></head>
+<body>
+	<p>バンドル前の開発用html、main.jsの処理を通常のhtmlで記述</p>
+	<p>loader指定(html,CSS,ファイル(画像)）のimportは、ブラウザでは効かない(JSとみなしてエラーとなる)</p>
+	<div id='box'></div>
+	<link type="text/css" rel="stylesheet" href="./app.css">
+	<script>
+		var png = './image.png';
+		var imgPng = document.createElement('img');
+		imgPng.src = png;
+		document.getElementById('box').appendChild(imgPng);
+	</script>
+	<script type="module">
+		import {hello} from "./sub.js";
+		hello();
+	</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+    "source": {
+        "include":  ["C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\simulator",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\tatLogDiver",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\timeSeries",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\util",
+					 "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\src\\util\\config"
+					 ]
+    },
+    "opts": {
+        "template":  "C:\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\jsdoc_templates",
+        "destination": "\\Users\\A\\Desktop\\wbat\\git\\hirosejn\\HJN\\jsdoc",
+        "recurese": true,
+        "private": false
+    },
+    "templates": {
+        "default": {
+            "useLongnameInNav": true
+        }
+    }
+}
