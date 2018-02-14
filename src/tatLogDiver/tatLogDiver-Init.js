@@ -39,29 +39,46 @@ export default function Init(chartName){ // #70
 	html_chart.innerHTML = ''
 	    + '<div id="' + chartName + '"></div>'
         + '<div id="' + chartName + 'D"></div>'
-        + '<textarea id="lineViewer" class="lineViewer">logdata</textarea>';
+        + '<textarea id="lineViewer" class="lineViewer" readonly>logdata</textarea>'; // #78
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '<header>'
-        + '<div id="Simulator"></div>' // #53
-        + '<div class="statusbar">'
-        + '  <iframe id="fileInfo"></iframe>'
-        + '</div>'
+        // シミュレータ JSON Edit画面 領域 #53
+        + '<div id="Simulator"></div>'
+        // ステータスバー（ログ表示）領域
+        + '<div class="statusbar"><iframe id="fileInfo"></iframe></div>'
+        // ハンバーガーメニュー 領域
         + '<div class="hjnBurgerTray">'
+            // ×ボタン
         + '  <input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
         + '    <label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>'
+        // グラフZoomリセットボタン #78
+        + '    <input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
+        + '    onClick="HJN.chart.graph.resetZoom();HJN.chartD.graph.resetZoom();" />'
+        + '      <label for="chartZoom" class="hjnCtrlBox"><span></span></label>'
+            // メニュー上部タイトル
         + '  <div class="hjnBurgerTitle">'
+                // メニューオーバレイモード変更 ボタン
         + '    <input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
         + '      <label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>'
+        
+// '<input id="' + "idName" + '" type="buttom" class="hjnBoxSwitch hjnResize" '
+// + 'onClick="HJN.' + "this.chartIdName" + '.graph.resetZoom()">'
+// + '<label for="' + "idName" + '" class="hjnCtrlBox"><span></span></label>'
+                // メニュー上部テキスト 領域
         + '    <p>'
+                    // JSDocリンク
         + '      <a class="hjnLabel4Input" href="../jsdoc/index.html"'
         + '                target=”_hirosejnJSDoc3”>TAT log diver</a><BR>'
+                    // GitHubリンク
         + '      <a class="hjnLabel4Input" href="https://github.com/hirosejn/"'
         + '                target=”_hirosejnGit”>&copy;2017 Junichiroh Hirose</a>'
         + '    </p>'
         + '  </div>'
+        // メニュー画面本体（左右開閉ラッパー）
         + '  <div class="hjnBurgerWrap">'
+            // アコーディオンメニュー
         + '    <div class="hjnAccordion">'
         + '      <div id="' + chartName + '_menu"></div>'
         + '      <div id="' + chartName + 'D_menu"></div>'
@@ -75,7 +92,7 @@ export default function Init(chartName){ // #70
 	Util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
 
 	// コンフィグプロパティを初期化する #74
-	//     HJN.Config = HJN.Config || Util.Config;
+	// HJN.Config = HJN.Config || Util.Config;
     TimeSeries.MenuConfigFile.config();
     TimeSeries.MenuConfigFilter.config();
     Simulator.MenuConfig.config();
@@ -392,7 +409,8 @@ HJN.init.GetSliderRangedEtat = function() {
  *            date 日時（ミリ秒単位）
  */
 HJN.init.SetDetailDateTime=function(date) {
-    Util.Config.DetailGraph.setValueByKey("D_TIME", Math.floor(date / 1000) * 1000); // 秒単位に丸める #27
+    Util.Config.DetailGraph.setValueByKey("D_TIME", Math.floor(date / 1000) * 1000); // 秒単位に丸める
+                                                                                        // #27
 };
 
 

@@ -33,8 +33,9 @@ export default (function() { // #56
      */
     TouchPanel.isTouchableDevice = function() {
         Logger.ShowText([TouchPanel._deviceType]);
-        return true; // (TouchPanel._deviceType === "MOUSE") ? false : true;
+        return  (TouchPanel._deviceType === "MOUSE") ? false : true; // #78
     }
+    
     // タッチデバイスか判定する（クラス定数）
     TouchPanel._deviceType = "SHIMULATED_TOUCH";
     function detectDeviceType(event) {

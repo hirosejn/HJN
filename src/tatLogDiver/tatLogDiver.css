@@ -48,7 +48,7 @@ footer { position: fixed; bottom: 0%; text-align: right; font-size: smaller; }
 /* メニュー 全体 */
 .hjnBurgerTitle { /* ハンバーガーメニューオープン時の見出し */
 	position: absolute;	visibility: visible; color: #999; background:#fff; width: 100%;
-	padding: 0 40px 0 15px; opacity: 0; z-index: 97;
+	padding: 0 80px 0 15px; opacity: 0; z-index: 97;
 	transform: translate3d(0, -15px, 0); transition: transform 0.1s, opacity 0.5s; }
 .hjnBurgerTitle p { word-wrap: break-word; line-height: 18px; width: 160px; }
 .hjnBurger:checked ~ .hjnBurgerTitle { transform: none;  opacity: 1; }

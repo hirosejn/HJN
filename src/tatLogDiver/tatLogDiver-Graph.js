@@ -327,7 +327,8 @@ Graph.prototype.update = function (seriesSet, n) {
             var dt = Math.floor(detailDateTime / TimeSeries.Tat.CYCLE) * TimeSeries.Tat.CYCLE;
             xRangeMin = dt - detailRangeMinus * detailRangeUnit;
             xRangeMax = dt + detailRangePlus * detailRangeUnit;
-        } else { // undefined, HJN.Tat.CTPS.N, HJN.Tat.CONC.N, HJN.Tat.STAT.N, HJN.Tat.ETAT.N
+        } else { // undefined, HJN.Tat.CTPS.N, HJN.Tat.CONC.N,
+                    // HJN.Tat.STAT.N, HJN.Tat.ETAT.N
             var dt = Math.floor(detailDateTime / xRangeUnit) * xRangeUnit; // #61
             xRangeMin = dt - detailRangeMinus * detailRangeUnit; // #48
             xRangeMax = dt + detailRangePlus * detailRangeUnit; // #48
@@ -504,7 +505,7 @@ Graph.prototype.update = function (seriesSet, n) {
         Util.TouchPanel.DispatchEventTouchToMouse(this.graph.canvas_ctx_.canvas);
     }
     // zoom reset ボタン追加 #22
-    this.addIcon_ZoomReset();
+    // this.addIcon_ZoomReset(); #78 グラフ毎から全体で一つに変更に伴いcall停止
     Util.Logger.ShowLogText("[8:dygraph showen] ", "calc");
 
     // 初期表示の不活性グラフの設定
@@ -1224,13 +1225,17 @@ Graph.prototype.addIcon_ZoomReset = function () {
     // div.id = id;
     // div.className = "menuBar";
     // div = element.parentElement;
-    /*
-     * var divIcons = document.getElementById("Icons"); var idName =
-     * this.chartIdName + "Zoom"; if (divIcons) { var div =
-     * document.createElement('div'); var htmlText = '<input id="' + idName + '"
-     * type="buttom" class="hjnBoxSwitch hjnResize" ' + 'onClick="HJN.' +
-     * this.chartIdName + '.graph.resetZoom()">' + '<label for="' + idName + '"
-     * class="hjnCtrlBox"><span></span></label>'; div.innerHTML = htmlText;
-     * divIcons.appendChild(div); }
-     */
+    
+    // var divIcons = document.getElementById("Icons");
+    // var idName = this.chartIdName + "Zoom";
+    // if (divIcons) {
+    // var div = document.createElement('div');
+    // var htmlText = '<input id="' + idName
+    // + '"type="buttom" class="hjnBoxSwitch hjnResize" '
+    // + 'onClick="HJN.' + this.chartIdName + '.graph.resetZoom()">'
+    // + '<label for="' + idName + '"class="hjnCtrlBox"><span></span></label>';
+    // div.innerHTML = htmlText;
+    // divIcons.appendChild(div);
+   // }
+     
 };

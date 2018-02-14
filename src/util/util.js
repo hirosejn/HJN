@@ -4,7 +4,7 @@ import Random             from './util-Random.js';
 import addEventListener   from './util-addEventListener.js';
 import setZeroTimeout     from './util-setZeroTimeout.js';
 import Logger             from './util-Logger.js';
-import CopyToClipboard    from './util-copyToClipboard.js';
+import copyToClipboard    from './util-copyToClipboard.js';
 import binarySearch       from './util-binarySearch.js';
 import Heap               from './util-Heap.js';
 import {Config}           from './config/config.js';
@@ -21,7 +21,7 @@ export {
     addEventListener,
     setZeroTimeout,
     Logger,
-    CopyToClipboard,
+    copyToClipboard,
     binarySearch,
     Heap,
     Config

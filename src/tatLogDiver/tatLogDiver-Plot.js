@@ -74,10 +74,6 @@ Plot.PointClickCallback = function(point) {
     HJN.Plot.Add(n, x, y);
     // Balloonを再描画する
     HJN.Plot.ShowBalloon();
-    // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする
-    if (!Util.TouchPanel.isTouchableDevice()) { // #22
-        Util.CopyToClipboard("lineViewer"); // #61
-    }
 };
 
 /**
@@ -148,11 +144,11 @@ Plot.Add=function(n, x, y) {
         if (n === HJN.Tat.ETAT.N){
             rangeMinus = Math.max(rangeMinus, 
                     Math.floor(x / rangeUnit) - Math.floor((x - y) / rangeUnit)); // #48
-            document.getElementById("DetailRangeMinus").value = rangeMinus; 
+            Util.Config.DetailGraph.setText("D_RANGE_MINUS", rangeMinus);
         }else if (n === HJN.Tat.STAT.N){
             rangePlus = Math.max(rangePlus,
                     Math.floor((x + y) / rangeUnit)) - Math.floor(x / rangeUnit) ; // #48
-            document.getElementById("DetailRangePlus").value = rangePlus;
+            Util.Config.DetailGraph.setText("D_RANGE_PLUS", rangePlus);
         }
         // Plotを追加する
         plot = {label: label, ckBox:false,
@@ -259,7 +255,8 @@ Plot.CheckRadio = function(i) {
     plot.radio = true;
     // グラフの日時で、詳細グラフを再作成する
     HJN.init.SetDetailDateTime(plot.x); // 中心時刻に設定する
-    Util.Config.DetailGraph.setText("D_RANGE_PLUS", plot.rangePlus); // 幅を設定する #74
+    Util.Config.DetailGraph.setText("D_RANGE_PLUS", plot.rangePlus); // 幅を設定する
+                                                                        // #74
     Util.Config.DetailGraph.setText("D_RANGE_MINUS", plot.rangeMinus);
     Util.Config.DetailGraph.setText("D_UNIT", 
                 Util.Config.DetailGraph.getOptionKey("D_UNIT", plot.rangeUnit)); // #48
@@ -278,4 +275,8 @@ Plot.ShowBalloon =function(){
     "use strict";
     HJN.chart.showBalloon();
     HJN.chartD.showBalloon();
+    // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする #78
+    if (!Util.TouchPanel.isTouchableDevice()) { // #22
+        Util.copyToClipboard("lineViewer"); // #61
+    }
 };
