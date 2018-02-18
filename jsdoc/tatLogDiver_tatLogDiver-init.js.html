@@ -67,29 +67,44 @@ export default function Init(chartName){ // #70
 	html_chart.innerHTML = ''
 	    + '&lt;div id="' + chartName + '">&lt;/div>'
         + '&lt;div id="' + chartName + 'D">&lt;/div>'
-        + '&lt;textarea id="lineViewer" class="lineViewer">logdata&lt;/textarea>';
+    // CONCデータ表示領域 #78
+        + '&lt;div class="hjnDraggableBox lineViewer" >' // #79
+        + '&lt;div id="lineViewer" readonly>logdata&lt;/div>&lt;/div>';
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '&lt;header>'
-        + '&lt;div id="Simulator">&lt;/div>' // #53
-        + '&lt;div class="statusbar">'
-        + '  &lt;iframe id="fileInfo">&lt;/iframe>'
-        + '&lt;/div>'
+        // シミュレータ JSON Edit画面 領域 #53
+        + '&lt;div id="Simulator">&lt;/div>'
+        // ハンバーガーメニュー 領域
         + '&lt;div class="hjnBurgerTray">'
+            // ステータスバー（ログ表示）領域
+        + '&lt;div class="statusbar hjnDraggableBox">&lt;iframe id="fileInfo">&lt;/iframe>&lt;/div>' // #79
+            // ×ボタン
         + '  &lt;input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
         + '    &lt;label for="hjnBoxBuger" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+        // グラフZoomリセットボタン #78
+        + '    &lt;input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
+        + '    onClick="HJN.chart.graph.resetZoom();HJN.chartD.graph.resetZoom();" />'
+        + '      &lt;label for="chartZoom" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+            // メニュー上部タイトル
         + '  &lt;div class="hjnBurgerTitle">'
+                // メニューオーバレイモード変更 ボタン
         + '    &lt;input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
         + '      &lt;label for="hjnBoxPlaceOn" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+                // メニュー上部テキスト 領域
         + '    &lt;p>'
+                    // JSDocリンク
         + '      &lt;a class="hjnLabel4Input" href="../jsdoc/index.html"'
         + '                target=”_hirosejnJSDoc3”>TAT log diver&lt;/a>&lt;BR>'
+                    // GitHubリンク
         + '      &lt;a class="hjnLabel4Input" href="https://github.com/hirosejn/"'
         + '                target=”_hirosejnGit”>&amp;copy;2017 Junichiroh Hirose&lt;/a>'
         + '    &lt;/p>'
         + '  &lt;/div>'
+        // メニュー画面本体（左右開閉ラッパー）
         + '  &lt;div class="hjnBurgerWrap">'
+            // アコーディオンメニュー
         + '    &lt;div class="hjnAccordion">'
         + '      &lt;div id="' + chartName + '_menu">&lt;/div>'
         + '      &lt;div id="' + chartName + 'D_menu">&lt;/div>'
@@ -103,7 +118,7 @@ export default function Init(chartName){ // #70
 	Util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
 
 	// コンフィグプロパティを初期化する #74
-	//     HJN.Config = HJN.Config || Util.Config;
+	// HJN.Config = HJN.Config || Util.Config;
     TimeSeries.MenuConfigFile.config();
     TimeSeries.MenuConfigFilter.config();
     Simulator.MenuConfig.config();
@@ -120,6 +135,9 @@ export default function Init(chartName){ // #70
 
 	// 初期表示データを自動生成する // #53
 	Util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
+	
+	// イベントハンドラを登録する
+	Util.DraggableBox.enableDraggableClass();
 }
 
 /**
@@ -420,7 +438,8 @@ HJN.init.GetSliderRangedEtat = function() {
  *            date 日時（ミリ秒単位）
  */
 HJN.init.SetDetailDateTime=function(date) {
-    Util.Config.DetailGraph.setValueByKey("D_TIME", Math.floor(date / 1000) * 1000); // 秒単位に丸める #27
+    Util.Config.DetailGraph.setValueByKey("D_TIME", Math.floor(date / 1000) * 1000); // 秒単位に丸める
+                                                                                        // #27
 };
 
 
@@ -442,13 +461,13 @@ HJN.init.Copyright=function(){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.DraggableBox.html">Util.DraggableBox</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 19 2018 01:45:38 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

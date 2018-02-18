@@ -102,10 +102,6 @@ Plot.PointClickCallback = function(point) {
     HJN.Plot.Add(n, x, y);
     // Balloonを再描画する
     HJN.Plot.ShowBalloon();
-    // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする
-    if (!Util.TouchPanel.isTouchableDevice()) { // #22
-        Util.CopyToClipboard("lineViewer"); // #61
-    }
 };
 
 /**
@@ -176,11 +172,11 @@ Plot.Add=function(n, x, y) {
         if (n === HJN.Tat.ETAT.N){
             rangeMinus = Math.max(rangeMinus, 
                     Math.floor(x / rangeUnit) - Math.floor((x - y) / rangeUnit)); // #48
-            document.getElementById("DetailRangeMinus").value = rangeMinus; 
+            Util.Config.DetailGraph.setText("D_RANGE_MINUS", rangeMinus);
         }else if (n === HJN.Tat.STAT.N){
             rangePlus = Math.max(rangePlus,
                     Math.floor((x + y) / rangeUnit)) - Math.floor(x / rangeUnit) ; // #48
-            document.getElementById("DetailRangePlus").value = rangePlus;
+            Util.Config.DetailGraph.setText("D_RANGE_PLUS", rangePlus);
         }
         // Plotを追加する
         plot = {label: label, ckBox:false,
@@ -287,7 +283,8 @@ Plot.CheckRadio = function(i) {
     plot.radio = true;
     // グラフの日時で、詳細グラフを再作成する
     HJN.init.SetDetailDateTime(plot.x); // 中心時刻に設定する
-    Util.Config.DetailGraph.setText("D_RANGE_PLUS", plot.rangePlus); // 幅を設定する #74
+    Util.Config.DetailGraph.setText("D_RANGE_PLUS", plot.rangePlus); // 幅を設定する
+                                                                        // #74
     Util.Config.DetailGraph.setText("D_RANGE_MINUS", plot.rangeMinus);
     Util.Config.DetailGraph.setText("D_UNIT", 
                 Util.Config.DetailGraph.getOptionKey("D_UNIT", plot.rangeUnit)); // #48
@@ -306,6 +303,10 @@ Plot.ShowBalloon =function(){
     "use strict";
     HJN.chart.showBalloon();
     HJN.chartD.showBalloon();
+    // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする #78
+    if (!Util.TouchPanel.isTouchableDevice()) { // #22
+        Util.copyToClipboard("lineViewer"); // #61
+    }
 };</code></pre>
         </article>
     </section>
@@ -316,13 +317,13 @@ Plot.ShowBalloon =function(){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.DraggableBox.html">Util.DraggableBox</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 19 2018 01:45:38 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

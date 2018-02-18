@@ -7,6 +7,7 @@ import Logger             from './util-Logger.js';
 import copyToClipboard    from './util-copyToClipboard.js';
 import binarySearch       from './util-binarySearch.js';
 import Heap               from './util-Heap.js';
+import DraggableBox   from './util-DraggableBox.js';
 import {Config}           from './config/config.js';
 
 /** @namespace Util */
@@ -24,6 +25,7 @@ export {
     copyToClipboard,
     binarySearch,
     Heap,
+    DraggableBox,
     Config
 };
 

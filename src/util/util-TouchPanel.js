@@ -5,7 +5,7 @@ import {Logger} from './util.js';
  * @class TouchPanel
  * @classdesc タッチパネル用ツール
  *            <p>
- *            参考 {@https://code.i-harness.com/ja/q/4f2389}
+ *            参考 {@link https://code.i-harness.com/ja/q/4f2389}
  * 
  * @param {Number}
  *            [average=0.5] 平均値

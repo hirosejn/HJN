@@ -39,17 +39,19 @@ export default function Init(chartName){ // #70
 	html_chart.innerHTML = ''
 	    + '<div id="' + chartName + '"></div>'
         + '<div id="' + chartName + 'D"></div>'
-        + '<textarea id="lineViewer" class="lineViewer" readonly>logdata</textarea>'; // #78
+    // CONCデータ表示領域 #78
+        + '<div class="hjnDraggableBox lineViewer" >' // #79
+        + '<div id="lineViewer" readonly>logdata</div></div>';
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '<header>'
         // シミュレータ JSON Edit画面 領域 #53
         + '<div id="Simulator"></div>'
-        // ステータスバー（ログ表示）領域
-        + '<div class="statusbar"><iframe id="fileInfo"></iframe></div>'
         // ハンバーガーメニュー 領域
         + '<div class="hjnBurgerTray">'
+            // ステータスバー（ログ表示）領域
+        + '<div class="statusbar hjnDraggableBox"><iframe id="fileInfo"></iframe></div>' // #79
             // ×ボタン
         + '  <input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
         + '    <label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>'
@@ -62,10 +64,6 @@ export default function Init(chartName){ // #70
                 // メニューオーバレイモード変更 ボタン
         + '    <input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
         + '      <label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>'
-        
-// '<input id="' + "idName" + '" type="buttom" class="hjnBoxSwitch hjnResize" '
-// + 'onClick="HJN.' + "this.chartIdName" + '.graph.resetZoom()">'
-// + '<label for="' + "idName" + '" class="hjnCtrlBox"><span></span></label>'
                 // メニュー上部テキスト 領域
         + '    <p>'
                     // JSDocリンク
@@ -109,6 +107,9 @@ export default function Init(chartName){ // #70
 
 	// 初期表示データを自動生成する // #53
 	Util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
+	
+	// イベントハンドラを登録する
+	Util.DraggableBox.enableDraggableClass();
 }
 
 /**
