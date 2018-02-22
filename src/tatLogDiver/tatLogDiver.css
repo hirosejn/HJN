@@ -17,14 +17,14 @@ input	{ border-width: 1px; font-size: 12px; }
 select  { background: #eee;}
 #Simulator {overflow: auto; resize: both; position: absolute; z-index: 100;
 			top: 0px; left: 0px; height: 0; width: 190px; background: rgba(255,255,255,0.5); }
-.statusbar	{ overflow: auto; resize: both; position: absolute; z-index: 99; visibility:visible; 
-			top: 2px; left: 10px; height: 35px; width: 175px; background: #fff; }
-.statusbar > iframe { overflow: hidden; width: 95%; height: 100%; }
+.statusbar	{ overflow: auto; position: absolute; z-index: 99; visibility:visible; 
+			top: 3px; left: 10px; height: 33px; width: 175px; background: #fff; }
+.statusbar > iframe { overflow: hidden; border:0; width: 100%; }
 .lineViewer { width: 70%; height: 42px; 
 			 margin: 10px 0px; padding: 0px; border: 1px #cccccc dotted; }
 /* draggable box */
 .hjnDraggableBox {}
-.hjnDraggableItem:hover {cursor: move;  background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }
+.hjnDraggableItem:hover {background: rgba(128, 128, 128, 0.2); transition: all 0.2s; }
 footer { position: fixed; bottom: 0%; text-align: right; font-size: smaller; }
 
 /* ハンバーガーメニュー */
@@ -45,7 +45,7 @@ footer { position: fixed; bottom: 0%; text-align: right; font-size: smaller; }
 	display: block; content: ''; transition: transform 0.1s; }
 .hjnBurger + label span::before { top: -8px; }
 .hjnBurger + label span::after { top: 8px; }
-.hjnBurger:checked + label span { background: #fff; }
+.hjnBurger:checked + label span { background: transparent; }
 .hjnBurger:checked + label span::before { transform: translateY(8px) rotate(-45deg); }
 .hjnBurger:checked + label span::after { transform: translateY(-8px) rotate(45deg); }
 

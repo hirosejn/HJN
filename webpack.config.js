@@ -22,7 +22,7 @@ module.exports = {
       Dygraph: './libs/dygraph.min.js'
   },
   plugins: [
-      new webpack.optimize.UglifyJsPlugin({sourceMap: true}),  
+      new webpack.optimize.UglifyJsPlugin({sourceMap: true})  
   ],
   devServer: {                      // ローカル開発用環境を立ち上げる
     contentBase: './',              // './src'と'./dist'の両方が見える場所

@@ -47,7 +47,7 @@ export default function Init(chartName){ // #70
 	html_nav.innerHTML = ''
 	    + '<header>'
         // シミュレータ JSON Edit画面 領域 #53
-        + '<div id="Simulator"></div>'
+        + '<div id="Simulator" class="hjnDraggableBox"></div>'
         // ハンバーガーメニュー 領域
         + '<div class="hjnBurgerTray">'
             // ステータスバー（ログ表示）領域
@@ -416,11 +416,22 @@ HJN.init.SetDetailDateTime=function(date) {
 
 
 /**
+ * ダイアログを表示する
+ * 
+ * @memberof Init
+ * @param {String}
+ *            iHtml ダイアログのiHtmlに設定する文字列
+ */
+HJN.init.ShowDialog = function(iHtml){
+    Util.DraggableBox.createDialog(iHtml);
+};
+
+/**
  * 著作権表記文字を取得する（Menuイベントから呼び出される）
  * 
  * @memberof Init
  * @return {String} str 著作権表記文字
  */
 HJN.init.Copyright=function(){
-    return Copyright.text;
+    return Copyright.getAboutText();
 };

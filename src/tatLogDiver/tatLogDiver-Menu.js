@@ -118,7 +118,7 @@ export default function Menu(that) {
         var divSimulator = document.getElementById("Simulator");
         var jsonEditor = document.createElement('div'); // 要素の作成
         jsonEditor.innerHTML = '<textarea id="SimulatorEditor" '
-                + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
+                + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:100%;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
         // divSimulatorEditor.readOnly = true; // #22
@@ -136,7 +136,7 @@ export default function Menu(that) {
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(that, ++_id, "Download")
                 + '<ul class="hjnMenuLv2">'
-                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン 
+                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン
                 + getATag(menuDownloadCsv, "Upper ")    // 上段グラフcsvダウンロード ボタン
                 + getATag(menuDownloadLog, "Upper ")    // 上段生データダウンロードボタン
                 + '</ul>' + '</li>';
@@ -191,7 +191,8 @@ export default function Menu(that) {
         accordion.innerHTML += '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "Help")
                 + '<ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpAbout) + '</ul>' + '</li>';
+                + getAlertTag(menuHelpAbout)
+                + '</ul>' + '</li>';
 
         // メニュー登録
         divMenu.appendChild(accordion);
@@ -245,7 +246,8 @@ export default function Menu(that) {
     function getAlertTag(arg) {
         return '' + '<ol><a id="' + arg.menuId + '"'
                 + 'class="hjnButton4Input" ' // #51
-                + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
+// + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>'
+                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName + ")" + '"' + '>' // #79
                 + '<label>' + arg.menuLabel + '</label></a></ol>';
     }
 };
