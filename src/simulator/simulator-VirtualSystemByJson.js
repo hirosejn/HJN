@@ -8,7 +8,6 @@ import * as Util from '../util/util.js';
  *            Util管理用クラス（スタティックメソッドのみ）のためコンストラクタは使用しない
  */
 export default (function() { // #53
-    "use strict";
     /** @constructor */
     function virtualSystemByJson(){
         if(!(this instanceof virtualSystemByJson)){
@@ -20,7 +19,7 @@ export default (function() { // #53
     //
 
     // public
-    
+
     // static
     /**
      * 初期表示用サンプルデータ(ETAT)を自動生成する
@@ -33,7 +32,6 @@ export default (function() { // #53
      */
     // CreateSampleTatLog
     virtualSystemByJson.Execute = function(jsonText){ // #53
-        "use strict";
         var vSys = {};
         // parse
         var json = JSON.parse(jsonText)
@@ -76,7 +74,7 @@ export default (function() { // #53
             var cEnd   = start + Util.S2N(c.end, 24*60*60*1000);
             vSys.setClients(c.user, c.message, c.num, cStart, cEnd, models[c.model]);
         }
-        if (log) console.log(vSys); // #59
+        if (1 < log) console.log(vSys); // #59
         return vSys.execute();
     }
 
@@ -90,7 +88,6 @@ export default (function() { // #53
      */
     // CreateSampleTatLogJson
     virtualSystemByJson.GetJsonConfig = function(n){ // #53
-        "use strict";
         n = (typeof(n) !== "undefined") ? n : 0;
         var jsonText = "";
         if (n === 0) {

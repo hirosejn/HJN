@@ -14,7 +14,6 @@ import * as Util from '../util/util.js';
  *            [thinkTime = 300 ms] 繰返し時の次回処理開始までの平均時間(ミリ秒）
  */
 export default (function() { // #53
-"use strict";
     /** @constructor */
     function VirtualApp(userName, model){
         if(!(this instanceof VirtualApp)){
@@ -50,7 +49,6 @@ export default (function() { // #53
 
     // public
 
-    
     /**
      * シミュレータのログを出力する
      * 
@@ -82,7 +80,7 @@ export default (function() { // #53
         } else if (logLv > +isLog) {
             return; 
         }
-        
+
         // エラーログ編集
         var user = vApp ? " " + vApp._userName : " ";
         var resourceText = resource ? (" [" + resource._name + " wait:"
@@ -110,7 +108,7 @@ export default (function() { // #53
                     resource._holdingQty = resource._holdHeap.size();
             }
         }
-                
+
         // エラーログ出力
         if (highText || modify){
             console.log(logText + " %o", highText + " " + modify);
@@ -172,7 +170,7 @@ export default (function() { // #53
         this.logger(4, system._log, system.getTime(), this, undefined, 'NEXT', undefined);
         var events = []; // 戻り値
         var ret = {result: true, events: [this]};
-        
+
         if (this._sequenceIdx < this._sequence.length) { // イベントシーケンス処理途中のとき
             var seq = this._sequence[this._sequenceIdx]; // 現在の処理シーケンス位置
             // holdリソースを取得する
@@ -200,7 +198,7 @@ export default (function() { // #53
             }
             return events;
         }
-        
+
         // イベントシーケンスを終えたときTATログを出力する(this._sequenceIdx >= this._sequence.length)
         var vApp = this._finish(system, "N_000");
         // シーケンスをstart状態に設定する
@@ -257,7 +255,7 @@ export default (function() { // #53
         });
         return this;
     };
-    
+
     /**
      * アベンド処理（holdしている可能性のあるリソースを解放し、イベントシーケンスを強制終了する）
      * 
@@ -310,7 +308,7 @@ export default (function() { // #53
         }
         return events;
     };
-    
+
     /**
      * イベント終了時処理（ログ出力と、繰り返し判定）
      * 
@@ -348,7 +346,7 @@ export default (function() { // #53
             this._startTime = this._sequenceTime; // #61 念のため設定
             return undefined;
         }
-        
+
         // 起動済処理はTATログを出力する #59
         if (this._startTime <= now ) { // || this._sequenceIdx ===
                                         // this._sequence.length) {

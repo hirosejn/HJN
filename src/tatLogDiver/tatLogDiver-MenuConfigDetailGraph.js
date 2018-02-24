@@ -15,19 +15,18 @@ MenuConfigDetailGraph.config = function () {
     var c = new  Util.Config(prefix);
     // Config設定画面定義
     c 
-            .name("D_RANGE").label(null,"Range:")
-                .number("D_RANGE_MINUS", " - ", "", "1", 'style="width:40px;"', func_D)
-                .number("D_RANGE_PLUS"  , " + ", "", "2", 'style="width:40px;"', func_D)
-            .name("D_UNIT").startTag("select")
-                .option(c.def("D_UNIT_SEC",                 1000), null, "sec",    false, null, func_D) // #48
-                .option(c.def("D_UNIT_10SEC",           10000), null, "10sec", true, null, func_D)
-                .option(c.def("D_UNIT_MIN",               60000), null, "min",    false, null, func_D)
-                .option(c.def("D_UNIT_HOUR",        3600000), null, "hour",   false, null, func_D)
-                .option(c.def("D_UNIT_6HOUR",    21600000), null, "6hour", false, null, func_D)
-                .option(c.def("D_UNIT_DAY",         86400000), null, "day",     false, null, func_D)
-                .option(c.def("D_UNIT_YEAR", 31536000000), null, "year",    false, null, func_D)
-            .endTag()
-//            .n("<br>")
+        .name("D_RANGE").label(null,"Range:")
+            .number("D_RANGE_MINUS", " - ", "", "1", 'style="width:40px;"', func_D)
+            .number("D_RANGE_PLUS"  , " + ", "", "2", 'style="width:40px;"', func_D)
+        .name("D_UNIT").startTag("select")
+            .option(c.def("D_UNIT_SEC",         1000), null, "sec",   false, null, func_D) // #48
+            .option(c.def("D_UNIT_10SEC",      10000), null, "10sec", true,  null, func_D)
+            .option(c.def("D_UNIT_MIN",        60000), null, "min",   false, null, func_D)
+            .option(c.def("D_UNIT_HOUR",     3600000), null, "hour",  false, null, func_D)
+            .option(c.def("D_UNIT_6HOUR",   21600000), null, "6hour", false, null, func_D)
+            .option(c.def("D_UNIT_DAY",     86400000), null, "day",   false, null, func_D)
+            .option(c.def("D_UNIT_YEAR", 31536000000), null, "year",  false, null, func_D)
+        .endTag()
     ;
 }
 

@@ -18,7 +18,6 @@
  * @example i=Util.binarySearch(x,arrXY,function(e){return e.x;});
  */
 export default function (val, arr, func, low, high, isEqual) {
-    "use strict";
     func = func || function(val){ return val.valueOf(); };
     low = low || 0;
     if (!arr) return -1;

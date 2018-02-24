@@ -26,8 +26,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
-import * as Util from '../util/util.js';
+            <pre class="prettyprint source linenums"><code>import * as Util from '../util/util.js';
 import * as TimeSeries from '../timeSeries/timeSeries.js';
 import * as Simulator from '../simulator/simulator.js';
 import {HJN} from './tatLogDiver-HJN.js';
@@ -56,8 +55,6 @@ import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
  *          Bundle("chart"); // チャートを作成する }); &lt;/script> &lt;/body> &lt;/html>
  */
 export default function Init(chartName){ // #70
-
-	"use strict";
 	// 引数１ ：デフォルトHJN.chartName("chart")
 	HJN.chartName = chartName = chartName || HJN.chartName;
 	// タイトルを設定する #57
@@ -79,34 +76,54 @@ export default function Init(chartName){ // #70
         // ハンバーガーメニュー 領域
         + '&lt;div class="hjnBurgerTray">'
             // ステータスバー（ログ表示）領域
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
         + '&lt;div class="statusbar hjnDraggableBox">&lt;iframe id="fileInfo" style="height:100%;">&lt;/iframe>&lt;/div>' // #79
+=======
+        +   '&lt;div class="statusbar hjnDraggableBox">'
+        +   '&lt;iframe id="fileInfo" style="height:100%;">&lt;/iframe>&lt;/div>' // #79
+>>>>>>> 785cc0d drag element (masterリリース) #79
             // ×ボタン
-        + '  &lt;input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
-        + '    &lt;label for="hjnBoxBuger" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+        +   '&lt;input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
+        +     '&lt;label for="hjnBoxBuger" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
         // グラフZoomリセットボタン #78
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
         + '    &lt;input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
         + '    onClick="HJN.init.ResetStyle();" />'
         + '      &lt;label for="chartZoom" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+=======
+        +     '&lt;input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
+        +     'onClick="HJN.init.ResetStyle();" />'
+        +       '&lt;label for="chartZoom" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+>>>>>>> 785cc0d drag element (masterリリース) #79
             // メニュー上部タイトル
-        + '  &lt;div class="hjnBurgerTitle">'
+        +   '&lt;div class="hjnBurgerTitle">'
                 // メニューオーバレイモード変更 ボタン
-        + '    &lt;input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
-        + '      &lt;label for="hjnBoxPlaceOn" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
+        +     '&lt;input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
+        +       '&lt;label for="hjnBoxPlaceOn" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
                 // メニュー上部テキスト 領域
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
         + '    &lt;p>'
                     // ツール名称＆JSDocリンク
         + '      &lt;a class="hjnLabel4Input" href="../jsdoc/index.html"'
         + '                target=”_hirosejnJSDoc3”>TAT log diver&lt;/a>&lt;BR>'
         + '    &lt;/p>'
         + '  &lt;/div>'
+=======
+        +     '&lt;p>'
+                    // ツール名称＆JSDocリンク
+        +       '&lt;a class="hjnLabel4Input" href="../jsdoc/index.html" '
+        +                 'target=”_hirosejnJSDoc3”>TAT log diver&lt;/a>&lt;BR>'
+        +     '&lt;/p>'
+        +   '&lt;/div>'
+>>>>>>> 785cc0d drag element (masterリリース) #79
         // メニュー画面本体（左右開閉ラッパー）
-        + '  &lt;div class="hjnBurgerWrap">'
+        +   '&lt;div class="hjnBurgerWrap">'
             // アコーディオンメニュー
-        + '    &lt;div class="hjnAccordion">'
-        + '      &lt;div id="' + chartName + '_menu">&lt;/div>'
-        + '      &lt;div id="' + chartName + 'D_menu">&lt;/div>'
-        + '    &lt;/div>'
-        + '  &lt;/div>'
+        +     '&lt;div class="hjnAccordion">'
+        +       '&lt;div id="' + chartName + '_menu">&lt;/div>'
+        +       '&lt;div id="' + chartName + 'D_menu">&lt;/div>'
+        +     '&lt;/div>'
+        +   '&lt;/div>'
         + '&lt;/div>'
         + '&lt;/header>';
 	html_chart.parentNode.insertBefore(html_nav, html_chart);
@@ -156,7 +173,11 @@ HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
     elements = document.getElementsByClassName("statusbar");
     for(var i = 0; i &lt; elements.length; i++){
         Util.Element.SetStyles(elements[i],
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
                 { left: "10px", top: 0, width: "175px", height: "40px"});
+=======
+                { left: "10px", top: 0, width: "155px", height: "40px"});
+>>>>>>> 785cc0d drag element (masterリリース) #79
     }
     Util.Element.SetStyles(document.getElementById("Simulator"),
                 { left: 0, top: 0, width: "190px", height: 0});
@@ -175,7 +196,6 @@ HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
  */
 export function CreateSampleTatLogAndChartShow(json){ // #53
-    "use strict";
     var jsonText;
     if (typeof(json) === "number") { // #53
         jsonText = Simulator.virtualSystemByJson.GetJsonConfig(json);
@@ -336,7 +356,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                         HJN.chart.showBalloon();
                         showLogForLowerGraph(HJN.files[0].name); // #79
                     } else { // #72
-                        Util.Logger.ShowLogText("&lt;mark>表示データがありません&lt;/mark>", "msg");                        
+                        Util.Logger.ShowLogText("&lt;mark>表示データがありません&lt;/mark>", "msg");
                     }
                 });
             }
@@ -400,7 +420,6 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
  * @return {seriesSet} dygraph用時系列データ配列
  */
 Init.ChartRegistDetail = function(cTps){
-	"use strict";
 	// CTPSの最大値となるplotを取得する
 	var maxY =Number.MIN_VALUE,
 		maxYIdx = -1;
@@ -431,7 +450,7 @@ Init.ChartRegistDetail = function(cTps){
 };
 /**
  * 詳細グラフ用機能： sliderRangeで指定された範囲のeTatを返却する（グラフの点クリックイベント時に呼び出される）
- * 
+ *
  * @memberof Init
  * @return {ETAT} 詳細グラフ用eTat
  */
@@ -445,7 +464,7 @@ HJN.init.GetSliderRangedEtat = function() {
     rangeTagPlus = rangeTagPlus  ? +rangeTagPlus : 1 + rangeCycle;     // 幅（秒）
     rangeTagMinus = rangeTagMinus ? +rangeTagMinus : rangeCycle;     // 幅（秒）
     rangeTagUnit = rangeTagUnit  ? +rangeTagUnit : TimeSeries.Tat.CYCLE; // #48
-    
+
     Util.Config.DetailGraph.setValueByKey("D_RANGE_PLUS",rangeTagPlus);
     Util.Config.DetailGraph.setValueByKey("D_RANGE_MINUS",rangeTagMinus);
     Util.Config.DetailGraph.setValueByKey("D_UNIT",rangeTagUnit);
@@ -459,20 +478,24 @@ HJN.init.GetSliderRangedEtat = function() {
 };
 /**
  * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する（Plotから呼び出される）
- * 
+ *
  * @memberof Init
  * @param {xMs}
  *            date 日時（ミリ秒単位）
  */
 HJN.init.SetDetailDateTime=function(date) {
-    Util.Config.DetailGraph.setValueByKey("D_TIME", Math.floor(date / 1000) * 1000); // 秒単位に丸める
-                                                                                        // #27
+    Util.Config.DetailGraph.setValueByKey("D_TIME",
+            Math.floor(date / 1000) * 1000); // 秒単位に丸める  #27
 };
 
 
 /**
  * ダイアログを表示する
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
  * 
+=======
+ *
+>>>>>>> 785cc0d drag element (masterリリース) #79
  * @memberof Init
  * @param {String}
  *            iHtml ダイアログのiHtmlに設定する文字列
@@ -483,7 +506,7 @@ HJN.init.ShowDialog = function(iHtml){
 
 /**
  * 著作権表記文字を取得する（Menuイベントから呼び出される）
- * 
+ *
  * @memberof Init
  * @return {String} str 著作権表記文字
  */
@@ -505,7 +528,11 @@ HJN.init.Copyright=function(){
 <br class="clear">
 
 <footer>
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
     Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
+=======
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 15:42:41 GMT+0900 (東京 (標準時))
+>>>>>>> 785cc0d drag element (masterリリース) #79
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

@@ -11,7 +11,6 @@
  *            {@link http://dbaron.org/log/20100309-faster-timeouts}
  */
 export default (function(global) {
-    "use strict";
     var timeouts = [], 
         messageName = "zero-timeout-message";
     function handleMessage(event) {

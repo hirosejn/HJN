@@ -21,7 +21,6 @@ import * as Util from '../util/util.js';
  *            [log=false] 詳細ログ出力有無
  */
 export default (function() { // #53
-    "use strict";
     /** @constructor */
     function VirtualResource(system, name,
                         holdCapacity, timeout, waitCapacity, queueWait, log){

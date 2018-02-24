@@ -37,7 +37,6 @@ HJN.Plot.List = [];
  *            point dygraph の point
  */
 Plot.PointClickCallback = function(point) {
-    "use strict";
     Util.Logger.ShowLogText("[0:PointClickCallback]start---------------","calc");
     var n = HJN.Tat.seriesConfig.findIndex(function(e){ return e.key === point.name; }),// シリーズ番号
         x = point.xval, // ミリ秒
@@ -84,7 +83,6 @@ Plot.PointClickCallback = function(point) {
  *            plot dygraphのpoint
  */
 Plot.PointDblClickCallback = function(point) {
-    "use strict";
     // 指定plotを削除する
     var n = HJN.Tat.seriesConfig.findIndex(function(e){ return e.key === point.name; }),
         x = point.xval, // ミリ秒
@@ -111,7 +109,6 @@ Plot.PointDblClickCallback = function(point) {
  * @return {index} i plots内のplotの位置
  */
 Plot.Add=function(n, x, y) {
-    "use strict";
     // 各plotを非選択状態とする
     HJN.Plot.List.forEach(function(e){e.radio = false;});
     // ラベルフォーマットの設定
@@ -205,7 +202,6 @@ Plot.Add=function(n, x, y) {
  * Plot.Listを再表示する
  */
 Plot.Render = function() {
-    "use strict";
     var divCheckedPlots =  document.getElementById(HJN.chartName + "Plots");
     // 既存のアイコンを削除する
     while (divCheckedPlots.firstChild){
@@ -235,7 +231,6 @@ Plot.Render = function() {
  *            i 削除対象plotの、plots内位置
  */
 Plot.CheckBox = function(i) {
-    "use strict";
     HJN.Plot.List.splice(i,1);      // checkされたplotを削除する
     Plot.Render();          // Plotsを再描画する
     Plot.ShowBalloon();     // グラフのBalloonを再描画する
@@ -248,7 +243,6 @@ Plot.CheckBox = function(i) {
  *            i 選択されたplotの、plots内位置
  */
 Plot.CheckRadio = function(i) {
-    "use strict";
     // Plot.Listにradioの状態を反映する
     HJN.Plot.List.forEach(function(e){ e.radio = false; });
     var plot = HJN.Plot.List[i];
@@ -272,7 +266,6 @@ Plot.CheckRadio = function(i) {
  * Balloonを再描画する
  */
 Plot.ShowBalloon =function(){
-    "use strict";
     HJN.chart.showBalloon();
     HJN.chartD.showBalloon();
     // タッチデバイスでないとき、lineViewerに表示をクリップボードにコピーする #78

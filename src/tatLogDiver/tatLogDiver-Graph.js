@@ -1,4 +1,3 @@
-"use strict";
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
 import Menu from'./tatLogDiver-Menu.js';
@@ -1202,6 +1201,7 @@ Graph.prototype.addIcon_ZoomReset = function () {
         div.innerHTML = htmlText;
         divChart.insertBefore(div, divChart.firstChild);
     }
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
 
     // divIcons.appendChild(div);
 
@@ -1221,4 +1221,6 @@ Graph.prototype.addIcon_ZoomReset = function () {
     // divIcons.appendChild(div);
    // }
 
+=======
+>>>>>>> 785cc0d drag element (masterリリース) #79
 };

@@ -11,7 +11,6 @@ import {D2S} from './util.js';
  *            [mode=0] ログ出力モード
  */
 export default (function() { // #27
-    "use strict";
     /** @static */
     Logger.prototype = {
             _logText: [],

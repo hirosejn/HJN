@@ -29,7 +29,6 @@ import * as Util from '../util/util.js';
  * @example sim = simulator.VirtualSystem()
  */
 export default (function() { // #53　
-    "use strict";
     /** @constructor */
     function VirtualSystem(start, end, resourcesJson, log){
         if(!(this instanceof VirtualSystem)){

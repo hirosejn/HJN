@@ -10,7 +10,6 @@
  *          eTat.tatMap.search(x, x, 1000);
  */
 export default (function() { // #18
-    "use strict";
     /** @static */
     MappedETat.prototype = {
             _abscissa: [],
