@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Random</title>
+    <title>JSDoc: Class: Element</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Random</h1>
+    <h1 class="page-title">Class: Element</h1>
 
     
 
@@ -29,9 +29,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="Util.html">Util</a>.</span>Random</h2>
+            <span class="ancestors"><a href="Util.html">Util</a>.</span>Element</h2>
         
-            <div class="class-description">Random 乱数取得           <p>           ある事象の単位時間あたりの発生回数がポアソン分布, その発生間隔が指数分布に従う<br>           M/M/1モデルは、到着がポアソン過程となり、(したがって到着間隔は指数分布に従う)、サービス時間が指数分布に従う           <p>           参考 <a href="http://www.ishikawa-lab.com/montecarlo/4shou.html">http://www.ishikawa-lab.com/montecarlo/4shou.html</a></div>
+            <div class="class-description">追加する挙動の操作要素は、後に記述した挙動の要素が上位になる 参考           <a href="https://q-az.net/elements-drag-and-drop/">https://q-az.net/elements-drag-and-drop/</a></div>
         
     
 </header>
@@ -47,12 +47,12 @@
 
 	
     <dir class="tag-source">
-        <a href="util_util-Random.js.html">util/util-Random.js</a>, <a href="util_util-Random.js.html#line1">line 1</a>
+        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line3">line 3</a>
     </dir>
     
 
-    <h4 class="name" id="Random">
-    <span class="type-signature"></span>new Random<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="Element">
+    <span class="type-signature"></span>new Element<span class="signature">(element)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -74,39 +74,23 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>average</code></td>
+                <td class="name"><code>element</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">DOM</span>
 
 
             
             </span>
 
             
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
 
             
-                <span class="default">
-                
-                    0.5
-                
-                </span>
-            
 
-            <div class="description last">平均値</div>
+            <div class="description last">ドラッグ機能を付与するDOM要素</div>
         </li></ul>
 
     
@@ -162,11 +146,6 @@
     
 </dl>
 </h6>
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>var r = HJN_util.Random(10), val = r.exponential();</code></pre>
 
 
 
@@ -195,17 +174,17 @@
 
 	
     <dir class="tag-source">
-        <a href="util_util-Random.js.html">util/util-Random.js</a>, <a href="util_util-Random.js.html#line47">line 47</a>
+        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line69">line 69</a>
     </dir>
     
 
-    <h4 class="name" id="exponential">
-    <span class="type-signature">(static) </span>Random#exponential<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
+    <h4 class="name" id=".Element.createDialog">
+    <span class="type-signature">(static) </span>Element.createDialog<span class="signature">(iHtml<span class="signature-attributes">opt</span>, element<span class="signature-attributes">opt</span>, id<span class="signature-attributes">opt</span>, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		指数分布となる乱数を返却する(lambda = 1/average)
+		ダイアログを生成し表示する
 	</div>
 	
     
@@ -226,7 +205,124 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>average</code></td>
+                <td class="name"><code>iHtml</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "no message"
+                
+                </span>
+            
+
+            <div class="description last">ダイアログのinnerHTMLに設定する文字列</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>element</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">DOM</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    document.body
+                
+                </span>
+            
+
+            <div class="description last">ダイアログの位置とサイズを指定する際の基準となる要素</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "HJN.dialog"
+                
+                </span>
+            
+
+            <div class="description last">ダイアログ要素のid名、同一名称のダイアログを閉じて作成する</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>w</code></td>
             
 
             <span class="type">
@@ -253,131 +349,19 @@
             
                 <span class="default">
                 
-                    this._average
+                    40
                 
                 </span>
             
 
-            <div class="description last">平均値=1/λ、分散=1/(λ^2)<br></div>
+            <div class="description last">elementに対するダイアログの幅の比率％</div>
         </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Number</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    乱数
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="util_util-Random.js.html">util/util-Random.js</a>, <a href="util_util-Random.js.html#line60">line 60</a>
-    </dir>
-    
-
-    <h4 class="name" id="poisson">
-    <span class="type-signature">(static) </span>Random#poisson<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
-    </h4>
-    
-    
-	<div class="description">
-		ポアソン分布となる乱数を返却する(lambda = average)
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>average</code></td>
+                <td class="name"><code>h</code></td>
             
 
             <span class="type">
@@ -404,137 +388,25 @@
             
                 <span class="default">
                 
-                    this._average
+                    40
                 
                 </span>
             
 
-            <div class="description last">平均値=分散=λ<br></div>
+            <div class="description last">elementに対するダイアログの高さの比率％</div>
         </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Number</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    乱数
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="util_util-Random.js.html">util/util-Random.js</a>, <a href="util_util-Random.js.html#line34">line 34</a>
-    </dir>
-    
-
-    <h4 class="name" id="uniform">
-    <span class="type-signature">(static) </span>Random#uniform<span class="signature">(average<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span>
-    </h4>
-    
-    
-	<div class="description">
-		一様分布となる乱数を返却する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>average</code></td>
+                <td class="name"><code>[style={ width: w+"%", height: h+"%", left: 50-w/2+"%", top:           50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255,           0.8)", border: "medium solid #aaa"}]</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">Object</span>
 
 
             
@@ -542,8 +414,6 @@
 
             
                 <span class="attributes">
-                
-                    &lt;optional>
                 
 
                 
@@ -555,12 +425,10 @@
             
                 <span class="default">
                 
-                    this._average
-                
                 </span>
             
 
-            <div class="description last">平均値<br></div>
+            <div class="description last">ダイアログ背景のCSSスタイル</div>
         </li></ul>
 
     
@@ -579,28 +447,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Number</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    乱数
-		</div>
-		
-	</li></ul>
-
-    
 
 <h6>
 

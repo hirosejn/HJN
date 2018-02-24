@@ -68,24 +68,24 @@ export default function Init(chartName){ // #70
 	    + '&lt;div id="' + chartName + '">&lt;/div>'
         + '&lt;div id="' + chartName + 'D">&lt;/div>'
     // CONCデータ表示領域 #78
-        + '&lt;div class="hjnDraggableBox lineViewer" >' // #79
+        + '&lt;div class="lineViewer hjnDraggableBox hjnCode" >' // #79
         + '&lt;div id="lineViewer" readonly>logdata&lt;/div>&lt;/div>';
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '&lt;header>'
         // シミュレータ JSON Edit画面 領域 #53
-        + '&lt;div id="Simulator">&lt;/div>'
+        + '&lt;div id="Simulator" class="hjnDraggableBox" style="visibility:hidden">&lt;/div>'
         // ハンバーガーメニュー 領域
         + '&lt;div class="hjnBurgerTray">'
             // ステータスバー（ログ表示）領域
-        + '&lt;div class="statusbar hjnDraggableBox">&lt;iframe id="fileInfo">&lt;/iframe>&lt;/div>' // #79
+        + '&lt;div class="statusbar hjnDraggableBox">&lt;iframe id="fileInfo" style="height:100%;">&lt;/iframe>&lt;/div>' // #79
             // ×ボタン
         + '  &lt;input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
         + '    &lt;label for="hjnBoxBuger" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
         // グラフZoomリセットボタン #78
         + '    &lt;input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
-        + '    onClick="HJN.chart.graph.resetZoom();HJN.chartD.graph.resetZoom();" />'
+        + '    onClick="HJN.init.ResetStyle();" />'
         + '      &lt;label for="chartZoom" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
             // メニュー上部タイトル
         + '  &lt;div class="hjnBurgerTitle">'
@@ -94,12 +94,9 @@ export default function Init(chartName){ // #70
         + '      &lt;label for="hjnBoxPlaceOn" class="hjnCtrlBox">&lt;span>&lt;/span>&lt;/label>'
                 // メニュー上部テキスト 領域
         + '    &lt;p>'
-                    // JSDocリンク
+                    // ツール名称＆JSDocリンク
         + '      &lt;a class="hjnLabel4Input" href="../jsdoc/index.html"'
         + '                target=”_hirosejnJSDoc3”>TAT log diver&lt;/a>&lt;BR>'
-                    // GitHubリンク
-        + '      &lt;a class="hjnLabel4Input" href="https://github.com/hirosejn/"'
-        + '                target=”_hirosejnGit”>&amp;copy;2017 Junichiroh Hirose&lt;/a>'
         + '    &lt;/p>'
         + '  &lt;/div>'
         // メニュー画面本体（左右開閉ラッパー）
@@ -113,6 +110,7 @@ export default function Init(chartName){ // #70
         + '&lt;/div>'
         + '&lt;/header>';
 	html_chart.parentNode.insertBefore(html_nav, html_chart);
+    HJN.init.ResetStyle(true); // #79
 	
 	var dropFieldName = chartName;	// ファイルドロップを受け付けるタグ名
 	Util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
@@ -137,9 +135,37 @@ export default function Init(chartName){ // #70
 	Util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
 	
 	// イベントハンドラを登録する
-	Util.DraggableBox.enableDraggableClass();
+	Util.Element.enableDraggableClass();
 }
 
+/**
+ * スタイルを初期設定する（Reset zoomボタンからも呼ばれる）
+ * @param {Boolean}
+ *            [isInit=false] リセット時true：初期設定値も再設定する
+ *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
+ * 
+ * @memberof Init
+ */
+HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
+    // 指定クラス名が設定された要素にスタイルを設定する
+    var elements = document.getElementsByClassName("lineViewer");
+    for(var i = 0; i &lt; elements.length; i++){
+        Util.Element.SetStyles(elements[i],
+                { bottom: 0, left: "", top: "", width: "70%", height: "10vh"});
+    }
+    elements = document.getElementsByClassName("statusbar");
+    for(var i = 0; i &lt; elements.length; i++){
+        Util.Element.SetStyles(elements[i],
+                { left: "10px", top: 0, width: "175px", height: "40px"});
+    }
+    Util.Element.SetStyles(document.getElementById("Simulator"),
+                { left: 0, top: 0, width: "190px", height: 0});
+    // 別途初期設定される値を再設定する
+    if (!isInit) {
+        HJN.chart.graph.resetZoom();
+        HJN.chartD.graph.resetZoom();
+    }
+}
 /**
  * データを自動生成し表示する
  * 
@@ -174,7 +200,7 @@ export function CreateSampleTatLogAndChartShow(json){ // #53
 HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
     // フィルタしたeTatを取得する #34
     var eTat = HJN.chart.fileParser.createFilter().filter(eTatOriginal);
-    
+
     // グラフを初期表示する
     HJN.Plot.List = []; // #53
     // 上段
@@ -182,23 +208,16 @@ HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
     var tat = new TimeSeries.Tat(eTat); // #75
     HJN.chart.setSeriesSet(tat);
     HJN.chart.update();
-    var text = "上段表示 [" + HJN.chart.eTat.length + "]";
-    Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
+    showLogForUpperGraph("Simulator"); // #79
 
     // 下段(非同期）
    Util.setZeroTimeout( function(){
        HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
        HJN.chart.showBalloon();    // 上段のBalloonを描画する
        if (HJN.chartD.eTat){
-           var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
-           Util.Logger.ShowLogText(text, "elaps");
-           text = "&lt;mark>Simulated data&lt;/mark>["
-                + HJN.chart.eTat.length.toString()
-                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
-           Util.Logger.ShowLogText(text, "msg");
-           
+           showLogForLowerGraph("Simulator"); // #79
        } else { // #72
-           Util.Logger.ShowLogText("&lt;mark>表示データがありません&lt;/mark>", "msg");                        
+           Util.Logger.ShowLogText("&lt;mark>表示データがありません&lt;/mark>", "msg");
        }
        // 上下段のマウス操作同期設定 #49
        var sync = Dygraph.synchronize(
@@ -206,16 +225,28 @@ HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
                  {selection: true, zoom: false});
     });
 }
+function showLogForUpperGraph(fileName){
+    var text = "+ ";
+    Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
+}
+function showLogForLowerGraph(fileName){
+    var text = "下段[" + HJN.chartD.eTat.length + "]行";
+    Util.Logger.ShowLogText(text, "elaps", true);
+    text = "&lt;mark>" + fileName + " [" 
+            + HJN.chart.eTat.length.toString()
+             .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+            + "]行を表示&lt;/mark>"; // 整数文字列のカンマ編集
+    Util.Logger.ShowLogText(text, "msg");
+}
 
 /**
  * HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
- * 
+ *
  * @memberof Init
  * @param {string}
  *            dropFieldName ファイルのドロップイベントを受けるフィールド名
  */
 Init.DropField = function (dropFieldName) {
-	"use strict";
 	// 第一引数で指定された名前の ID 属性のエレメントを取得する
 	var element = document.getElementById(dropFieldName);
 	
@@ -242,7 +273,6 @@ Init.DropField = function (dropFieldName) {
  *            files ファイルハンドラ
  */
 HJN.init.FileReader = Init.FileReader = function (files){  // #15
-	"use strict";
 	for(var i = 0; i &lt; files.length; i++){	// データを順番に取得する
 		try{
 			// ファイルを取得する
@@ -270,7 +300,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
             var filesIdx = HJN.files.length;
             // ファイルの先頭2行をログ表示する
             HJN.filesArrayBuffer[filesIdx] = evt.target.result;
-            Util.Logger.ShowLogTextInit();              // 情報表示 : 初期化
+            Util.Logger.ResetTimestamp();              // 情報表示 : 初期化
             Util.Logger.ShowLogText(textArray, "msg");  // 情報表示：ドロップファイル情報
             // 指定ファイルを読み込む
             // CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
@@ -283,7 +313,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                 HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(
                         getTatLogArray(HJN.filesArrayBuffer, filesIdx));
             }
-            
+
             // 全ファイルを読み込んだらグラフを描画する
             if (HJN.files[HJN.files.length - 1] === file){ // 指定ファイル群の最後のファイルを処理しているとき
                 // フィルタしたeTatを取得する #34
@@ -294,7 +324,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                 var tat = new TimeSeries.Tat(eTat); // #75
                 HJN.chart.setSeriesSet(tat);
                 HJN.chart.update();
-                Util.Logger.ShowLogText("上段表示", "elaps");
+                showLogForUpperGraph(HJN.files[0].name); // #79
 
                 // 下段用データの展開とグラフ描画（非同期処理）
                 HJN.Plot.List = [];
@@ -304,10 +334,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                         HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
                         // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
                         HJN.chart.showBalloon();
-                        Util.Logger.ShowLogText("下段表示", "elaps");
-                        Util.Logger.ShowLogText("&lt;mark>"+ HJN.files[0].name +
-                                "["+ HJN.chart.eTat.length +
-                                "]を表示しました&lt;/mark>", "msg");
+                        showLogForLowerGraph(HJN.files[0].name); // #79
                     } else { // #72
                         Util.Logger.ShowLogText("&lt;mark>表示データがありません&lt;/mark>", "msg");                        
                     }
@@ -444,13 +471,24 @@ HJN.init.SetDetailDateTime=function(date) {
 
 
 /**
+ * ダイアログを表示する
+ * 
+ * @memberof Init
+ * @param {String}
+ *            iHtml ダイアログのiHtmlに設定する文字列
+ */
+HJN.init.ShowDialog = function(iHtml){
+    Util.Element.createDialog(iHtml);
+};
+
+/**
  * 著作権表記文字を取得する（Menuイベントから呼び出される）
  * 
  * @memberof Init
  * @return {String} str 著作権表記文字
  */
 HJN.init.Copyright=function(){
-    return Copyright.text;
+    return Copyright.getAboutText();
 };</code></pre>
         </article>
     </section>
@@ -461,13 +499,13 @@ HJN.init.Copyright=function(){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.DraggableBox.html">Util.DraggableBox</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 19 2018 01:45:38 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

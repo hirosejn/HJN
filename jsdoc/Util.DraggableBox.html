@@ -31,7 +31,7 @@
         <h2>
             <span class="ancestors"><a href="Util.html">Util</a>.</span>DraggableBox</h2>
         
-            <div class="class-description">参考 <a href="https://q-az.net/elements-drag-and-drop/">https://q-az.net/elements-drag-and-drop/</a></div>
+            <div class="class-description">追加する挙動の操作要素は、後に記述した挙動の要素が上位になる 参考           <a href="https://q-az.net/elements-drag-and-drop/">https://q-az.net/elements-drag-and-drop/</a></div>
         
     
 </header>
@@ -52,7 +52,7 @@
     
 
     <h4 class="name" id="DraggableBox">
-    <span class="type-signature"></span>new DraggableBox<span class="signature">()</span><span class="type-signature"></span>
+    <span class="type-signature"></span>new DraggableBox<span class="signature">(element)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -65,6 +65,35 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>element</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">DOM</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">ドラッグ機能を付与するDOM要素</div>
+        </li></ul>
+
+    
 
 
 
@@ -145,17 +174,17 @@
 
 	
     <dir class="tag-source">
-        <a href="util_util-DraggableBox.js.html">util/util-DraggableBox.js</a>, <a href="util_util-DraggableBox.js.html#line24">line 24</a>
+        <a href="util_util-DraggableBox.js.html">util/util-DraggableBox.js</a>, <a href="util_util-DraggableBox.js.html#line69">line 69</a>
     </dir>
     
 
-    <h4 class="name" id=".DraggableBox.enableDraggableClass">
-    <span class="type-signature">(static) </span>DraggableBox.enableDraggableClass<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id=".DraggableBox.createDialog">
+    <span class="type-signature">(static) </span>DraggableBox.createDialog<span class="signature">(iHtml<span class="signature-attributes">opt</span>, element<span class="signature-attributes">opt</span>, id<span class="signature-attributes">opt</span>, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
+		ダイアログを生成し表示する
 	</div>
 	
     
@@ -167,6 +196,242 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>iHtml</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "no message"
+                
+                </span>
+            
+
+            <div class="description last">ダイアログのinnerHTMLに設定する文字列</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>element</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">DOM</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    document.body
+                
+                </span>
+            
+
+            <div class="description last">ダイアログの位置とサイズを指定する際の基準となる要素</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "HJN.dialog"
+                
+                </span>
+            
+
+            <div class="description last">ダイアログ要素のid名、同一名称のダイアログを閉じて作成する</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>w</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    40
+                
+                </span>
+            
+
+            <div class="description last">elementに対するダイアログの幅の比率％</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>h</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    40
+                
+                </span>
+            
+
+            <div class="description last">elementに対するダイアログの高さの比率％</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>[style={ width: w+"%", height: h+"%", left: 50-w/2+"%", top:           50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255,           0.8)", border: "medium solid #aaa"}]</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">ダイアログ背景のCSSスタイル</div>
+        </li></ul>
+
+    
 
 
 
@@ -221,13 +486,6 @@
 </h6>
 
 
-    <h5>Examples</h5>
-    
-    <pre class="prettyprint"><code>.hjnDraggableBox {}.hjnDraggableItem:hover {cursor: move;  background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }</code></pre>
-
-    <pre class="prettyprint"><code>&lt;div class="hjnDraggableBox">&lt;/div></code></pre>
-
-
 
         
     
@@ -251,7 +509,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 19 2018 01:45:38 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Feb 24 2018 23:07:40 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

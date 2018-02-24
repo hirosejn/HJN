@@ -40,24 +40,24 @@ export default function Init(chartName){ // #70
 	    + '<div id="' + chartName + '"></div>'
         + '<div id="' + chartName + 'D"></div>'
     // CONCデータ表示領域 #78
-        + '<div class="hjnDraggableBox lineViewer" >' // #79
+        + '<div class="lineViewer hjnDraggableBox hjnCode" >' // #79
         + '<div id="lineViewer" readonly>logdata</div></div>';
 	// 手前にメニュ－用htmlを作成する #52
 	var html_nav = document.createElement('nav');
 	html_nav.innerHTML = ''
 	    + '<header>'
         // シミュレータ JSON Edit画面 領域 #53
-        + '<div id="Simulator" class="hjnDraggableBox"></div>'
+        + '<div id="Simulator" class="hjnDraggableBox" style="visibility:hidden"></div>'
         // ハンバーガーメニュー 領域
         + '<div class="hjnBurgerTray">'
             // ステータスバー（ログ表示）領域
-        + '<div class="statusbar hjnDraggableBox"><iframe id="fileInfo"></iframe></div>' // #79
+        + '<div class="statusbar hjnDraggableBox"><iframe id="fileInfo" style="height:100%;"></iframe></div>' // #79
             // ×ボタン
         + '  <input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
         + '    <label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>'
         // グラフZoomリセットボタン #78
         + '    <input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
-        + '    onClick="HJN.chart.graph.resetZoom();HJN.chartD.graph.resetZoom();" />'
+        + '    onClick="HJN.init.ResetStyle();" />'
         + '      <label for="chartZoom" class="hjnCtrlBox"><span></span></label>'
             // メニュー上部タイトル
         + '  <div class="hjnBurgerTitle">'
@@ -66,12 +66,9 @@ export default function Init(chartName){ // #70
         + '      <label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>'
                 // メニュー上部テキスト 領域
         + '    <p>'
-                    // JSDocリンク
+                    // ツール名称＆JSDocリンク
         + '      <a class="hjnLabel4Input" href="../jsdoc/index.html"'
         + '                target=”_hirosejnJSDoc3”>TAT log diver</a><BR>'
-                    // GitHubリンク
-        + '      <a class="hjnLabel4Input" href="https://github.com/hirosejn/"'
-        + '                target=”_hirosejnGit”>&copy;2017 Junichiroh Hirose</a>'
         + '    </p>'
         + '  </div>'
         // メニュー画面本体（左右開閉ラッパー）
@@ -85,6 +82,7 @@ export default function Init(chartName){ // #70
         + '</div>'
         + '</header>';
 	html_chart.parentNode.insertBefore(html_nav, html_chart);
+    HJN.init.ResetStyle(true); // #79
 	
 	var dropFieldName = chartName;	// ファイルドロップを受け付けるタグ名
 	Util.Logger.ShowLogTextInit(); // 処理時間計測の初期化
@@ -109,9 +107,37 @@ export default function Init(chartName){ // #70
 	Util.Config.GetConfig("Simulator").getFunctionByKey("S_SIMU")(); // #53
 	
 	// イベントハンドラを登録する
-	Util.DraggableBox.enableDraggableClass();
+	Util.Element.enableDraggableClass();
 }
 
+/**
+ * スタイルを初期設定する（Reset zoomボタンからも呼ばれる）
+ * @param {Boolean}
+ *            [isInit=false] リセット時true：初期設定値も再設定する
+ *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
+ * 
+ * @memberof Init
+ */
+HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
+    // 指定クラス名が設定された要素にスタイルを設定する
+    var elements = document.getElementsByClassName("lineViewer");
+    for(var i = 0; i < elements.length; i++){
+        Util.Element.SetStyles(elements[i],
+                { bottom: 0, left: "", top: "", width: "70%", height: "10vh"});
+    }
+    elements = document.getElementsByClassName("statusbar");
+    for(var i = 0; i < elements.length; i++){
+        Util.Element.SetStyles(elements[i],
+                { left: "10px", top: 0, width: "175px", height: "40px"});
+    }
+    Util.Element.SetStyles(document.getElementById("Simulator"),
+                { left: 0, top: 0, width: "190px", height: 0});
+    // 別途初期設定される値を再設定する
+    if (!isInit) {
+        HJN.chart.graph.resetZoom();
+        HJN.chartD.graph.resetZoom();
+    }
+}
 /**
  * データを自動生成し表示する
  * 
@@ -146,7 +172,7 @@ export function CreateSampleTatLogAndChartShow(json){ // #53
 HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
     // フィルタしたeTatを取得する #34
     var eTat = HJN.chart.fileParser.createFilter().filter(eTatOriginal);
-    
+
     // グラフを初期表示する
     HJN.Plot.List = []; // #53
     // 上段
@@ -154,23 +180,16 @@ HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
     var tat = new TimeSeries.Tat(eTat); // #75
     HJN.chart.setSeriesSet(tat);
     HJN.chart.update();
-    var text = "上段表示 [" + HJN.chart.eTat.length + "]";
-    Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
+    showLogForUpperGraph("Simulator"); // #79
 
     // 下段(非同期）
    Util.setZeroTimeout( function(){
        HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
        HJN.chart.showBalloon();    // 上段のBalloonを描画する
        if (HJN.chartD.eTat){
-           var text = "下段表示 [" + HJN.chartD.eTat.length + "]";
-           Util.Logger.ShowLogText(text, "elaps");
-           text = "<mark>Simulated data</mark>["
-                + HJN.chart.eTat.length.toString()
-                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + "]"; // 整数文字列のカンマ編集
-           Util.Logger.ShowLogText(text, "msg");
-           
+           showLogForLowerGraph("Simulator"); // #79
        } else { // #72
-           Util.Logger.ShowLogText("<mark>表示データがありません</mark>", "msg");                        
+           Util.Logger.ShowLogText("<mark>表示データがありません</mark>", "msg");
        }
        // 上下段のマウス操作同期設定 #49
        var sync = Dygraph.synchronize(
@@ -178,16 +197,28 @@ HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
                  {selection: true, zoom: false});
     });
 }
+function showLogForUpperGraph(fileName){
+    var text = "+ ";
+    Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
+}
+function showLogForLowerGraph(fileName){
+    var text = "下段[" + HJN.chartD.eTat.length + "]行";
+    Util.Logger.ShowLogText(text, "elaps", true);
+    text = "<mark>" + fileName + " [" 
+            + HJN.chart.eTat.length.toString()
+             .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+            + "]行を表示</mark>"; // 整数文字列のカンマ編集
+    Util.Logger.ShowLogText(text, "msg");
+}
 
 /**
  * HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
- * 
+ *
  * @memberof Init
  * @param {string}
  *            dropFieldName ファイルのドロップイベントを受けるフィールド名
  */
 Init.DropField = function (dropFieldName) {
-	"use strict";
 	// 第一引数で指定された名前の ID 属性のエレメントを取得する
 	var element = document.getElementById(dropFieldName);
 	
@@ -214,7 +245,6 @@ Init.DropField = function (dropFieldName) {
  *            files ファイルハンドラ
  */
 HJN.init.FileReader = Init.FileReader = function (files){  // #15
-	"use strict";
 	for(var i = 0; i < files.length; i++){	// データを順番に取得する
 		try{
 			// ファイルを取得する
@@ -242,7 +272,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
             var filesIdx = HJN.files.length;
             // ファイルの先頭2行をログ表示する
             HJN.filesArrayBuffer[filesIdx] = evt.target.result;
-            Util.Logger.ShowLogTextInit();              // 情報表示 : 初期化
+            Util.Logger.ResetTimestamp();              // 情報表示 : 初期化
             Util.Logger.ShowLogText(textArray, "msg");  // 情報表示：ドロップファイル情報
             // 指定ファイルを読み込む
             // CSVファイルを上段用eTatに展開する[{x:, y:,pos:,len:},...] 全件展開する
@@ -255,7 +285,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                 HJN.chart.eTatOriginal = HJN.chart.eTatOriginal.concat(
                         getTatLogArray(HJN.filesArrayBuffer, filesIdx));
             }
-            
+
             // 全ファイルを読み込んだらグラフを描画する
             if (HJN.files[HJN.files.length - 1] === file){ // 指定ファイル群の最後のファイルを処理しているとき
                 // フィルタしたeTatを取得する #34
@@ -266,7 +296,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                 var tat = new TimeSeries.Tat(eTat); // #75
                 HJN.chart.setSeriesSet(tat);
                 HJN.chart.update();
-                Util.Logger.ShowLogText("上段表示", "elaps");
+                showLogForUpperGraph(HJN.files[0].name); // #79
 
                 // 下段用データの展開とグラフ描画（非同期処理）
                 HJN.Plot.List = [];
@@ -276,10 +306,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
                         HJN.chartD.update(Init.ChartRegistDetail(HJN.chart.cTps));
                         // 上段のBalloonを描画する(上段update時にはplots登録されていないので、ここで処理）
                         HJN.chart.showBalloon();
-                        Util.Logger.ShowLogText("下段表示", "elaps");
-                        Util.Logger.ShowLogText("<mark>"+ HJN.files[0].name +
-                                "["+ HJN.chart.eTat.length +
-                                "]を表示しました</mark>", "msg");
+                        showLogForLowerGraph(HJN.files[0].name); // #79
                     } else { // #72
                         Util.Logger.ShowLogText("<mark>表示データがありません</mark>", "msg");                        
                     }
@@ -423,7 +450,7 @@ HJN.init.SetDetailDateTime=function(date) {
  *            iHtml ダイアログのiHtmlに設定する文字列
  */
 HJN.init.ShowDialog = function(iHtml){
-    Util.DraggableBox.createDialog(iHtml);
+    Util.Element.createDialog(iHtml);
 };
 
 /**

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: util/util-DraggableBox.js</title>
+    <title>JSDoc: Source: util/util-Element.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: util/util-DraggableBox.js</h1>
+    <h1 class="page-title">Source: util/util-Element.js</h1>
 
     
 
@@ -30,14 +30,14 @@
 
 /**
  * @memberOf Util
- * @class DraggableBox
+ * @class Element
  * @classdesc 追加する挙動の操作要素は、後に記述した挙動の要素が上位になる 参考
  *            {@link https://q-az.net/elements-drag-and-drop/}
  * @param {DOM}
  *            element ドラッグ機能を付与するDOM要素
  * @constructor
  */
-export default function DraggableBox(element){
+export default function Element(element){
     this._element = element;    // 挙動を追加する要素
     this._wrapper = {};         // マウスイベントを取得するdivを追加する下地要素
 
@@ -63,11 +63,11 @@ var pos = {};        // マウス押下時の位置情報の保管用
  *          background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }
  * @example &lt;div class="hjnDraggableBox">&lt;/div>
  */
-DraggableBox.enableDraggableClass = function(){
+Element.enableDraggableClass = function(){
     var elements = document.getElementsByClassName("hjnDraggableBox");  // 要素の取得
     // マウスが要素内で押されたとき、又はタッチされたとき発火
     for(var i = 0; i &lt; elements.length; i++){
-        var element = new DraggableBox(elements[i]);
+        var element = new Element(elements[i]);
         element     // 移動指定要素がリサイズ指定要素よりが下になるよう、移動を先に記述する
             .makeMoveable()
             .makeResizable();
@@ -92,9 +92,9 @@ DraggableBox.enableDraggableClass = function(){
  *            [style={ width: w+"%", height: h+"%", left: 50-w/2+"%", top:
  *            50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255,
  *            0.8)", border: "medium solid #aaa"}] ダイアログ背景のCSSスタイル
- * @memberOf Util.DraggableBox
+ * @memberOf Util.Element
  */
-DraggableBox.createDialog = function(iHtml, element, id, w, h, style){
+Element.createDialog = function(iHtml, element, id, w, h, style){
     iHtml = iHtml || "no message";
     element = element || document.body;
     style = style || {};
@@ -119,7 +119,7 @@ DraggableBox.createDialog = function(iHtml, element, id, w, h, style){
             { width: w+"%", height: h+"%", left: 50-w/2+"%", top: 50-h/2+"%",
               position: "absolute", "z-index" : "80",
               background: "rgba(255, 255, 255, 0.8)", border: "medium solid #aaa"});
-    var draggable = new DraggableBox(div);
+    var draggable = new Element(div);
     draggable        // 移動指定要素がリサイズ指定要素よりが下になるよう、×ボタン、移動、リサイズの順に記述する
         .makeRemovable()
         .makeMoveable()
@@ -135,7 +135,7 @@ DraggableBox.createDialog = function(iHtml, element, id, w, h, style){
  *            height:"20px"};] ×ボタン要素のCSSスタイル
  * @return this
  */
-DraggableBox.prototype.makeRemovable = function(style) {
+Element.prototype.makeRemovable = function(style) {
     // inputタグを追加する
     // &lt;input id="hjnDialog" type="checkbox" class="hjnBurger" checked="checked"
     // onChange="..."/>
@@ -168,7 +168,7 @@ DraggableBox.prototype.makeRemovable = function(style) {
  *            height:"20px"};] ドラッグ移動機能要素のCSSスタイル
  * @return this
  */
-DraggableBox.prototype.makeMoveable = function(style) {
+Element.prototype.makeMoveable = function(style) {
     // 制御用divを追加する
     this.addHandleElement(elementMove, style, // 上：20px
             {cursor: "move", top:"0",  left:"50%", width:"100%", height:"20px"},
@@ -183,7 +183,7 @@ DraggableBox.prototype.makeMoveable = function(style) {
  *
  * @return this
  */
-DraggableBox.prototype.makeResizable = function(style) {
+Element.prototype.makeResizable = function(style) {
     // 制御用divを追加する
     this.addHandleElement(elementUpper,  style,  // 上:Upper
             {cursor: "ns-resize", top:"0",    left:"50%", width:"100%"});
@@ -219,7 +219,7 @@ DraggableBox.prototype.makeResizable = function(style) {
  * @param {String}
  *            [className="hjnDraggableItem"] マウスイベントを取得するdivに設定するCSSクラス名
  */
-DraggableBox.prototype.addHandleElement = function(func, style, styleD, transform, className) {
+Element.prototype.addHandleElement = function(func, style, styleD, transform, className) {
     style = style || {};
     styleD = styleD || {};
     transform = transform || "onFrame";
@@ -279,7 +279,6 @@ function dragEndBottomRight(e){dragEnd(draggingBottomRight, dragEndBottomRight);
 /**
  * DOM要素にスタイル設定
  *
- * @private
  * @param {DOM}
  *            element CSSスタイルを設定するDOM要素
  * @param {object}
@@ -287,6 +286,7 @@ function dragEndBottomRight(e){dragEnd(draggingBottomRight, dragEndBottomRight);
  * @param {object}
  *            [styleD] elementに設定するデフォルトスタイル {top:"50%", left:"50%"}
  */
+Element.SetStyles = setStyles;
 function setStyles(element, style, styleD){
     // ポインタ操作の透過が指定されていないとき有効化にする（ダイアログなど上位レイヤで透過となっていることがあるため）
     styleD = styleD || {};
@@ -433,13 +433,13 @@ function dragEnd(dragging, dragEnd) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.DraggableBox.html">Util.DraggableBox</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Feb 24 2018 23:07:40 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

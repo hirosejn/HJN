@@ -44,7 +44,7 @@ export default (function() { // #27
         }
     };
     /**
-     * ログ出力： ログテキストを初期化する
+     * ログ出力： ログテキストおよびタイムスタンプを初期化する
      * 
      * @memberof Util.Logger
      * @param {String}
@@ -58,6 +58,14 @@ export default (function() { // #27
         if(text) Logger.ShowLogText(text, type);
     };
     /**
+     * ログ出力： タイムスタンプを初期化する
+     * 
+     * @memberof Util.Logger
+     */
+    Logger.ResetTimestamp=function() {
+        Logger._timestamp = new Date();
+    };
+    /**
      * ログ出力： ログテキストをテキストアレイに追記し、表示する
      * 
      * @memberof Util.Logger
@@ -65,8 +73,10 @@ export default (function() { // #27
      *            text ログ出力文字列
      * @param {String}
      *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
+     * @param {Boolean}
+     *            [isSameline=false] 直前のログと同一ラインにするか
      */
-    Logger.ShowLogText=function(text, type) {
+    Logger.ShowLogText=function(text, type, isSameline) {
         if (type === "calc") return; // 集計時評価用ログ出力抑止
         // "msg"指定のときは経過時間を取らずに、ログのみ出力する
         if (type !== "msg"){
@@ -77,12 +87,15 @@ export default (function() { // #27
                     + "s " + text;
             // 数値のカンマ編集（小数部もカンマが入る）
             text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            text = D2S(Logger._timestamp, "hh:mm:ss.ppp     ")
-                    + text; // #60
         }
-        Logger._logText.push(text);
+        if (isSameline){
+            var last = Logger._logText.length - 1;
+            Logger._logText[last] += text;
+        } else {
+            Logger._logText.push(text);
+        }
         Logger.ShowText(Logger._logText);
-        if(true) console.log(text);
+        if(true) console.log(D2S(Logger._timestamp, "hh:mm:ss.ppp     ") + text); // #60
     };
     /**
      * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
@@ -110,7 +123,7 @@ export default (function() { // #27
     Logger.ShowIHtmlBody=function(elementId, iHtmlBody){
         var body = document.createElement('body');
         body.innerHTML = ""
-            + "<style>body{font-size: 10px; margin: 1px; }</style>"
+            + "<style>body{font-size: x-small; margin: 0; }</style>"
             + "<body id='iHtmlBody'>" + iHtmlBody + "</body>";
         var iframe = document.getElementById(elementId);
         iframe.contentDocument.body = body;

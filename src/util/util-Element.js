@@ -2,17 +2,17 @@ import {Logger} from './util.js';
 
 /**
  * @memberOf Util
- * @class DraggableBox
+ * @class Element
  * @classdesc 追加する挙動の操作要素は、後に記述した挙動の要素が上位になる 参考
  *            {@link https://q-az.net/elements-drag-and-drop/}
  * @param {DOM}
  *            element ドラッグ機能を付与するDOM要素
  * @constructor
  */
-export default function DraggableBox(element){
+export default function Element(element){
     this._element = element;    // 挙動を追加する要素
     this._wrapper = {};         // マウスイベントを取得するdivを追加する下地要素
-    
+
     // width,height :100%が有効となるようposition: absoluteを指定する
     element.style.position = "absolute";
     // ドラッグ＆ドロップ用divを作成する(下地のみクリック透過）
@@ -29,17 +29,17 @@ var pos = {};        // マウス押下時の位置情報の保管用
 
 /**
  * CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
- * 
+ *
  * @memberOf Util
  * @example .hjnDraggableBox {} .hjnDraggableItem:hover {cursor: move;
  *          background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }
  * @example <div class="hjnDraggableBox"></div>
  */
-DraggableBox.enableDraggableClass = function(){
+Element.enableDraggableClass = function(){
     var elements = document.getElementsByClassName("hjnDraggableBox");  // 要素の取得
     // マウスが要素内で押されたとき、又はタッチされたとき発火
     for(var i = 0; i < elements.length; i++){
-        var element = new DraggableBox(elements[i]);
+        var element = new Element(elements[i]);
         element     // 移動指定要素がリサイズ指定要素よりが下になるよう、移動を先に記述する
             .makeMoveable()
             .makeResizable();
@@ -48,7 +48,7 @@ DraggableBox.enableDraggableClass = function(){
 
 /**
  * ダイアログを生成し表示する
- * 
+ *
  * @memberOf Util
  * @param {String}
  *            [iHtml="no message"] ダイアログのinnerHTMLに設定する文字列
@@ -64,9 +64,9 @@ DraggableBox.enableDraggableClass = function(){
  *            [style={ width: w+"%", height: h+"%", left: 50-w/2+"%", top:
  *            50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255,
  *            0.8)", border: "medium solid #aaa"}] ダイアログ背景のCSSスタイル
- * @memberOf Util.DraggableBox
+ * @memberOf Util.Element
  */
-DraggableBox.createDialog = function(iHtml, element, id, w, h, style){
+Element.createDialog = function(iHtml, element, id, w, h, style){
     iHtml = iHtml || "no message";
     element = element || document.body;
     style = style || {};
@@ -89,9 +89,9 @@ DraggableBox.createDialog = function(iHtml, element, id, w, h, style){
     // スタイルを設定する（デフォルト：縦横40%（親サイズに連動）で中央に配置）
     setStyles(div, style, 
             { width: w+"%", height: h+"%", left: 50-w/2+"%", top: 50-h/2+"%",
-              position: "absolute",
+              position: "absolute", "z-index" : "80",
               background: "rgba(255, 255, 255, 0.8)", border: "medium solid #aaa"});
-    var draggable = new DraggableBox(div);
+    var draggable = new Element(div);
     draggable        // 移動指定要素がリサイズ指定要素よりが下になるよう、×ボタン、移動、リサイズの順に記述する
         .makeRemovable()
         .makeMoveable()
@@ -100,14 +100,14 @@ DraggableBox.createDialog = function(iHtml, element, id, w, h, style){
 
 /**
  * ×ボタンによる要素削除機能を付与する
- * 
+ *
  * @memberOf Util
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
  *            height:"20px"};] ×ボタン要素のCSSスタイル
  * @return this
  */
-DraggableBox.prototype.makeRemovable = function(style) {
+Element.prototype.makeRemovable = function(style) {
     // inputタグを追加する
     // <input id="hjnDialog" type="checkbox" class="hjnBurger" checked="checked"
     // onChange="..."/>
@@ -133,14 +133,14 @@ DraggableBox.prototype.makeRemovable = function(style) {
 }
 /**
  * ドラッグによる移動機能を付与する
- * 
+ *
  * @memberOf Util
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
  *            height:"20px"};] ドラッグ移動機能要素のCSSスタイル
  * @return this
  */
-DraggableBox.prototype.makeMoveable = function(style) {
+Element.prototype.makeMoveable = function(style) {
     // 制御用divを追加する
     this.addHandleElement(elementMove, style, // 上：20px
             {cursor: "move", top:"0",  left:"50%", width:"100%", height:"20px"},
@@ -149,13 +149,13 @@ DraggableBox.prototype.makeMoveable = function(style) {
 }
 /**
  * ドラッグによる リサイズ機能を付与する
- * 
+ *
  * @param {object}
  *            [style] リサイズ機能要素のCSSスタイルを、デフォルトから変更する際に指定
- * 
+ *
  * @return this
  */
-DraggableBox.prototype.makeResizable = function(style) {
+Element.prototype.makeResizable = function(style) {
     // 制御用divを追加する
     this.addHandleElement(elementUpper,  style,  // 上:Upper
             {cursor: "ns-resize", top:"0",    left:"50%", width:"100%"});
@@ -177,7 +177,7 @@ DraggableBox.prototype.makeResizable = function(style) {
 }
 /**
  * マウスクリック用要素を追加
- * 
+ *
  * @param {Function}
  *            func マウス押下時に発火する処理
  * @param {object}
@@ -191,12 +191,12 @@ DraggableBox.prototype.makeResizable = function(style) {
  * @param {String}
  *            [className="hjnDraggableItem"] マウスイベントを取得するdivに設定するCSSクラス名
  */
-DraggableBox.prototype.addHandleElement = function(func, style, styleD, transform, className) {
+Element.prototype.addHandleElement = function(func, style, styleD, transform, className) {
     style = style || {};
     styleD = styleD || {};
     transform = transform || "onFrame";
     for (var property in style) styleD[property] = style[property];
-    
+
     var div = document.createElement('div');
     div.classList.add(className || "hjnDraggableItem");
     // 要素がpaddingの内側になるtransform設定値を求める
@@ -250,8 +250,7 @@ function dragEndBottomRight(e){dragEnd(draggingBottomRight, dragEndBottomRight);
 
 /**
  * DOM要素にスタイル設定
- * 
- * @private
+ *
  * @param {DOM}
  *            element CSSスタイルを設定するDOM要素
  * @param {object}
@@ -259,6 +258,7 @@ function dragEndBottomRight(e){dragEnd(draggingBottomRight, dragEndBottomRight);
  * @param {object}
  *            [styleD] elementに設定するデフォルトスタイル {top:"50%", left:"50%"}
  */
+Element.SetStyles = setStyles;
 function setStyles(element, style, styleD){
     // ポインタ操作の透過が指定されていないとき有効化にする（ダイアログなど上位レイヤで透過となっていることがあるため）
     styleD = styleD || {};
@@ -271,7 +271,7 @@ function setStyles(element, style, styleD){
 
 /**
  * マウス押下したときに発火する関数から呼ばれる
- * 
+ *
  * @private
  * @param {Event}
  *            e 発火イベント
@@ -295,27 +295,57 @@ function dragStart(e, element, dragging, dragEnd) {
     var style = document.defaultView.getComputedStyle(grandparent);
     pos.marginLeft = parseInt(style.getPropertyValue("margin-left")) || 0;
     pos.marginTop = parseInt(style.getPropertyValue("margin-top")) || 0;
-    pos.width = parseInt(style.getPropertyValue("width")) || 0;
-    pos.height = parseInt(style.getPropertyValue("height")) || 0;
+    pos.width = grandparent.clientWidth || 0;
+    pos.height = grandparent.clientHeight || 0;
 
     // 処理範囲外のとき何もしない
     // if (pos.y > 10) return;
 
-    // ムーブイベントにコールバック
-    document.body.addEventListener("mousemove", dragging, false);
-    document.body.addEventListener("touchmove", dragging, false);
+    // 全画面にマウスアップ用要素を被せる
+    var hjnDrag = document.getElementById("hjnDrag");
+    if (!hjnDrag) {
+        hjnDrag = document.createElement('div');
+        hjnDrag.id = "hjnDrag";
+        element.parentElement.appendChild(hjnDrag);
+    }
+    setStyles(hjnDrag,  
+            { width  : window.innerWidth + "px",
+              height : window.innerHeight + "px",
+              position : "fixed", top : "0", left : "0",
+              });
     // 親の親要素（hjnDraggableBox指定)に、CSSクラス"drag"を追加
     grandparent.classList.add("drag");
+    // addEventListenerの第三引数を判定
+    var isPassive = isSupportsPassive() ? {passive: false} : false;
+    // ムーブイベントにコールバック
+    document.body.addEventListener("mousemove", dragging, isPassive);
+    document.body.addEventListener("touchmove", dragging, isPassive);
     // マウスボタンが離されたとき、またはカーソルが外れたときに発火するイベントを登録する
-    var drag = document.getElementsByClassName("drag")[0];
-    drag.addEventListener("mouseup", dragEnd, false);
-    drag.addEventListener("touchend", dragEnd, false);
-    document.body.addEventListener("mouseleave", dragEnd, false);
-    document.body.addEventListener("touchleave", dragEnd, false);
+    hjnDrag.addEventListener("mouseup", dragEnd, isPassive);
+    hjnDrag.addEventListener("touchend", dragEnd, isPassive);
+    document.body.addEventListener("mouseleave", dragEnd, isPassive);
+    document.body.addEventListener("touchleave", dragEnd, isPassive);
+}
+
+// addEventListenerの第三引数を判定するためにがpassive対応かどうか判定する
+function isSupportsPassive(){
+    var supportsPassive = false;
+    try {
+      var opt = {
+        get passive() {
+          supportsPassive = true;
+        }
+      },
+      handler = function() {};
+
+      window.addEventListener("checkpassive", handler, opt);
+      window.removeEventListener("checkpassive", handler, opt);
+    } catch (err) {}
+    return supportsPassive; 
 }
 /**
  * 親の親要素をマウス押下後、マウスカーソルが動いたときに発火する関数から呼ばれる
- * 
+ *
  * @private
  * @param {Event}
  *            e 発火イベント
@@ -329,21 +359,23 @@ function dragging(e, multiply) {
     // タッチイベントとマウスのイベントの差異を吸収する
     var event = (e.type === "mousemove") ? e : e.changedTouches[0];
     // フリックしたときに画面を動かさないようにデフォルト動作を抑制する
-    event.preventDefault();
+    e.preventDefault();
     // マウスが動いた場所に要素を動かす（"drag"は同時に一つしか存在しない前提）
     var drag = document.getElementsByClassName("drag")[0];
-    drag.style.left = pos.offsetLeft - pos.marginLeft 
-                + multiply.posX * (event.pageX - pos.pageX) + "px";
-    drag.style.top  = pos.offsetTop  - pos.marginTop
-                + multiply.posY * (event.pageY - pos.pageY) + "px";
-    drag.style.width  = pos.width  
-                + multiply.width  * (event.pageX - pos.pageX) + "px";
-    drag.style.height = pos.height 
-                + multiply.height * (event.pageY - pos.pageY) + "px";
+    if (drag) {
+        drag.style.left = pos.offsetLeft - pos.marginLeft 
+            + multiply.posX * (event.pageX - pos.pageX) + "px";
+        drag.style.top  = pos.offsetTop  - pos.marginTop
+            + multiply.posY * (event.pageY - pos.pageY) + "px";
+        drag.style.width  = pos.width
+            + multiply.width  * (event.pageX - pos.pageX) + "px";
+        drag.style.height = pos.height
+            + multiply.height * (event.pageY - pos.pageY) + "px";
+    }
 }
 /**
  * マウスボタンが上がった場合、もしくは画面外にマウスが出た場合に発火する関数から呼ばれる
- * 
+ *
  * @private
  * @param {function}
  *            dragging 消去するイベントに登録されている関数
@@ -356,12 +388,10 @@ function dragEnd(dragging, dragEnd) {
     document.body.removeEventListener("touchmove", dragging, false);
     document.body.removeEventListener("mouseleave", dragEnd, false);
     document.body.removeEventListener("touchleave", dragEnd, false);
-    
+    // クラス名 .drag を外す
     var drag = document.getElementsByClassName("drag")[0];
-    if (drag) {
-        drag.removeEventListener("mouseup", dragEnd, false);
-        drag.removeEventListener("touchend", dragEnd, false);
-        // クラス名 .drag も消す
-        drag.classList.remove("drag");
-    }
+    if (drag) drag.classList.remove("drag");
+    // マウスアップ検知用要素を削除する
+    var hjnDrag = document.getElementById("hjnDrag");
+    if (hjnDrag) { hjnDrag.parentElement.removeChild(hjnDrag);}
 }
