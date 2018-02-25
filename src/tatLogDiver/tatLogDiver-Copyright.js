@@ -1,6 +1,6 @@
 export var Copyright = {
     name : "TAT log diver",
-    Version : "b18.02.24",
+    Version : "b18.02.25",
     text : "&copy; 2017-" + (new Date()).getFullYear() + " Junichiroh Hirose",
     url : "https://github.com/hirosejn/",
 };

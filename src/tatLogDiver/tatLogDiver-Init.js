@@ -48,46 +48,27 @@ export default function Init(chartName){ // #70
         // ハンバーガーメニュー 領域
         + '<div class="hjnBurgerTray">'
             // ステータスバー（ログ表示）領域
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-        + '<div class="statusbar hjnDraggableBox"><iframe id="fileInfo" style="height:100%;"></iframe></div>' // #79
-=======
         +   '<div class="statusbar hjnDraggableBox">'
         +   '<iframe id="fileInfo" style="height:100%;"></iframe></div>' // #79
->>>>>>> 785cc0d drag element (masterリリース) #79
             // ×ボタン
         +   '<input id="hjnBoxBuger" type="checkbox" class="hjnBurger hjnResize" checked="checked" />'
         +     '<label for="hjnBoxBuger" class="hjnCtrlBox"><span></span></label>'
         // グラフZoomリセットボタン #78
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-        + '    <input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
-        + '    onClick="HJN.init.ResetStyle();" />'
-        + '      <label for="chartZoom" class="hjnCtrlBox"><span></span></label>'
-=======
         +     '<input id="chartZoom" type="buttom" class="hjnBoxSwitch hjnResize" '
         +     'onClick="HJN.init.ResetStyle();" />'
         +       '<label for="chartZoom" class="hjnCtrlBox"><span></span></label>'
->>>>>>> 785cc0d drag element (masterリリース) #79
             // メニュー上部タイトル
         +   '<div class="hjnBurgerTitle">'
                 // メニューオーバレイモード変更 ボタン
         +     '<input id="hjnBoxPlaceOn" type="checkbox" class="hjnBoxSwitch hjnResize" />'
         +       '<label for="hjnBoxPlaceOn" class="hjnCtrlBox"><span></span></label>'
                 // メニュー上部テキスト 領域
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-        + '    <p>'
-                    // ツール名称＆JSDocリンク
-        + '      <a class="hjnLabel4Input" href="../jsdoc/index.html"'
-        + '                target=”_hirosejnJSDoc3”>TAT log diver</a><BR>'
-        + '    </p>'
-        + '  </div>'
-=======
         +     '<p>'
                     // ツール名称＆JSDocリンク
         +       '<a class="hjnLabel4Input" href="../jsdoc/index.html" '
         +                 'target=”_hirosejnJSDoc3”>TAT log diver</a><BR>'
         +     '</p>'
         +   '</div>'
->>>>>>> 785cc0d drag element (masterリリース) #79
         // メニュー画面本体（左右開閉ラッパー）
         +   '<div class="hjnBurgerWrap">'
             // アコーディオンメニュー
@@ -145,11 +126,7 @@ HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
     elements = document.getElementsByClassName("statusbar");
     for(var i = 0; i < elements.length; i++){
         Util.Element.SetStyles(elements[i],
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-                { left: "10px", top: 0, width: "175px", height: "40px"});
-=======
                 { left: "10px", top: 0, width: "155px", height: "40px"});
->>>>>>> 785cc0d drag element (masterリリース) #79
     }
     Util.Element.SetStyles(document.getElementById("Simulator"),
                 { left: 0, top: 0, width: "190px", height: 0});

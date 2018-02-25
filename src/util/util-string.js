@@ -130,7 +130,6 @@ export var D2S = function(ds, str, isLocal){ // #60
  *         {@linkhttps://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat}
  */
 export var N2S = function(y){
-    "use strict";
     return Intl.NumberFormat('en-IN').format(y);
 };
 

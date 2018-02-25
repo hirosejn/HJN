@@ -1201,26 +1201,4 @@ Graph.prototype.addIcon_ZoomReset = function () {
         div.innerHTML = htmlText;
         divChart.insertBefore(div, divChart.firstChild);
     }
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-
-    // divIcons.appendChild(div);
-
-    // div.id = id;
-    // div.className = "menuBar";
-    // div = element.parentElement;
-
-    // var divIcons = document.getElementById("Icons");
-    // var idName = this.chartIdName + "Zoom";
-    // if (divIcons) {
-    // var div = document.createElement('div');
-    // var htmlText = '<input id="' + idName
-    // + '"type="buttom" class="hjnBoxSwitch hjnResize" '
-    // + 'onClick="HJN.' + this.chartIdName + '.graph.resetZoom()">'
-    // + '<label for="' + idName + '"class="hjnCtrlBox"><span></span></label>';
-    // div.innerHTML = htmlText;
-    // divIcons.appendChild(div);
-   // }
-
-=======
->>>>>>> 785cc0d drag element (masterリリース) #79
 };

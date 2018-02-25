@@ -236,11 +236,7 @@ export default function Menu(that) {
     // '<li><a id="xxx" href="#">Child Menu</a></li>'
     function getFuncTag(arg, preLabel) {
         preLabel = preLabel || "";
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
         return '' 
-=======
-        return ''
->>>>>>> 785cc0d drag element (masterリリース) #79
                 + '<li><a id="' + arg.menuId + ' "'
                 + 'class="hjnButton4Input" href="#" ' // #51
                 + 'onclick="' + arg.funcName + '()">' //
@@ -250,11 +246,7 @@ export default function Menu(that) {
     // Alert用<A>タグ編集（内部関数宣言）
     // '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
     function getAlertTag(arg) {
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
         return '' 
-=======
-        return ''
->>>>>>> 785cc0d drag element (masterリリース) #79
                 + '<ol><a id="' + arg.menuId + '"'
                 + 'class="hjnButton4Input" ' // #51
                 + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName + ")" + '"' + '>' // #79
