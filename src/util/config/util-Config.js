@@ -18,7 +18,6 @@
  *          .radio(def("ENDIAN_BIG", false), null, "big");
  */
 export default (function() { // #24
-    "use strict";
     /** @static */
     Config.prototype.__config = {};   // config設定コンテナ
     Config.prototype.__config._onFunctions = {}; // 関数登録用

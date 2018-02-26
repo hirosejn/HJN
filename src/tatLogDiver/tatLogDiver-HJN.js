@@ -13,11 +13,8 @@ HJN.Tat = Tat;
 HJN.chart = HJN.chartD = null;
 HJN.chartName = "chart";
 
-Util.Config("DetailGraph").setValueByKey("D_TIME", +(new Date()));  // 下段表示時刻
-                                                                    // #27
-
-
 HJN.files = [];
 HJN.filesArrayBuffer = [];
 
 HJN.timer = {};
+Util.Config("DetailGraph").setValueByKey("D_TIME", +(new Date()));  // 下段表示時刻 #27

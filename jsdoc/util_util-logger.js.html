@@ -39,7 +39,6 @@
  *            [mode=0] ログ出力モード
  */
 export default (function() { // #27
-    "use strict";
     /** @static */
     Logger.prototype = {
             _logText: [],
@@ -72,7 +71,7 @@ export default (function() { // #27
         }
     };
     /**
-     * ログ出力： ログテキストを初期化する
+     * ログ出力： ログテキストおよびタイムスタンプを初期化する
      * 
      * @memberof Util.Logger
      * @param {String}
@@ -86,6 +85,14 @@ export default (function() { // #27
         if(text) Logger.ShowLogText(text, type);
     };
     /**
+     * ログ出力： タイムスタンプを初期化する
+     * 
+     * @memberof Util.Logger
+     */
+    Logger.ResetTimestamp=function() {
+        Logger._timestamp = new Date();
+    };
+    /**
      * ログ出力： ログテキストをテキストアレイに追記し、表示する
      * 
      * @memberof Util.Logger
@@ -93,8 +100,10 @@ export default (function() { // #27
      *            text ログ出力文字列
      * @param {String}
      *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
+     * @param {Boolean}
+     *            [isSameline=false] 直前のログと同一ラインにするか
      */
-    Logger.ShowLogText=function(text, type) {
+    Logger.ShowLogText=function(text, type, isSameline) {
         if (type === "calc") return; // 集計時評価用ログ出力抑止
         // "msg"指定のときは経過時間を取らずに、ログのみ出力する
         if (type !== "msg"){
@@ -105,12 +114,15 @@ export default (function() { // #27
                     + "s " + text;
             // 数値のカンマ編集（小数部もカンマが入る）
             text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            text = D2S(Logger._timestamp, "hh:mm:ss.ppp     ")
-                    + text; // #60
         }
-        Logger._logText.push(text);
+        if (isSameline){
+            var last = Logger._logText.length - 1;
+            Logger._logText[last] += text;
+        } else {
+            Logger._logText.push(text);
+        }
         Logger.ShowText(Logger._logText);
-        if(true) console.log(text);
+        if(true) console.log(D2S(Logger._timestamp, "hh:mm:ss.ppp     ") + text); // #60
     };
     /**
      * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
@@ -138,7 +150,7 @@ export default (function() { // #27
     Logger.ShowIHtmlBody=function(elementId, iHtmlBody){
         var body = document.createElement('body');
         body.innerHTML = ""
-            + "&lt;style>body{font-size: 10px; margin: 1px; }&lt;/style>"
+            + "&lt;style>body{font-size: x-small; margin: 0; }&lt;/style>"
             + "&lt;body id='iHtmlBody'>" + iHtmlBody + "&lt;/body>";
         var iframe = document.getElementById(elementId);
         iframe.contentDocument.body = body;
@@ -156,13 +168,17 @@ export default (function() { // #27
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
+=======
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 15:42:41 GMT+0900 (東京 (標準時))
+>>>>>>> 785cc0d drag element (masterリリース) #79
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

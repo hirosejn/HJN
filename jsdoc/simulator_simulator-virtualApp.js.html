@@ -42,7 +42,6 @@
  *            [thinkTime = 300 ms] 繰返し時の次回処理開始までの平均時間(ミリ秒）
  */
 export default (function() { // #53
-"use strict";
     /** @constructor */
     function VirtualApp(userName, model){
         if(!(this instanceof VirtualApp)){
@@ -78,7 +77,6 @@ export default (function() { // #53
 
     // public
 
-    
     /**
      * シミュレータのログを出力する
      * 
@@ -110,7 +108,7 @@ export default (function() { // #53
         } else if (logLv > +isLog) {
             return; 
         }
-        
+
         // エラーログ編集
         var user = vApp ? " " + vApp._userName : " ";
         var resourceText = resource ? (" [" + resource._name + " wait:"
@@ -138,7 +136,7 @@ export default (function() { // #53
                     resource._holdingQty = resource._holdHeap.size();
             }
         }
-                
+
         // エラーログ出力
         if (highText || modify){
             console.log(logText + " %o", highText + " " + modify);
@@ -200,7 +198,7 @@ export default (function() { // #53
         this.logger(4, system._log, system.getTime(), this, undefined, 'NEXT', undefined);
         var events = []; // 戻り値
         var ret = {result: true, events: [this]};
-        
+
         if (this._sequenceIdx &lt; this._sequence.length) { // イベントシーケンス処理途中のとき
             var seq = this._sequence[this._sequenceIdx]; // 現在の処理シーケンス位置
             // holdリソースを取得する
@@ -228,7 +226,7 @@ export default (function() { // #53
             }
             return events;
         }
-        
+
         // イベントシーケンスを終えたときTATログを出力する(this._sequenceIdx >= this._sequence.length)
         var vApp = this._finish(system, "N_000");
         // シーケンスをstart状態に設定する
@@ -285,7 +283,7 @@ export default (function() { // #53
         });
         return this;
     };
-    
+
     /**
      * アベンド処理（holdしている可能性のあるリソースを解放し、イベントシーケンスを強制終了する）
      * 
@@ -338,7 +336,7 @@ export default (function() { // #53
         }
         return events;
     };
-    
+
     /**
      * イベント終了時処理（ログ出力と、繰り返し判定）
      * 
@@ -376,7 +374,7 @@ export default (function() { // #53
             this._startTime = this._sequenceTime; // #61 念のため設定
             return undefined;
         }
-        
+
         // 起動済処理はTATログを出力する #59
         if (this._startTime &lt;= now ) { // || this._sequenceIdx ===
                                         // this._sequence.length) {
@@ -426,13 +424,17 @@ export default (function() { // #53
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
+=======
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 15:42:41 GMT+0900 (東京 (標準時))
+>>>>>>> 785cc0d drag element (masterリリース) #79
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

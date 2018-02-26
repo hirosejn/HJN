@@ -93,6 +93,9 @@
             <dt><a href="Util.Config.html">Config</a></dt>
             <dd></dd>
         
+            <dt><a href="Util.Element.html">Element</a></dt>
+            <dd></dd>
+        
             <dt><a href="Util.Heap.html">Heap</a></dt>
             <dd></dd>
         
@@ -408,7 +411,358 @@
 
 	
     <dir class="tag-source">
-        <a href="util_util-copyToClipboard.js.html">util/util-copyToClipboard.js</a>, <a href="util_util-copyToClipboard.js.html#line8">line 8</a>
+        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line38">line 38</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Element.enableDraggableClass">
+    <span class="type-signature">(static) </span>Element.enableDraggableClass<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>.hjnDraggableBox {} .hjnDraggableItem:hover {cursor: move;         background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }</code></pre>
+
+    <pre class="prettyprint"><code>&lt;div class="hjnDraggableBox">&lt;/div></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line143">line 143</a>
+    </dir>
+    
+
+    <h4 class="name" id="makeMoveable">
+    <span class="type-signature">(static) </span>Element#makeMoveable<span class="signature">([style={cursor: "move", top:"0", left:"50%", width:"100%",           height:"20px"};])</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		ドラッグによる移動機能を付与する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>[style={cursor: "move", top:"0", left:"50%", width:"100%",           height:"20px"};]</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">ドラッグ移動機能要素のCSSスタイル</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	    </span>
+		
+		<div class="param-desc">
+		    this
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line110">line 110</a>
+    </dir>
+    
+
+    <h4 class="name" id="makeRemovable">
+    <span class="type-signature">(static) </span>Element#makeRemovable<span class="signature">([style={cursor: "move", top:"0", left:"50%", width:"100%",           height:"20px"};])</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		×ボタンによる要素削除機能を付与する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>[style={cursor: "move", top:"0", left:"50%", width:"100%",           height:"20px"};]</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+
+            
+
+            <div class="description last">×ボタン要素のCSSスタイル</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	    </span>
+		
+		<div class="param-desc">
+		    this
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="util_util-copyToClipboard.js.html">util/util-copyToClipboard.js</a>, <a href="util_util-copyToClipboard.js.html#line10">line 10</a>
     </dir>
     
 
@@ -418,7 +772,7 @@
     
     
 	<div class="description">
-		指定されたtextareaを使って、クリップボードにコピーする
+		指定されたelementIDのテキストをクリップボードにコピーする<br>一時的にdocument.bodyの下にコピー処理用要素を作成する<br>スマフォ等で書き込み可能なtextareaにフォーカスが移らないよう一時的にreadonlyにする
 	</div>
 	
     
@@ -445,7 +799,7 @@
             <span class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">String</span>
 
 
             
@@ -530,13 +884,17 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
+=======
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 15:42:41 GMT+0900 (東京 (標準時))
+>>>>>>> 785cc0d drag element (masterリリース) #79
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

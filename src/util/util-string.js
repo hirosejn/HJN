@@ -9,7 +9,6 @@
  * @return {String} str 編集後文字列
  */
 export var DateToString = function() {
-    "use strict";
     var dt = arguments[0],  // arg0
         str = arguments[1]; // arg1
     // if (typeof(dt) === "number") dt = new Date(dt);
@@ -38,9 +37,8 @@ export var DateToString = function() {
  * @return {Number} timeNum 日時（１ミリ秒を１とする数値、エラーのときNumber.NaN）
  */
 export var S2D = function(str, conf){ // #34
-    "use strict";
     if(!str) return Number.NaN;
-    
+
     if(typeof(conf) === "Object"){
         // confが"Object"のとき、指定された構造体オブジェクトの条件でパースする（最も高速な処理）
         return parse(str, conf);
@@ -94,7 +92,6 @@ export var S2D = function(str, conf){ // #34
  * @return {String} str 編集後文字列
  */
 export var D2S = function(ds, str, isLocal){ // #60
-    "use strict";
     var minus = "";
     var ret = "";
     if (ds < 0) {
@@ -149,7 +146,6 @@ export var N2S = function(y){
  * 
  */
 export var S2N = function(str, sub){ // #53
-    "use strict";
     var s = (typeof(str) !== "undefined") ? str : sub;
     var h = 3600000; // 1時間（ミリ秒）
     var min = 60000; // 1分（ミリ秒）

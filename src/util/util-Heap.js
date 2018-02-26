@@ -23,11 +23,10 @@
  *          h.size() // =>0 登録オブジェクト数
  */
 export default (function() { // #55
-    "use strict";
     /** @constructor */
     function Heap(func, delFunc){ 
         if(!(this instanceof Heap)) return new Heap(func, delFunc);
-        
+
         this._func = (typeof(func) === "function")
                 ? func
                 : function(node){

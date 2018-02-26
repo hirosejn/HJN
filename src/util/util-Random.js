@@ -13,7 +13,6 @@
  * @example var r = HJN_util.Random(10), val = r.exponential();
  */
 export default (function() { // #56
-    "use strict";
     /** @constructor */
     function Random(average){
         if(!(this instanceof Random)) return new Random(average);
@@ -21,11 +20,11 @@ export default (function() { // #56
     }
 
     /** @private */
-    
+
     // public
     /**
      * 一様分布となる乱数を返却する
-     * 
+     *
      * @memberof Util.Random
      * @param {Number}
      *            [average=this._average] 平均値<br>
@@ -38,7 +37,7 @@ export default (function() { // #56
 
     /**
      * 指数分布となる乱数を返却する(lambda = 1/average)
-     * 
+     *
      * @memberof Util.Random
      * @param {Number}
      *            [average=this._average] 平均値=1/λ、分散=1/(λ^2)<br>

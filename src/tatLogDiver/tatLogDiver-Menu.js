@@ -8,7 +8,6 @@ import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
  * @memberof tatLogDiver
  */
 export default function Menu(that) {
-    "use strict";
     // メニュー用のエレメントを取得する
     var divMenuId = that.chartIdName + "_menu";
     var divMenu = document.getElementById(divMenuId);
@@ -118,7 +117,7 @@ export default function Menu(that) {
         var divSimulator = document.getElementById("Simulator");
         var jsonEditor = document.createElement('div'); // 要素の作成
         jsonEditor.innerHTML = '<textarea id="SimulatorEditor" '
-                + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
+                + 'style="width:100%;border:none;resize:none;background:rgba(255,255,255,0.5);height:100%;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
         // divSimulatorEditor.readOnly = true; // #22
@@ -136,7 +135,7 @@ export default function Menu(that) {
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(that, ++_id, "Download")
                 + '<ul class="hjnMenuLv2">'
-                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン 
+                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン
                 + getATag(menuDownloadCsv, "Upper ")    // 上段グラフcsvダウンロード ボタン
                 + getATag(menuDownloadLog, "Upper ")    // 上段生データダウンロードボタン
                 + '</ul>' + '</li>';
@@ -171,17 +170,17 @@ export default function Menu(that) {
         chartView.appendChild(chartViewUl);
 
         // "Bottom detail graph" Menu
-        accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(that, ++_id, "Bottom detail graph", true)
-                + '<ul class="hjnMenuLv2">' //
-                
-                + '<ol><div id="detailTimeRange">' 
-                + Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
-                + '</div></ol>' // #51
+        accordion.innerHTML = ''
+                + '<li class="hjnMenuLv1">'
+                +   getAccordionTag(that, ++_id, "Bottom detail graph", true)
+                +   '<ul class="hjnMenuLv2">'
+                +     '<ol><div id="detailTimeRange">' 
+                +     Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
+                +     '</div></ol>' // #51
+                +   '<li><div id="chartPlots"></div></li>' // Plot一覧用タグ
+                +   '</ul>'
+                + '</li>';
 
-                + '<li><div id="chartPlots"></div></li>' // Plot一覧用タグ
-                + '</ul>' + '</li>';
-        
         // Help Menu
         var menuHelpAbout = { // getAlertTag
             menuLabel : "about TAT log diver",
@@ -191,7 +190,8 @@ export default function Menu(that) {
         accordion.innerHTML += '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "Help")
                 + '<ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpAbout) + '</ul>' + '</li>';
+                + getAlertTag(menuHelpAbout)
+                + '</ul>' + '</li>';
 
         // メニュー登録
         divMenu.appendChild(accordion);
@@ -204,7 +204,8 @@ export default function Menu(that) {
         typeStr = isAccordion ? ' type="checkbox" name="accordion" '
                 : ' type="radio" name="accordion" ', //
         checkedStr = ' checked="checked" ';
-        return '' + '<input id="ac-' + that.chartIdName + id + '"' + typeStr
+        return ''
+                + '<input id="ac-' + that.chartIdName + id + '"' + typeStr
                 + (isChecked ? checkedStr : '') + '">' + '<label for="ac-'
                 + that.chartIdName + id + '">' + labelText + '</label>';
     }
@@ -213,7 +214,8 @@ export default function Menu(that) {
     // '<ol><a><label>Child Menu<input type="file" id="xxx"
     // multiple/></label></a></ol>
     function getInputTag(arg) {
-        return '' + '<ol><a><label class="hjnButton4Input">' + arg.menuLabel // #51
+        return ''
+                + '<ol><a><label class="hjnButton4Input">' + arg.menuLabel // #51
                 + '<input type="file" id="' + arg.menuId + '"  multiple />'
                 + '</label></a></ol>';
     }
@@ -234,7 +236,12 @@ export default function Menu(that) {
     // '<li><a id="xxx" href="#">Child Menu</a></li>'
     function getFuncTag(arg, preLabel) {
         preLabel = preLabel || "";
-        return '' + '<li><a id="' + arg.menuId + ' "'
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+        return '' 
+=======
+        return ''
+>>>>>>> 785cc0d drag element (masterリリース) #79
+                + '<li><a id="' + arg.menuId + ' "'
                 + 'class="hjnButton4Input" href="#" ' // #51
                 + 'onclick="' + arg.funcName + '()">' //
                 + preLabel + arg.menuLabel + '</a></li>';
@@ -243,9 +250,14 @@ export default function Menu(that) {
     // Alert用<A>タグ編集（内部関数宣言）
     // '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
     function getAlertTag(arg) {
-        return '' + '<ol><a id="' + arg.menuId + '"'
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+        return '' 
+=======
+        return ''
+>>>>>>> 785cc0d drag element (masterリリース) #79
+                + '<ol><a id="' + arg.menuId + '"'
                 + 'class="hjnButton4Input" ' // #51
-                + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
+                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName + ")" + '"' + '>' // #79
                 + '<label>' + arg.menuLabel + '</label></a></ol>';
     }
 };

@@ -5,21 +5,20 @@ import {Logger} from './util.js';
  * @class TouchPanel
  * @classdesc タッチパネル用ツール
  *            <p>
- *            参考 {@https://code.i-harness.com/ja/q/4f2389}
+ *            参考 {@link https://code.i-harness.com/ja/q/4f2389}
  * 
  * @param {Number}
  *            [average=0.5] 平均値
  * @example var r = HJN_util.TouchPanel(10), val = r.exponential();
  */
 export default (function() { // #56
-    "use strict";
     /** @constructor */
     function TouchPanel(average){
         if(!(this instanceof TouchPanel)) return new TouchPanel(average);
         this._average = average || 0.5;
     }
     /** @private */
-    
+
     // public
     /**
      * タッチデバイスか判定する
@@ -33,8 +32,9 @@ export default (function() { // #56
      */
     TouchPanel.isTouchableDevice = function() {
         Logger.ShowText([TouchPanel._deviceType]);
-        return true; // (TouchPanel._deviceType === "MOUSE") ? false : true;
+        return  (TouchPanel._deviceType === "MOUSE") ? false : true; // #78
     }
+
     // タッチデバイスか判定する（クラス定数）
     TouchPanel._deviceType = "SHIMULATED_TOUCH";
     function detectDeviceType(event) {
@@ -59,7 +59,6 @@ export default (function() { // #56
      * @example HJN_util.DispatchEventTouchToMouse();
      */
     TouchPanel.DispatchEventTouchToMouse = function(element, isStopTouch) { // #22
-        "use strict";
         element.addEventListener("touchstart", touchHandler, true);
         element.addEventListener("touchmove", touchHandler, true);
         element.addEventListener("touchend", touchHandler, true);
@@ -132,7 +131,7 @@ export default (function() { // #56
                 null              // relatedTarget
               );
             touch.target.dispatchEvent(newEvent);
-            
+
             // タッチイベントを止める #22
             if(isStopTouch) {
                 ev.stopImmediatePropagation();

@@ -36,7 +36,6 @@ import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
  * @memberof tatLogDiver
  */
 export default function Menu(that) {
-    "use strict";
     // メニュー用のエレメントを取得する
     var divMenuId = that.chartIdName + "_menu";
     var divMenu = document.getElementById(divMenuId);
@@ -146,7 +145,7 @@ export default function Menu(that) {
         var divSimulator = document.getElementById("Simulator");
         var jsonEditor = document.createElement('div'); // 要素の作成
         jsonEditor.innerHTML = '&lt;textarea id="SimulatorEditor" '
-                + 'style="width:99%;border:none;resize:none;background:rgba(255,255,255,0.5);height:500px;">'
+                + 'style="width:100%;border:none;resize:none;background:rgba(255,255,255,0.5);height:100%;">'
         divSimulator.appendChild(jsonEditor);
         var divSimulatorEditor = document.getElementById("SimulatorEditor");
         // divSimulatorEditor.readOnly = true; // #22
@@ -164,7 +163,7 @@ export default function Menu(that) {
         accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Download">'
                 + getAccordionTag(that, ++_id, "Download")
                 + '&lt;ul class="hjnMenuLv2">'
-                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン 
+                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン
                 + getATag(menuDownloadCsv, "Upper ")    // 上段グラフcsvダウンロード ボタン
                 + getATag(menuDownloadLog, "Upper ")    // 上段生データダウンロードボタン
                 + '&lt;/ul>' + '&lt;/li>';
@@ -199,17 +198,17 @@ export default function Menu(that) {
         chartView.appendChild(chartViewUl);
 
         // "Bottom detail graph" Menu
-        accordion.innerHTML = '&lt;li class="hjnMenuLv1">'
-                + getAccordionTag(that, ++_id, "Bottom detail graph", true)
-                + '&lt;ul class="hjnMenuLv2">' //
-                
-                + '&lt;ol>&lt;div id="detailTimeRange">' 
-                + Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
-                + '&lt;/div>&lt;/ol>' // #51
+        accordion.innerHTML = ''
+                + '&lt;li class="hjnMenuLv1">'
+                +   getAccordionTag(that, ++_id, "Bottom detail graph", true)
+                +   '&lt;ul class="hjnMenuLv2">'
+                +     '&lt;ol>&lt;div id="detailTimeRange">' 
+                +     Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
+                +     '&lt;/div>&lt;/ol>' // #51
+                +   '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' // Plot一覧用タグ
+                +   '&lt;/ul>'
+                + '&lt;/li>';
 
-                + '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' // Plot一覧用タグ
-                + '&lt;/ul>' + '&lt;/li>';
-        
         // Help Menu
         var menuHelpAbout = { // getAlertTag
             menuLabel : "about TAT log diver",
@@ -219,7 +218,8 @@ export default function Menu(that) {
         accordion.innerHTML += '&lt;li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "Help")
                 + '&lt;ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpAbout) + '&lt;/ul>' + '&lt;/li>';
+                + getAlertTag(menuHelpAbout)
+                + '&lt;/ul>' + '&lt;/li>';
 
         // メニュー登録
         divMenu.appendChild(accordion);
@@ -232,7 +232,8 @@ export default function Menu(that) {
         typeStr = isAccordion ? ' type="checkbox" name="accordion" '
                 : ' type="radio" name="accordion" ', //
         checkedStr = ' checked="checked" ';
-        return '' + '&lt;input id="ac-' + that.chartIdName + id + '"' + typeStr
+        return ''
+                + '&lt;input id="ac-' + that.chartIdName + id + '"' + typeStr
                 + (isChecked ? checkedStr : '') + '">' + '&lt;label for="ac-'
                 + that.chartIdName + id + '">' + labelText + '&lt;/label>';
     }
@@ -241,7 +242,8 @@ export default function Menu(that) {
     // '&lt;ol>&lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx"
     // multiple/>&lt;/label>&lt;/a>&lt;/ol>
     function getInputTag(arg) {
-        return '' + '&lt;ol>&lt;a>&lt;label class="hjnButton4Input">' + arg.menuLabel // #51
+        return ''
+                + '&lt;ol>&lt;a>&lt;label class="hjnButton4Input">' + arg.menuLabel // #51
                 + '&lt;input type="file" id="' + arg.menuId + '"  multiple />'
                 + '&lt;/label>&lt;/a>&lt;/ol>';
     }
@@ -262,7 +264,12 @@ export default function Menu(that) {
     // '&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;/li>'
     function getFuncTag(arg, preLabel) {
         preLabel = preLabel || "";
-        return '' + '&lt;li>&lt;a id="' + arg.menuId + ' "'
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+        return '' 
+=======
+        return ''
+>>>>>>> 785cc0d drag element (masterリリース) #79
+                + '&lt;li>&lt;a id="' + arg.menuId + ' "'
                 + 'class="hjnButton4Input" href="#" ' // #51
                 + 'onclick="' + arg.funcName + '()">' //
                 + preLabel + arg.menuLabel + '&lt;/a>&lt;/li>';
@@ -271,9 +278,14 @@ export default function Menu(that) {
     // Alert用&lt;A>タグ編集（内部関数宣言）
     // '&lt;a id="xxx" onclick=Alert("xxx")>Child Menu&lt;/a>'
     function getAlertTag(arg) {
-        return '' + '&lt;ol>&lt;a id="' + arg.menuId + '"'
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+        return '' 
+=======
+        return ''
+>>>>>>> 785cc0d drag element (masterリリース) #79
+                + '&lt;ol>&lt;a id="' + arg.menuId + '"'
                 + 'class="hjnButton4Input" ' // #51
-                + ' onclick="alert(' + arg.strFuncName + ")" + '"' + '>' //
+                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName + ")" + '"' + '>' // #79
                 + '&lt;label>' + arg.menuLabel + '&lt;/label>&lt;/a>&lt;/ol>';
     }
 };</code></pre>
@@ -286,13 +298,17 @@ export default function Menu(that) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 13 2018 00:22:48 GMT+0900 (東京 (標準時))
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
+=======
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 15:42:41 GMT+0900 (東京 (標準時))
+>>>>>>> 785cc0d drag element (masterリリース) #79
     <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
 </footer>
 

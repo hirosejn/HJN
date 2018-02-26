@@ -1,4 +1,3 @@
-"use strict";
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
 import Menu from'./tatLogDiver-Menu.js';
@@ -10,7 +9,7 @@ import * as TimeSeries from '../timeSeries/timeSeries.js';
 
 /**
  * インスタンス内の定数を設定する。併せて性能対策として頻繁に使うDOM要素を取り込む
- * 
+ *
  * @memberof tatLogDiver
  * @class Graph
  * @classdesc TAT(Turnaround time)ログ分析用グラフ
@@ -25,7 +24,6 @@ import * as TimeSeries from '../timeSeries/timeSeries.js';
  *          HJN.chartD.init();
  */
 export default function Graph(chartIdName, globalName, config) {
-    "use strict";
     /* メンバ変数 */
     this.seriesSet = [];
     this.chartIdName = chartIdName; // arg0 "chart","chartD"
@@ -133,7 +131,7 @@ export default function Graph(chartIdName, globalName, config) {
  * クラスメソッド：menuのFilterのｘｙ幅指定エリアにグラフのｘｙ幅を設定する<br>
  * dygraphのdrawCallbackに設定する関数<br>
  * menuのRadio(F_SYNC)選択時に呼び出す関数（このためにクラスメソッド）
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.DrawCallback = function (g, is_initial) { // #50 #51
@@ -163,11 +161,10 @@ Graph.DrawCallback = function (g, is_initial) { // #50 #51
 
 /**
  * グラフを初期化する
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.init = function () {
-    "use strict";
     // メニューを作成する
     Menu(this);
     // 凡例を作成する
@@ -213,13 +210,12 @@ Graph.prototype.init = function () {
 
 /**
  * legendの表示指定をグラフに反映する(onclick呼出用）
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {index}
  *            i seriesSet配列の設定変更するグラフのインデックス
  */
 Graph.prototype.onClickSetVisibility = function (i) { //
-    "use strict";
     var formName = this.chartIdName + "_LegendForm";
     var ck = document[formName].elements[i].checked;
     this.graph.setVisibility(i, ck);
@@ -227,11 +223,10 @@ Graph.prototype.onClickSetVisibility = function (i) { //
 
 /**
  * ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動、高さは指定）
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.resize = function () {
-    "use strict";
     // 幅（メニューの状態に合わせて計算） #31
     var dWidth = 0;
     if (this.menuId.checked && !this.menuPlaceOnId.checked) {
@@ -258,7 +253,6 @@ Graph.prototype.resize = function () {
  *            [seriesSet] tat内の応答時間の時系列データ管理配列
  */
 Graph.prototype.setSeriesSet = function (tat, seriesSet) { // #30
-
     if(tat) {
         this.seriesSet = tat.getSeriesSet();
         this.cTpsUnit = tat.getCTpsUnit(); // #75
@@ -274,7 +268,7 @@ Graph.prototype.setSeriesSet = function (tat, seriesSet) { // #30
 
 /**
  * データを変更し描画する
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {seriesSet}
  *            seriesSet dygraph用時系列データ配列
@@ -282,7 +276,6 @@ Graph.prototype.setSeriesSet = function (tat, seriesSet) { // #30
  *            n 選択されたグラフのseriesSet配列位置
  */
 Graph.prototype.update = function (seriesSet, n) {
-    "use strict";
     // 指定データがあるとき取り込む
     if (seriesSet) this.setSeriesSet(undefined, seriesSet);
     // dygraph用表示データを作成する
@@ -306,8 +299,8 @@ Graph.prototype.update = function (seriesSet, n) {
         }
         return;
     }
-    
-    
+
+
     // xy[] に処理対象seriesを指定する
     for (i = 0; i < this.SERIESES.length; i++) {
         xy[i] = this.seriesSet[this.SERIESES[i].N];
@@ -327,7 +320,8 @@ Graph.prototype.update = function (seriesSet, n) {
             var dt = Math.floor(detailDateTime / TimeSeries.Tat.CYCLE) * TimeSeries.Tat.CYCLE;
             xRangeMin = dt - detailRangeMinus * detailRangeUnit;
             xRangeMax = dt + detailRangePlus * detailRangeUnit;
-        } else { // undefined, HJN.Tat.CTPS.N, HJN.Tat.CONC.N, HJN.Tat.STAT.N, HJN.Tat.ETAT.N
+        } else { // undefined, HJN.Tat.CTPS.N, HJN.Tat.CONC.N,
+                    // HJN.Tat.STAT.N, HJN.Tat.ETAT.N
             var dt = Math.floor(detailDateTime / xRangeUnit) * xRangeUnit; // #61
             xRangeMin = dt - detailRangeMinus * detailRangeUnit; // #48
             xRangeMax = dt + detailRangePlus * detailRangeUnit; // #48
@@ -504,7 +498,7 @@ Graph.prototype.update = function (seriesSet, n) {
         Util.TouchPanel.DispatchEventTouchToMouse(this.graph.canvas_ctx_.canvas);
     }
     // zoom reset ボタン追加 #22
-    this.addIcon_ZoomReset();
+    // this.addIcon_ZoomReset(); #78 グラフ毎から全体で一つに変更に伴いcall停止
     Util.Logger.ShowLogText("[8:dygraph showen] ", "calc");
 
     // 初期表示の不活性グラフの設定
@@ -715,11 +709,10 @@ Graph.prototype.update = function (seriesSet, n) {
 
 /**
  * dygraphのBalloonを再描画する
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.showBalloon = function () {
-    "use strict";
     if (this.cTps.length === 0)
         return; // ctpsが空の時何もしない
 
@@ -766,14 +759,13 @@ Graph.prototype.showBalloon = function () {
 /**
  * dygraphのlegendを編集する(dygraph オプション登録用関数）
  * {@link http://dygraphs.com/options.html#legendFormatter}
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {ETAT}
  *            data [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
  * @return {string} dygraphのlegendに表示する文字（HTML)
  */
 Graph.prototype.legendFormatter = function (data) {
-    "use strict";
     // legend: 'always'指定のとき、マウスがグラフ外にあると dataに値が設定されていなことを考慮
     var html = (typeof data.x === "undefined") ? '' : Util.DateToString(
             new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.ppp");
@@ -808,13 +800,12 @@ Graph.prototype.legendFormatter = function (data) {
 
 /**
  * メニュー機能：CSVデータファイルを開く
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {evt}
  *            evt ファイルオープンイペント
  */
 Graph.prototype.menuOpenCsv = function (evt) {
-    "use strict";
     var file_list = evt.target.files;
     // 指定されたファイルを処理する
     HJN.init.FileReader(file_list);
@@ -822,7 +813,7 @@ Graph.prototype.menuOpenCsv = function (evt) {
 
 /**
  * メニュー機能：画面設定をJSON形式のセーブファイルとしてダウンロードする
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
@@ -830,7 +821,6 @@ Graph.prototype.menuOpenCsv = function (evt) {
  *            fileName ie11以降のときに使用：ダウンロードファイル名
  */
 Graph.prototype.menuSaveConfig = function (menuId, fileName) {
-    "use strict";
     // plotsをjsonに変換する
     var save = {
         "HJN.Plot.List" : HJN.Plot.List,
@@ -843,7 +833,7 @@ Graph.prototype.menuSaveConfig = function (menuId, fileName) {
 };
 /**
  * メニュー機能：JSON形式の画面設定ファイルをロードし画面表示に反映する TODO
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ？
@@ -851,7 +841,6 @@ Graph.prototype.menuSaveConfig = function (menuId, fileName) {
  *            fileName ie11以降のときに使用：ダウンロードファイル名 ？
  */
 Graph.prototype.menuLoadConfig = function (evt) { // #10
-    "use strict";
     // 指定されたファイルを開く
     var files = evt.target.files;
     for (var i = 0; i < files.length; i++) { // データを順番に取得する
@@ -924,11 +913,10 @@ Graph.prototype.menuLoadConfig = function (evt) { // #10
 
 /**
  * メニュー機能：メニューで指定されたフィルタの条件で再描画する
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.menuFilterApply = function () { // #34
-    "use strict";
     if (HJN.files && HJN.files.length === 0) {
         // 自動生成データのグラフを表示しているとき
         HJN.init.ChartShow(HJN.chart.eTatOriginal)
@@ -939,7 +927,7 @@ Graph.prototype.menuFilterApply = function () { // #34
 };
 /**
  * メニュー機能：フィルタ条件を初期値にし、再描画する
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.menuFilterReset = function () { // #34
@@ -948,12 +936,12 @@ Graph.prototype.menuFilterReset = function () { // #34
 
 /**
  * メニュー機能：シミュレータ 指定JSONでシミュレートする
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.menuSimulatorSimulate = function () { // #53
-    "use strict";
     // グラフを再生成する
+    Util.Logger.ResetTimestamp(); // #79
     var json = document.getElementById("SimulatorEditor").value;
     HJN.files = []; // #61
     HJN.Plot.List = [];
@@ -962,14 +950,14 @@ Graph.prototype.menuSimulatorSimulate = function () { // #53
 };
 /**
  * メニュー機能：シミュレータ JSON入力エリアを広げる
- * 
+ *
  */
 Graph.prototype.menuSimulatorEditor = function () { // #53
-    "use strict";
     var divSimulator = document.getElementById("Simulator");
     var divSimulatorEditor = document.getElementById("SimulatorEditor");
     if (divSimulator.style.height === "100%") { // #60
         // 開いているとき、textareaの親を閉じる
+        divSimulator.style.visibility = "hidden"; // #79
         divSimulator.style.height = "0";
         divSimulator.style.width = "190px";
     } else{ // 閉じているとき
@@ -978,7 +966,9 @@ Graph.prototype.menuSimulatorEditor = function () { // #53
         // textareaの親を開く
         divSimulator.style.height = "100%";
         divSimulator.style.width = "70%";
-        divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
+//        divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
+        divSimulatorEditor.style.height = divSimulator.clientHeight + "px";
+        divSimulator.style.visibility = "visible"; // #79
     }
 };
 
@@ -993,7 +983,6 @@ Graph.prototype.menuSimulatorEditor = function () { // #53
  *            fileName ie11以降のときに使用：ダウンロードファイル名
  */
 Graph.prototype.menuDownloadImg = function (menuId, fileName) {
-    "use strict";
     var type = 'image/png';
     // canvas から DataURL で画像を出力
     var canvas = this.chartId.getElementsByTagName('canvas')[0], dataurl = canvas
@@ -1025,7 +1014,6 @@ Graph.prototype.menuDownloadImg = function (menuId, fileName) {
  *            fileName ie11以降のときに使用：ダウンロードファイル名
  */
 Graph.prototype.menuDownloadCsv = function (menuId, fileName) {
-    "use strict";
     var bom = new Uint8Array([ 0xEF, 0xBB, 0xBF ]), // Excel対応UTF8のBOMコード指定
     csv = this.labels.join(','); // csvヘッダ行の作成
     this.dyData.forEach(function (e) {
@@ -1048,7 +1036,6 @@ Graph.prototype.menuDownloadCsv = function (menuId, fileName) {
  *            fileName ie11以降のときに使用：ダウンロードファイル名
  */
 Graph.prototype.menuDownloadLog = function (menuId, fileName) {
-    "use strict";
     var eTat = this.eTat;
     if (0 < eTat.length) { // 出力対象データがあるとき
         if (typeof eTat[0].pos === "undefined") { // 生成データのとき
@@ -1095,7 +1082,7 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
 
 /**
  * メニュー機能：plotsでconcが選択されているとき、同時処理に該当するTATログの該当行をCSVファイルとしてダウンロードする
- * 
+ *
  * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
@@ -1103,7 +1090,6 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
  *            fileName ie11以降のときに使用：ダウンロードファイル名
  */
 Graph.prototype.menuDownloadConc = function (menuId, fileName) {
-    "use strict";
     var plot = HJN.Plot.List.find(function (e) {
         return e.radio;
     });
@@ -1163,11 +1149,10 @@ Graph.prototype.menuDownloadConc = function (menuId, fileName) {
  * @memberof tatLogDiver.Graph
  * @param {Object}
  *            arrayBuffer 変換元
- * @param {Blob} -
+ * @return {Blob}
  *            変換後
  */
 Graph.prototype.menuBuffToBlob = function (arrayBuffer) {
-    "use strict";
     return new Blob([ arrayBuffer ], {
         type : "application/octet-stream"
     });
@@ -1185,7 +1170,6 @@ Graph.prototype.menuBuffToBlob = function (arrayBuffer) {
  *            fileName ie11以降のときに使用：ダウンロードファイル名
  */
 Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
-    "use strict";
     if (window.navigator.msSaveBlob) { // ie11以降のとき
         window.navigator.msSaveBlob(blob, fileName);
         // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
@@ -1197,11 +1181,10 @@ Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
 
 /**
  * Zoomリセットアイコンを追加する
- * 
+ *
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.addIcon_ZoomReset = function () {
-    "use strict";
     var divChart = this.chartId; // document.getElementById("Icons");
     var idName = this.chartIdName + "Zoom";
     var input = document.getElementById(idName);
@@ -1218,19 +1201,26 @@ Graph.prototype.addIcon_ZoomReset = function () {
         div.innerHTML = htmlText;
         divChart.insertBefore(div, divChart.firstChild);
     }
-    
+<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
+
     // divIcons.appendChild(div);
 
     // div.id = id;
     // div.className = "menuBar";
     // div = element.parentElement;
-    /*
-     * var divIcons = document.getElementById("Icons"); var idName =
-     * this.chartIdName + "Zoom"; if (divIcons) { var div =
-     * document.createElement('div'); var htmlText = '<input id="' + idName + '"
-     * type="buttom" class="hjnBoxSwitch hjnResize" ' + 'onClick="HJN.' +
-     * this.chartIdName + '.graph.resetZoom()">' + '<label for="' + idName + '"
-     * class="hjnCtrlBox"><span></span></label>'; div.innerHTML = htmlText;
-     * divIcons.appendChild(div); }
-     */
+
+    // var divIcons = document.getElementById("Icons");
+    // var idName = this.chartIdName + "Zoom";
+    // if (divIcons) {
+    // var div = document.createElement('div');
+    // var htmlText = '<input id="' + idName
+    // + '"type="buttom" class="hjnBoxSwitch hjnResize" '
+    // + 'onClick="HJN.' + this.chartIdName + '.graph.resetZoom()">'
+    // + '<label for="' + idName + '"class="hjnCtrlBox"><span></span></label>';
+    // div.innerHTML = htmlText;
+    // divIcons.appendChild(div);
+   // }
+
+=======
+>>>>>>> 785cc0d drag element (masterリリース) #79
 };
