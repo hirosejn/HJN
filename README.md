@@ -1,6 +1,10 @@
 # HJN
 TAT log Diver
 
+hirosejn が個人用に作成したツールです
+ソースコードを公開し参照することを認めていますが、著作権、使用権、改変権、再販権など、すべての権利をhirosejnに留保します
+使用する場合、個別にhirosejnの承諾を得てください
+
 HJN TAT log Diver v0.03- uses Dygraphs
 
 * Dygraphs
