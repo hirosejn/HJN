@@ -3,6 +3,7 @@ import * as TimeSeries from '../timeSeries/timeSeries.js';
 import * as Simulator from '../simulator/simulator.js';
 import {HJN} from './tatLogDiver-HJN.js';
 import {Copyright} from "./tatLogDiver-Copyright.js";
+import {Usage} from './tatLogDiver-Usage.js'; // #84
 import Graph from './tatLogDiver-Graph.js';
 import Plot  from './tatLogDiver-Plot.js';
 import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
@@ -110,6 +111,7 @@ export default function Init(chartName){ // #70
 
 /**
  * スタイルを初期設定する（Reset zoomボタンからも呼ばれる）
+ * 
  * @param {Boolean}
  *            [isInit=false] リセット時true：初期設定値も再設定する
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
@@ -210,7 +212,7 @@ function showLogForLowerGraph(fileName){
 
 /**
  * HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
- *
+ * 
  * @memberof Init
  * @param {string}
  *            dropFieldName ファイルのドロップイベントを受けるフィールド名
@@ -399,7 +401,7 @@ Init.ChartRegistDetail = function(cTps){
 };
 /**
  * 詳細グラフ用機能： sliderRangeで指定された範囲のeTatを返却する（グラフの点クリックイベント時に呼び出される）
- *
+ * 
  * @memberof Init
  * @return {ETAT} 詳細グラフ用eTat
  */
@@ -427,31 +429,51 @@ HJN.init.GetSliderRangedEtat = function() {
 };
 /**
  * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する（Plotから呼び出される）
- *
+ * 
  * @memberof Init
  * @param {xMs}
  *            date 日時（ミリ秒単位）
  */
 HJN.init.SetDetailDateTime=function(date) {
     Util.Config.DetailGraph.setValueByKey("D_TIME",
-            Math.floor(date / 1000) * 1000); // 秒単位に丸める  #27
+            Math.floor(date / 1000) * 1000); // 秒単位に丸める #27
 };
 
 
 /**
  * ダイアログを表示する
- *
+ * 
  * @memberof Init
  * @param {String}
  *            iHtml ダイアログのiHtmlに設定する文字列
  */
-HJN.init.ShowDialog = function(iHtml){
-    Util.Element.createDialog(iHtml);
+HJN.init.ShowDialog = function(iHtml, id, w, h, style){
+    var element;
+    Util.Element.createDialog(iHtml, element, id, w, h, style);
+};
+
+/**
+ * 使い方HTMLを取得する（Menuイベントから呼び出される） #84
+ * 
+ * @memberof Init
+ * @return {String} str 使い方HTML
+ */
+HJN.init.Usage=function(){
+    var url = "https://github.com/hirosejn/HJN/wiki/Usage(JP)";
+    var label = "GitHub wiki : " + url;
+    var html = 'Usage of TAT log diver'
+    + '<br>'
+    + '<br>'
+    + '<a class="hjnLabel4Input" href="' + url + '"'
+    +  'target=”_hirosejnUsage”>' + label +'</a><BR>';
+    
+    return Usage.TopHtml;
+// return html;
 };
 
 /**
  * 著作権表記文字を取得する（Menuイベントから呼び出される）
- *
+ * 
  * @memberof Init
  * @return {String} str 著作権表記文字
  */

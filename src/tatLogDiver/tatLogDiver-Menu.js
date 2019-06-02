@@ -182,14 +182,26 @@ export default function Menu(that) {
                 + '</li>';
 
         // Help Menu
+        var menuHelpUsage = { // getAlertTag #84
+                menuLabel : "Usage of TAT log diver",
+                menuId : divMenuId + "_HelpUsage",
+                strFuncName : "HJN.init.Usage()",
+                dialogId : "HJN.dialogUsage",
+                w : 50,
+                h : 40                    
+            };
         var menuHelpAbout = { // getAlertTag
-            menuLabel : "about TAT log diver",
-            menuId : divMenuId + "_HelpAbout",
-            strFuncName : "HJN.init.Copyright()"
+                menuLabel : "about TAT log diver",
+                menuId : divMenuId + "_HelpAbout",
+                strFuncName : "HJN.init.Copyright()",
+                dialogId : "HJN.dialogAbout",
+                w : 30,
+                h : 50                   
         };
         accordion.innerHTML += '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "Help")
                 + '<ul class="hjnMenuLv2" style="width: 100%;">' //
+                + getAlertTag(menuHelpUsage) // #84
                 + getAlertTag(menuHelpAbout)
                 + '</ul>' + '</li>';
 
@@ -246,10 +258,15 @@ export default function Menu(that) {
     // Alert用<A>タグ編集（内部関数宣言）
     // '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
     function getAlertTag(arg) {
+        var w = arg.w || 40;
+        var h = arg.h || 40;
         return '' 
                 + '<ol><a id="' + arg.menuId + '"'
                 + 'class="hjnButton4Input" ' // #51
-                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName + ")" + '"' + '>' // #79
+                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName
+                    + ", '"+ arg.dialogId + "'" // #84
+                    + "," + w + "," + h 
+                    +")" + '"' + '>' // #79
                 + '<label>' + arg.menuLabel + '</label></a></ol>';
     }
 };

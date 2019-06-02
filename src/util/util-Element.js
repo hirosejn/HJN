@@ -29,7 +29,7 @@ var pos = {};        // マウス押下時の位置情報の保管用
 
 /**
  * CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
- *
+ * 
  * @memberOf Util
  * @example .hjnDraggableBox {} .hjnDraggableItem:hover {cursor: move;
  *          background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }
@@ -48,7 +48,7 @@ Element.enableDraggableClass = function(){
 
 /**
  * ダイアログを生成し表示する
- *
+ * 
  * @memberOf Util
  * @param {String}
  *            [iHtml="no message"] ダイアログのinnerHTMLに設定する文字列
@@ -100,7 +100,7 @@ Element.createDialog = function(iHtml, element, id, w, h, style){
 
 /**
  * ×ボタンによる要素削除機能を付与する
- *
+ * 
  * @memberOf Util
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
@@ -118,7 +118,8 @@ Element.prototype.makeRemovable = function(style) {
     input.checked = true;
     input.onchange = function(){
                 var e = this.parentElement.parentElement;
-                e.parentElement.removeChild(e); };
+                e.parentElement.removeChild(e); // ToDo: 自分ではなく先に開いたダイアログから閉じる
+                };
     this._wrapper.appendChild(input);
     // ×ボタンlabelタグを追加する
     // <label for="hjnDialog"><span></span></label>
@@ -133,7 +134,7 @@ Element.prototype.makeRemovable = function(style) {
 }
 /**
  * ドラッグによる移動機能を付与する
- *
+ * 
  * @memberOf Util
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
@@ -149,10 +150,10 @@ Element.prototype.makeMoveable = function(style) {
 }
 /**
  * ドラッグによる リサイズ機能を付与する
- *
+ * 
  * @param {object}
  *            [style] リサイズ機能要素のCSSスタイルを、デフォルトから変更する際に指定
- *
+ * 
  * @return this
  */
 Element.prototype.makeResizable = function(style) {
@@ -177,7 +178,7 @@ Element.prototype.makeResizable = function(style) {
 }
 /**
  * マウスクリック用要素を追加
- *
+ * 
  * @param {Function}
  *            func マウス押下時に発火する処理
  * @param {object}
@@ -250,7 +251,7 @@ function dragEndBottomRight(e){dragEnd(draggingBottomRight, dragEndBottomRight);
 
 /**
  * DOM要素にスタイル設定
- *
+ * 
  * @param {DOM}
  *            element CSSスタイルを設定するDOM要素
  * @param {object}
@@ -271,7 +272,7 @@ function setStyles(element, style, styleD){
 
 /**
  * マウス押下したときに発火する関数から呼ばれる
- *
+ * 
  * @private
  * @param {Event}
  *            e 発火イベント
@@ -345,7 +346,7 @@ function isSupportsPassive(){
 }
 /**
  * 親の親要素をマウス押下後、マウスカーソルが動いたときに発火する関数から呼ばれる
- *
+ * 
  * @private
  * @param {Event}
  *            e 発火イベント
@@ -375,7 +376,7 @@ function dragging(e, multiply) {
 }
 /**
  * マウスボタンが上がった場合、もしくは画面外にマウスが出た場合に発火する関数から呼ばれる
- *
+ * 
  * @private
  * @param {function}
  *            dragging 消去するイベントに登録されている関数
