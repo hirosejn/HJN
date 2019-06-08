@@ -1,5 +1,5 @@
-import css from '../../libs/dygraph.css';
-import css from './tatLogDiver.css';
+import cssDygraph from '../../libs/dygraph.css';
+import cssTatLogDiver from './tatLogDiver.css';
 import Init from "./tatLogDiver-Init.js";
 import {HJN} from "./tatLogDiver-HJN.js";
 import Graph from "./tatLogDiver-Graph.js";
