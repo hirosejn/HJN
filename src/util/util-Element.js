@@ -93,7 +93,7 @@ Element.createDialog = function(iHtml, element, id, w, h, style){
               background: "rgba(255, 255, 255, 0.8)", border: "medium solid #aaa"});
     var draggable = new Element(div);
     draggable        // 移動指定要素がリサイズ指定要素よりが下になるよう、×ボタン、移動、リサイズの順に記述する
-        .makeRemovable()
+        .makeRemovable(id)
         .makeMoveable()
         .makeResizable();
 }
@@ -102,24 +102,26 @@ Element.createDialog = function(iHtml, element, id, w, h, style){
  * ×ボタンによる要素削除機能を付与する
  * 
  * @memberOf Util
+ * @param {String}
+ *            [id=""] ×ボタン要素のid名（重複すると先に作成された×ボタンのダイアログが閉じられる）
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
  *            height:"20px"};] ×ボタン要素のCSSスタイル
  * @return this
  */
-Element.prototype.makeRemovable = function(style) {
+Element.prototype.makeRemovable = function(id, style) {
     // inputタグを追加する
     // <input id="hjnDialog" type="checkbox" class="hjnBurger" checked="checked"
     // onChange="..."/>
     var input = document.createElement("input");
     input.type = "checkbox";
-    input.id = "hjnDialog";
+    input.id = (id || "") + "_BATSU"; // #86
     input.classList.add("hjnBurger");
     input.checked = true;
     input.onchange = function(){
-                var e = this.parentElement.parentElement;
-                e.parentElement.removeChild(e); // ToDo: 自分ではなく先に開いたダイアログから閉じる
-                };
+        var e = this.parentElement.parentElement;
+        e.parentElement.removeChild(e);
+    };
     this._wrapper.appendChild(input);
     // ×ボタンlabelタグを追加する
     // <label for="hjnDialog"><span></span></label>
@@ -132,6 +134,7 @@ Element.prototype.makeRemovable = function(style) {
     this._wrapper.appendChild(label);
     return this;
 }
+
 /**
  * ドラッグによる移動機能を付与する
  * 
