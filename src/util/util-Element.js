@@ -84,7 +84,10 @@ Element.createDialog = function(iHtml, element, id, w, h, style){
     setStyles(div.children[0],
             {width: "100%", height: "100%", border: 0, "pointer-events": "auto"});
     var body = document.createElement('body');
-    body.innerHTML = "<body>" + iHtml + "</body>";
+    var htmlText = "<body>" + iHtml + "</body>";
+    body.textContent = ""; // #82
+    body.insertAdjacentHTML('afterBegin', htmlText);
+    
     div.children[0].contentDocument.body = body;
     // スタイルを設定する（デフォルト：縦横40%（親サイズに連動）で中央に配置）
     setStyles(div, style, 

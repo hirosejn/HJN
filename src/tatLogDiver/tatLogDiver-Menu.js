@@ -1,6 +1,5 @@
 import * as Util from '../util/util.js';
 import * as Simulator from '../simulator/simulator.js';
-import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
 
 /**
  * tatLogDiverのメニューを追加する
