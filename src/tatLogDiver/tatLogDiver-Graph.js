@@ -1047,13 +1047,18 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
     var eTat = this.eTat;
     if (0 < eTat.length) { // 出力対象データがあるとき
         if (typeof eTat[0].pos === "undefined") { // 生成データのとき
-            // 生成データをCSVに編集する
-            var eTatCsv = "";
-            var delimiter = '"';
+            // 生成データをCSVに編集する #88
+            var delimiter = '';
             var separator = delimiter + Util.Config.File.getConfig("SEP") + delimiter; // #76
+            var eTatCsv = delimiter + '終了年月日 時分秒ミリ秒' 
+                        + separator + '処理時間(ms)'
+                        + separator + 'シミューレート情報'
+                        + delimiter + '\r\n';
             eTat.forEach(function (e) {
-                eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') + separator
-                        + e.y + separator + e.message + delimiter + '\r\n'; // #61
+                eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') 
+                        + separator + e.y 
+                        + separator + e.message 
+                        + delimiter + '\r\n'; // #61
             });
             // ダウンロードする
             this.menuDownloadBlob(this.menuBuffToBlob(eTatCsv), menuId,
@@ -1107,11 +1112,16 @@ Graph.prototype.menuDownloadConc = function (menuId, fileName) {
         if (0 < trans.length) { // 出力テキストを編集する
             if (typeof trans[0].pos === "undefined") {
                 // 初期表示データのとき、CSVを編集する
-                // 生成データをCSVに編集する
-                var csv = "";
+                // 生成データをCSVに編集する #88
+                var delimiter = '';
+                var separator = delimiter + Util.Config.File.getConfig("SEP") + delimiter; // #76
+                var csv = delimiter + '終了年月日 時分秒ミリ秒'
+                        + separator + '処理時間(ms)'
+                        + delimiter + '\r\n';
                 trans.forEach(function (e) {
-                    csv += Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") + ","
-                            + e.y + "\r\n";
+                    csv += delimiter + Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp")
+                        + separator + e.y
+                        + delimiter + '\r\n';
                 });
                 // ダウンロードする
                 this.menuDownloadBlob(this.menuBuffToBlob(csv), menuId,

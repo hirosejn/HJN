@@ -34,7 +34,7 @@ export default (function() { // #53
         this._thinkTimeMin = Math.max(0,
                 (typeof(model.thinkTimeMin) !== "undefined") ? model.thinkTimeMin : 500);
         // メッセージ（ログ末尾に付与する文字列）
-        this._baseMessage = model.message + "\n";
+        this._baseMessage = model.message; // + "\n"; // #88
         this._message = "";
         this._history = []; // #62
 
