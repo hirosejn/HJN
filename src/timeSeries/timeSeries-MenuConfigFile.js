@@ -48,7 +48,8 @@ MenuConfigFile.config = function () {
             .number("TIME_LEN", "length", null, null, 'style="width:40px;"').n()
         .name("TIME_FORM").label(null,"Format:").n()
             .radio("TIME_FORM_YMD", "text", null, true)
-                .text("TIME_YMD", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh:mm:ss.ppp"').n()
+                .text("TIME_YMD", null, null, '"YYYY/MM/DD hh:mm:ss.000"',
+                        'size="23" placeholder=' + "'" +'"YYYY/MM/DD hh:mm:ss.000"'+ "'" ).n() // #92
             .radio("TIME_FORM_TEXT", "(num)", "text")
             .radio("TIME_FORM_LONG", null, "long").n()
             .nDown()

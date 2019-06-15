@@ -197,16 +197,29 @@ HJN.init.ChartShow = Init.ChartShow = function(eTatOriginal){
     });
 }
 function showLogForUpperGraph(fileName){
-    var text = "+ ";
-    Util.Logger.ShowLogText(text, "elaps");       // 処理時間ログ出力
+    // 上段グラフの処理時間をログに出力
+    // Util.Logger.ShowLogText("+ ", "elaps");
 }
 function showLogForLowerGraph(fileName){
-    var text = "下段[" + HJN.chartD.eTat.length + "]行";
-    Util.Logger.ShowLogText(text, "elaps", true);
-    text = "<mark>" + fileName + " [" 
-            + HJN.chart.eTat.length.toString()
-             .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-            + "]行を表示</mark>"; // 整数文字列のカンマ編集
+    // 下段グラフの処理時間をログに出力
+    // Util.Logger.ShowLogText("", "elaps", true);
+
+    // ファイル名、取込レコード数のログ編集
+    var text = "<mark>" + /* fileName + */ " ["
+            + (HJN.chart.eTat.length.toString() + "")
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') // 整数文字列のカンマ編集
+            + "]行</mark> ";
+    // 下段の表示レコード数をログに出力
+    if (HJN.chartD.eTat){
+        text += "下段[" 
+                + (HJN.chartD.eTat.length + "")
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') // 整数文字列のカンマ編集
+                + "]行";
+    }else{
+        text = "" +
+        		"表示データなし　要確認：Charset, delimiter, Line feed code"
+    }
+    // ログ出力
     Util.Logger.ShowLogText(text, "msg");
 }
 
@@ -248,10 +261,12 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 		try{
 			// ファイルを取得する
 			var file = files[i];
-			// ログ出力用にファイル名（サイズ）を編集する
-			var textArray =	"<BR><mark><b>" + file.name + "</b></mark> " +
-							"["+ file.size + "byte] " + 
-							file.lastModifiedDate.toLocaleString() +"<BR>";
+			// ログ出力用にファイル名、ファイルサイズ、ファイル更新日時を編集する
+			var textArray = "<mark><b>" + file.name + "</b></mark><BR>"
+			            + (file.size + "")
+			                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') // 整数文字列のカンマ編集
+			            + "Kbyte<BR>"
+			            + file.lastModifiedDate.toLocaleString() + "<BR>";
 			// ファイルの読み込みに成功したら、その内容をドロップエリアに追記して表示する
 			var reader = new FileReader();
 			reader.onloadend = funcOnloadend.bind(this, files[i], i);

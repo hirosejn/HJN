@@ -37,7 +37,7 @@ export default (function() { // #27
         var ts = new Date(),
             freq = 60000;   // 1分毎
         if (freq < ts - Logger._logtime){
-            var t = D2S(ts, "hh:mm:ss.ppp"); // #60
+            var t = D2S(ts, "hh:mm:ss.000"); // #60 #92
             console.log(t + "[" + i + "]~~~~" + text);
             Logger._logtime = ts;
         }
@@ -94,7 +94,7 @@ export default (function() { // #27
             Logger._logText.push(text);
         }
         Logger.ShowText(Logger._logText);
-        if(true) console.log(D2S(Logger._timestamp, "hh:mm:ss.ppp     ") + text); // #60
+        if(true) console.log(D2S(Logger._timestamp, "hh:mm:ss.000     ") + text); // #60 #92
     };
     /**
      * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する

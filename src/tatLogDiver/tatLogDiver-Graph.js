@@ -145,9 +145,9 @@ Graph.DrawCallback = function (g, is_initial) { // #50 #51
             || (syncMode === "F_SYNC_DETAIL" && g.HJN === HJN.chartD)) {
         // ｘ軸の幅をFilterメニューフェールドに反映する
         setText("Filter.F_TIME_FROM", Util.D2S(g.xAxisRange()[0],
-                "yyyy/MM/dd hh:mm:ss.ppp", true));
+                "yyyy/MM/dd hh:mm:ss.000", true)); // #92
         setText("Filter.F_TIME_TO", Util.D2S(g.xAxisRange()[1],
-                "yyyy/MM/dd hh:mm:ss.ppp", true));
+                "yyyy/MM/dd hh:mm:ss.000", true)); // #92
         // ｙ軸(右)の幅をFilterメニューフェールドに反映する
         setText("Filter.F_TAT_FROM", +(g.yAxisRange(1)[0].toPrecision(4)));
         setText("Filter.F_TAT_TO", +(g.yAxisRange(1)[1].toPrecision(4)));
@@ -508,7 +508,7 @@ Graph.prototype.update = function (seriesSet, n) {
         var format = "";
         var diffTime = this.xAxisRange()[1] - this.xAxisRange()[0];
         if (diffTime < 60000) { 
-            format = isTop ? "hh:mm:ss.ppp" : "ss.ppp";
+            format = isTop ? "hh:mm:ss.000" : "ss.000"; // #92
         } else if (diffTime < 86400000) { // 1日未満
             format = "hh:mm:ss";
         } else if (diffTime < 31536000000) { // 365日未満
@@ -673,7 +673,8 @@ Graph.prototype.update = function (seriesSet, n) {
                     text += val;
                 }
                 if (val && time) text += " ";
-                if (time) text += "[" + Util.D2S(time, "hh:mm:ss.ppp", true) + "]"; // #60
+                if (time) text += "[" + Util.D2S(time, "hh:mm:ss.000", true) + "]"; // #60
+                                                                                    // #92
                 ctx.beginPath();
                 ctx.fillStyle = color.replace(/\,[\s\.0-9]*\)/,",1)"); // #60
                 ctx.textAlign = "left"; // "rigth" "center" #60
@@ -776,7 +777,7 @@ Graph.prototype.showBalloon = function () {
 Graph.prototype.legendFormatter = function (data) {
     // legend: 'always'指定のとき、マウスがグラフ外にあると dataに値が設定されていなことを考慮
     var html = (typeof data.x === "undefined") ? '' : Util.DateToString(
-            new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.ppp");
+            new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.000"); // #92
     html = '<label class="datetime">' + html + '</label>';
     data.series
             .forEach(function (series) {
@@ -1055,7 +1056,7 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
                         + separator + 'シミューレート情報'
                         + delimiter + '\r\n';
             eTat.forEach(function (e) {
-                eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') 
+                eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.000') // #92
                         + separator + e.y 
                         + separator + e.message 
                         + delimiter + '\r\n'; // #61
@@ -1119,7 +1120,7 @@ Graph.prototype.menuDownloadConc = function (menuId, fileName) {
                         + separator + '処理時間(ms)'
                         + delimiter + '\r\n';
                 trans.forEach(function (e) {
-                    csv += delimiter + Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp")
+                    csv += delimiter + Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.000") // #92
                         + separator + e.y
                         + delimiter + '\r\n';
                 });

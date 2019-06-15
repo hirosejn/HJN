@@ -25,9 +25,9 @@ MenuConfigFilter.config = function () {
             .n("<br>")
             .name("F_TIME").label(null, "[Date filter]").n()
             .label(null,"Include if end time is between").n()
-                .text("F_TIME_FROM", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"')
+                .text("F_TIME_FROM", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.000"') // #92
                 .label(null,"and").n()
-                .text("F_TIME_TO", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.ppp"').n()
+                .text("F_TIME_TO", null, null, null, 'size="23" placeholder="YYYY/MM/DD hh.mm.ss.000"').n() // #92
             .n("<br>")
             .name("F_TAT").label(null,"[Turnaround time(TAT) filter]").n()
             .label(null,"Include if TAT is between").n()

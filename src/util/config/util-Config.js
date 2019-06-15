@@ -255,7 +255,7 @@ export default (function() { // #24
                         this._nameHtml +
                         'id="' + this._pre + key + '" '+ // idがユニークになるようkeyにprefixを付与
                         'onchange="' + this._globalName + '.Config.on(this);" ' + // #74
-                        (val ? 'value="' + val + '" ' : '') +   // val は、キー値のまま
+                        (val ? "value='" + val + "' " : "") +   // val は、キー値のまま #92
                         (attribute || '') + 
                         (check ? ' checked="checked;"' : '') +
                     '>' +

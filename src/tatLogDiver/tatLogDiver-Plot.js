@@ -112,7 +112,7 @@ Plot.Add=function(n, x, y) {
     // 各plotを非選択状態とする
     HJN.Plot.List.forEach(function(e){e.radio = false;});
     // ラベルフォーマットの設定
-    var format = (n === HJN.Tat.ETPS.N || n === HJN.Tat.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.ppp",
+    var format = (n === HJN.Tat.ETPS.N || n === HJN.Tat.CTPS.N) ? "hh:mm:ss" : "hh:mm:ss.000", // #92
         label = Util.D2S(x, format, true) + " " + // #61
                 HJN.Tat.seriesConfig[n].label.replace("%N",Util.N2S(y));
     // 幅(range)を取り込む（秒）
@@ -184,7 +184,7 @@ Plot.Add=function(n, x, y) {
         }
         if (concMax === y) { // 補正すべき時刻が求まったときCONC,ETATを追加する #23
             x = maxTime;
-            format = "hh:mm:ss.ppp";
+            format = "hh:mm:ss.000"; // #92
             label = Util.D2S(x, format, true) + " " + // #61
                     HJN.Tat.seriesConfig[n].label.replace("%N",Util.N2S(y));
             HJN.Plot.List.push( {label: label, ckBox:false,
