@@ -290,6 +290,7 @@ export default (function() {
         // class method
         /**
          * 数値(秒)、時間（時分秒)をパースして数値（秒*unit）を取得する<br>
+         * 数値でない場合 NaN を返却する<br>
          * /[0-9,:\. ]+/ に合致する文字列のみを処理する 例： argY: "-1:1:1.2" unit:1000 ->
          * -3661200 ms = -(1*60*60 + 1*60 + 1.2)*1000
          * 
@@ -299,13 +300,18 @@ export default (function() {
             var argY = arguments[0],
                 unit = arguments[1];
             if(!argY) {console.log("data Y parse error"); return 0; }
-            var str = argY.match(/[0-9,:\. ]+/)[0]; // #92
+            // 数値を含まないとき NaN を返却する
+            var nums =  argY.match(/[0-9,:\. ]+/); // #92
+            if (!nums) return NaN; // #93
+            // 時分秒(hh:mm:ss.000)を秒にする
+            var str = nums[0];
             var ds = (str.indexOf(":") < 0) ? [str] : str.split(":"),   // #40
                 pm = (0 <= ds[0]) ? 1 : -1,
                 sec = 0.0;
             for(var i = 0; i < ds.length; i++){
                 sec += pm * Math.abs(ds[i]) * Math.pow(60, ds.length - i - 1);
             }
+            // 単位補正する（ミリ秒指定の場合 unit = 1000）
             return sec * (unit || 1);
         };
 
@@ -389,7 +395,7 @@ export default (function() {
             
             if(0 < x && 0 <= y){ // 正常時
                 return {x: x, y: y, isError: false };
-            } else {            // エラー時
+            } else {            // エラー時、（ NaN の場合を含む）
                 return {x: x, y: y, isError: true };
             }
         };

@@ -356,7 +356,6 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 			i = 0,  // timelog用
 			getterOfLine = HJN.chart.fileParser.createGetterOfLine(file),
 			getterOfXY = HJN.chart.fileParser.createGetterOfXY(),
-			tatUnit = Util.Config.File.getConfig("TAT_UNIT"), // #81
 			isDataType_TatStart = (Util.Config.File.getConfig("DATATYPE") == "DATATYPE_TATSTART"),
 			isDataType_StartEnd = (Util.Config.File.getConfig("DATATYPE") == "DATATYPE_START_END"), // #89
 			line = getterOfLine.next();	 // 先頭行の初期処理
@@ -366,7 +365,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 				xy = getterOfXY.parse(line);
 				if(!xy.isError){
 					if (isDataType_TatStart){ // #81 DATATYPE_TATSTART
-						eTat.push( {x: (xy.x + xy.y * tatUnit), y: xy.y, fileIdx: idx,
+						eTat.push( {x: (xy.x + xy.y), y: xy.y, fileIdx: idx, // #93
 							pos: line.pos, len: line.array.byteLength, sTatIdx: 0} );
 					} else { // DATATYPE_TATEND
 						eTat.push( {x: xy.x, y: xy.y, fileIdx: idx, // #23
@@ -375,8 +374,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 				}
 				line = getterOfLine.next(); // #24
 			} catch (e) {	/* 改行だけレコードをスキップ */
-				console.error(e);
-				console.err("err: %o",e);
+				console.error("err: %o",e); // #93
 			}
 		}
 		Util.Logger.ShowLogText("[0:file readed & got eTat]---------------","calc");

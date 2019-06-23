@@ -18,10 +18,8 @@ export var DateToString = function() {
     str = str.replace(/hh/, ('0' + dt.getHours()).slice(-2) );
     str = str.replace(/mm/, ('0' + dt.getMinutes()).slice(-2) );
     str = str.replace(/ss/, ('0' + dt.getSeconds()).slice(-2) );
-    str = str.replace(/000/,('00' + dt.getMilliseconds()).slice(-3) ); // #60
-                                                                        // #92
-    // str = str.replace(/000/,('00' + Math.floor(dt % 1000)).slice(-3) );
-
+    str = str.replace(/000/,('00' + dt.getMilliseconds()).slice(-3) ); // #92
+    // str = str.replace(/000/,('00' + Math.floor(dt % 1000)).slice(-3) ); #60
     return str;
 };
 
@@ -104,16 +102,16 @@ export var D2S = function(ds, str, isLocal){ // #60
     if (!isLocal) { // #60
         datetime = new Date(+datetime + 60000 * datetime.getTimezoneOffset()); // 環境タイムゾーンの補正
     }
-    if(str){ // フォーマット指定があるとき
+    if(str){ // フォーマット指定があるとき #93
         ret = DateToString(datetime, str);
     } else if (ds < 1000) { // 自動で1秒(1000)未満のとき
-        ret = "0." + Math.round(ds);
+        ret = DateToString(datetime, "0.000"); 
     } else if (ds < 60000) { // 自動で1分(1*60*1000)未満のとき
-        ret = DateToString(datetime, "ss.000"); // #92
+        ret = DateToString(datetime, "ss.000").replace(/^0+/,""); // #92
     } else if (ds < 3600000) { // 自動で1分以上、1時間(1*60*60*1000)未満のとき
-        ret = "0:" + DateToString(datetime, "mm:ss.000"); // #92
+        ret = "0:" + DateToString(datetime, "mm:ss.000").replace(/^0+/,""); // #92
     } else if (ds < 86400000) { // 自動で1時間以上、1日(1*24*60*60*1000)未満のとき
-        ret = DateToString(datetime, "hh:mm:ss");
+        ret = DateToString(datetime, "hh:mm:ss").replace(/^0+/,"");
     } else { // 自動で1日以上のとき
         ret = Math.floor(ds / 86400000) + " ";
         ret += DateToString(datetime, "hh:mm:ss");

@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
 encoding/.jshintrc=UTF-8
+encoding//testdata/tatlog_Excel_SJIS.csv=ISO-8859-1
 encoding/<project>=UTF-8
 encoding/jsdoc_conf.json=UTF-8

@@ -46,10 +46,8 @@ export var DateToString = function() {
     str = str.replace(/hh/, ('0' + dt.getHours()).slice(-2) );
     str = str.replace(/mm/, ('0' + dt.getMinutes()).slice(-2) );
     str = str.replace(/ss/, ('0' + dt.getSeconds()).slice(-2) );
-    str = str.replace(/000/,('00' + dt.getMilliseconds()).slice(-3) ); // #60
-                                                                        // #92
-    // str = str.replace(/000/,('00' + Math.floor(dt % 1000)).slice(-3) );
-
+    str = str.replace(/000/,('00' + dt.getMilliseconds()).slice(-3) ); // #92
+    // str = str.replace(/000/,('00' + Math.floor(dt % 1000)).slice(-3) ); #60
     return str;
 };
 
@@ -132,16 +130,16 @@ export var D2S = function(ds, str, isLocal){ // #60
     if (!isLocal) { // #60
         datetime = new Date(+datetime + 60000 * datetime.getTimezoneOffset()); // 環境タイムゾーンの補正
     }
-    if(str){ // フォーマット指定があるとき
+    if(str){ // フォーマット指定があるとき #93
         ret = DateToString(datetime, str);
     } else if (ds &lt; 1000) { // 自動で1秒(1000)未満のとき
-        ret = "0." + Math.round(ds);
+        ret = DateToString(datetime, "0.000"); 
     } else if (ds &lt; 60000) { // 自動で1分(1*60*1000)未満のとき
-        ret = DateToString(datetime, "ss.000"); // #92
+        ret = DateToString(datetime, "ss.000").replace(/^0+/,""); // #92
     } else if (ds &lt; 3600000) { // 自動で1分以上、1時間(1*60*60*1000)未満のとき
-        ret = "0:" + DateToString(datetime, "mm:ss.000"); // #92
+        ret = "0:" + DateToString(datetime, "mm:ss.000").replace(/^0+/,""); // #92
     } else if (ds &lt; 86400000) { // 自動で1時間以上、1日(1*24*60*60*1000)未満のとき
-        ret = DateToString(datetime, "hh:mm:ss");
+        ret = DateToString(datetime, "hh:mm:ss").replace(/^0+/,"");
     } else { // 自動で1日以上のとき
         ret = Math.floor(ds / 86400000) + " ";
         ret += DateToString(datetime, "hh:mm:ss");
@@ -192,14 +190,15 @@ export var S2N = function(str, sub){ // #53
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Usage.html">Usage</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Usage.html">Usage</a></li><li><a href="Util.html">Util</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Jun 16 2019 01:38:12 GMT+0900 (東京 (標準時))
-    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
 </footer>
 
 <script> prettyPrint(); </script>
