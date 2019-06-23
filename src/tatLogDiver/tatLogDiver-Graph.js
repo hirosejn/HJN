@@ -9,7 +9,7 @@ import * as TimeSeries from '../timeSeries/timeSeries.js';
 
 /**
  * インスタンス内の定数を設定する。併せて性能対策として頻繁に使うDOM要素を取り込む
- *
+ * 
  * @memberof tatLogDiver
  * @class Graph
  * @classdesc TAT(Turnaround time)ログ分析用グラフ
@@ -131,7 +131,7 @@ export default function Graph(chartIdName, globalName, config) {
  * クラスメソッド：menuのFilterのｘｙ幅指定エリアにグラフのｘｙ幅を設定する<br>
  * dygraphのdrawCallbackに設定する関数<br>
  * menuのRadio(F_SYNC)選択時に呼び出す関数（このためにクラスメソッド）
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.DrawCallback = function (g, is_initial) { // #50 #51
@@ -145,9 +145,9 @@ Graph.DrawCallback = function (g, is_initial) { // #50 #51
             || (syncMode === "F_SYNC_DETAIL" && g.HJN === HJN.chartD)) {
         // ｘ軸の幅をFilterメニューフェールドに反映する
         setText("Filter.F_TIME_FROM", Util.D2S(g.xAxisRange()[0],
-                "yyyy/MM/dd hh:mm:ss.ppp", true));
+                "yyyy/MM/dd hh:mm:ss.000", true)); // #92
         setText("Filter.F_TIME_TO", Util.D2S(g.xAxisRange()[1],
-                "yyyy/MM/dd hh:mm:ss.ppp", true));
+                "yyyy/MM/dd hh:mm:ss.000", true)); // #92
         // ｙ軸(右)の幅をFilterメニューフェールドに反映する
         setText("Filter.F_TAT_FROM", +(g.yAxisRange(1)[0].toPrecision(4)));
         setText("Filter.F_TAT_TO", +(g.yAxisRange(1)[1].toPrecision(4)));
@@ -161,7 +161,7 @@ Graph.DrawCallback = function (g, is_initial) { // #50 #51
 
 /**
  * グラフを初期化する
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.init = function () {
@@ -210,7 +210,7 @@ Graph.prototype.init = function () {
 
 /**
  * legendの表示指定をグラフに反映する(onclick呼出用）
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {index}
  *            i seriesSet配列の設定変更するグラフのインデックス
@@ -223,7 +223,7 @@ Graph.prototype.onClickSetVisibility = function (i) { //
 
 /**
  * ウィンドウ枠に合わせて描画領域をリサイズする（dygraphは幅は自動、高さは指定）
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.resize = function () {
@@ -268,7 +268,7 @@ Graph.prototype.setSeriesSet = function (tat, seriesSet) { // #30
 
 /**
  * データを変更し描画する
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {seriesSet}
  *            seriesSet dygraph用時系列データ配列
@@ -508,7 +508,7 @@ Graph.prototype.update = function (seriesSet, n) {
         var format = "";
         var diffTime = this.xAxisRange()[1] - this.xAxisRange()[0];
         if (diffTime < 60000) { 
-            format = isTop ? "hh:mm:ss.ppp" : "ss.ppp";
+            format = isTop ? "hh:mm:ss.000" : "ss.000"; // #92
         } else if (diffTime < 86400000) { // 1日未満
             format = "hh:mm:ss";
         } else if (diffTime < 31536000000) { // 365日未満
@@ -567,10 +567,18 @@ Graph.prototype.update = function (seriesSet, n) {
             }
             // ログデータを表示し、線を引く
             if (0 <= n) {
+                // ログデータを取得する
                 var e = eTat[n];
-                // ログデータを表示する
-                document.getElementById("lineViewer").innerHTML =
-                            this.HJN.fileParser.getRecordAsText(e); // #62
+                var logRow = this.HJN.fileParser.getRecordAsText(e);
+                // シミュレータ生成データでないとき、文字コード変換する #82
+                if (typeof e.pos != "undefined") { 
+                    var charset = HJN.Config.File.getConfig("CHAR");
+                    logRow = Util.Encoding.charset.convert(logRow, "Unicode", charset); 
+                }
+                // ログデータを表示する #62
+                var iHtml = document.getElementById("lineViewer");
+                iHtml.textContent = ""; // #82
+                iHtml.insertAdjacentHTML('afterBegin', logRow);
                 // 線を引く #30
                 drawTatLine(ctx, e.x, e.y, 2, color);
                 ctx.stroke();
@@ -665,7 +673,8 @@ Graph.prototype.update = function (seriesSet, n) {
                     text += val;
                 }
                 if (val && time) text += " ";
-                if (time) text += "[" + Util.D2S(time, "hh:mm:ss.ppp", true) + "]"; // #60
+                if (time) text += "[" + Util.D2S(time, "hh:mm:ss.000", true) + "]"; // #60
+                                                                                    // #92
                 ctx.beginPath();
                 ctx.fillStyle = color.replace(/\,[\s\.0-9]*\)/,",1)"); // #60
                 ctx.textAlign = "left"; // "rigth" "center" #60
@@ -709,7 +718,7 @@ Graph.prototype.update = function (seriesSet, n) {
 
 /**
  * dygraphのBalloonを再描画する
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.showBalloon = function () {
@@ -759,7 +768,7 @@ Graph.prototype.showBalloon = function () {
 /**
  * dygraphのlegendを編集する(dygraph オプション登録用関数）
  * {@link http://dygraphs.com/options.html#legendFormatter}
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {ETAT}
  *            data [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
@@ -768,7 +777,7 @@ Graph.prototype.showBalloon = function () {
 Graph.prototype.legendFormatter = function (data) {
     // legend: 'always'指定のとき、マウスがグラフ外にあると dataに値が設定されていなことを考慮
     var html = (typeof data.x === "undefined") ? '' : Util.DateToString(
-            new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.ppp");
+            new Date(data.xHTML), "yyyy/MM/dd hh:mm:ss.000"); // #92
     html = '<label class="datetime">' + html + '</label>';
     data.series
             .forEach(function (series) {
@@ -800,7 +809,7 @@ Graph.prototype.legendFormatter = function (data) {
 
 /**
  * メニュー機能：CSVデータファイルを開く
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {evt}
  *            evt ファイルオープンイペント
@@ -813,7 +822,7 @@ Graph.prototype.menuOpenCsv = function (evt) {
 
 /**
  * メニュー機能：画面設定をJSON形式のセーブファイルとしてダウンロードする
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
@@ -833,7 +842,7 @@ Graph.prototype.menuSaveConfig = function (menuId, fileName) {
 };
 /**
  * メニュー機能：JSON形式の画面設定ファイルをロードし画面表示に反映する TODO
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ？
@@ -913,7 +922,7 @@ Graph.prototype.menuLoadConfig = function (evt) { // #10
 
 /**
  * メニュー機能：メニューで指定されたフィルタの条件で再描画する
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.menuFilterApply = function () { // #34
@@ -927,7 +936,7 @@ Graph.prototype.menuFilterApply = function () { // #34
 };
 /**
  * メニュー機能：フィルタ条件を初期値にし、再描画する
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.menuFilterReset = function () { // #34
@@ -936,7 +945,7 @@ Graph.prototype.menuFilterReset = function () { // #34
 
 /**
  * メニュー機能：シミュレータ 指定JSONでシミュレートする
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.menuSimulatorSimulate = function () { // #53
@@ -950,7 +959,7 @@ Graph.prototype.menuSimulatorSimulate = function () { // #53
 };
 /**
  * メニュー機能：シミュレータ JSON入力エリアを広げる
- *
+ * 
  */
 Graph.prototype.menuSimulatorEditor = function () { // #53
     var divSimulator = document.getElementById("Simulator");
@@ -966,7 +975,7 @@ Graph.prototype.menuSimulatorEditor = function () { // #53
         // textareaの親を開く
         divSimulator.style.height = "100%";
         divSimulator.style.width = "70%";
-//        divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
+// divSimulatorEditor.style.height = (divSimulator.scrollHeight - 10) + "px";
         divSimulatorEditor.style.height = divSimulator.clientHeight + "px";
         divSimulator.style.visibility = "visible"; // #79
     }
@@ -1039,13 +1048,18 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
     var eTat = this.eTat;
     if (0 < eTat.length) { // 出力対象データがあるとき
         if (typeof eTat[0].pos === "undefined") { // 生成データのとき
-            // 生成データをCSVに編集する
-            var eTatCsv = "";
-            var delimiter = '"';
+            // 生成データをCSVに編集する #88
+            var delimiter = '';
             var separator = delimiter + Util.Config.File.getConfig("SEP") + delimiter; // #76
+            var eTatCsv = delimiter + '終了年月日 時分秒ミリ秒' 
+                        + separator + '処理時間(ms)'
+                        + separator + 'シミューレート情報'
+                        + delimiter + '\r\n';
             eTat.forEach(function (e) {
-                eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.ppp') + separator
-                        + e.y + separator + e.message + delimiter + '\r\n'; // #61
+                eTatCsv += delimiter + Util.D2S(e.x, 'yyyy/MM/dd hh:mm:ss.000') // #92
+                        + separator + e.y 
+                        + separator + e.message 
+                        + delimiter + '\r\n'; // #61
             });
             // ダウンロードする
             this.menuDownloadBlob(this.menuBuffToBlob(eTatCsv), menuId,
@@ -1082,7 +1096,7 @@ Graph.prototype.menuDownloadLog = function (menuId, fileName) {
 
 /**
  * メニュー機能：plotsでconcが選択されているとき、同時処理に該当するTATログの該当行をCSVファイルとしてダウンロードする
- *
+ * 
  * @memberof tatLogDiver.Graph
  * @param {String}
  *            menuId Chrome, FireFoxのときに使用：ダウンロードファイルの一時作成に使うHTMLタグ
@@ -1099,11 +1113,16 @@ Graph.prototype.menuDownloadConc = function (menuId, fileName) {
         if (0 < trans.length) { // 出力テキストを編集する
             if (typeof trans[0].pos === "undefined") {
                 // 初期表示データのとき、CSVを編集する
-                // 生成データをCSVに編集する
-                var csv = "";
+                // 生成データをCSVに編集する #88
+                var delimiter = '';
+                var separator = delimiter + Util.Config.File.getConfig("SEP") + delimiter; // #76
+                var csv = delimiter + '終了年月日 時分秒ミリ秒'
+                        + separator + '処理時間(ms)'
+                        + delimiter + '\r\n';
                 trans.forEach(function (e) {
-                    csv += Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp") + ","
-                            + e.y + "\r\n";
+                    csv += delimiter + Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.000") // #92
+                        + separator + e.y
+                        + delimiter + '\r\n';
                 });
                 // ダウンロードする
                 this.menuDownloadBlob(this.menuBuffToBlob(csv), menuId,
@@ -1149,8 +1168,7 @@ Graph.prototype.menuDownloadConc = function (menuId, fileName) {
  * @memberof tatLogDiver.Graph
  * @param {Object}
  *            arrayBuffer 変換元
- * @return {Blob}
- *            変換後
+ * @return {Blob} 変換後
  */
 Graph.prototype.menuBuffToBlob = function (arrayBuffer) {
     return new Blob([ arrayBuffer ], {
@@ -1181,7 +1199,7 @@ Graph.prototype.menuDownloadBlob = function (blob, menuId, fileName) {
 
 /**
  * Zoomリセットアイコンを追加する
- *
+ * 
  * @memberof tatLogDiver.Graph
  */
 Graph.prototype.addIcon_ZoomReset = function () {
@@ -1201,26 +1219,4 @@ Graph.prototype.addIcon_ZoomReset = function () {
         div.innerHTML = htmlText;
         divChart.insertBefore(div, divChart.firstChild);
     }
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-
-    // divIcons.appendChild(div);
-
-    // div.id = id;
-    // div.className = "menuBar";
-    // div = element.parentElement;
-
-    // var divIcons = document.getElementById("Icons");
-    // var idName = this.chartIdName + "Zoom";
-    // if (divIcons) {
-    // var div = document.createElement('div');
-    // var htmlText = '<input id="' + idName
-    // + '"type="buttom" class="hjnBoxSwitch hjnResize" '
-    // + 'onClick="HJN.' + this.chartIdName + '.graph.resetZoom()">'
-    // + '<label for="' + idName + '"class="hjnCtrlBox"><span></span></label>';
-    // div.innerHTML = htmlText;
-    // divIcons.appendChild(div);
-   // }
-
-=======
->>>>>>> 785cc0d drag element (masterリリース) #79
 };

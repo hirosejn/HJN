@@ -37,9 +37,7 @@
 
 var util = require('util');
 
-/* eslint-disable no-empty-function */
 function Logger() {}
-/* eslint-enable no-empty-function */
 util.inherits(Logger, require('events').EventEmitter);
 
 var logger = module.exports = new Logger();

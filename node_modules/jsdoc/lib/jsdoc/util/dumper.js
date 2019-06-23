@@ -2,6 +2,8 @@
 /**
  * Recursively print out all names and values in a data structure.
  * @module jsdoc/util/dumper
+ * @author Michael Mathews <micmath@gmail.com>
+ * @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
@@ -23,7 +25,6 @@ ObjectWalker.prototype.seen = function(object) {
     else {
         result = object[OBJECT_WALKER_KEY];
     }
-
     return result;
 };
 
@@ -52,11 +53,11 @@ ObjectWalker.prototype.isUnwalkable = function(o) {
 };
 
 ObjectWalker.prototype.isFunction = function(o) {
-    return ( (o && typeof o === 'function') || o instanceof Function );
+    return (o && typeof o === 'function' || o instanceof Function);
 };
 
 ObjectWalker.prototype.isObject = function(o) {
-    return (o && o instanceof Object) ||
+    return o && o instanceof Object ||
         (o && typeof o.constructor !== 'undefined' && o.constructor.name === 'Object');
 };
 
@@ -66,7 +67,6 @@ ObjectWalker.prototype.checkCircularRefs = function(o, func) {
     }
     else {
         this.markAsSeen(o);
-
         return func(o);
     }
 };

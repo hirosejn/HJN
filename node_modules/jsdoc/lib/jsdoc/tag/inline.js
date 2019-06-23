@@ -1,5 +1,8 @@
 /**
  * @module jsdoc/tag/inline
+ *
+ * @author Jeff Williams <jeffrey.l.williams@gmail.com>
+ * @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
@@ -85,7 +88,6 @@ exports.replaceInlineTags = function(string, replacers) {
             tag: tag,
             text: text
         };
-
         tagInfo.push(matchedTag);
 
         return replacer(string, matchedTag);
@@ -126,7 +128,6 @@ exports.replaceInlineTags = function(string, replacers) {
  */
 exports.replaceInlineTag = function(string, tag, replacer) {
     var replacers = {};
-
     replacers[tag] = replacer;
 
     return exports.replaceInlineTags(string, replacers);

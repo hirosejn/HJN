@@ -8,6 +8,7 @@ import copyToClipboard    from './util-copyToClipboard.js';
 import binarySearch       from './util-binarySearch.js';
 import Heap               from './util-Heap.js';
 import Element            from './util-Element.js';
+import {Encoding}         from './util-Encoding.js'; // #82
 import {Config}           from './config/config.js';
 
 /** @namespace Util */
@@ -26,7 +27,8 @@ export {
     binarySearch,
     Heap,
     Element,
-    Config
+    Config,
+    Encoding // #82
 };
 
 

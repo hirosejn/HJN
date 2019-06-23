@@ -1,6 +1,8 @@
 /**
  * Make the contents of a README file available to include in the output.
  * @module jsdoc/readme
+ * @author Michael Mathews <micmath@gmail.com>
+ * @author Ben Blank <ben.blank@gmail.com>
  */
 'use strict';
 

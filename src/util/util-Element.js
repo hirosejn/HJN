@@ -29,7 +29,7 @@ var pos = {};        // マウス押下時の位置情報の保管用
 
 /**
  * CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
- *
+ * 
  * @memberOf Util
  * @example .hjnDraggableBox {} .hjnDraggableItem:hover {cursor: move;
  *          background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }
@@ -48,7 +48,7 @@ Element.enableDraggableClass = function(){
 
 /**
  * ダイアログを生成し表示する
- *
+ * 
  * @memberOf Util
  * @param {String}
  *            [iHtml="no message"] ダイアログのinnerHTMLに設定する文字列
@@ -84,7 +84,10 @@ Element.createDialog = function(iHtml, element, id, w, h, style){
     setStyles(div.children[0],
             {width: "100%", height: "100%", border: 0, "pointer-events": "auto"});
     var body = document.createElement('body');
-    body.innerHTML = "<body>" + iHtml + "</body>";
+    var htmlText = "<body>" + iHtml + "</body>";
+    body.textContent = ""; // #82
+    body.insertAdjacentHTML('afterBegin', htmlText);
+    
     div.children[0].contentDocument.body = body;
     // スタイルを設定する（デフォルト：縦横40%（親サイズに連動）で中央に配置）
     setStyles(div, style, 
@@ -93,32 +96,35 @@ Element.createDialog = function(iHtml, element, id, w, h, style){
               background: "rgba(255, 255, 255, 0.8)", border: "medium solid #aaa"});
     var draggable = new Element(div);
     draggable        // 移動指定要素がリサイズ指定要素よりが下になるよう、×ボタン、移動、リサイズの順に記述する
-        .makeRemovable()
+        .makeRemovable(id)
         .makeMoveable()
         .makeResizable();
 }
 
 /**
  * ×ボタンによる要素削除機能を付与する
- *
+ * 
  * @memberOf Util
+ * @param {String}
+ *            [id=""] ×ボタン要素のid名（重複すると先に作成された×ボタンのダイアログが閉じられる）
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
  *            height:"20px"};] ×ボタン要素のCSSスタイル
  * @return this
  */
-Element.prototype.makeRemovable = function(style) {
+Element.prototype.makeRemovable = function(id, style) {
     // inputタグを追加する
     // <input id="hjnDialog" type="checkbox" class="hjnBurger" checked="checked"
     // onChange="..."/>
     var input = document.createElement("input");
     input.type = "checkbox";
-    input.id = "hjnDialog";
+    input.id = (id || "") + "_BATSU"; // #86
     input.classList.add("hjnBurger");
     input.checked = true;
     input.onchange = function(){
-                var e = this.parentElement.parentElement;
-                e.parentElement.removeChild(e); };
+        var e = this.parentElement.parentElement;
+        e.parentElement.removeChild(e);
+    };
     this._wrapper.appendChild(input);
     // ×ボタンlabelタグを追加する
     // <label for="hjnDialog"><span></span></label>
@@ -131,9 +137,10 @@ Element.prototype.makeRemovable = function(style) {
     this._wrapper.appendChild(label);
     return this;
 }
+
 /**
  * ドラッグによる移動機能を付与する
- *
+ * 
  * @memberOf Util
  * @param {Object}
  *            [style={cursor: "move", top:"0", left:"50%", width:"100%",
@@ -149,10 +156,10 @@ Element.prototype.makeMoveable = function(style) {
 }
 /**
  * ドラッグによる リサイズ機能を付与する
- *
+ * 
  * @param {object}
  *            [style] リサイズ機能要素のCSSスタイルを、デフォルトから変更する際に指定
- *
+ * 
  * @return this
  */
 Element.prototype.makeResizable = function(style) {
@@ -177,7 +184,7 @@ Element.prototype.makeResizable = function(style) {
 }
 /**
  * マウスクリック用要素を追加
- *
+ * 
  * @param {Function}
  *            func マウス押下時に発火する処理
  * @param {object}
@@ -250,7 +257,7 @@ function dragEndBottomRight(e){dragEnd(draggingBottomRight, dragEndBottomRight);
 
 /**
  * DOM要素にスタイル設定
- *
+ * 
  * @param {DOM}
  *            element CSSスタイルを設定するDOM要素
  * @param {object}
@@ -271,7 +278,7 @@ function setStyles(element, style, styleD){
 
 /**
  * マウス押下したときに発火する関数から呼ばれる
- *
+ * 
  * @private
  * @param {Event}
  *            e 発火イベント
@@ -345,7 +352,7 @@ function isSupportsPassive(){
 }
 /**
  * 親の親要素をマウス押下後、マウスカーソルが動いたときに発火する関数から呼ばれる
- *
+ * 
  * @private
  * @param {Event}
  *            e 発火イベント
@@ -375,7 +382,7 @@ function dragging(e, multiply) {
 }
 /**
  * マウスボタンが上がった場合、もしくは画面外にマウスが出た場合に発火する関数から呼ばれる
- *
+ * 
  * @private
  * @param {function}
  *            dragging 消去するイベントに登録されている関数

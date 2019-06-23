@@ -1,5 +1,11 @@
 /**
- * @module jsdoc/tutorial/resolver
+    @overview
+    @author Rafa&#322; Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
+    @license Apache License 2.0 - See file 'LICENSE.md' in this project.
+ */
+
+/**
+    @module jsdoc/tutorial/resolver
  */
 'use strict';
 
@@ -7,7 +13,6 @@ var env = require('jsdoc/env');
 var fs = require('jsdoc/fs');
 var logger = require('jsdoc/util/logger');
 var path = require('path');
-var stripBom = require('jsdoc/util/stripbom');
 var tutorial = require('jsdoc/tutorial');
 
 var hasOwnProp = Object.prototype.hasOwnProperty;
@@ -32,20 +37,22 @@ function isTutorialJSON(json) {
  */
 exports.root = new tutorial.RootTutorial();
 
-/**
- * Helper function that adds tutorial configuration to the `conf` variable. This helps when multiple
- * tutorial configurations are specified in one object, or when a tutorial's children are specified
- * as tutorial configurations as opposed to an array of tutorial names.
+/** Helper function that adds tutorial configuration to the `conf` variable.
+ * This helps when multiple tutorial configurations are specified in one object,
+ * or when a tutorial's children are specified as tutorial configurations as
+ * opposed to an array of tutorial names.
  *
  * Recurses as necessary to ensure all tutorials are added.
  *
- * @param {string} name - if `meta` is a configuration for a single tutorial, this is that
- * tutorial's name.
- * @param {object} meta - object that contains tutorial information. Can either be for a single
- * tutorial, or for multiple (where each key in `meta` is the tutorial name and each value is the
- * information for a single tutorial). Additionally, a tutorial's 'children' property may either be
- * an array of strings (names of the child tutorials), OR an object giving the configuration for the
- * child tutorials.
+ * @param {string} name - if `meta` is a configuration for a single tutorial,
+ *                        this is that tutorial's name.
+ * @param {object} meta - object that contains tutorial information.
+ *                        Can either be for a single tutorial, or for multiple
+ *                        (where each key in `meta` is the tutorial name and each
+ *                         value is the information for a single tutorial).
+ *                        Additionally, a tutorial's 'children' property may
+ *                        either be an array of strings (names of the child tutorials),
+ *                        OR an object giving the configuration for the child tutorials.
  */
 function addTutorialConf(name, meta) {
     var i;
@@ -100,7 +107,7 @@ exports.addTutorial = function(current) {
 exports.load = function(filepath) {
     var content;
     var current;
-    var files = fs.ls(filepath, env.opts.recurse ? env.conf.recurseDepth : undefined);
+    var files = fs.ls(filepath, env.opts.recurse ? 10 : undefined);
     var name;
     var match;
     var type;
@@ -131,16 +138,14 @@ exports.load = function(filepath) {
 
                 // configuration file
                 case 'json':
-                    var meta = JSON.parse(stripBom.strip(content));
-
+                    var meta = JSON.parse(content);
                     addTutorialConf(name, meta);
-
                     // don't add this as a tutorial
                     return;
 
                 // how can it be? check `finder' regexp
-                // not a file we want to work with
                 default:
+                    // not a file we want to work with
                     return;
             }
 
@@ -150,8 +155,7 @@ exports.load = function(filepath) {
     });
 };
 
-/**
- * Resolves hierarchical structure.
+/** Resolves hierarchical structure.
  */
 exports.resolve = function() {
     var item;

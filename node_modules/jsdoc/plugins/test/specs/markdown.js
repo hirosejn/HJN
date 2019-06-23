@@ -24,8 +24,7 @@ describe('markdown plugin', function() {
             myClass.params[0].description,
             myClass.properties[0].description,
             myClass.returns[0].description,
-            myClass.see,
-            myClass.summary
+            myClass.see
         ].forEach(function(value) {
             // if we processed the value, it should be wrapped in a <p> tag
             expect( /^<p>(?:.+)<\/p>$/.test(value) ).toBe(true);

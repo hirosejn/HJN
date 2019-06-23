@@ -1,9 +1,13 @@
 /**
- * @module jsdoc/tag/validator
- * @requires jsdoc/tag/dictionary
+    @module jsdoc/tag/validator
+    @requires jsdoc/tag/dictionary
+
+    @author Michael Mathews <micmath@gmail.com>
+    @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
+var dictionary = require('jsdoc/tag/dictionary');
 var env = require('jsdoc/env');
 var format = require('util').format;
 var logger = require('jsdoc/util/logger');
@@ -11,11 +15,9 @@ var logger = require('jsdoc/util/logger');
 function buildMessage(tagName, meta, desc) {
     var result = format('The @%s tag %s. File: %s, line: %s', tagName, desc, meta.filename,
         meta.lineno);
-
     if (meta.comment) {
         result += '\n' + meta.comment;
     }
-
     return result;
 }
 
@@ -23,11 +25,10 @@ function buildMessage(tagName, meta, desc) {
  * Validate the given tag.
  */
 exports.validate = function(tag, tagDef, meta) {
-    var allowUnknownTags = env.conf.tags.allowUnknownTags;
-
     // handle cases where the tag definition does not exist
     if (!tagDef) {
         // log an error if unknown tags are not allowed
+        var allowUnknownTags = env.conf.tags.allowUnknownTags;
         if (!allowUnknownTags ||
             (Array.isArray(allowUnknownTags) &&
              allowUnknownTags.indexOf(tag.title) < 0)) {

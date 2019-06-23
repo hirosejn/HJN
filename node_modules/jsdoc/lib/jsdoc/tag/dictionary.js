@@ -10,7 +10,6 @@ var dictionary;
 /** @private */
 function TagDefinition(dict, title, etc) {
     var self = this;
-
     etc = etc || {};
 
     this.title = dict.normalise(title);
@@ -27,7 +26,6 @@ function TagDefinition(dict, title, etc) {
 /** @private */
 TagDefinition.prototype.synonym = function(synonymName) {
     this._dictionary.defineSynonym(this.title, synonymName);
-
     return this; // chainable
 };
 
@@ -44,7 +42,7 @@ function Dictionary() {
 }
 
 /** @function */
-Dictionary.prototype._defineNamespace = function(title) {
+Dictionary.prototype._defineNamespace = function defineNamespace(title) {
     title = this.normalise(title || '');
 
     if (title && this._namespaces.indexOf(title) === -1) {
@@ -55,9 +53,8 @@ Dictionary.prototype._defineNamespace = function(title) {
 };
 
 /** @function */
-Dictionary.prototype.defineTag = function(title, opts) {
+Dictionary.prototype.defineTag = function defineTag(title, opts) {
     var tagDef = new TagDefinition(this, title, opts);
-
     this._tags[tagDef.title] = tagDef;
 
     if (opts && opts.isNamespace) {
@@ -68,28 +65,28 @@ Dictionary.prototype.defineTag = function(title, opts) {
 };
 
 /** @function */
-Dictionary.prototype.defineSynonym = function(title, synonym) {
+Dictionary.prototype.defineSynonym = function defineSynonym(title, synonym) {
     this._tagSynonyms[synonym.toLowerCase()] = this.normalise(title);
 };
 
 /** @function */
-Dictionary.prototype.getNamespaces = function() {
+Dictionary.prototype.getNamespaces = function getNamespaces() {
     return this._namespaces.slice(0);
 };
 
 /** @function */
-Dictionary.prototype.lookUp = function(title) {
+Dictionary.prototype.lookUp = function lookUp(title) {
     title = this.normalise(title);
 
     if ( hasOwnProp.call(this._tags, title) ) {
-        return this._tags[title];
+       return this._tags[title];
     }
 
     return false;
 };
 
 /** @function */
-Dictionary.prototype.isNamespace = function(kind) {
+Dictionary.prototype.isNamespace = function isNamespace(kind) {
     if (kind) {
         kind = this.normalise(kind);
         if (this._namespaces.indexOf(kind) !== -1) {
@@ -101,7 +98,7 @@ Dictionary.prototype.isNamespace = function(kind) {
 };
 
 /** @function */
-Dictionary.prototype.normalise = function(title) {
+Dictionary.prototype.normalise = function normalise(title) {
     var canonicalName = title.toLowerCase();
 
     if ( hasOwnProp.call(this._tagSynonyms, canonicalName) ) {

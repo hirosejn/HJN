@@ -1,5 +1,7 @@
 /**
- * @module jsdoc/tutorial
+    @overview
+    @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
+    @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
@@ -8,38 +10,37 @@ var util = require('util');
 
 var hasOwnProp = Object.prototype.hasOwnProperty;
 
-/**
- * Removes child tutorial from the parent. Does *not* unset child.parent though.
- *
- * @param {Tutorial} parent - parent tutorial.
- * @param {Tutorial} child - Old child.
- * @private
+/** Removes child tutorial from the parent. Does *not* unset child.parent though.
+    @param {Tutorial} parent - parent tutorial.
+    @param {Tutorial} child - Old child.
+    @private
  */
 function removeChild(parent, child) {
     var index = parent.children.indexOf(child);
-
     if (index !== -1) {
         parent.children.splice(index, 1);
     }
 }
 
-/**
- * Adds a child to the parent tutorial. Does *not* set child.parent though.
- *
- * @param {Tutorial} parent - parent tutorial.
- * @param {Tutorial} child - New child.
- * @private
+/** Adds a child to the parent tutorial. Does *not* set child.parent though.
+    @param {Tutorial} parent - parent tutorial.
+    @param {Tutorial} child - New child.
+    @private
  */
 function addChild(parent, child) {
     parent.children.push(child);
 }
 
 /**
- * @class
- * @classdesc Represents a single JSDoc tutorial.
- * @param {string} name - Tutorial name.
- * @param {string} content - Text content.
- * @param {number} type - Source formating.
+    @module jsdoc/tutorial
+ */
+
+/**
+    @class
+    @classdesc Represents a single JSDoc tutorial.
+    @param {string} name - Tutorial name.
+    @param {string} content - Text content.
+    @param {number} type - Source formating.
  */
 exports.Tutorial = function(name, content, type) {
     this.title = this.name = this.longname = name;
@@ -51,10 +52,8 @@ exports.Tutorial = function(name, content, type) {
     this.children = [];
 };
 
-/**
- * Moves children from current parent to different one.
- *
- * @param {?Tutorial} parent - New parent. If null, the tutorial has no parent.
+/** Moves children from current parent to different one.
+    @param {?Tutorial} parent - New parent. If null, the tutorial has no parent.
  */
 exports.Tutorial.prototype.setParent = function(parent) {
     // removes node from old parent
@@ -68,28 +67,22 @@ exports.Tutorial.prototype.setParent = function(parent) {
     }
 };
 
-/**
- * Removes children from current node.
- *
- * @param {Tutorial} child - Old child.
+/** Removes children from current node.
+    @param {Tutorial} child - Old child.
  */
 exports.Tutorial.prototype.removeChild = function(child) {
     child.setParent(null);
 };
 
-/**
- * Adds new children to current node.
- *
- * @param {Tutorial} child - New child.
+/** Adds new children to current node.
+    @param {Tutorial} child - New child.
  */
 exports.Tutorial.prototype.addChild = function(child) {
     child.setParent(this);
 };
 
-/**
- * Prepares source.
- *
- * @return {string} HTML source.
+/** Prepares source.
+    @return {string} HTML source.
  */
 exports.Tutorial.prototype.parse = function() {
     switch (this.type) {
@@ -100,7 +93,6 @@ exports.Tutorial.prototype.parse = function() {
         // markdown
         case exports.TYPES.MARKDOWN:
             var mdParse = markdown.getParser();
-
             return mdParse(this.content);
 
         // uhm... should we react somehow?
@@ -139,10 +131,8 @@ exports.RootTutorial.prototype._addTutorial = function(child) {
     this._tutorials[child.name] = child;
 };
 
-/**
- * Tutorial source types.
- *
- * @enum {number}
+/** Tutorial source types.
+    @enum {number}
  */
 exports.TYPES = {
     HTML: 1,

@@ -1,7 +1,6 @@
 'use strict';
 
 var logger = require('jsdoc/util/logger');
-var stripBom = require('jsdoc/util/stripbom');
 
 /**
  * Provides access to information about a JavaScript package.
@@ -80,7 +79,7 @@ exports.Package = function(json) {
     this.kind = 'package';
 
     try {
-        packageInfo = JSON.parse(stripBom.strip(json) || '{}');
+        packageInfo = JSON.parse(json || '{}');
     }
     catch (e) {
         logger.error('Unable to parse the package file: %s', e.message);

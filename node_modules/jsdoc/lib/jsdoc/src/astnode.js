@@ -43,16 +43,15 @@ var isFunction = exports.isFunction = function(node) {
  * @param {Object} node - The AST node to check.
  * @return {Boolean} Set to `true` if the node creates a new scope, or `false` in all other cases.
  */
-exports.isScope = function(node) {
+var isScope = exports.isScope = function(node) {
     // TODO: handle blocks with "let" declarations
-    return Boolean(node) && typeof node === 'object' && ( node.type === Syntax.CatchClause ||
-        node.type === Syntax.ClassDeclaration || node.type === Syntax.ClassExpression ||
+    return !!node && typeof node === 'object' && ( node.type === Syntax.CatchClause ||
         isFunction(node) );
 };
 
 // TODO: docs
-exports.addNodeProperties = function(node) {
-    var debugEnabled = Boolean(env.opts.debug);
+var addNodeProperties = exports.addNodeProperties = function(node) {
+    var debugEnabled = !!env.opts.debug;
     var newProperties = {};
 
     if (!node || typeof node !== 'object') {
@@ -107,7 +106,6 @@ exports.addNodeProperties = function(node) {
 
 // TODO: docs
 var nodeToValue = exports.nodeToValue = function(node) {
-    var key;
     var parent;
     var str;
     var tempObject;
@@ -136,26 +134,8 @@ var nodeToValue = exports.nodeToValue = function(node) {
             str = nodeToValue(node.left);
             break;
 
-        case Syntax.BigIntLiteral:
-            str = node.value;
-            break;
-
         case Syntax.ClassDeclaration:
             str = nodeToValue(node.id);
-            break;
-
-        case Syntax.ClassPrivateProperty:
-            // TODO: Strictly speaking, the name should be '#' plus node.key, but because we
-            // already use '#' as scope punctuation, that causes JSDoc to get extremely confused.
-            // The solution probably involves quoting part or all of the name, but JSDoc doesn't
-            // deal with quoted names very nicely right now, and most people probably won't want to
-            // document class private properties anyhow. So for now, we'll just cheat and omit the
-            // leading '#'.
-            str = nodeToValue(node.key);
-            break;
-
-        case Syntax.ClassProperty:
-            str = nodeToValue(node.key);
             break;
 
         case Syntax.ExportAllDeclaration:
@@ -218,26 +198,13 @@ var nodeToValue = exports.nodeToValue = function(node) {
         case Syntax.MethodDefinition:
             parent = node.parent.parent;
             // for class expressions, we want the name of the variable the class is assigned to
-            // (but there won't be a name if the class is returned by an arrow function expression)
-            // TODO: we should use `name.LONGNAMES.ANONYMOUS` instead of an empty string, but that
-            // causes problems downstream if the parent class has an `@alias` tag
             if (parent.type === Syntax.ClassExpression) {
-                str = nodeToValue(parent.parent) || '';
+                str = nodeToValue(parent.parent);
             }
             // for the constructor of a module's default export, use a special name
             else if (node.kind === 'constructor' && parent.parent &&
                 parent.parent.type === Syntax.ExportDefaultDeclaration) {
                 str = 'module.exports';
-            }
-            // for the constructor of a module's named export, use the name of the export
-            // declaration
-            else if (node.kind === 'constructor' && parent.parent &&
-                parent.parent.type === Syntax.ExportNamedDeclaration) {
-                str = nodeToValue(parent.parent);
-            }
-            // for other constructors, use the name of the parent class
-            else if (node.kind === 'constructor') {
-                str = nodeToValue(parent);
             }
             // if the method is a member of a module's default export, ignore the name, because it's
             // irrelevant
@@ -266,8 +233,7 @@ var nodeToValue = exports.nodeToValue = function(node) {
                     return;
                 }
 
-                key = prop.key.name;
-
+                var key = prop.key.name;
                 // preserve literal values so that the JSON form shows the correct type
                 if (prop.value.type === Syntax.Literal) {
                     tempObject[key] = prop.value.value;
@@ -334,22 +300,23 @@ var getParamNames = exports.getParamNames = function(node) {
 
 // TODO: docs
 var isAccessor = exports.isAccessor = function(node) {
-    return Boolean(node) && typeof node === 'object' &&
+    return !!node && typeof node === 'object' &&
         (node.type === Syntax.Property || node.type === Syntax.MethodDefinition) &&
         (node.kind === 'get' || node.kind === 'set');
 };
 
 // TODO: docs
-exports.isAssignment = function(node) {
-    return Boolean(node) && typeof node === 'object' &&
-        (node.type === Syntax.AssignmentExpression || node.type === Syntax.VariableDeclarator);
+var isAssignment = exports.isAssignment = function(node) {
+    return !!node && typeof node === 'object' && (node.type === Syntax.AssignmentExpression ||
+        node.type === Syntax.VariableDeclarator);
 };
 
 // TODO: docs
 /**
  * Retrieve information about the node, including its name and type.
+ * @alias module:jsdoc/src/astnode.getInfo
  */
-exports.getInfo = function(node) {
+var getInfo = exports.getInfo = function(node) {
     var info = {};
 
     switch (node.type) {
@@ -398,27 +365,11 @@ exports.getInfo = function(node) {
             node.body.body.some(function(definition) {
                 if (definition.kind === 'constructor') {
                     info.paramnames = getParamNames(definition.value);
-
                     return true;
                 }
-
                 return false;
             });
 
-            break;
-
-        // like "#b = 1;" in: "class A { #b = 1; }"
-        case Syntax.ClassPrivateProperty:
-            info.node = node;
-            info.name = nodeToValue(info.node);
-            info.type = info.node.type;
-            break;
-
-        // like "b = 1;" in: "class A { b = 1; }"
-        case Syntax.ClassProperty:
-            info.node = node;
-            info.name = nodeToValue(info.node);
-            info.type = info.node.type;
             break;
 
         // like: "export * from 'foo'"

@@ -1,10 +1,13 @@
 /**
- * @module jsdoc/config
+    @overview
+    @author Michael Mathews <micmath@gmail.com>
+    @license Apache License 2.0 - See file 'LICENSE.md' in this project.
+ */
+
+/**
+    @module jsdoc/config
  */
 'use strict';
-
-var stripBom = require('jsdoc/util/stripbom');
-var stripJsonComments = require('strip-json-comments');
 
 function mergeRecurse(target, source) {
     Object.keys(source).forEach(function(p) {
@@ -24,13 +27,6 @@ function mergeRecurse(target, source) {
 
 // required config values, override these defaults in your config.json if necessary
 var defaults = {
-    plugins: [],
-    recurseDepth: 10,
-    source: {
-        includePattern: '.+\\.js(doc|x)?$',
-        excludePattern: ''
-    },
-    sourceType: 'module',
     tags: {
         allowUnknownTags: true,
         dictionaries: ['jsdoc', 'closure']
@@ -38,35 +34,28 @@ var defaults = {
     templates: {
         monospaceLinks: false,
         cleverLinks: false
-    }
+    },
+    source: {
+        includePattern: '.+\\.js(doc|x)?$',
+        excludePattern: ''
+    },
+    plugins: []
 };
 
 /**
- * @class
- * @classdesc Represents a JSDoc application configuration.
- * @param {(string|object)} [jsonOrObject] - The contents of config.json, or a JavaScript object
- * exported from a .js config file.
+    @class
+    @classdesc Represents a JSDoc application configuration.
+    @param {string} [json] - The contents of config.json.
  */
-function Config(jsonOrObject) {
-    if (typeof jsonOrObject === 'undefined') {
-        jsonOrObject = {};
-    }
-
-    if (typeof jsonOrObject === 'string') {
-        jsonOrObject = JSON.parse( (stripJsonComments(stripBom.strip(jsonOrObject)) || '{}') );
-    }
-
-    if (typeof jsonOrObject !== 'object') {
-        jsonOrObject = {};
-    }
-
-    this._config = mergeRecurse(defaults, jsonOrObject);
+function Config(json) {
+    json = JSON.parse( (json || '{}') );
+    this._config = mergeRecurse(defaults, json);
 }
 
 module.exports = Config;
 
 /**
- * Get the merged configuration values.
+    Get the merged configuration values.
  */
 Config.prototype.get = function() {
     return this._config;

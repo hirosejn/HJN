@@ -71,8 +71,8 @@ export default (function() {
          *            &lt;p>
          *            ファクトリのFileParserが保持する改行コードを用いて、ファイルから１レコードを取得する
          * 
-         * @example try{ var getterOfLine =
-         *          FileParser.createGetterOfLine(file), fileInfo;&lt;br>
+         * @example try{ var getterOfLine = FileParser.createGetterOfLine(file),
+         *          fileInfo;&lt;br>
          *          for(var i = 0; i &lt; n; i++) { &lt;br>
          *          line = getterOfLine.next(); fileInfo += line.str + "&lt;BR>"; }&lt;br>
          *          }catch (e) {&lt;br>
@@ -84,7 +84,8 @@ export default (function() {
             this.file = file;
             this.buf = new Uint8Array(file);
             this.maxLength = maxLength || this.buf.length,
-            this.confLF = Util.Config.File.getConfig("LF");  // 改行コードor固定レコード長 #76
+            this.confLF = Util.Config.File.getConfig("LF");  // 改行コードor固定レコード長
+                                                                // #76
             this.from = 0;
             this.to = 0;
             this.len = 0;
@@ -183,7 +184,7 @@ export default (function() {
                             || this.confF_TAT === true || this.confF_TEXT != null)
                           ? true : false; // フィルタ指定の有無
             
-            c = new Util.Config("File"); // #76 
+            c = new Util.Config("File"); // #76
             this.confF_SEP = c.getConfig("SEP").charCodeAt(0);
         }
         
@@ -279,16 +280,17 @@ export default (function() {
             this.confTIME_POS = (c.getConfig("TIME_POS") || 1) - 1;  // 時刻(X)の先頭バイト位置
             this.confTIME_LEN = (c.getConfig("TIME_LEN") || 0);      // 時刻(X)のバイト長
             this.confTIME_FORM = c.getConfig("TIME_FORM");           // 時刻(X)の文字フォーマット指定
-            this.confTIME_YMD = (c.getConfig("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
+            this.confTIME_YMD = (c.getConfig("TIME_YMD") || '"YYYY/MM/DD hh.mm.ss.000"'); // #42
                                                                     // 時刻(X)のYMDフォーマット
-            this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
+                                                                    // #92
+            this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.000 #41
                 YYYY: this.confTIME_YMD.indexOf("YYYY"),
                 MM: this.confTIME_YMD.indexOf("MM"),
                 DD: this.confTIME_YMD.indexOf("DD"),
                 hh: this.confTIME_YMD.indexOf("hh"),
                 mm: this.confTIME_YMD.indexOf("mm"),
                 ss: this.confTIME_YMD.indexOf("ss"),
-                ppp: this.confTIME_YMD.indexOf("p"),
+                p000: this.confTIME_YMD.indexOf("0"), // #92
             };
             this.isYMD = (this.confTIME_FORM === "TIME_FORM_YMD");
             // 時刻(X)の数値単位(1or1000,YMDのとき1)
@@ -315,21 +317,29 @@ export default (function() {
         
         // class method
         /**
-         * 数字をパースして数値（ミリ秒）を取得する&lt;br>
-         * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
+         * 数値(秒)、時間（時分秒)をパースして数値（秒*unit）を取得する&lt;br>
+         * 数値でない場合 NaN を返却する&lt;br>
+         * /[0-9,:\. ]+/ に合致する文字列のみを処理する 例： argY: "-1:1:1.2" unit:1000 ->
+         * -3661200 ms = -(1*60*60 + 1*60 + 1.2)*1000
          * 
          * @memberof TimeSeries.FileParser.GetterOfXY
          */
-        GetterOfXY.parseNumber = function (){ // str, unit,
-            var str = arguments[0],
+        GetterOfXY.parseNumber = function (){ // argY, unit,
+            var argY = arguments[0],
                 unit = arguments[1];
-            if(!str) {console.log("data Y parse error"); return 0; }
+            if(!argY) {console.log("data Y parse error"); return 0; }
+            // 数値を含まないとき NaN を返却する
+            var nums =  argY.match(/[0-9,:\. ]+/); // #92
+            if (!nums) return NaN; // #93
+            // 時分秒(hh:mm:ss.000)を秒にする
+            var str = nums[0];
             var ds = (str.indexOf(":") &lt; 0) ? [str] : str.split(":"),   // #40
                 pm = (0 &lt;= ds[0]) ? 1 : -1,
                 sec = 0.0;
             for(var i = 0; i &lt; ds.length; i++){
                 sec += pm * Math.abs(ds[i]) * Math.pow(60, ds.length - i - 1);
             }
+            // 単位補正する（ミリ秒指定の場合 unit = 1000）
             return sec * (unit || 1);
         };
 
@@ -413,7 +423,7 @@ export default (function() {
             
             if(0 &lt; x &amp;&amp; 0 &lt;= y){ // 正常時
                 return {x: x, y: y, isError: false };
-            } else {            // エラー時
+            } else {            // エラー時、（ NaN の場合を含む）
                 return {x: x, y: y, isError: true };
             }
         };
@@ -434,17 +444,17 @@ export default (function() {
         var text = "";
         if (typeof e.pos === "undefined") { // 生成データのとき
             // 生成データをCSVのログデータとして編集する #61
-            text = Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
+            text = Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.000", true) // #92
                     + ", " + e.y + ", " + e.message; // #53
             // 状態遷移履歴を追加する #62
             if (e.history){
                 e.history.forEach(function(h){
                     var timeStr = "";
                     if (typeof(h.time) === "number") {
-                        timeStr = Util.D2S(h.time, "mm:ss.ppp", true) + " seq:"
+                        timeStr = Util.D2S(h.time, "mm:ss.000", true) + " seq:" // #92
                     }
                     text += " [" + h.sequenceIdx + ":" + h.status + "]" // #61
-                        + timeStr + Util.D2S(h.sequenceTime, "mm:ss.ppp", true);
+                        + timeStr + Util.D2S(h.sequenceTime, "mm:ss.000", true); // #92
                 }, this);
             }
         } else { // ファイル読込のとき
@@ -472,18 +482,15 @@ export default (function() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Util.html">Util</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Usage.html">Usage</a></li><li><a href="Util.html">Util</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-<<<<<<< Upstream, based on branch 'gh-pages' of https://github.com/hirosejn/HJN.git
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 01:39:01 GMT+0900 (東京 (標準時))
-=======
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 25 2018 15:42:41 GMT+0900 (東京 (標準時))
->>>>>>> 785cc0d drag element (masterリリース) #79
-    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017 Junichiroh Hirose</a>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
 </footer>
 
 <script> prettyPrint(); </script>

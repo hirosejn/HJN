@@ -34,7 +34,7 @@ export default (function() { // #53
         this._thinkTimeMin = Math.max(0,
                 (typeof(model.thinkTimeMin) !== "undefined") ? model.thinkTimeMin : 500);
         // メッセージ（ログ末尾に付与する文字列）
-        this._baseMessage = model.message + "\n";
+        this._baseMessage = model.message; // + "\n"; // #88
         this._message = "";
         this._history = []; // #62
 
@@ -88,7 +88,7 @@ export default (function() { // #53
                 + resource._holdHeap.size() + "="
                 + resource._holdingQty + " qty] ") : " ";
         text = text || "";
-        var logText = Util.D2S(this.getTime(),"hh:mm:ss.ppp",true) 
+        var logText = Util.D2S(this.getTime(),"hh:mm:ss.000",true) 
                     + user +"(" + this._times + "-" + this._sequenceIdx + ")"
                     + resourceText 
                     + text;
@@ -242,10 +242,10 @@ export default (function() { // #53
     VirtualApp.prototype.addHistory = function(status, time) {
 // var timeStr = "";
 // if (typeof(time) === "number") {
-// timeStr = Util.D2S(time, "mm:ss.ppp", true) + " seq:"
+// timeStr = Util.D2S(time, "mm:ss.000", true) + " seq:"
 // }
 // this._message += " [" + this._sequenceIdx + ":" + status + "]" // #61
-// + timeStr + Util.D2S(this._sequenceTime, "mm:ss.ppp", true);
+// + timeStr + Util.D2S(this._sequenceTime, "mm:ss.000", true);
         // 状態遷移履歴（ログ出力用）を追加する
         this._history.push({ // #62
             sequenceIdx : this._sequenceIdx,
@@ -359,7 +359,7 @@ export default (function() { // #53
         } else  {
             this.logger(0, system._log, now, this, undefined,
                     'finish() Unexpected error★ _startTime > _sequenceTime:'
-                    + Util.D2S(this._startTime, "hh:mm:ss.ppp", true)
+                    + Util.D2S(this._startTime, "hh:mm:ss.000", true)
                             + " " + this._startTime + " > " + now
                             + " Idx:" + this._sequenceIdx 
                     , logText);

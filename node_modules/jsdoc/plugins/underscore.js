@@ -6,6 +6,7 @@
  * automatically hides them.
  *
  * @module plugins/underscore
+ * @author Daniel Ellis <coug36@gmail.com>
  */
 
 exports.handlers = {

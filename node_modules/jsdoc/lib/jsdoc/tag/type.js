@@ -1,5 +1,9 @@
 /**
  * @module jsdoc/tag/type
+ *
+ * @author Michael Mathews <micmath@gmail.com>
+ * @author Jeff Williams <jeffrey.l.williams@gmail.com>
+ * @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
@@ -37,7 +41,7 @@ function unescapeBraces(text) {
  * @param {string} string - The tag text.
  * @return {module:jsdoc/tag/type.TypeExpressionInfo} The type expression and updated tag text.
  */
-function extractTypeExpression(string) {
+ function extractTypeExpression(string) {
     var completeExpression;
     var count = 0;
     var position = 0;
@@ -239,6 +243,7 @@ function getTypeStrings(parsedType, isOutermostType) {
  * @return {module:jsdoc/tag/type.TagInfo} Updated information from the tag.
  */
 function parseTypeExpression(tagInfo) {
+    var errorMessage;
     var parsedType;
 
     // don't try to parse empty type expressions
@@ -288,17 +293,13 @@ var typeParsers = [parseName, parseTypeExpression];
  * @throws {Error} Thrown if a type expression cannot be parsed.
  */
 exports.parse = function(tagValue, canHaveName, canHaveType) {
-    var tagInfo;
+    if (typeof tagValue !== 'string') { tagValue = ''; }
 
-    if (typeof tagValue !== 'string') {
-        tagValue = '';
-    }
-
-    tagInfo = getTagInfo(tagValue, canHaveName, canHaveType);
+    var tagInfo = getTagInfo(tagValue, canHaveName, canHaveType);
     tagInfo.type = tagInfo.type || [];
 
     typeParsers.forEach(function(parser) {
-        tagInfo = parser(tagInfo);
+        tagInfo = parser.call(this, tagInfo);
     });
 
     // if we wanted a type, but the parsers didn't add any type names, use the type expression

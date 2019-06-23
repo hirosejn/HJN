@@ -1,6 +1,8 @@
 /**
  * Parse the command line arguments.
  * @module jsdoc/opts/argparser
+ * @author Michael Mathews <micmath@gmail.com>
+ * @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
@@ -25,7 +27,6 @@ ArgParser.prototype._getOptionByShortName = function(name) {
     if (hasOwnProp.call(this._shortNameIndex, name)) {
         return this._options[this._shortNameIndex[name]];
     }
-
     return null;
 };
 
@@ -33,7 +34,6 @@ ArgParser.prototype._getOptionByLongName = function(name) {
     if (hasOwnProp.call(this._longNameIndex, name)) {
         return this._options[this._longNameIndex[name]];
     }
-
     return null;
 };
 
@@ -129,7 +129,6 @@ function findMaxLength(arr) {
 
 function concatWithMaxLength(items, maxLength) {
     var result = '';
-
     // to prevent endless loops, always use the first item, regardless of length
     result += items.shift();
 
@@ -149,8 +148,9 @@ function formatHelpInfo(options) {
 
     var maxLength = process.stdout.columns;
     var maxNameLength = findMaxLength(options.names);
-    var wrapDescriptionAt = maxLength - (MARGIN_LENGTH * 3) - maxNameLength;
+    var maxDescriptionLength = findMaxLength(options.descriptions);
 
+    var wrapDescriptionAt = maxLength - (MARGIN_LENGTH * 3) - maxNameLength;
     // build the string for each option
     options.names.forEach(function(name, i) {
         var result;
@@ -224,21 +224,17 @@ ArgParser.prototype.help = function() {
  * that option. The values will be the values provided, or `true` if the option accepts no value.
  */
 ArgParser.prototype.parse = function(args, defaults) {
-    var arg;
-    var next;
-    var option;
-    var result = ( defaults && _.defaults({}, defaults) ) || {};
-    var shortName;
-    var longName;
-    var name;
-    var value;
+    var result = defaults && _.defaults({}, defaults) || {};
 
     result._ = [];
-    for (var i = 0, l = args.length; i < l; i++) {
-        arg = String(args[i]);
-        next = (i < l - 1) ? String(args[i + 1]) : null;
-        shortName = null;
-        value = null;
+    for (var i = 0, leni = args.length; i < leni; i++) {
+        var arg = '' + args[i],
+            next = (i < leni - 1) ? '' + args[i + 1] : null,
+            option,
+            shortName = null,
+            longName,
+            name,
+            value = null;
 
         // like -t
         if (arg.charAt(0) === '-') {

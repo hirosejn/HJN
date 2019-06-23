@@ -43,8 +43,8 @@ export default (function() {
          *            <p>
          *            ファクトリのFileParserが保持する改行コードを用いて、ファイルから１レコードを取得する
          * 
-         * @example try{ var getterOfLine =
-         *          FileParser.createGetterOfLine(file), fileInfo;<br>
+         * @example try{ var getterOfLine = FileParser.createGetterOfLine(file),
+         *          fileInfo;<br>
          *          for(var i = 0; i < n; i++) { <br>
          *          line = getterOfLine.next(); fileInfo += line.str + "<BR>"; }<br>
          *          }catch (e) {<br>
@@ -56,7 +56,8 @@ export default (function() {
             this.file = file;
             this.buf = new Uint8Array(file);
             this.maxLength = maxLength || this.buf.length,
-            this.confLF = Util.Config.File.getConfig("LF");  // 改行コードor固定レコード長 #76
+            this.confLF = Util.Config.File.getConfig("LF");  // 改行コードor固定レコード長
+                                                                // #76
             this.from = 0;
             this.to = 0;
             this.len = 0;
@@ -155,7 +156,7 @@ export default (function() {
                             || this.confF_TAT === true || this.confF_TEXT != null)
                           ? true : false; // フィルタ指定の有無
             
-            c = new Util.Config("File"); // #76 
+            c = new Util.Config("File"); // #76
             this.confF_SEP = c.getConfig("SEP").charCodeAt(0);
         }
         
@@ -251,16 +252,17 @@ export default (function() {
             this.confTIME_POS = (c.getConfig("TIME_POS") || 1) - 1;  // 時刻(X)の先頭バイト位置
             this.confTIME_LEN = (c.getConfig("TIME_LEN") || 0);      // 時刻(X)のバイト長
             this.confTIME_FORM = c.getConfig("TIME_FORM");           // 時刻(X)の文字フォーマット指定
-            this.confTIME_YMD = (c.getConfig("TIME_YMD") || "YYYY/MM/DD hh.mm.ss.ppp"); // #42
+            this.confTIME_YMD = (c.getConfig("TIME_YMD") || '"YYYY/MM/DD hh.mm.ss.000"'); // #42
                                                                     // 時刻(X)のYMDフォーマット
-            this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.ppp #41
+                                                                    // #92
+            this.paseDateConf = {  // YYYY/MM/DD hh:mm:dd.ss.000 #41
                 YYYY: this.confTIME_YMD.indexOf("YYYY"),
                 MM: this.confTIME_YMD.indexOf("MM"),
                 DD: this.confTIME_YMD.indexOf("DD"),
                 hh: this.confTIME_YMD.indexOf("hh"),
                 mm: this.confTIME_YMD.indexOf("mm"),
                 ss: this.confTIME_YMD.indexOf("ss"),
-                ppp: this.confTIME_YMD.indexOf("p"),
+                p000: this.confTIME_YMD.indexOf("0"), // #92
             };
             this.isYMD = (this.confTIME_FORM === "TIME_FORM_YMD");
             // 時刻(X)の数値単位(1or1000,YMDのとき1)
@@ -287,21 +289,29 @@ export default (function() {
         
         // class method
         /**
-         * 数字をパースして数値（ミリ秒）を取得する<br>
-         * 例："-1:1:1.2 -> -3661200 ms = -1*(3600+60+1+0.2)*1000
+         * 数値(秒)、時間（時分秒)をパースして数値（秒*unit）を取得する<br>
+         * 数値でない場合 NaN を返却する<br>
+         * /[0-9,:\. ]+/ に合致する文字列のみを処理する 例： argY: "-1:1:1.2" unit:1000 ->
+         * -3661200 ms = -(1*60*60 + 1*60 + 1.2)*1000
          * 
          * @memberof TimeSeries.FileParser.GetterOfXY
          */
-        GetterOfXY.parseNumber = function (){ // str, unit,
-            var str = arguments[0],
+        GetterOfXY.parseNumber = function (){ // argY, unit,
+            var argY = arguments[0],
                 unit = arguments[1];
-            if(!str) {console.log("data Y parse error"); return 0; }
+            if(!argY) {console.log("data Y parse error"); return 0; }
+            // 数値を含まないとき NaN を返却する
+            var nums =  argY.match(/[0-9,:\. ]+/); // #92
+            if (!nums) return NaN; // #93
+            // 時分秒(hh:mm:ss.000)を秒にする
+            var str = nums[0];
             var ds = (str.indexOf(":") < 0) ? [str] : str.split(":"),   // #40
                 pm = (0 <= ds[0]) ? 1 : -1,
                 sec = 0.0;
             for(var i = 0; i < ds.length; i++){
                 sec += pm * Math.abs(ds[i]) * Math.pow(60, ds.length - i - 1);
             }
+            // 単位補正する（ミリ秒指定の場合 unit = 1000）
             return sec * (unit || 1);
         };
 
@@ -385,7 +395,7 @@ export default (function() {
             
             if(0 < x && 0 <= y){ // 正常時
                 return {x: x, y: y, isError: false };
-            } else {            // エラー時
+            } else {            // エラー時、（ NaN の場合を含む）
                 return {x: x, y: y, isError: true };
             }
         };
@@ -406,17 +416,17 @@ export default (function() {
         var text = "";
         if (typeof e.pos === "undefined") { // 生成データのとき
             // 生成データをCSVのログデータとして編集する #61
-            text = Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.ppp", true)
+            text = Util.D2S(e.x, "yyyy/MM/dd hh:mm:ss.000", true) // #92
                     + ", " + e.y + ", " + e.message; // #53
             // 状態遷移履歴を追加する #62
             if (e.history){
                 e.history.forEach(function(h){
                     var timeStr = "";
                     if (typeof(h.time) === "number") {
-                        timeStr = Util.D2S(h.time, "mm:ss.ppp", true) + " seq:"
+                        timeStr = Util.D2S(h.time, "mm:ss.000", true) + " seq:" // #92
                     }
                     text += " [" + h.sequenceIdx + ":" + h.status + "]" // #61
-                        + timeStr + Util.D2S(h.sequenceTime, "mm:ss.ppp", true);
+                        + timeStr + Util.D2S(h.sequenceTime, "mm:ss.000", true); // #92
                 }, this);
             }
         } else { // ファイル読込のとき

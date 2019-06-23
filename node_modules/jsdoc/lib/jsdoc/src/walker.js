@@ -1,13 +1,29 @@
 /**
- * Traversal utilities for ASTs that are compatible with the ESTree API.
+ * Traversal utilities for ASTs that are compatible with the Mozilla Parser API. Adapted from
+ * [Acorn](http://marijnhaverbeke.nl/acorn/).
  *
  * @module jsdoc/src/walker
+ * @license MIT
  */
 'use strict';
 
 var astnode = require('jsdoc/src/astnode');
-var logger = require('jsdoc/util/logger');
+var doclet = require('jsdoc/doclet');
 var Syntax = require('jsdoc/src/syntax').Syntax;
+
+/**
+ * Check whether an AST node creates a new scope.
+ *
+ * @private
+ * @param {Object} node - The AST node to check.
+ * @return {Boolean} Set to `true` if the node creates a new scope, or `false` in all other cases.
+ */
+function isScopeNode(node) {
+    // TODO: handle blocks with "let" declarations
+    return node && typeof node === 'object' && (node.type === Syntax.CatchClause ||
+        node.type === Syntax.FunctionDeclaration || node.type === Syntax.FunctionExpression ||
+        node.type === Syntax.ArrowFunctionExpression);
+}
 
 // TODO: docs
 function getCurrentScope(scopes) {
@@ -15,44 +31,21 @@ function getCurrentScope(scopes) {
 }
 
 // TODO: docs
-function moveLeadingComments(source, target, count) {
+function moveComments(source, target) {
     if (source.leadingComments) {
-        if (count === undefined) {
-            count = source.leadingComments.length;
-        }
-
-        target.leadingComments = source.leadingComments.slice(0, count);
-        source.leadingComments = source.leadingComments.slice(count);
+        target.leadingComments = source.leadingComments.slice(0);
+        source.leadingComments = [];
     }
 }
 
-// TODO: docs
-function moveTrailingComments(source, target, count) {
-    if (source.trailingComments) {
-        if (count === undefined) {
-            count = source.trailingComments.length;
-        }
-
-        target.trailingComments = source.trailingComments.slice(
-            source.trailingComments.length - count, count
-        );
-        source.trailingComments = source.trailingComments.slice(0);
-    }
-}
-
-/* eslint-disable no-empty-function, no-unused-vars */
 function leafNode(node, parent, state, cb) {}
-/* eslint-enable no-empty-function, no-unused-vars */
 
 // TODO: docs
 var walkers = exports.walkers = {};
 
 walkers[Syntax.ArrayExpression] = function(node, parent, state, cb) {
-    var e;
-
     for (var i = 0, l = node.elements.length; i < l; i++) {
-        e = node.elements[i];
-
+        var e = node.elements[i];
         if (e) {
             cb(e, node, state);
         }
@@ -61,10 +54,8 @@ walkers[Syntax.ArrayExpression] = function(node, parent, state, cb) {
 
 // TODO: verify correctness
 walkers[Syntax.ArrayPattern] = function(node, parent, state, cb) {
-    var e;
-
     for (var i = 0, l = node.elements.length; i < l; i++) {
-        e = node.elements[i];
+        var e = node.elements[i];
         // must be an identifier or an expression
         if (e && e.type !== Syntax.Identifier) {
             cb(e, node, state);
@@ -94,23 +85,9 @@ walkers[Syntax.AssignmentExpression] = function(node, parent, state, cb) {
 
 walkers[Syntax.AssignmentPattern] = walkers[Syntax.AssignmentExpression];
 
-walkers[Syntax.AwaitExpression] = function(node, parent, state, cb) {
-    cb(node.argument, node, state);
-};
-
-walkers[Syntax.BigIntLiteral] = leafNode;
-
 walkers[Syntax.BinaryExpression] = function(node, parent, state, cb) {
     cb(node.left, node, state);
     cb(node.right, node, state);
-};
-
-walkers[Syntax.BindExpression] = function(node, parent, state, cb) {
-    if (node.object) {
-        cb(node.object, node, state);
-    }
-
-    cb(node.callee, node, state);
 };
 
 walkers[Syntax.BlockStatement] = function(node, parent, state, cb) {
@@ -149,19 +126,9 @@ walkers[Syntax.ClassDeclaration] = function(node, parent, state, cb) {
     if (node.body) {
         cb(node.body, node, state);
     }
-
-    if (node.decorators) {
-        for (var i = 0, l = node.decorators.length; i < l; i++) {
-            cb(node.decorators[i], node, state);
-        }
-    }
 };
 
 walkers[Syntax.ClassExpression] = walkers[Syntax.ClassDeclaration];
-
-// walkers[Syntax.ClassPrivateProperty] is defined later
-
-// walkers[Syntax.ClassProperty] is defined later
 
 // TODO: verify correctness
 walkers[Syntax.ComprehensionBlock] = walkers[Syntax.AssignmentExpression];
@@ -189,14 +156,6 @@ walkers[Syntax.ContinueStatement] = leafNode;
 
 walkers[Syntax.DebuggerStatement] = leafNode;
 
-walkers[Syntax.Decorator] = function(node, parent, state, cb) {
-    cb(node.expression, node, state);
-};
-
-walkers[Syntax.DoExpression] = function(node, parent, state, cb) {
-    cb(node.body, node, state);
-};
-
 walkers[Syntax.DoWhileStatement] = function(node, parent, state, cb) {
     cb(node.test, node, state);
     cb(node.body, node, state);
@@ -219,16 +178,12 @@ walkers[Syntax.ExportAllDeclaration] = function(node, parent, state, cb) {
 walkers[Syntax.ExportDefaultDeclaration] = function(node, parent, state, cb) {
     // if the declaration target is a class, move leading comments to the declaration target
     if (node.declaration && node.declaration.type === Syntax.ClassDeclaration) {
-        moveLeadingComments(node, node.declaration);
+        moveComments(node, node.declaration);
     }
 
     if (node.declaration) {
         cb(node.declaration, node, state);
     }
-};
-
-walkers[Syntax.ExportDefaultSpecifier] = function(node, parent, state, cb) {
-    cb(node.exported, node, state);
 };
 
 walkers[Syntax.ExportNamedDeclaration] = function(node, parent, state, cb) {
@@ -248,10 +203,6 @@ walkers[Syntax.ExportNamedDeclaration] = function(node, parent, state, cb) {
     }
 };
 
-walkers[Syntax.ExportNamespaceSpecifier] = function(node, parent, state, cb) {
-    cb(node.exported, node, state);
-};
-
 walkers[Syntax.ExportSpecifier] = function(node, parent, state, cb) {
     if (node.exported) {
         cb(node.exported, node, state);
@@ -263,13 +214,7 @@ walkers[Syntax.ExportSpecifier] = function(node, parent, state, cb) {
 };
 
 walkers[Syntax.ExpressionStatement] = function(node, parent, state, cb) {
-    moveLeadingComments(node, node.expression);
-
     cb(node.expression, node, state);
-};
-
-walkers[Syntax.File] = function(node, parent, state, cb) {
-    cb(node.program, node, state);
 };
 
 walkers[Syntax.ForInStatement] = function(node, parent, state, cb) {
@@ -309,8 +254,6 @@ walkers[Syntax.IfStatement] = function(node, parent, state, cb) {
         cb(node.alternate, node, state);
     }
 };
-
-walkers[Syntax.Import] = leafNode;
 
 walkers[Syntax.ImportDeclaration] = function(node, parent, state, cb) {
     if (node.specifiers) {
@@ -398,10 +341,8 @@ walkers[Syntax.LabeledStatement] = function(node, parent, state, cb) {
 
 // TODO: add scope info??
 walkers[Syntax.LetStatement] = function(node, parent, state, cb) {
-    var head;
-
     for (var i = 0, l = node.head.length; i < l; i++) {
-        head = node.head[i];
+        var head = node.head[i];
         cb(head.id, node, state);
         if (head.init) {
             cb(head.init, node, state);
@@ -432,12 +373,6 @@ walkers[Syntax.MethodDefinition] = function(node, parent, state, cb) {
     if (node.value) {
         cb(node.value, node, state);
     }
-
-    if (node.decorators) {
-        for (var i = 0, l = node.decorators.length; i < l; i++) {
-            cb(node.decorators[i], node, state);
-        }
-    }
 };
 
 walkers[Syntax.ModuleDeclaration] = function(node, parent, state, cb) {
@@ -464,46 +399,14 @@ walkers[Syntax.ObjectExpression] = function(node, parent, state, cb) {
 
 walkers[Syntax.ObjectPattern] = walkers[Syntax.ObjectExpression];
 
-walkers[Syntax.PrivateName] = function(node, parent, state, cb) {
-    cb(node.name, node, state);
-};
-
-walkers[Syntax.Program] = function(node, parent, state, cb) {
-    // if the first item in the body has multiple leading comments, move all but the last one to
-    // this node. this happens, for example, when a file has a /** @module */ standalone comment
-    // followed by one or more other comments.
-    if (node.body[0] && node.body[0].leadingComments && node.body[0].leadingComments.length > 1) {
-        moveLeadingComments(node.body[0], node, node.body[0].leadingComments.length - 1);
-    }
-
-    // if the last item in the body has trailing comments, move them to this node
-    if (node.body.length && node.body[node.body.length - 1].trailingComments) {
-        moveTrailingComments(node.body[node.body.length - 1], node);
-    }
-
-    for (var i = 0, l = node.body.length; i < l; i++) {
-        cb(node.body[i], node, state);
-    }
-};
+walkers[Syntax.Program] = walkers[Syntax.BlockStatement];
 
 walkers[Syntax.Property] = function(node, parent, state, cb) {
     // move leading comments from key to property node
-    moveLeadingComments(node.key, node);
+    moveComments(node.key, node);
 
-    if (node.value) {
-        cb(node.value, node, state);
-    }
-
-    if (node.decorators) {
-        for (var i = 0, l = node.decorators.length; i < l; i++) {
-            cb(node.decorators[i], node, state);
-        }
-    }
+    cb(node.value, node, state);
 };
-
-walkers[Syntax.ClassPrivateProperty] = walkers[Syntax.Property];
-
-walkers[Syntax.ClassProperty] = walkers[Syntax.Property];
 
 walkers[Syntax.RestElement] = function(node, parent, state, cb) {
     if (node.argument) {
@@ -584,6 +487,9 @@ walkers[Syntax.ThrowStatement] = function(node, parent, state, cb) {
 };
 
 walkers[Syntax.TryStatement] = function(node, parent, state, cb) {
+    var i;
+    var l;
+
     cb(node.block, node, state);
 
     if (node.handler) {
@@ -603,7 +509,7 @@ walkers[Syntax.UpdateExpression] = walkers[Syntax.UnaryExpression];
 
 walkers[Syntax.VariableDeclaration] = function(node, parent, state, cb) {
     // move leading comments to first declarator
-    moveLeadingComments(node, node.declarations[0]);
+    moveComments(node, node.declarations[0]);
 
     for (var i = 0, l = node.declarations.length; i < l; i++) {
         cb(node.declarations[i], node, state);
@@ -650,11 +556,6 @@ Walker.prototype._recurse = function(filename, ast) {
         scopes: []
     };
 
-    function logUnknownNodeType(node) {
-        logger.debug('Found a node with unrecognized type %s. Ignoring the node and its ' +
-            'descendants.', node.type);
-    }
-
     function cb(node, parent, cbState) {
         var currentScope;
 
@@ -673,11 +574,7 @@ Walker.prototype._recurse = function(filename, ast) {
         }
         cbState.nodes.push(node);
 
-        if (!self._walkers[node.type]) {
-            logUnknownNodeType(node);
-        } else {
-            self._walkers[node.type](node, parent, cbState, cb);
-        }
+        self._walkers[node.type](node, parent, cbState, cb);
 
         if (isScope) {
             cbState.scopes.pop();
@@ -696,7 +593,7 @@ Walker.prototype.recurse = function(ast, visitor, filename) {
 
     if (visitor) {
         for (var i = 0, l = state.nodes.length; i < l; i++) {
-            shouldContinue = visitor.visit(state.nodes[i], filename);
+            shouldContinue = visitor.visit.call(visitor, state.nodes[i], filename);
             if (!shouldContinue) {
                 break;
             }

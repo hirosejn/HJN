@@ -1,5 +1,8 @@
 /**
- * @module jsdoc/src/filter
+    @module jsdoc/src/filter
+
+    @author Michael Mathews <micmath@gmail.com>
+    @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
 'use strict';
 
@@ -17,11 +20,11 @@ function makeRegExp(config) {
 }
 
 /**
- * @constructor
- * @param {Object} opts
- * @param {string[]} opts.exclude - Specific files to exclude.
- * @param {(string|RegExp)} opts.includePattern
- * @param {(string|RegExp)} opts.excludePattern
+    @constructor
+    @param {object} opts
+    @param {string[]} opts.exclude - Specific files to exclude.
+    @param {string|RegExp} opts.includePattern
+    @param {string|RegExp} opts.excludePattern
  */
 exports.Filter = function(opts) {
     this.exclude = opts.exclude && Array.isArray(opts.exclude) ?
@@ -34,8 +37,8 @@ exports.Filter = function(opts) {
 };
 
 /**
- * @param {string} filepath - The filepath to check.
- * @returns {boolean} Should the given file be included?
+    @param {string} filepath - The filepath to check.
+    @returns {boolean} Should the given file be included?
  */
 exports.Filter.prototype.isIncluded = function(filepath) {
     var included = true;

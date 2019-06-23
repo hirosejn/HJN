@@ -4,7 +4,8 @@
  */
 'use strict';
 
-var dictionary = require('jsdoc/tag/dictionary');
+var logger = require('jsdoc/util/logger');
+var path = require('jsdoc/path');
 
 function addHandlers(handlers, parser) {
     Object.keys(handlers).forEach(function(eventName) {
@@ -13,6 +14,9 @@ function addHandlers(handlers, parser) {
 }
 
 exports.installPlugins = function(plugins, parser) {
+    var dictionary = require('jsdoc/tag/dictionary');
+
+    var eventName;
     var plugin;
 
     for (var i = 0, l = plugins.length; i < l; i++) {
