@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/util/util-Logger.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/util/util-Logger.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {D2S} from './util.js';
+
+/**
+ * @memberOf Util
+ * @class Logger
+ * @classdesc ロガー
+ *            &lt;p>
+ *            モードに応じたログを出力する。画面ログ表示領域、コンソールログへの出力に対応
+ * 
+ * @param {String}
+ *            [mode=0] ログ出力モード
+ */
+export default (function() { // #27
+    /** @static */
+    Logger.prototype = {
+            _logText: [],
+            _timestamp : new Date(),
+            _logtime : new Date()
+        };
+    /** @constructor */
+    function Logger(mode){
+        if(!(this instanceof Logger)) return new Logger(mode);
+        this._mode = mode || 0;
+        // getKeyによりIndex作成関数を設定する
+    }
+    /**
+     * 一定時間（１分）経過後、最初に本メソッドが呼ばれたときのみログ出力する（ループ用）
+     * 
+     * @memberof Util.Logger
+     * @param {Number}
+     *            i 参考番号&lt;br>
+     *            経過時間内のループ回数などの表示に使用することを想定
+     * @param {String}
+     *            text ログ出力文字列
+     */
+    Logger.ByInterval = function(i, text) {
+        var ts = new Date(),
+            freq = 60000;   // 1分毎
+        if (freq &lt; ts - Logger._logtime){
+            var t = D2S(ts, "hh:mm:ss.000"); // #60 #92
+            console.log(t + "[" + i + "]~~~~" + text);
+            Logger._logtime = ts;
+        }
+    };
+    /**
+     * ログ出力： ログテキストおよびタイムスタンプを初期化する
+     * 
+     * @memberof Util.Logger
+     * @param {String}
+     *            text ログ出力文字列
+     * @param {String}
+     *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
+     */
+    Logger.ShowLogTextInit=function(text, type) {
+        Logger._timestamp = new Date();
+        Logger._logText = [];
+        if(text) Logger.ShowLogText(text, type);
+    };
+    /**
+     * ログ出力： タイムスタンプを初期化する
+     * 
+     * @memberof Util.Logger
+     */
+    Logger.ResetTimestamp=function() {
+        Logger._timestamp = new Date();
+    };
+    /**
+     * ログ出力： ログテキストをテキストアレイに追記し、表示する
+     * 
+     * @memberof Util.Logger
+     * @param {String}
+     *            text ログ出力文字列
+     * @param {String}
+     *            [type] ログ区分（"calc"：計算用ログ、"msg"：メッセージのみ（タイムスタンプなし））
+     * @param {Boolean}
+     *            [isSameline=false] 直前のログと同一ラインにするか
+     */
+    Logger.ShowLogText=function(text, type, isSameline) {
+        if (type === "calc") return; // 集計時評価用ログ出力抑止
+        // "msg"指定のときは経過時間を取らずに、ログのみ出力する
+        if (type !== "msg"){
+            // 処理時間情報を追加する
+            var lastTimestamp = Logger._timestamp;
+            Logger._timestamp = new Date();
+            text = (Math.round( Logger._timestamp - lastTimestamp ) / 1000.0)
+                    + "s " + text;
+            // 数値のカンマ編集（小数部もカンマが入る）
+            text = text.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        }
+        if (isSameline){
+            var last = Logger._logText.length - 1;
+            Logger._logText[last] += text;
+        } else {
+            Logger._logText.push(text);
+        }
+        Logger.ShowText(Logger._logText);
+        if(true) console.log(D2S(Logger._timestamp, "hh:mm:ss.000     ") + text); // #60 #92
+    };
+    /**
+     * 第一引数のテキストアレイの内容を#fileInfoのiframeに表示する
+     * 
+     * @memberof Util.Logger
+     * @param {String}
+     *            textArray 出力するログ（配列１行がログ１件）
+     */
+    Logger.ShowText=function(textArray) {
+        var iHtmlBody = "";
+        for (var i = textArray.length - 1; 0 &lt;= i; i--){
+            iHtmlBody += textArray[i] + "&lt;BR>"; 
+        }
+        Logger.ShowIHtmlBody('fileInfo',iHtmlBody);
+    };
+    /**
+     * 第一引数のID名のiframeに、第二引数のログ（HTML化）を表示する
+     * 
+     * @memberof Util.Logger
+     * @param {String}
+     *            elementId iframeのID名
+     * @param {String}
+     *            iHtmlBody ログ（HTML化）
+     */
+    Logger.ShowIHtmlBody=function(elementId, iHtmlBody){
+        var body = document.createElement('body');
+        body.innerHTML = ""
+            + "&lt;style>body{font-size: x-small; margin: 0; }&lt;/style>"
+            + "&lt;body id='iHtmlBody'>" + iHtmlBody + "&lt;/body>";
+        var iframe = document.getElementById(elementId);
+        iframe.contentDocument.body = body;
+    };
+    
+    // newの戻り値
+    return Logger;
+}());</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

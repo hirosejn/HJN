@@ -7,3 +7,7 @@ import Graph from "./tatLogDiver-Graph.js";
 window.addEventListener("DOMContentLoaded",function(eve){
     Init("chart");      // チャートを作成する
 });
+
+export {
+    Init
+}

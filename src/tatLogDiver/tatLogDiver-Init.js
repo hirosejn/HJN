@@ -3,7 +3,6 @@ import * as TimeSeries from '../timeSeries/timeSeries.js';
 import * as Simulator from '../simulator/simulator.js';
 import {HJN} from './tatLogDiver-HJN.js';
 import {Copyright} from "./tatLogDiver-Copyright.js";
-import {Usage} from './tatLogDiver-Usage.js'; // #84
 import Graph from './tatLogDiver-Graph.js';
 import Plot  from './tatLogDiver-Plot.js';
 import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
@@ -13,7 +12,8 @@ import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
 /**
  * HTMLから呼び出すAPI
  * 
- * @memberof Init
+ * @memberof HJN
+ * @class Init
  * @param {string}
  *            [chartName=HJN.chartName="chart"] グラフを作成するHTMLタグ名
  * @return {ETAT} 終了時刻のTAT（応答時間）時系列データ
@@ -112,11 +112,11 @@ export default function Init(chartName){ // #70
 /**
  * スタイルを初期設定する（Reset zoomボタンからも呼ばれる）
  * 
+ * @memberof HJN.init
  * @param {Boolean}
  *            [isInit=false] リセット時true：初期設定値も再設定する
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
  * 
- * @memberof Init
  */
 HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
 	// 指定クラス名が設定された要素にスタイルを設定する
@@ -141,7 +141,7 @@ HJN.init.ResetStyle = Init.ResetStyle = function(isInit){ // #79
 /**
  * データを自動生成し表示する
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {String|Number}
  *            [json = Simulator.virtualSystemByJson.GetJsonConfig(0)]
  *            シミュレーション条件JSONテキスト、もしくはサンプルJSON番号
@@ -164,7 +164,7 @@ export function CreateSampleTatLogAndChartShow(json){ // #53
 /**
  * 終了時刻とtatの配列をグラフ表示する（Menuイベントから呼び出される）
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {ETAT}
  *            HJN.chart.eTatOriginal 終了時刻とtatを含む配列
  */
@@ -226,7 +226,7 @@ function showLogForLowerGraph(fileName){
 /**
  * HTMLタグに、CSVファイルのドロップを受付けイベントを登録する
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {string}
  *            dropFieldName ファイルのドロップイベントを受けるフィールド名
  */
@@ -252,7 +252,7 @@ Init.DropField = function (dropFieldName) {
 /**
  * 指定されたファイルを読込んで処理する
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {Object}
  *            files ファイルハンドラ
  */
@@ -386,7 +386,7 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 /**
  * 詳細グラフ用機能： 表示対象期間のcTpsから、eTps範囲を取得し、詳細Seriesを生成する。併せてPlotsを登録する。
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {xMs}
  *            cTps 日時（ミリ秒単位）
  * @return {seriesSet} dygraph用時系列データ配列
@@ -423,7 +423,7 @@ Init.ChartRegistDetail = function(cTps){
 /**
  * 詳細グラフ用機能： sliderRangeで指定された範囲のeTatを返却する（グラフの点クリックイベント時に呼び出される）
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @return {ETAT} 詳細グラフ用eTat
  */
 HJN.init.GetSliderRangedEtat = function() {
@@ -451,7 +451,7 @@ HJN.init.GetSliderRangedEtat = function() {
 /**
  * 詳細グラフ用機能： 指定日時を秒単位に丸めて、FORMのslider Rangeに設定する（Plotから呼び出される）
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {xMs}
  *            date 日時（ミリ秒単位）
  */
@@ -464,7 +464,7 @@ HJN.init.SetDetailDateTime=function(date) {
 /**
  * ダイアログを表示する
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @param {String}
  *            iHtml ダイアログのiHtmlに設定する文字列
  */
@@ -476,26 +476,36 @@ HJN.init.ShowDialog = function(iHtml, id, w, h, style){
 /**
  * 使い方HTMLを取得する（Menuイベントから呼び出される） #84
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @return {String} str 使い方HTML
  */
 HJN.init.Usage=function(){
-	var url = "https://github.com/hirosejn/HJN/wiki/Usage(JP)";
-	var label = "GitHub wiki : " + url;
-	var html = 'Usage of TAT log diver'
-	+ '<br>'
-	+ '<br>'
-	+ '<a class="hjnLabel4Input" href="' + url + '"'
-	+  'target=”_hirosejnUsage”>' + label +'</a><BR>';
-
-	return Usage.TopHtml;
-// return html;
+    var UsageHtmlFile = "tatLogDiver-Usage.html";
+    var UsageHtmlURL = "./tatLogDiver/" + UsageHtmlFile;
+    if (typeof require === "undefined") {
+        // webpack でパッケージ化していないとき、ダイアログ内にhtmlへのパスを表示する
+        var url = "https://github.com/hirosejn/HJN/wiki/Usage(JP)";
+        var label = "GitHub wiki : " + url;
+        var html = 'Usage of TAT log diver'
+            + '<br>'
+            + 'webpack 未適用モード'
+            + '<br>'
+            + '<a class="hjnLabel4Input" href="' + url + '"'
+            + 'target=”_hirosejnUsage”>' + label +'</a><BR>'
+            + '<br>'
+            + '<a class="hjnLabel4Input" href="' + UsageHtmlURL + '"'
+            + 'target=”_hirosejnUsage”>' + UsageHtmlURL +'</a><BR>';
+        return html;
+    } else {
+        // webpack でパッケージ化するとき、ダイアログ内にhtmlを表示する
+        return require("./" + UsageHtmlFile); // #94
+    }
 };
 
 /**
  * 著作権表記文字を取得する（Menuイベントから呼び出される）
  * 
- * @memberof Init
+ * @memberof HJN.init
  * @return {String} str 著作権表記文字
  */
 HJN.init.Copyright=function(){

@@ -5,6 +5,7 @@ import * as Simulator from '../simulator/simulator.js';
  * tatLogDiverのメニューを追加する
  * 
  * @memberof tatLogDiver
+ * @class Menu
  */
 export default function Menu(that) {
     // メニュー用のエレメントを取得する
@@ -87,7 +88,7 @@ export default function Menu(that) {
             menuId : divMenuId + "_FilterClear"
         };
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Filter">'
-                + getAccordionTag(that, ++_id, "Filter")   
+                + getAccordionTag(that, ++_id, "Filter")
                 + '<ul class="hjnMenuLv2">'   // #24
                 + Util.Config.Filter.getHtml()     // 設定HMTL #76
                 + getFuncTag(menuFilterApply)  // フィルターボタン
@@ -107,7 +108,7 @@ export default function Menu(that) {
         };
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Simulator">'
                 + getAccordionTag(that, ++_id, "Simulator")
-                + '<ul class="hjnMenuLv2">' 
+                + '<ul class="hjnMenuLv2">'
                 + getFuncTag(menuSimulatorSimulate) // シミュレート実行ボタン
                 + getFuncTag(menuSimulatorEditor)     // JSONエディタボタン
                 + Util.Config.Simulator.getHtml()        // 設定HTML #74
@@ -126,7 +127,7 @@ export default function Menu(that) {
         // View Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_View">'
                 + getAccordionTag(that, ++_id, "View", true)
-                + '<ul class="hjnMenuLv2">' // 
+                + '<ul class="hjnMenuLv2">' //
                 + '<li><div id="' + that.chartIdName + '_legend"></div></li>'
                 + '</ul>' + '</li>';
 
@@ -173,7 +174,7 @@ export default function Menu(that) {
                 + '<li class="hjnMenuLv1">'
                 +   getAccordionTag(that, ++_id, "Bottom detail graph", true)
                 +   '<ul class="hjnMenuLv2">'
-                +     '<ol><div id="detailTimeRange">' 
+                +     '<ol><div id="detailTimeRange">'
                 +     Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
                 +     '</div></ol>' // #51
                 +   '<li><div id="chartPlots"></div></li>' // Plot一覧用タグ
@@ -187,7 +188,7 @@ export default function Menu(that) {
                 strFuncName : "HJN.init.Usage()",
                 dialogId : "HJN.dialogUsage",
                 w : 50,
-                h : 40                    
+                h : 40
             };
         var menuHelpAbout = { // getAlertTag
                 menuLabel : "about TAT log diver",
@@ -195,7 +196,7 @@ export default function Menu(that) {
                 strFuncName : "HJN.init.Copyright()",
                 dialogId : "HJN.dialogAbout",
                 w : 30,
-                h : 50                   
+                h : 50
         };
         accordion.innerHTML += '<li class="hjnMenuLv1">'
                 + getAccordionTag(that, ++_id, "Help")
@@ -247,7 +248,7 @@ export default function Menu(that) {
     // '<li><a id="xxx" href="#">Child Menu</a></li>'
     function getFuncTag(arg, preLabel) {
         preLabel = preLabel || "";
-        return '' 
+        return ''
                 + '<li><a id="' + arg.menuId + ' "'
                 + 'class="hjnButton4Input" href="#" ' // #51
                 + 'onclick="' + arg.funcName + '()">' //
@@ -259,12 +260,12 @@ export default function Menu(that) {
     function getAlertTag(arg) {
         var w = arg.w || 40;
         var h = arg.h || 40;
-        return '' 
+        return ''
                 + '<ol><a id="' + arg.menuId + '"'
                 + 'class="hjnButton4Input" ' // #51
                 + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName
                     + ", '"+ arg.dialogId + "'" // #84
-                    + "," + w + "," + h 
+                    + "," + w + "," + h
                     +")" + '"' + '>' // #79
                 + '<label>' + arg.menuLabel + '</label></a></ol>';
     }

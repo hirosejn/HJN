@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/tatLogDiver/tatLogDiver-Copyright.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/tatLogDiver/tatLogDiver-Copyright.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @memberOf tatLogDiver
+ * @class Copyright
+ * @classdesc コピーライト定義と表示用メソッド
+ * @prop {String} name - 名称："TAT log diver"
+ * @prop {String} Version - バージョン
+ * @prop {String} text - コピーライト表示文字列
+ * @prop {String} url - GitHubリンク："https://github.com/hirosejn/"
+ */
+
+export var Copyright = {
+    name : "TAT log diver",
+    Version : "b19.06.23",
+    text : "&amp;copy; 2017-" + (new Date()).getFullYear() + " Junichiroh Hirose",
+    url : "https://github.com/hirosejn/",
+};
+
+
+/**
+ * about tat Log Diver として表示する説明文をHTMLで取得する
+ * 
+ * @memberof tatLogDiver.Copyright
+ * @return {String}表示用HTML
+ */
+Copyright.getAboutText = function(){
+    return Copyright.name + " (" + Copyright.Version + ")&lt;br>"
+        + Copyright.text + " &lt;br> "
+        + Copyright.getGitHubHTML() + " &lt;br> "
+        + Copyright.getJSDocHTML() + " &lt;br> "
+        + Copyright.getHtmlHTML();  // #84
+}
+
+/**
+ * GitHubリンク(HTML)を取得する
+ * 
+ * @memberof tatLogDiver.Copyright
+ * @param {String}
+ *            [text=Copyright.url] HTMLの表示文字列
+ * @return {String} GitHubリンク(HTML)文字列
+ */
+Copyright.getGitHubHTML = function(text){
+    text = text || Copyright.url;
+    return '&lt;a class="hjnLabel4Input" href="' + Copyright.url+ '"'
+        + ' target=”_hirosejnGit”>' + text + '&lt;/a>'
+}
+
+/**
+ * JSDOCリンク(HTML)を取得する
+ * 
+ * @memberof tatLogDiver.Copyright
+ * @param {String}
+ *            [name="JSDoc"] HTMLの表示文字列
+ * @return {String} JSDOCリンク(HTML)文字列
+ */
+Copyright.getJSDocHTML = function(name){
+    name = name || "JSDoc";
+    return '&lt;a class="hjnLabel4Input" href="../jsdoc/index.html"'
+        +  'target=”_hirosejnJSDoc3”>' + name +'&lt;/a>&lt;BR>'
+}
+
+/**
+ * HTMLページのリンク(HTML)を取得する
+ * 
+ * @memberof tatLogDiver.Copyright
+ * @param {String}
+ *            [name="HTML : " + Copyright.url] HTMLの表示文字列
+ * @return {String} HTMLページのリンク(HTML)文字列
+ */
+Copyright.getHtmlHTML = function(name){ // #84
+    var url = "https://hirosejn.github.io/HJN/";
+    name = name || "HTML : " + url;
+    return '&lt;a class="hjnLabel4Input" href="' + url + '"'
+        +  'target=”_hirosejnHTML”>' + name +'&lt;/a>&lt;BR>'
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

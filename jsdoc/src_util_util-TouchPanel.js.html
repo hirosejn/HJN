@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/util/util-TouchPanel.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/util/util-TouchPanel.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {Logger} from './util.js';
+
+/**
+ * @memberOf Util
+ * @class TouchPanel
+ * @classdesc タッチパネル用ツール
+ *            &lt;p>
+ *            参考 {@link https://code.i-harness.com/ja/q/4f2389}
+ * 
+ * @param {Number}
+ *            [average=0.5] 平均値
+ * @example var r = HJN_util.TouchPanel(10), val = r.exponential();
+ */
+export default (function() { // #56
+    /** @constructor */
+    function TouchPanel(average){
+        if(!(this instanceof TouchPanel)) return new TouchPanel(average);
+        this._average = average || 0.5;
+    }
+    /** @private */
+
+    // public
+    /**
+     * タッチデバイスか判定する
+     * &lt;p>
+     * クラスロード後、touchstart と mouosemove の初回のイベントがどちらが先に発生したかにより判定する 参考
+     * {@link https://lab.syncer.jp/Web/JavaScript/Snippet/44/}
+     * 
+     * @memberof TouchPanel
+     * @return {String} 先に検出したイベントがマウス移動のとき false、以外のときtrue
+     * 
+     */
+    TouchPanel.isTouchableDevice = function() {
+        Logger.ShowText([TouchPanel._deviceType]);
+        return  (TouchPanel._deviceType === "MOUSE") ? false : true; // #78
+    }
+
+    // タッチデバイスか判定する（クラス定数）
+    TouchPanel._deviceType = "SHIMULATED_TOUCH";
+    function detectDeviceType(event) {
+        TouchPanel._deviceType = event.changedTouches ? "TOUCH" : "MOUSE" ;
+        document.removeEventListener("touchstart", detectDeviceType) ;
+        document.removeEventListener("mousemove", detectDeviceType) ;
+    }
+    document.addEventListener("touchstart", detectDeviceType) ;
+    document.addEventListener("mousemove", detectDeviceType) ;
+
+    /**
+     * タッチパネル操作をマウス操作に転送する
+     * &lt;p>
+     * 参考 {@link https://code.i-harness.com/ja/q/4f2389}
+     * 
+     * @memberof Util.TouchPanel
+     * @param {Object}
+     *            element 対象dom要素
+     * @param {Boolean}
+     *            [isStopTouch=false] 元のタッチのデフォルトイベントを消すか（個別に登録されているリスナーには無関係）
+     * 
+     * @example HJN_util.DispatchEventTouchToMouse();
+     */
+    TouchPanel.DispatchEventTouchToMouse = function(element, isStopTouch) { // #22
+        element.addEventListener("touchstart", touchHandler, true);
+        element.addEventListener("touchmove", touchHandler, true);
+        element.addEventListener("touchend", touchHandler, true);
+        element.addEventListener("touchcancel", touchHandler, true);
+        return;
+
+        function touchHandler(ev) {
+            var bIgnoreChilds = false;
+            if( !window.__TOUCH_TYPES ) {
+                window.__TOUCH_TYPES  = { touchstart:'mousedown', touchmove:'mousemove', touchend:'mouseup' };
+                window.__TOUCH_INPUTS = { INPUT: 1, TEXTAREA: 1, SELECT: 1, OPTION: 1,
+                                         'input':1,'textarea':1,'select':1,'option':1 };
+            }
+            var bSame = (ev.target == this);
+            if (bIgnoreChilds &amp;&amp; !bSame) { return; }
+            // Get if object is already tested or input type
+            var b = (!bSame &amp;&amp; ev.target.__ajqmeclk);
+            // allow multi-touch gestures to work
+            if (b === true || !ev.touches || ev.touches.length > 1 || !window.__TOUCH_TYPES[ev.type]) { return; }
+
+            var oEv = (!bSame &amp;&amp; typeof b != 'boolean') ? ev.target.getAttribute('events') : false;
+            var b = (!bSame)
+                  ? (ev.target.__ajqmeclk = oEv
+                      ? (oEv['click'] || oEv['mousedown'] || oEv['mouseup'] || oEv['mousemove']) 
+                      : false )
+                  :false;
+            // allow default clicks to work (and on inputs)
+            if (b || window.__TOUCH_INPUTS[ev.target.tagName]) { return; } 
+
+            var touch = ev.changedTouches[0];
+            var tmpClientX = touch.clientX;
+            var tmpClientY = touch.clientY;
+            // クリックに変換するタップ誤差範囲
+            var CLICK_MARGIN = 20; // px
+            var CLICK_DELAY = 1000; // ms
+
+            // 前回touchstart時の座標と時刻が一定範囲内の時、dygraphがクリックと判定するよう補正する
+            if ((ev.type === "touchstart" || ev.type === "touchend") &amp;&amp;
+                    this.startTouch &amp;&amp;
+                    Math.abs(this.startTouch.x - touch.clientX) &lt; CLICK_MARGIN &amp;&amp; // タッチ補正幅(px)
+                    Math.abs(this.startTouch.y - touch.clientY) &lt; CLICK_MARGIN &amp;&amp;
+                    +new Date() - this.startTouch.t &lt; CLICK_DELAY) { // タッチ時間(ms)
+                // 位置補正
+                tmpClientX = this.startTouch.x;
+                tmpClientY = this.startTouch.y;
+            } else if (ev.type === "touchstart"){
+                // touchstart時の座標と時刻を退避する
+                this.startTouch = {x: touch.clientX, y: touch.clientY, t: +new Date()};
+            } else if (ev.type === "touchend") {  
+                // touchstart時の座標と時刻を初期化する
+                this.startTouch = {};
+            }
+            // マウスイベントを発生させる
+            var newEvent = document.createEvent("MouseEvent");
+            newEvent.initMouseEvent(
+                window.__TOUCH_TYPES[ev.type],    // type
+                true,             // bubbles
+                true,             // cancelable
+                window,           // view
+                1,                // detail
+                touch.screenX,    // screenX スクリーンサイズ
+                touch.screenY,    // screenY
+                tmpClientX,       // clientX タッチ座標
+                tmpClientY,       // clientY
+                false,            // ctrlKey
+                false,            // altKey
+                false,            // shiftKey
+                false,            // metaKey
+                0,                // button
+                null              // relatedTarget
+              );
+            touch.target.dispatchEvent(newEvent);
+
+            // タッチイベントを止める #22
+            if(isStopTouch) {
+                ev.stopImmediatePropagation();
+                ev.stopPropagation();
+                ev.preventDefault();
+                return false;
+            }
+        }
+    };
+
+    /* new */
+    return TouchPanel;
+}());</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

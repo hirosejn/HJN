@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/tatLogDiver/tatLogDiver-MenuConfigDetailGraph.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/tatLogDiver/tatLogDiver-MenuConfigDetailGraph.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as Util from '../util/util.js';
+import Graph from '../tatLogDiver/tatLogDiver-Graph.js';
+import * as TimeSeries from '../timeSeries/timeSeries.js';
+
+/**
+ * @memberOf tatLogDiver
+ * @class MenuConfigDetailGraph
+ * @classdesc DetailGraph用メニューHTML定義
+ * 
+ */
+export default function MenuConfigDetailGraph() {} // #27
+
+MenuConfigDetailGraph.config = function () {
+    var prefix = "DetailGraph";
+    var c = new  Util.Config(prefix);
+    // Config設定画面定義
+    c 
+        .name("D_RANGE").label(null,"Range:")
+            .number("D_RANGE_MINUS", " - ", "", "1", 'style="width:40px;"', func_D)
+            .number("D_RANGE_PLUS"  , " + ", "", "2", 'style="width:40px;"', func_D)
+        .name("D_UNIT").startTag("select")
+            .option(c.def("D_UNIT_SEC",         1000), null, "sec",   false, null, func_D) // #48
+            .option(c.def("D_UNIT_10SEC",      10000), null, "10sec", true,  null, func_D)
+            .option(c.def("D_UNIT_MIN",        60000), null, "min",   false, null, func_D)
+            .option(c.def("D_UNIT_HOUR",     3600000), null, "hour",  false, null, func_D)
+            .option(c.def("D_UNIT_6HOUR",   21600000), null, "6hour", false, null, func_D)
+            .option(c.def("D_UNIT_DAY",     86400000), null, "day",   false, null, func_D)
+            .option(c.def("D_UNIT_YEAR", 31536000000), null, "year",  false, null, func_D)
+        .endTag()
+    ;
+}
+
+// Config登録関数定義
+function func_D(){
+    clearTimeout(HJN.timer);
+    HJN.timer = setTimeout(function(){
+            Util.Logger.ShowLogTextInit("[-:HJN.init.setDetailRange]start---------------","calc");
+            // 表示中Plotsのrangeを更新する #30
+            var i = HJN.Plot.List.findIndex(function(e){ return (e.radio === true); });
+            var plot = HJN.Plot.List[i];
+            plot.rangePlus  = Util.Config.DetailGraph.getConfig("D_RANGE_PLUS"); // #27
+            plot.rangeMinus = Util.Config.DetailGraph.getConfig("D_RANGE_MINUS");
+            plot.rangeUnit = Util.Config.DetailGraph.getConfig("D_UNIT"); // #48
+            plot.rangeUnit = plot.rangeUnit  ? plot.rangeUnit  : TimeSeries.Tat.CYCLE; // #57
+            Util.Config.DetailGraph.setValueByKey("D_UNIT", plot.rangeUnit);
+
+            // 下段データを登録する
+            var tat = new TimeSeries.Tat(HJN.init.GetSliderRangedEtat()); // #75
+            HJN.chartD.setSeriesSet(tat);
+            // 下段グラフを描画する
+            Graph.prototype.update.call(HJN.chartD, HJN.chartD.seriesSet);
+        }, 750);    // 750ms 値の変更がなかった時に、処理を開始する
+ };</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

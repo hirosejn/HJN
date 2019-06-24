@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/tatLogDiver/tatLogDiver-Menu.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/tatLogDiver/tatLogDiver-Menu.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as Util from '../util/util.js';
+import * as Simulator from '../simulator/simulator.js';
+
+/**
+ * tatLogDiverのメニューを追加する
+ * 
+ * @memberof tatLogDiver
+ * @class Menu
+ */
+export default function Menu(that) {
+    // メニュー用のエレメントを取得する
+    var divMenuId = that.chartIdName + "_menu";
+    var divMenu = document.getElementById(divMenuId);
+    // menu用divがないとき、chartの直前に追加する #13
+    if (!divMenu) {
+        var div = document.createElement('div');
+        div.id = divMenuId;
+        div.className = "menuBar";
+        divMenu = that.chartId.parentNode.insertBefore(div, that.chartId);
+    }
+    // メニューボタン定義を登録する
+    var g = that.globalName;
+    // 上下段共通ボタンの定義(Download Menu)
+    var menuDownloadImg = { // getATag
+        menuLabel : "graph image(.png)",
+        funcName : g + ".menuDownloadImg",
+        menuId : divMenuId + "_DownloadImg",
+        fileName : "graph.png"
+    };
+    var menuDownloadCsv = { // getATag
+        menuLabel : "graph data(.csv)",
+        funcName : g + ".menuDownloadCsv",
+        menuId : divMenuId + "_DownloadCsv",
+        fileName : "graph.csv"
+    };
+    var menuDownloadLog = { // getATag
+        menuLabel : "graph log records(.csv)",
+        funcName : g + ".menuDownloadLog",
+        menuId : divMenuId + "_DownloadLog",
+        fileName : "tatlog.csv"
+    };
+    var menuDownloadConc = { // getATag
+        menuLabel : "conc log records(.csv)",
+        funcName : g + ".menuDownloadConc",
+        menuId : divMenuId + "_DownloadConc",
+        fileName : "conclog.csv"
+    };
+
+    // メニューを追加する
+    var accordion = document.createElement('div'); // 要素の作成
+    var _id = 0;
+    if (HJN.chart.chartId === that.chartId) { // 上段グラフ用機能のメニュー追加
+        // File Menu
+        var menuOpenCsv = { // getInputTag
+            menuLabel : "Open csv data file",
+            funcName : g + ".menuOpenCsv",
+            menuId : divMenuId + "_OpenCsv "
+        };
+        var menuSaveConfig = { // getATag
+            menuLabel : "save format (.json)",
+            funcName : g + ".menuSaveConfig",
+            menuId : divMenuId + "_SaveCongig",
+            fileName : "hjnconfig.json"
+        };
+        var menuLoadConfig = { // getInputTag #10
+            menuLabel : "load format (.json)",
+            funcName : g + ".menuLoadConfig",
+            menuId : divMenuId + "_LoadCongig"
+        };
+        accordion.innerHTML = '&lt;li class="hjnMenuLv1">'
+                + getAccordionTag(that, ++_id, "File")
+                + '&lt;ul class="hjnMenuLv2">'
+                + getInputTag(menuOpenCsv)     // オープンボタン #24
+                + Util.Config.File.getHtml()          // 設定HTML #76
+                + getATag(menuSaveConfig)        // セーブボタン
+                + getInputTag(menuLoadConfig) // ロードボタン #10
+                + '&lt;/ul>' + '&lt;/li>';
+
+        // Filter Menu #34
+        var menuFilterApply = { // getFuncTag #34
+            menuLabel : "Apply filter &amp; reload",
+            funcName : g + ".menuFilterApply",
+            menuId : divMenuId + "_FilterApply"
+        };
+        var menuFilterReset = { // getFuncTag #34
+            menuLabel : "Reset filter condition",
+            funcName : g + ".menuFilterReset",
+            menuId : divMenuId + "_FilterClear"
+        };
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Filter">'
+                + getAccordionTag(that, ++_id, "Filter")
+                + '&lt;ul class="hjnMenuLv2">'   // #24
+                + Util.Config.Filter.getHtml()     // 設定HMTL #76
+                + getFuncTag(menuFilterApply)  // フィルターボタン
+                + getFuncTag(menuFilterReset)   // クリアボタン
+                + '&lt;/ul>' + '&lt;/li>';
+
+        // Simulator Menu #53
+        var menuSimulatorSimulate = {
+            menuLabel : "Simulate",
+            funcName : g + ".menuSimulatorSimulate",
+            menuId : divMenuId + "_SimulatorSimulate"
+        };
+        var menuSimulatorEditor = {
+            menuLabel : "JSON Editor(Open/Close)",
+            funcName : g + ".menuSimulatorEditor",
+            menuId : divMenuId + "_SimulatorEditor"
+        };
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Simulator">'
+                + getAccordionTag(that, ++_id, "Simulator")
+                + '&lt;ul class="hjnMenuLv2">'
+                + getFuncTag(menuSimulatorSimulate) // シミュレート実行ボタン
+                + getFuncTag(menuSimulatorEditor)     // JSONエディタボタン
+                + Util.Config.Simulator.getHtml()        // 設定HTML #74
+                + '&lt;/ul>' + '&lt;/li>';
+        // シミュレーション条件JSON Editエリアを設定する
+        var divSimulator = document.getElementById("Simulator");
+        var jsonEditor = document.createElement('div'); // 要素の作成
+        jsonEditor.innerHTML = '&lt;textarea id="SimulatorEditor" '
+                + 'style="width:100%;border:none;resize:none;background:rgba(255,255,255,0.5);height:100%;">'
+        divSimulator.appendChild(jsonEditor);
+        var divSimulatorEditor = document.getElementById("SimulatorEditor");
+        // divSimulatorEditor.readOnly = true; // #22
+        divSimulatorEditor.value = Simulator.virtualSystemByJson
+                .GetJsonConfig(); // デフォルトJSON
+
+        // View Menu
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_View">'
+                + getAccordionTag(that, ++_id, "View", true)
+                + '&lt;ul class="hjnMenuLv2">' //
+                + '&lt;li>&lt;div id="' + that.chartIdName + '_legend">&lt;/div>&lt;/li>'
+                + '&lt;/ul>' + '&lt;/li>';
+
+        // Download Menu
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1" id="menu_Download">'
+                + getAccordionTag(that, ++_id, "Download")
+                + '&lt;ul class="hjnMenuLv2">'
+                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン
+                + getATag(menuDownloadCsv, "Upper ")    // 上段グラフcsvダウンロード ボタン
+                + getATag(menuDownloadLog, "Upper ")    // 上段生データダウンロードボタン
+                + '&lt;/ul>' + '&lt;/li>';
+
+        // メニュー登録
+        divMenu.appendChild(accordion);
+        // イベントリスナー登録
+        document.getElementById(menuOpenCsv.menuId).addEventListener('change',
+                that.menuOpenCsv.bind(that), false); // File Open用
+        document.getElementById(menuLoadConfig.menuId).addEventListener(
+                'change', that.menuLoadConfig.bind(that), false); // LoadConfig用
+
+    } else { // 下段用グラフ機能のメニュー追加
+        _id += 100;
+        // Download Menu
+        var chartDownloadUl = document.createElement('ul');
+        chartDownloadUl.className = "hjnMenuLv2";
+        chartDownloadUl.innerHTML = '' //
+                + getATag(menuDownloadImg, "Detail ")    // 下段画像ダウンロードボタン
+                + getATag(menuDownloadCsv, "Detail ")     // 下段グラフcsvダウンロードボタン
+                + getATag(menuDownloadLog, "Detail ")     // 下段生データダウンロードボタン
+                + getATag(menuDownloadConc, "Detail "); // 下段conc csvダウンロードボタン
+        var chartDownload = document.getElementById("menu_Download");
+        chartDownload.appendChild(chartDownloadUl);
+
+        // View Menu
+        var chartViewUl = document.createElement('ul');
+        chartViewUl.className = "hjnMenuLv2";
+        chartViewUl.innerHTML = '&lt;li>&lt;div id="' + that.chartIdName
+                + '_legend">&lt;/div>&lt;/li>';
+        var chartView = document.getElementById("menu_View");
+        chartView.appendChild(chartViewUl);
+
+        // "Bottom detail graph" Menu
+        accordion.innerHTML = ''
+                + '&lt;li class="hjnMenuLv1">'
+                +   getAccordionTag(that, ++_id, "Bottom detail graph", true)
+                +   '&lt;ul class="hjnMenuLv2">'
+                +     '&lt;ol>&lt;div id="detailTimeRange">'
+                +     Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
+                +     '&lt;/div>&lt;/ol>' // #51
+                +   '&lt;li>&lt;div id="chartPlots">&lt;/div>&lt;/li>' // Plot一覧用タグ
+                +   '&lt;/ul>'
+                + '&lt;/li>';
+
+        // Help Menu
+        var menuHelpUsage = { // getAlertTag #84
+                menuLabel : "Usage of TAT log diver",
+                menuId : divMenuId + "_HelpUsage",
+                strFuncName : "HJN.init.Usage()",
+                dialogId : "HJN.dialogUsage",
+                w : 50,
+                h : 40
+            };
+        var menuHelpAbout = { // getAlertTag
+                menuLabel : "about TAT log diver",
+                menuId : divMenuId + "_HelpAbout",
+                strFuncName : "HJN.init.Copyright()",
+                dialogId : "HJN.dialogAbout",
+                w : 30,
+                h : 50
+        };
+        accordion.innerHTML += '&lt;li class="hjnMenuLv1">'
+                + getAccordionTag(that, ++_id, "Help")
+                + '&lt;ul class="hjnMenuLv2" style="width: 100%;">' //
+                + getAlertTag(menuHelpUsage) // #84
+                + getAlertTag(menuHelpAbout)
+                + '&lt;/ul>' + '&lt;/li>';
+
+        // メニュー登録
+        divMenu.appendChild(accordion);
+    }
+
+    // アコーディオンラベル用&lt;input>&lt;label>タグ編集（内部関数宣言） #31
+    // idは、ユニークな英数字なら何でもよい（ラベル押下時のアコーディオン開閉ラジオボタン連動用の接尾語）
+    function getAccordionTag(that, id, labelText, isChecked) {
+        var isAccordion = true, // true:アコーディオン型 false:折りたたみ型 #21
+        typeStr = isAccordion ? ' type="checkbox" name="accordion" '
+                : ' type="radio" name="accordion" ', //
+        checkedStr = ' checked="checked" ';
+        return ''
+                + '&lt;input id="ac-' + that.chartIdName + id + '"' + typeStr
+                + (isChecked ? checkedStr : '') + '">' + '&lt;label for="ac-'
+                + that.chartIdName + id + '">' + labelText + '&lt;/label>';
+    }
+
+    // File Open用&lt;input>タグ編集（内部関数宣言）
+    // '&lt;ol>&lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx"
+    // multiple/>&lt;/label>&lt;/a>&lt;/ol>
+    function getInputTag(arg) {
+        return ''
+                + '&lt;ol>&lt;a>&lt;label class="hjnButton4Input">' + arg.menuLabel // #51
+                + '&lt;input type="file" id="' + arg.menuId + '"  multiple />'
+                + '&lt;/label>&lt;/a>&lt;/ol>';
+    }
+
+    // ダウンロード用&lt;A>タグ編集（内部関数宣言）
+    // '&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;li/>'
+    function getATag(arg, preLabel) {
+        preLabel = preLabel || "";
+        return '' + '&lt;li>&lt;a id="' + arg.menuId + '" '
+                + 'class="hjnButton4Input" href="#" ' // #51
+                + 'download="' + arg.fileName + '" ' //
+                + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '"
+                + arg.fileName + "'" + ')" ' + '>' + preLabel + arg.menuLabel
+                + '&lt;/a>&lt;/li>';
+    }
+
+    // グローバルメソッド呼出用&lt;A>タグ編集（内部関数宣言） #34
+    // '&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;/li>'
+    function getFuncTag(arg, preLabel) {
+        preLabel = preLabel || "";
+        return ''
+                + '&lt;li>&lt;a id="' + arg.menuId + ' "'
+                + 'class="hjnButton4Input" href="#" ' // #51
+                + 'onclick="' + arg.funcName + '()">' //
+                + preLabel + arg.menuLabel + '&lt;/a>&lt;/li>';
+    }
+
+    // Alert用&lt;A>タグ編集（内部関数宣言）
+    // '&lt;a id="xxx" onclick=Alert("xxx")>Child Menu&lt;/a>'
+    function getAlertTag(arg) {
+        var w = arg.w || 40;
+        var h = arg.h || 40;
+        return ''
+                + '&lt;ol>&lt;a id="' + arg.menuId + '"'
+                + 'class="hjnButton4Input" ' // #51
+                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName
+                    + ", '"+ arg.dialogId + "'" // #84
+                    + "," + w + "," + h
+                    +")" + '"' + '>' // #79
+                + '&lt;label>' + arg.menuLabel + '&lt;/label>&lt;/a>&lt;/ol>';
+    }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
