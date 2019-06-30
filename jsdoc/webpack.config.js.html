@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: webpack.config.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: webpack.config.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * webpack によるパッケージングの定義
+ *
+ *  @example
+ * tatLogDiver.js のパッケージング構造
+ *
+ *  src/tatLogDiver
+ *      tatLogDiver.js  webpackでパッケージングするエントリーポイントjs
+ *                      以下の階層構造でimport
+ *                      Init() を初期呼出し
+ *          ../../libs/dygraph.css as cssDygraph  css-loader用
+ *          ./tatLogDiver.css as cssTatLogDiver   css-loader用
+ *
+ *          ./tatLogDiver-Init.js as Init
+ *              ../timeSeries/timeSeries.js as TimeSeries
+ *              ../simulator/simulator.js as Simulator
+ *              ./tatLogDiver-HJN.js as HJN
+ *                  以下に再掲しているので省略
+ *              ./tatLogDiver-MenuConfigDetailGraph.js as MenuConfigDetailGraph
+ *                  ../tatLogDiver/tatLogDiver-Graph.js as Graph
+ *                  ../timeSeries/timeSeries.js as TimeSeries
+ *              ./tatLogDiver-Plot.js as Plot
+ *                  ../timeSeries/timeSeries.js as TimeSeries
+ *                  ./tatLogDiver-HJN.js as HJN
+ *              ./tatLogDiver-Graph.js as Graph
+ *                  以下に再掲しているので省略
+ *              ./tatLogDiver-Usage.js as Usage
+ *                  手書きのjsから、wqebpackのhtml-loader方式に変更予定:ToDo★
+ *              ./tatLogDiver-Copyright.js as Copyright
+ *
+ *          ./tatLogDiver-Graph.js as Graph
+ *              ../timeSeries/timeSeries.js as TimeSeries
+ *              ../simulator/simulator.js as Simulator
+ *              ./tatLogDiver-Init.js as CreateSampleTatLogAndChartShow
+ *              ./tatLogDiver-Menu.js as Menu
+ *                  ../simulator/simulator.js as Simulator
+ *
+ *          ./tatLogDiver-HJN.js as HJN
+ *              ../timeSeries/timeSeries-Tat.js as Tat
+ *
+ *      tatLogDiver-Copyright.js
+ *
+ *  src/simulator/
+ *      simulator.js     同一フォルダの simulator-クラス名.js を importしexportする
+ *      simulator-*.js   同一フォルダのjsと、../util をimport
+ *          *-MenuConfig.js は、例外的に、../tatLogDiver/tatLogDiver-Init.js もimport
+ *
+ *  src/timeSeries/
+ *      timeSeries.js    同一フォルダの timeSeries-クラス名.js を importしexportする
+ *      timeSeries-*.js  同一フォルダのjsと、../util をimport
+ *          *-MenuConfig.js は、例外的に、../tatLogDiver/tatLogDiver-Graph.js もimport
+ *          timeSeries-FileParser.jsは、例外的に、../tatLogDiver/tatLogDiver-HJN.js もimport
+ *
+ *  src/util/            他から利用される他を利用しない)共通js
+ *      util.js          同一フォルダの util-クラス名.js を importしexportする
+ *                       (./config/config.js は、{Config}にexport)
+ *      config/config.js 同一フォルダの util-Config.js を importし{Config}にexportする
+ *
+ * */
+const webpack = require('webpack');
+
+module.exports = {
+  watch: true, // ファイル変更時に自動ビルド
+  entry: { // メインとなるJavaScriptファイル（エントリーポイント）
+      tatLogDiver: `./src/tatLogDiver/tatLogDiver.js`,
+  },
+  output: {                         // ファイルの出力設定
+    path: `${__dirname}/dist`,      // 出力ファイルのディレクトリ名
+    filename: '[name].min.js'  // 出力ファイル名
+  },
+  module: {
+      loaders: [                    // `-loader`は省略可能
+          { test: /\.html$/, loader: 'html-loader' }, // htmlを読み込むローダー
+          { test: /\.css$/, loaders: ['style-loader','css-loader'] }, // cssを読み込むローダー
+          { test: /\.(jpg|png|gif)$/, loaders: 'url-loader' }  // ファイルを読み込むローダー
+      ]
+  },
+  devtool: 'source-map',            // ソースマップを有効にする
+  target: 'web',    // 生成ソースの実行環境（チャンクの挙動と利用モジュールに影響）
+  externals: { // bundleしないモジュール（別途、ｈｔｍｌで読込）
+      Dygraph: './libs/dygraph.min.js'
+  },
+  plugins: [
+      new webpack.optimize.UglifyJsPlugin({sourceMap: true})
+  ],
+  devServer: {                      // ローカル開発用環境を立ち上げる
+    contentBase: './',              // './src'と'./dist'の両方が見える場所
+    port: 8081      // ブラウザで http://localhost:8081/ でアクセスできるようになる
+  }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.Menu.html">Util.Menu</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.SubWindow.html">Util.SubWindow</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

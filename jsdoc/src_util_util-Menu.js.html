@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/util/util-Menu.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/util/util-Menu.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @memberOf Util
+ * @class Menu
+ * @classdesc Menu メニュー
+ *            &lt;p>
+ *            メニューを操作する
+ * @param {String}
+ *            menuId メニューのID（メニュー要素をユニークに指定するID）
+ * @param {String}
+ *            [menuLabel=""] メニューのラベル
+ * @param {String}
+ *            funcName メニュー要素選択時に発行する関数名
+ * 
+ * @example // TopHogeBottom と表示するサブウィンドウを表示し、閉じる&lt;br>
+ *          var menu1 = new Util.Menu( "Usage of TAT log diver", divMenuId +
+ *          "_HelpUsage", "HJN.init.Usage"); menu1.mekeAsDialog(
+ *          "HJN.dialogUsage", 50 , 40);
+ */
+export default (function() { // #95
+    /** @constructor */
+    function Menu(menuId, menuLabel, funcName){ 
+        if(!(this instanceof Menu)) return new Menu(id, label, funcName);
+
+        this.menuId = menuId;
+        this.menuLabel = menuLabel;
+        this.funcName = funcName;
+    }
+
+    // private
+    // クラス変数
+    
+    // メソッド
+    
+    // public
+    /**
+     * アコーディオンラベル用タグを取得する
+     * 
+     * @memberOf Util.Menu
+     * @param {Object}
+     *            that ラベル押下時のアコーディオン開閉ラジオボタン連動用の接頭語
+     * @param {String}
+     *            id ラベル押下時のアコーディオン開閉ラジオボタン連動用の接尾語（ユニークな英数字）
+     * @param {String}
+     *            labelText ラベル表示文字列
+     * @param {Boolean}
+     *            [isChecked=閉じた状態て初期表示] trueを指定したとき展開して初期表示
+     * @return {String} html アコーディオンラベル用HTMLテキスト
+     */
+    Menu.getAccordionTag = function(that, id, labelText, isChecked) { // #31
+        var isAccordion = true, // true:アコーディオン型 false:折りたたみ型 #21
+        typeStr = isAccordion ? ' type="checkbox" name="accordion" '
+                : ' type="radio" name="accordion" ', //
+        checkedStr = ' checked="checked" ';
+
+        return ''
+                + '&lt;input id="ac-' + that.chartIdName + id + '"' // 
+                + typeStr + (isChecked ? checkedStr : '') + '">' // 
+                + '&lt;label for="ac-' + that.chartIdName + id + '">' //
+                + labelText + '&lt;/label>';
+    };
+
+    /**
+     * File Open用タグを取得する
+     * 
+     * @example
+     * &lt;ol>
+     * &lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx" multiple/>&lt;/label>&lt;/a>
+     * &lt;/ol>
+     * @memberOf Util.Menu
+     * @param {String}
+     *            [preLabel=""] ラベルの先頭文字列
+     * @return {String} html メニュー要素の表示用HTMLテキスト
+     */
+    Menu.prototype.getFileOpenTag = function(preLabel) {
+        preLabel = preLabel || "";
+
+        return ''
+                + '&lt;ol>&lt;a>&lt;label class="hjnButton4Input">' + this.menuLabel // #51
+                + '&lt;input type="file" id="' + this.menuId + '"  multiple />'
+                + '&lt;/label>&lt;/a>&lt;/ol>';
+    };
+    
+    /**
+     * ダウンロード処理に対応する
+     * 
+     * @memberOf Util.Menu
+     * @param {String}
+     *            [fileName="HJN_download"] ダウンロードファイル名
+     * @return {Object} this
+     */
+    Menu.prototype.makeDownloadable = function(fileName) {
+        this["fileName"] = fileName || "HJN_download";
+
+        return this;
+    };
+    /**
+     * ダウンロード用アンカータグを取得する
+     * 
+     * @example
+     * &lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;li/>
+     * @memberOf Util.Menu
+     * @param {String}
+     *            [preLabel=""] ラベルの先頭文字列
+     * @return {String} html メニュー要素の表示用HTMLテキスト
+     */
+    Menu.prototype.getATag = function(preLabel) {
+        preLabel = preLabel || "";
+
+        return '' + '&lt;li>&lt;a id="' + this.menuId + '" '
+                + 'class="hjnButton4Input" href="#" ' // #51
+                + 'download="' + this.fileName + '" ' //
+                + 'onclick="' + this.funcName + '(' + "'" + this.menuId + "', '"
+                + this.fileName + "'" + ')" ' + '>' + preLabel + this.menuLabel
+                + '&lt;/a>&lt;/li>';
+    };
+
+    /**
+     * グローバルメソッド呼出用アンカータグを取得する
+     * 
+     * @example
+     * &lt;li>&lt;a id="xxx" href="#" onclick="funcName()">Child Menu&lt;/a>&lt;/li>
+     * @memberOf Util.Menu
+     * @param {String}
+     *            [preLabel=""] ラベルの先頭文字列
+     * @return {String} html メニュー要素の表示用HTMLテキスト
+     */
+    Menu.prototype.getFuncTag = function(preLabel) { // #34
+        preLabel = preLabel || "";
+        
+        return ''
+                + '&lt;li>&lt;a id="' + this.menuId + ' "'
+                + 'class="hjnButton4Input" href="#" ' // #51
+                + 'onclick="' + this.funcName + '()">' //
+                + preLabel + this.menuLabel + '&lt;/a>&lt;/li>';
+    };
+    
+    
+    /**
+     * ポップアップダイアログ処理に対応する
+     * 
+     * @memberOf Util.Menu
+     * @param {String}
+     *            dialogId ダイアログのID（同一IDのダイアログは上書きされる）
+     * @param {Number}
+     *            [w=40] ダイアログの幅
+     * @param {Number}
+     *            [h=40] ダイアログの高さ
+     * @return {Object} this
+     */
+    Menu.prototype.makePopupable = function(dialogId, w, h) {
+        this["dialogId"] = dialogId;
+        this["w"] = w || 40;
+        this["h"] = h || 40;
+
+        return this;
+    };
+    /**
+     * ダイアログ用タグを取得する
+     * 
+     * @example
+     * &lt;ol>
+     * &lt;a id="xxx" class="hjnButton4Input"
+     * onclick="HJN.init.ShowDialog(FUNC_NAME(), 'DIALOG_ID', w , h)">
+     * &lt;label>Child Menu&lt;/label>&lt;/a>
+     * &lt;/ol>
+     * @memberOf Util.Menu
+     * @param {String}
+     *            [preLabel=""] ラベルの先頭文字列
+     * @return {String} html メニュー要素の表示用HTMLテキスト
+     */
+    Menu.prototype.getDialogTag = function(preLabel) {
+        preLabel = preLabel || "";
+
+        return ''
+            + '&lt;ol>&lt;a id="' + this.menuId + '" '
+            + 'class="hjnButton4Input" ' // #51
+            + ' onclick="HJN.Util.Element.createDialog(' // #95
+                + this.funcName + "()"+ ", " // #84
+                + "false, " 
+                + "'" + this.dialogId + "',"
+                + this.w + ","
+                + this.h +")" 
+            + '"' + '>' // #79
+            + '&lt;label>' + preLabel + this.menuLabel + '&lt;/label>&lt;/a>&lt;/ol>';
+    };
+    /**
+     * サブウィンドウ用タグを取得する
+     * 
+     * @example
+     * &lt;ol>
+     * &lt;a id="xxx" class="hjnButton4Input"
+     * onclick="HJN.init.ShowDialog(FUNC_NAME(), 'DIALOG_ID', w , h)">
+     * &lt;label>Child Menu&lt;/label>&lt;/a>
+     * &lt;/ol>
+     * @memberOf Util.Menu
+     * @param {String}
+     *            [preLabel=""] ラベルの先頭文字列
+     * @return {String} html メニュー要素の表示用HTMLテキスト
+     */
+    Menu.prototype.getSubWindowTag = function(preLabel) { // #95
+        preLabel = preLabel || "";
+
+        return ''
+        + '&lt;ol>&lt;a id="' + this.menuId + '" '
+        + 'class="hjnButton4Input" ' // #51
+        + ' onclick="HJN.Util.SubWindow.createSubWindow(' // #95
+            + this.funcName + "()"+ ", " // #84
+            + "false, " 
+            + "'" + this.dialogId + "',"
+            + this.w + ","
+            + this.h +")" 
+        + '"' + '>' // #79
+        + '&lt;label>' + preLabel + this.menuLabel + '&lt;/label>&lt;/a>&lt;/ol>';
+    };
+
+
+    /* new */
+    return Menu;
+}());</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.Menu.html">Util.Menu</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.SubWindow.html">Util.SubWindow</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

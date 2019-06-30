@@ -28,8 +28,7 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="Util.html">Util</a>.</span>Element</h2>
+        <h2>Element</h2>
         
             <div class="class-description">追加する挙動の操作要素は、後に記述した挙動の要素が上位になる 参考           <a href="https://q-az.net/elements-drag-and-drop/">https://q-az.net/elements-drag-and-drop/</a></div>
         
@@ -47,7 +46,7 @@
 
 	
     <dir class="tag-source">
-        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line3">line 3</a>
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line3">line 3</a>
     </dir>
     
 
@@ -163,6 +162,65 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".Element.SetStyles"><span class="type-signature">(static) </span>Element.SetStyles<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    DOM要素にスタイル設定
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -174,12 +232,12 @@
 
 	
     <dir class="tag-source">
-        <a href="util_util-Element.js.html">util/util-Element.js</a>, <a href="util_util-Element.js.html#line69">line 69</a>
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line67">line 67</a>
     </dir>
     
 
     <h4 class="name" id=".Element.createDialog">
-    <span class="type-signature">(static) </span>Element.createDialog<span class="signature">(iHtml<span class="signature-attributes">opt</span>, element<span class="signature-attributes">opt</span>, id<span class="signature-attributes">opt</span>, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <span class="type-signature">(static) </span>Element.createDialog<span class="signature">(iHtml<span class="signature-attributes">opt</span>, element<span class="signature-attributes">opt</span>, id<span class="signature-attributes">opt</span>, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>, style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -400,7 +458,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>[style={ width: w+"%", height: h+"%", left: 50-w/2+"%", top:           50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255,           0.8)", border: "medium solid #aaa"}]</code></td>
+                <td class="name"><code>style</code></td>
             
 
             <span class="type">
@@ -415,6 +473,8 @@
             
                 <span class="attributes">
                 
+                    &lt;optional>
+                
 
                 
 
@@ -424,6 +484,8 @@
 
             
                 <span class="default">
+                
+                    { width: w+"%", height: h+"%", left: 50-w/2+"%", top: 50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255, 0.8)", border: "medium solid #aaa"}
                 
                 </span>
             
@@ -488,6 +550,847 @@
 
 
         
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line38">line 38</a>
+    </dir>
+    
+
+    <h4 class="name" id=".Element.enableDraggableClass">
+    <span class="type-signature">(static) </span>Element.enableDraggableClass<span class="signature">()</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>.hjnDraggableBox {} .hjnDraggableItem:hover {cursor: move;         background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }</code></pre>
+
+    <pre class="prettyprint"><code>&lt;div class="hjnDraggableBox">&lt;/div></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line200">line 200</a>
+    </dir>
+    
+
+    <h4 class="name" id="addHandleElement">
+    <span class="type-signature">(static) </span>Element#addHandleElement<span class="signature">(func, style<span class="signature-attributes">opt</span>, styleD<span class="signature-attributes">opt</span>, transform<span class="signature-attributes">opt</span>, className<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		マウスクリック用要素を追加
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">マウス押下時に発火する処理</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">elementに設定するスタイル</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>styleD</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    {top:"0", left:"0" width:"5px", height:"5px"}
+                
+                </span>
+            
+
+            <div class="description last">elementに設定するデフォルトスタイル（styleに同じ属性がある場合styleが優先される）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>transform</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "over"
+                
+                </span>
+            
+
+            <div class="description last">paddingに対する要素の位置           "onFrame":線上、"inside":内側、その他：指定文字列をtransformスタイルに設定</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>className</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "hjnDraggableItem"
+                
+                </span>
+            
+
+            <div class="description last">マウスイベントを取得するdivに設定するCSSクラス名</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line147">line 147</a>
+    </dir>
+    
+
+    <h4 class="name" id="makeMoveable">
+    <span class="type-signature">(static) </span>Element#makeMoveable<span class="signature">(style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		ドラッグによる移動機能を付与する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    {cursor: "move", top:"0", left:"50%", width:"100%", height:"20px"};
+                
+                </span>
+            
+
+            <div class="description last">ドラッグ移動機能要素のCSSスタイル</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	    </span>
+		
+		<div class="param-desc">
+		    this
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line113">line 113</a>
+    </dir>
+    
+
+    <h4 class="name" id="makeRemovable">
+    <span class="type-signature">(static) </span>Element#makeRemovable<span class="signature">(id<span class="signature-attributes">opt</span>, style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		×ボタンによる要素削除機能を付与する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">×ボタン要素のid名（重複すると先に作成された×ボタンのダイアログが閉じられる）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    {cursor: "move", top:"0", left:"50%", width:"100%",height:"20px"};
+                
+                </span>
+            
+
+            <div class="description last">×ボタン要素のCSSスタイル</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	    </span>
+		
+		<div class="param-desc">
+		    this
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line163">line 163</a>
+    </dir>
+    
+
+    <h4 class="name" id="makeResizable">
+    <span class="type-signature">(static) </span>Element#makeResizable<span class="signature">(style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    </h4>
+    
+    
+	<div class="description">
+		ドラッグによる リサイズ機能を付与する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+
+            <div class="description last">リサイズ機能要素のCSSスタイルを、デフォルトから変更する際に指定</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	    </span>
+		
+		<div class="param-desc">
+		    this
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
     
 
     
@@ -503,7 +1406,7 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="Simulator.html">Simulator</a></li><li><a href="TimeSeries.html">TimeSeries</a></li><li><a href="Usage.html">Usage</a></li><li><a href="Util.html">Util</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#copy2Clipboard">copy2Clipboard</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.Menu.html">Util.Menu</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.SubWindow.html">Util.SubWindow</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
 </nav>
 
 <br class="clear">

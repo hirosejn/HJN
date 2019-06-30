@@ -8,10 +8,11 @@ import copyToClipboard    from './util-copyToClipboard.js';
 import binarySearch       from './util-binarySearch.js';
 import Heap               from './util-Heap.js';
 import Element            from './util-Element.js';
-import {Encoding}         from './util-Encoding.js'; // #82
 import {Config}           from './config/config.js';
+import {Encoding}         from './util-Encoding.js'; // #82
+import SubWindow          from './util-SubWindow.js'; // #95
+import Menu               from './util-Menu.js'; // #95
 
-/** @namespace Util */
 export {
     TouchPanel,
     S2D,
@@ -28,7 +29,9 @@ export {
     Heap,
     Element,
     Config,
-    Encoding // #82
+    Encoding,  // #82
+    SubWindow, // #95
+    Menu       // #95
 };
 
 
@@ -40,7 +43,7 @@ if(!Uint8Array.prototype.indexOf){
     Uint8Array.prototype.indexOf = function(target,index){
         index = (index === undefined) ? 0 : index;  // #29
         for(var i = index, last = index + 4096; i < last; i++){ // 暫定：1レコード4KBまでチェック
-            if(this[i] === target) return i; 
+            if(this[i] === target) return i;
         }
         return -1;
     };

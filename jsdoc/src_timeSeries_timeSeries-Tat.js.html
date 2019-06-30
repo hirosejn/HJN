@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/timeSeries/timeSeries-Tat.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/timeSeries/timeSeries-Tat.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as Util from '../util/util.js';
+import MappedETat from './timeSeries-MappedETat.js';
+import ETat from './timeSeries-ETat.js';
+import Cash from './timeSeries-Cash.js';
+
+
+/**
+ * @memberOf TimeSeries
+ * @class Tat
+ * @classdesc Tat 応答時間(Turnaround time)の時系列データ管理クラス
+ * @param {ETAT}
+ *            [eTat] [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]&lt;br>
+ *            eTatが指定されているとき、this.seriesSet を設定する
+ */
+export default function Tat(eTat) {
+    
+    this.cTpsUnit = Tat.UNIT_CTPS[0];
+    this.seriesSet = [];
+
+    if (eTat){
+        this.createSeries(eTat);
+    }
+}
+
+/**
+ * クラス定数
+ */
+Tat.UNIT_CTPS = [
+        { label: "/sec",   unit: 1000 },
+        { label: "/min",   unit: 60000 },
+        { label: "/hour",  unit: 3600000 },
+        { label: "/day",   unit: 86400000 }];
+Tat.CYCLE = 60000;  // ミリ秒 #57
+
+// グラフ定数
+Tat.CONC = {
+        key : 'conc',
+        name : '多重度（詳細）',
+        label : 'conc:%N',
+        N : 0,
+        scale : 0,
+        color : 'rgba(  0,  0,127, 0.3)',
+        tpsN : 1
+    }; // #7
+Tat.CTPS = {
+        key : 'cTps',
+        name : '多重度（区間最大）',
+        label : 'conc(max):%N',
+        N : 1,
+        scale : 0,
+        color : 'rgba(  0,  0,127, 0.1)',
+        detailN : 0
+    };
+Tat.ETPS = {
+        key : 'eTps',
+        name : 'average tps / min (end) [line]', // #57
+        label : 'end:%Ntps',
+        N : 2,
+        scale : 0,
+        color : 'rgba(  0, 127, 127, 0.3)'
+    };
+Tat.STAT = {
+        key : 'sTat',
+        name : 'response by start time [Y2軸:plot]',
+        label : 'start:%Nms',
+        N : 3,
+        scale : 1,
+        color : 'rgba(127, 127, 0, 0.3)'
+    };
+Tat.ETAT = {
+        key : 'eTat',
+        name : 'response by end time   [Y2軸:plot]',
+        label : 'end:%Nms',
+        N : 4,
+        scale : 1,
+        color : 'rgba(127,  0,  0, 0.3)'
+    };
+Tat.EMPS = {
+        key : 'eMps',
+        name : 'max response / min (end) [Y2軸:line]', // #57
+        label : 'max:%Nms',
+        N : 5,
+        scale : 1,
+        color : 'rgba(127,   0,  64, 0.3)'
+    };
+Tat.EAPS = {
+        key : 'eAps',
+        name : 'average response / min (end) [Y2軸:line]', // #57
+        label : 'ave:%Nms',
+        N : 6,
+        scale : 1,
+        color : 'rgba(127,   0,  64, 0.1)'
+    };
+Tat.toSeriesArray = function(conc, cTps, eTps, sTat, eTat, eMps, eAps) {
+    return [ conc, cTps, eTps, sTat, eTat, eMps, eAps ];
+}
+Tat.seriesConfig = Tat.toSeriesArray(
+        Tat.CONC, Tat.CTPS, Tat.ETPS, Tat.STAT, Tat.ETAT,
+        Tat.EMPS, Tat.EAPS);
+
+/**
+ * 終了時刻のTAT時系列データ(eTat)から、描画用時系列データ配列を作成する
+ * 
+ * @memberOf TimeSeries
+ * @param {ETAT}
+ *            eTat [[終了時刻(ms), 処理時間(sec), （任意）ログレコード等], ...]
+ * @return {seriesSet} dygraph用時系列データ配列
+ */
+Tat.prototype.createSeries = function (eTat) {
+    // 時系列データを初期化する
+    var conc = [], cTps = [], eTps = [], sTat = [], eMps = [], eAps = [];
+
+    // 集計対象データがないとき
+    if (eTat.length === 0)
+        return Tat.toSeriesArray(conc, cTps, eTps, sTat, eTat, eMps, eAps);
+
+    /** eTatをソートする * */
+    // 開始時刻でソートする #35
+    eTat.sort(function (a, b) {
+        return a.x - b.x;
+    });
+    Util.Logger.ShowLogText("[1:eTat sorten ] " + eTat.length + " plots",
+            "calc");
+
+    /** eTps(時間あたり処理件数),eMps,eAps(時間あたり最大/平均応答時間)時系列データを作成する * */
+    var dFrom = Math.floor(eTat[0].x / Tat.CYCLE) * Tat.CYCLE,
+        dTo = dFrom + Tat.CYCLE,
+        num = 0, // #39
+        maxTat = 0.0, // #19
+        aveTmp = 0.0;
+    eTat.forEach(function (e) {
+        if (e.x &lt; dTo) {
+            num += 1;
+            if (maxTat &lt; e.y) maxTat = e.y; // #19
+            aveTmp += e.y;
+        } else {
+            eTps.push({x : dFrom, y : num * 1000 / Tat.CYCLE}); // #57
+            eMps.push({x : dFrom, y : maxTat}); // #19
+            eAps.push({x : dFrom, y : aveTmp / num});
+            dFrom = Math.floor(e.x / Tat.CYCLE) * Tat.CYCLE;
+            dTo = dFrom + Tat.CYCLE;
+            num = 1;
+            maxTat = e.y; // #19 #39
+            aveTmp = e.y; // #39
+        }
+    }, this);
+    eTps.push({x : dFrom,             y : num * 1000 / Tat.CYCLE}); // #57
+    eTps.push({x : dFrom + Tat.CYCLE, y : num * 1000 / Tat.CYCLE}); // #57
+    eMps.push({x : dFrom,             y : maxTat}); // #19
+    eMps.push({x : dFrom + Tat.CYCLE, y : maxTat}); // #57
+    eAps.push({x : dFrom,             y : aveTmp / num});
+    eAps.push({x : dFrom + Tat.CYCLE, y : aveTmp / num}); // #57
+    
+    Util.Logger.ShowLogText("[3:eTps,eMps,eAps created] " + eTps.length
+            + " plots", "calc");
+
+    /** sTat（開始時間）時系列データを作成する,同時に入力eTatを補正する * */
+    // eTatからsTatを登録する
+    eTat.forEach(function (e, i) {
+        // 処理時間=0 のとき、1マイクロ秒とみなす(有効桁0.2マイクロ秒に切上される）
+        if (e.y === 0) {
+            e.y = 0.001;
+            e.x += e.y;
+        } // ミリ秒
+        // sTatにeTatデータを登録する
+        sTat.push({
+            x : e.x - e.y,
+            y : e.y,
+            eTatIdx : i
+        });
+    });
+    // 開始時刻でソートする
+    sTat.sort(function (a, b) {
+        return a.x - b.x;
+    });
+    // eTatにsTatの位置を設定する
+    sTat.forEach(function (s, i) {
+        eTat[s.eTatIdx].sTatIdx = i;
+    });
+    Util.Logger.ShowLogText("[2:sTat created] " + sTat.length + " plots",
+            "calc");
+
+    /** CONC(多重度)時系列データを作成する * */
+    var concTmp = [];
+    // eTatから、多重度が変化した時刻の一覧を作成する
+    eTat.map(function (e, i) {
+        // 開始時刻にカウントアップ情報を追加する
+        concTmp.push({x : e.x - e.y, y : 1});
+        // 終了時刻をカウントダウン情報を追加する
+        concTmp.push({x : e.x, y : -1});
+    });
+    // concを変化した時刻（開始or終了）でソートする
+    concTmp.sort(function (a, b) {
+        return a.x - b.x;
+    });
+    // concに同時取引数を設定する
+    var concNum = 0;
+    concTmp.forEach(function (c, i, a) {
+        // 重複削除用フラグを立てる #23
+        if (i > 0 &amp;&amp; c.x === a[i - 1].x) {
+            a[i - 1].del = true;
+        }
+        // 同時取引数を集計する(前提：c.y に、開始なら1、終了なら(-1)が設定されている)
+        concNum += c.y;
+        c.y = concNum;
+    });
+    // concの同じ時刻の点を削除する #23
+    conc = concTmp.filter(function (c) {
+        return !c.del;
+    });
+    Util.Logger.ShowLogText("[4:conc created] " + conc.length + " plots",
+            "calc");
+
+    /** cTPS秒間同時処理件数（concurrent transactions/sec）時系列データを作成する #18 * */
+    var XSec = floorTime(conc[0].x, Tat.CYCLE), // ミリ秒
+    YMax = conc[0].y, YNext = conc[0].y;
+    // concの先頭と末尾の時刻(x)の差よりPlot数を求め、Plot数が規定数(8000個)を超えたら、桁上げする #38
+    var cTpsMaxPlots = 8000, // 桁上げするPlot数
+    cTpsUnits = Tat.UNIT_CTPS, // #48
+    concTerm = conc[conc.length - 1].x - conc[0].x, // ミリ秒
+    cTpsIdx = 0;
+    while (cTpsIdx &lt; cTpsUnits.length
+            &amp;&amp; concTerm / cTpsUnits[cTpsIdx].unit > cTpsMaxPlots) {
+        cTpsIdx++;
+    }
+    cTpsIdx = (cTpsUnits.length > cTpsIdx) ? cTpsIdx : cTpsUnits.length - 1;
+    this.cTpsUnit = cTpsUnits[cTpsIdx];
+    // メニューのViewのcTPSのラベルに単位を追加する
+    var pos = (this === HJN.chart) ? 0 : 1;
+    document.getElementsByName("cTps")[pos]
+                .parentNode.lastChild.data = HJN.Tat.CTPS.name + this.cTpsUnit.label;
+
+    // 規定時間単位の最大同時処理数cTPSを作成する
+    conc.forEach(function (c) {
+        if (floorTime(c.x, this.cTpsUnit.unit) === XSec) { // c.xは ミリ秒
+            YMax = Math.max(YMax, c.y);
+        } else {
+            cTps.push({x : XSec, y : Math.max(YMax, YNext)});
+            for (var t = XSec + this.cTpsUnit.unit;
+                    t &lt; floorTime(c.x, this.cTpsUnit.unit);
+                    t += this.cTpsUnit.unit) { // c.xはミリ秒
+                        cTps.push({x : t, y : YNext});
+                if (YNext === 0) break;
+            }
+            XSec = floorTime(c.x, this.cTpsUnit.unit);
+            YMax = Math.max(YNext, c.y);
+        }
+        YNext = c.y;
+    }, this);
+    cTps.push({x : XSec, y : YMax});
+    cTps.push({x : XSec + this.cTpsUnit.unit, y : YNext});
+
+    // Util.Logger.ShowLogText("[5-1:cTps created] " + cTps.length + "
+    // plots","calc");
+
+    // cTpsのxからindexを引くMapを作成する #18
+    eTat = new ETat(eTat); // #75
+    Util.Logger.ShowLogText("[5:cTps created] " + cTps.length + " plots("
+            + +Math.floor(concTerm / 1000) + "sec" + cTpsUnits[cTpsIdx].label
+            + ")", "calc");
+
+    // 集計結果をHJN.Graphに設定する 注）this.SERIESESと同じ順番にすること
+    this.seriesSet = Tat.toSeriesArray(conc, cTps, eTps, sTat, eTat, eMps, eAps);
+
+    return this;
+
+    
+    // 時刻を指定ミリ秒間隔で切り捨てる（内部関数）
+    function floorTime(t, cycle) {
+        return Math.floor(Math.floor(t / cycle) * cycle);
+    }
+};
+
+/**
+ * cTpsの集計単位を取得する
+ * 
+ * @memberOf TimeSeries
+ * @return {object} 単位構造体 { label: "/sec", unit: 1000 }
+ */
+Tat.prototype.getCTpsUnit = function () {
+    return this.cTpsUnit;
+}
+
+/**
+ * seriesSetを取得する
+ * 
+ * @memberOf TimeSeries
+ * @return {array} seriesSet
+ */
+Tat.prototype.getSeriesSet = function () {
+    return this.seriesSet;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.Menu.html">Util.Menu</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.SubWindow.html">Util.SubWindow</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
