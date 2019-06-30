@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: VirtualResource</title>
+    <title>JSDoc: Class: Menu</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: VirtualResource</h1>
+    <h1 class="page-title">Class: Menu</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2>VirtualResource</h2>
+        <h2>Menu</h2>
         
-            <div class="class-description">仮想リソース</div>
+            <div class="class-description">Menu メニュー           <p>           メニューを操作する</div>
         
     
 </header>
@@ -46,12 +46,12 @@
 
 	
     <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line2">line 2</a>
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line1">line 1</a>
     </dir>
     
 
-    <h4 class="name" id="VirtualResource">
-    <span class="type-signature"></span>new VirtualResource<span class="signature">(system, name<span class="signature-attributes">opt</span>, holdCapacity<span class="signature-attributes">opt</span>, timeout<span class="signature-attributes">opt</span>, waitCapacity<span class="signature-attributes">opt</span>, queueWait<span class="signature-attributes">opt</span>, log<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="Menu">
+    <span class="type-signature"></span>new Menu<span class="signature">(menuId, menuLabel<span class="signature-attributes">opt</span>, funcName)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -73,42 +73,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>system</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                </span>
-            
-
-            <div class="description last">仮想システム（シミュレーション中の現在時刻取得等に用いる）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>menuId</code></td>
             
 
             <span class="type">
@@ -123,8 +88,6 @@
             
                 <span class="attributes">
                 
-                    &lt;optional>
-                
 
                 
 
@@ -135,396 +98,17 @@
             
                 <span class="default">
                 
-                    "unlimited"
-                
                 </span>
             
 
-            <div class="description last">リソース名（"unlimited"はリソース解放待ちを管理しない）</div>
+            <div class="description last">メニューのID（メニュー要素をユニークに指定するID）</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>holdCapacity</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    1.0
-                
-                </span>
-            
-
-            <div class="description last">保有リソース総量（数）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>timeout</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    10秒
-                
-                </span>
-            
-
-            <div class="description last">処理のタイムアウト時間（未使用）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>waitCapacity</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    Number.MAX_SAFE_INTEGER
-                
-                </span>
-            
-
-            <div class="description last">リソース取得待ちキューの深さ（数）、キュー溢れ時は即時エラー終了しリソース処理しない</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>queueWait</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    10秒
-                
-                </span>
-            
-
-            <div class="description last">最大キュー滞留時間（リソース取得待ちタイムアウト時間）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>log</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    false
-                
-                </span>
-            
-
-            <div class="description last">詳細ログ出力有無</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line309">line 309</a>
-    </dir>
-    
-
-    <h4 class="name" id="_finish">
-    <span class="type-signature">(static) </span>VirtualResource#_finish<span class="signature">(system, logID<span class="signature-attributes">opt</span>, logMesseage<span class="signature-attributes">opt</span>, forceTime)</span><span class="type-signature"> &rarr; {null}</span>
-    </h4>
-    
-    
-	<div class="description">
-		イベント終了時処理（リソースが管理しているvAppをfinishさせる（強制終了させ処理中vAppはTATログ出力する）
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>system</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                </span>
-            
-
-            <div class="description last">VirtualSystem</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>logID</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    "N_000"
-                
-                </span>
-            
-
-            <div class="description last">ログID（ログメッセージの先頭文字）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>logMesseage</code></td>
+                <td class="name"><code>menuLabel</code></td>
             
 
             <span class="type">
@@ -556,20 +140,20 @@
                 </span>
             
 
-            <div class="description last">ログメッセージ</div>
+            <div class="description last">メニューのラベル</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>forceTime</code></td>
+                <td class="name"><code>funcName</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">String</span>
 
 
             
@@ -591,7 +175,7 @@
                 </span>
             
 
-            <div class="description last">強制終了時刻を指定する（ミシュレーション停止後のeTat強制出力用）</div>
+            <div class="description last">メニュー要素選択時に発行する関数名</div>
         </li></ul>
 
     
@@ -610,23 +194,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">null</span>
-
-
-			
-	    </span>
-		
-	</li></ul>
-
-    
 
 <h6>
 
@@ -666,6 +233,29 @@
 </h6>
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// TopHogeBottom と表示するサブウィンドウを表示し、閉じる&lt;br>         var menu1 = new Util.Menu( "Usage of TAT log diver", divMenuId +         "_HelpUsage", "HJN.init.Usage"); menu1.mekeAsDialog(         "HJN.dialogUsage", 50 , 40);</code></pre>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
             
@@ -674,17 +264,17 @@
 
 	
     <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line242">line 242</a>
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line49">line 49</a>
     </dir>
     
 
-    <h4 class="name" id="free">
-    <span class="type-signature">(static) </span>VirtualResource#free<span class="signature">(vApp, isHolding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span>
+    <h4 class="name" id=".Menu.getAccordionTag">
+    <span class="type-signature">(static) </span>Menu.getAccordionTag<span class="signature">(that, id, labelText, isChecked<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
     </h4>
     
     
 	<div class="description">
-		引数vAppが使用していたリソースを解放する
+		アコーディオンラベル用タグを取得する
 	</div>
 	
     
@@ -705,7 +295,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>vApp</code></td>
+                <td class="name"><code>that</code></td>
             
 
             <span class="type">
@@ -733,14 +323,84 @@
                 </span>
             
 
-            <div class="description last">リソースにfree要求する仮想AP</div>
+            <div class="description last">ラベル押下時のアコーディオン開閉ラジオボタン連動用の接頭語</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>isHolding</code></td>
+                <td class="name"><code>id</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">ラベル押下時のアコーディオン開閉ラジオボタン連動用の接尾語（ユニークな英数字）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>labelText</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">ラベル表示文字列</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>isChecked</code></td>
             
 
             <span class="type">
@@ -767,12 +427,12 @@
             
                 <span class="default">
                 
-                    true
+                    閉じた状態て初期表示
                 
                 </span>
             
 
-            <div class="description last">該当vAppが自リソースをholdしているか否か<br>           false指定時、指定vAppはリソースをholdしていない前提で、hold vApp一覧からの削除処理を行わない</div>
+            <div class="description last">trueを指定したとき展開して初期表示</div>
         </li></ul>
 
     
@@ -800,14 +460,14 @@
 	    <span>
 	    	
 	        
-<span class="param-type">Array</span>
+<span class="param-type">String</span>
 
 
 			
 	    </span>
 		
 		<div class="param-desc">
-		    スケジューラに登録するイベントの配列([vApp] | [])
+		    html アコーディオンラベル用HTMLテキスト
 		</div>
 		
 	</li></ul>
@@ -860,17 +520,17 @@
 
 	
     <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line94">line 94</a>
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line106">line 106</a>
     </dir>
     
 
-    <h4 class="name" id="getTime">
-    <span class="type-signature">(static) </span>VirtualResource#getTime<span class="signature">()</span><span class="type-signature"> &rarr; {Number}</span>
+    <h4 class="name" id="getATag">
+    <span class="type-signature">(static) </span>Menu#getATag<span class="signature">(preLabel<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
     </h4>
     
     
 	<div class="description">
-		イベント時刻を返却する
+		ダウンロード用アンカータグを取得する
 	</div>
 	
     
@@ -882,6 +542,51 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>preLabel</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ラベルの先頭文字列</div>
+        </li></ul>
+
+    
 
 
 
@@ -906,529 +611,952 @@
 	    <span>
 	    	
 	        
+<span class="param-type">String</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    html メニュー要素の表示用HTMLテキスト
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;li>&lt;a id="xxx" href="#">Child Menu&lt;/a>&lt;li/></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line171">line 171</a>
+    </dir>
+    
+
+    <h4 class="name" id="getDialogTag">
+    <span class="type-signature">(static) </span>Menu#getDialogTag<span class="signature">(preLabel<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
+    </h4>
+    
+    
+	<div class="description">
+		ダイアログ用タグを取得する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>preLabel</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ラベルの先頭文字列</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    html メニュー要素の表示用HTMLテキスト
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;ol>&lt;a id="xxx" class="hjnButton4Input"onclick="HJN.init.ShowDialog(FUNC_NAME(), 'DIALOG_ID', w , h)">&lt;label>Child Menu&lt;/label>&lt;/a>&lt;/ol></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line74">line 74</a>
+    </dir>
+    
+
+    <h4 class="name" id="getFileOpenTag">
+    <span class="type-signature">(static) </span>Menu#getFileOpenTag<span class="signature">(preLabel<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
+    </h4>
+    
+    
+	<div class="description">
+		File Open用タグを取得する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>preLabel</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ラベルの先頭文字列</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    html メニュー要素の表示用HTMLテキスト
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;ol>&lt;a>&lt;label>Child Menu&lt;input type="file" id="xxx" multiple/>&lt;/label>&lt;/a>&lt;/ol></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line127">line 127</a>
+    </dir>
+    
+
+    <h4 class="name" id="getFuncTag">
+    <span class="type-signature">(static) </span>Menu#getFuncTag<span class="signature">(preLabel<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
+    </h4>
+    
+    
+	<div class="description">
+		グローバルメソッド呼出用アンカータグを取得する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>preLabel</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ラベルの先頭文字列</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    html メニュー要素の表示用HTMLテキスト
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;li>&lt;a id="xxx" href="#" onclick="funcName()">Child Menu&lt;/a>&lt;/li></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line200">line 200</a>
+    </dir>
+    
+
+    <h4 class="name" id="getSubWindowTag">
+    <span class="type-signature">(static) </span>Menu#getSubWindowTag<span class="signature">(preLabel<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span>
+    </h4>
+    
+    
+	<div class="description">
+		サブウィンドウ用タグを取得する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>preLabel</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">ラベルの先頭文字列</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">String</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    html メニュー要素の表示用HTMLテキスト
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;ol>&lt;a id="xxx" class="hjnButton4Input"onclick="HJN.init.ShowDialog(FUNC_NAME(), 'DIALOG_ID', w , h)">&lt;label>Child Menu&lt;/label>&lt;/a>&lt;/ol></code></pre>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line91">line 91</a>
+    </dir>
+    
+
+    <h4 class="name" id="makeDownloadable">
+    <span class="type-signature">(static) </span>Menu#makeDownloadable<span class="signature">(fileName<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		ダウンロード処理に対応する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>fileName</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "HJN_download"
+                
+                </span>
+            
+
+            <div class="description last">ダウンロードファイル名</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    this
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-Menu.js.html">src/util/util-Menu.js</a>, <a href="src_util_util-Menu.js.html#line150">line 150</a>
+    </dir>
+    
+
+    <h4 class="name" id="makePopupable">
+    <span class="type-signature">(static) </span>Menu#makePopupable<span class="signature">(dialogId, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		ポップアップダイアログ処理に対応する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>dialogId</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">ダイアログのID（同一IDのダイアログは上書きされる）</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>w</code></td>
+            
+
+            <span class="type">
+            
+                
 <span class="param-type">Number</span>
 
 
-			
-	    </span>
-		
-		<div class="param-desc">
-		    イベント時刻（UNIX時刻：ミリ秒）
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line193">line 193</a>
-    </dir>
-    
-
-    <h4 class="name" id="hold">
-    <span class="type-signature">(static) </span>VirtualResource#hold<span class="signature">(system, vApp)</span><span class="type-signature"> &rarr; {Objcet}</span>
-    </h4>
-    
-    
-	<div class="description">
-		リソースを取得する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>system</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
             
             </span>
 
             
+                <span class="attributes">
+                
+                    &lt;optional>
+                
 
+                
+
+                
+                </span>
             
 
-            <div class="description last">VirtualSystem</div>
+            
+                <span class="default">
+                
+                    40
+                
+                </span>
+            
+
+            <div class="description last">ダイアログの幅</div>
         </li></ul>
 
     
 		
         <ul class="params"><li>
             
-                <td class="name"><code>vApp</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">リソースにhold要求する仮想AP</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Objcet</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    処理結果{result:boolean, events:Array}<br>        {boolean} result :        true:正常（リソース取得、取得待ち、取得不要）、false:エラー（リソース枯渇E_QOF)）<br>        {Array} :events リソース取得後、スケジューラに登録するイベントの配列<br>        [vApp]： リソースを取得できたとき、もしくはリソース枯渇時でvApp再処理の場合、スケジュール対象の vApp        が登録された配列[vApp]を返却<br>        []： リソース待ちに登録されたとき、既にリソースが管理するスケジューラに登録さているので、空の配列[]を返却<br>        もしくはリソース枯渇時で繰返し完了時、再スケジュールしないので[]を返却
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line106">line 106</a>
-    </dir>
-    
-
-    <h4 class="name" id="next">
-    <span class="type-signature">(static) </span>VirtualResource#next<span class="signature">(system)</span><span class="type-signature"> &rarr; {Array}</span>
-    </h4>
-    
-    
-	<div class="description">
-		タイムアウトチェック用仮想イベント
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>system</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">VirtualSystem</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Array</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    再スケジュールするイベント（仮想アプリケーションorリソース）の配列、登録処理完了時はthisを含まない
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line287">line 287</a>
-    </dir>
-    
-
-    <h4 class="name" id="release">
-    <span class="type-signature">(static) </span>VirtualResource#release<span class="signature">(vApp)</span><span class="type-signature"> &rarr; {Object|undefined}</span>
-    </h4>
-    
-    
-	<div class="description">
-		引数vAppをリソース開放待ちキューからリリースする
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>vApp</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-
-            
-
-            <div class="description last">リリースする仮想AP</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	        
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">undefined</span>
-
-
-			
-	    </span>
-		
-		<div class="param-desc">
-		    リリースした仮想AP
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_simulator_simulator-VirtualResource.js.html">src/simulator/simulator-VirtualResource.js</a>, <a href="src_simulator_simulator-VirtualResource.js.html#line81">line 81</a>
-    </dir>
-    
-
-    <h4 class="name" id="start">
-    <span class="type-signature">(static) </span>VirtualResource#start<span class="signature">(startTime, system)</span><span class="type-signature"> &rarr; {Object}</span>
-    </h4>
-    
-    
-	<div class="description">
-		リソースチェックイベント（タイムアウトチェック）を開始する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>startTime</code></td>
+                <td class="name"><code>h</code></td>
             
 
             <span class="type">
@@ -1441,33 +1569,26 @@
             </span>
 
             
-
-            
-
-            <div class="description last">開始時刻（UNIX時刻：ミリ秒）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>system</code></td>
-            
-
-            <span class="type">
-            
+                <span class="attributes">
                 
-<span class="param-type">Object</span>
+                    &lt;optional>
+                
 
+                
+
+                
+                </span>
+            
 
             
-            </span>
-
+                <span class="default">
+                
+                    40
+                
+                </span>
             
 
-            
-
-            <div class="description last">VirtualSystem</div>
+            <div class="description last">ダイアログの高さ</div>
         </li></ul>
 
     
@@ -1502,7 +1623,7 @@
 	    </span>
 		
 		<div class="param-desc">
-		    イベント(this)
+		    this
 		</div>
 		
 	</li></ul>

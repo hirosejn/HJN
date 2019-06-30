@@ -8,8 +8,10 @@ import copyToClipboard    from './util-copyToClipboard.js';
 import binarySearch       from './util-binarySearch.js';
 import Heap               from './util-Heap.js';
 import Element            from './util-Element.js';
-import {Encoding}         from './util-Encoding.js'; // #82
 import {Config}           from './config/config.js';
+import {Encoding}         from './util-Encoding.js'; // #82
+import SubWindow          from './util-SubWindow.js'; // #95
+import Menu               from './util-Menu.js'; // #95
 
 export {
     TouchPanel,
@@ -27,7 +29,9 @@ export {
     Heap,
     Element,
     Config,
-    Encoding // #82
+    Encoding,  // #82
+    SubWindow, // #95
+    Menu       // #95
 };
 
 

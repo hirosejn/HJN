@@ -6,6 +6,8 @@ import * as Simulator from '../simulator/simulator.js';
  * 
  * @memberof tatLogDiver
  * @class Menu
+ * @param {Object}
+ *            that グラフへの参照
  */
 export default function Menu(that) {
     // メニュー用のエレメントを取得する
@@ -21,97 +23,87 @@ export default function Menu(that) {
     // メニューボタン定義を登録する
     var g = that.globalName;
     // 上下段共通ボタンの定義(Download Menu)
-    var menuDownloadImg = { // getATag
-        menuLabel : "graph image(.png)",
-        funcName : g + ".menuDownloadImg",
-        menuId : divMenuId + "_DownloadImg",
-        fileName : "graph.png"
-    };
-    var menuDownloadCsv = { // getATag
-        menuLabel : "graph data(.csv)",
-        funcName : g + ".menuDownloadCsv",
-        menuId : divMenuId + "_DownloadCsv",
-        fileName : "graph.csv"
-    };
-    var menuDownloadLog = { // getATag
-        menuLabel : "graph log records(.csv)",
-        funcName : g + ".menuDownloadLog",
-        menuId : divMenuId + "_DownloadLog",
-        fileName : "tatlog.csv"
-    };
-    var menuDownloadConc = { // getATag
-        menuLabel : "conc log records(.csv)",
-        funcName : g + ".menuDownloadConc",
-        menuId : divMenuId + "_DownloadConc",
-        fileName : "conclog.csv"
-    };
-
+    var menuDownloadImg = (new Util.Menu( // ATag
+                divMenuId + "_DownloadImg",
+                "graph image(.png)",
+                g + ".menuDownloadImg"))
+            .makeDownloadable("graph.png");
+    var menuDownloadCsv = (new Util.Menu( // ATag
+                divMenuId + "_DownloadCsv",
+                "graph data(.csv)",
+                g + ".menuDownloadLog"))
+            .makeDownloadable("graph.csv");
+    var menuDownloadLog = (new Util.Menu( // ATag
+                divMenuId + "_DownloadLog",
+                "graph log records(.csv)",
+                g + ".menuDownloadLog"))
+            .makeDownloadable("tatlog.csv");
+    var menuDownloadConc = (new Util.Menu( // ATag
+                divMenuId + "_DownloadConc",
+                "conc log records(.csv)",
+                g + ".menuDownloadConc"))
+            .makeDownloadable("conclog.csv");
+    
     // メニューを追加する
     var accordion = document.createElement('div'); // 要素の作成
     var _id = 0;
     if (HJN.chart.chartId === that.chartId) { // 上段グラフ用機能のメニュー追加
         // File Menu
-        var menuOpenCsv = { // getInputTag
-            menuLabel : "Open csv data file",
-            funcName : g + ".menuOpenCsv",
-            menuId : divMenuId + "_OpenCsv "
-        };
-        var menuSaveConfig = { // getATag
-            menuLabel : "save format (.json)",
-            funcName : g + ".menuSaveConfig",
-            menuId : divMenuId + "_SaveCongig",
-            fileName : "hjnconfig.json"
-        };
-        var menuLoadConfig = { // getInputTag #10
-            menuLabel : "load format (.json)",
-            funcName : g + ".menuLoadConfig",
-            menuId : divMenuId + "_LoadCongig"
-        };
+        var menuOpenCsv = (new Util.Menu( // FileOpenTag
+                divMenuId + "_OpenCsv ",
+                "Open csv data file",
+                g + ".menuOpenCsv"));
+        var menuSaveConfig = (new Util.Menu( // ATag
+                divMenuId + "_SaveCongig",
+                "save format (.json)",
+                g + ".menuSaveConfig"))
+            .makeDownloadable("hjnconfig.json");
+        var menuLoadConfig = (new Util.Menu( // FileOpenTag
+                divMenuId + "_LoadCongig", // #10
+                "load format (.json)",
+                g + ".menuLoadConfig"));
         accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + getAccordionTag(that, ++_id, "File")
+                + Util.Menu.getAccordionTag(that, ++_id, "File")
                 + '<ul class="hjnMenuLv2">'
-                + getInputTag(menuOpenCsv)     // オープンボタン #24
-                + Util.Config.File.getHtml()          // 設定HTML #76
-                + getATag(menuSaveConfig)        // セーブボタン
-                + getInputTag(menuLoadConfig) // ロードボタン #10
+                + menuOpenCsv.getFileOpenTag()     // オープンボタン #24
+                + Util.Config.File.getHtml()       // 設定HTML #76
+                + menuSaveConfig.getATag()         // セーブボタン
+                + menuLoadConfig.getFileOpenTag()  // ロードボタン #10
                 + '</ul>' + '</li>';
 
         // Filter Menu #34
-        var menuFilterApply = { // getFuncTag #34
-            menuLabel : "Apply filter & reload",
-            funcName : g + ".menuFilterApply",
-            menuId : divMenuId + "_FilterApply"
-        };
-        var menuFilterReset = { // getFuncTag #34
-            menuLabel : "Reset filter condition",
-            funcName : g + ".menuFilterReset",
-            menuId : divMenuId + "_FilterClear"
-        };
+        var menuFilterApply = (new Util.Menu( // FuncTag
+                divMenuId + "_FilterApply",
+                "Apply filter & reload",
+                g + ".menuFilterApply"));
+        var menuFilterReset = (new Util.Menu( // FuncTag
+                divMenuId + "_FilterClear",
+                "Reset filter condition",
+                g + ".menuFilterReset"));
+
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Filter">'
-                + getAccordionTag(that, ++_id, "Filter")
-                + '<ul class="hjnMenuLv2">'   // #24
-                + Util.Config.Filter.getHtml()     // 設定HMTL #76
-                + getFuncTag(menuFilterApply)  // フィルターボタン
-                + getFuncTag(menuFilterReset)   // クリアボタン
+                + Util.Menu.getAccordionTag(that, ++_id, "Filter")
+                + '<ul class="hjnMenuLv2">'    // #24
+                + Util.Config.Filter.getHtml() // 設定HMTL #76
+                + menuFilterApply.getFuncTag() // フィルターボタン
+                + menuFilterReset.getFuncTag() // クリアボタン
                 + '</ul>' + '</li>';
 
         // Simulator Menu #53
-        var menuSimulatorSimulate = {
-            menuLabel : "Simulate",
-            funcName : g + ".menuSimulatorSimulate",
-            menuId : divMenuId + "_SimulatorSimulate"
-        };
-        var menuSimulatorEditor = {
-            menuLabel : "JSON Editor(Open/Close)",
-            funcName : g + ".menuSimulatorEditor",
-            menuId : divMenuId + "_SimulatorEditor"
-        };
+        var menuSimulatorSimulate = (new Util.Menu( // FuncTag
+                divMenuId + "_SimulatorSimulate",
+                "Simulate",
+                g + ".menuSimulatorSimulate"));
+        var menuSimulatorEditor = (new Util.Menu( // FuncTag
+                divMenuId + "_SimulatorEditor",
+                "JSON Editor(Open/Close)",
+                g + ".menuSimulatorEditor"));
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Simulator">'
-                + getAccordionTag(that, ++_id, "Simulator")
+                + Util.Menu.getAccordionTag(that, ++_id, "Simulator")
                 + '<ul class="hjnMenuLv2">'
-                + getFuncTag(menuSimulatorSimulate) // シミュレート実行ボタン
-                + getFuncTag(menuSimulatorEditor)     // JSONエディタボタン
-                + Util.Config.Simulator.getHtml()        // 設定HTML #74
+                + menuSimulatorSimulate.getFuncTag()   // シミュレート実行ボタン
+                + menuSimulatorEditor.getFuncTag()     // JSONエディタボタン
+                + Util.Config.Simulator.getHtml()      // 設定HTML #74
                 + '</ul>' + '</li>';
         // シミュレーション条件JSON Editエリアを設定する
         var divSimulator = document.getElementById("Simulator");
@@ -126,25 +118,26 @@ export default function Menu(that) {
 
         // View Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_View">'
-                + getAccordionTag(that, ++_id, "View", true)
+                + Util.Menu.getAccordionTag(that, ++_id, "View", true)
                 + '<ul class="hjnMenuLv2">' //
                 + '<li><div id="' + that.chartIdName + '_legend"></div></li>'
                 + '</ul>' + '</li>';
 
         // Download Menu
         accordion.innerHTML += '<li class="hjnMenuLv1" id="menu_Download">'
-                + getAccordionTag(that, ++_id, "Download")
+                + Util.Menu.getAccordionTag(that, ++_id, "Download")
                 + '<ul class="hjnMenuLv2">'
-                + getATag(menuDownloadImg, "Upper ")   // 上段画像ダウンロード ボタン
-                + getATag(menuDownloadCsv, "Upper ")    // 上段グラフcsvダウンロード ボタン
-                + getATag(menuDownloadLog, "Upper ")    // 上段生データダウンロードボタン
+                + menuDownloadImg.getATag("Upper ")   // 上段画像ダウンロードボタン
+                + menuDownloadCsv.getATag("Upper ")   // 上段グラフcsvダウンロードボタン
+                + menuDownloadLog.getATag("Upper ")   // 上段生データダウンロードボタン
                 + '</ul>' + '</li>';
 
+        
         // メニュー登録
         divMenu.appendChild(accordion);
         // イベントリスナー登録
-        document.getElementById(menuOpenCsv.menuId).addEventListener('change',
-                that.menuOpenCsv.bind(that), false); // File Open用
+        document.getElementById(menuOpenCsv.menuId).addEventListener( //
+                'change', that.menuOpenCsv.bind(that), false); // File Open用
         document.getElementById(menuLoadConfig.menuId).addEventListener(
                 'change', that.menuLoadConfig.bind(that), false); // LoadConfig用
 
@@ -154,10 +147,10 @@ export default function Menu(that) {
         var chartDownloadUl = document.createElement('ul');
         chartDownloadUl.className = "hjnMenuLv2";
         chartDownloadUl.innerHTML = '' //
-                + getATag(menuDownloadImg, "Detail ")    // 下段画像ダウンロードボタン
-                + getATag(menuDownloadCsv, "Detail ")     // 下段グラフcsvダウンロードボタン
-                + getATag(menuDownloadLog, "Detail ")     // 下段生データダウンロードボタン
-                + getATag(menuDownloadConc, "Detail "); // 下段conc csvダウンロードボタン
+                + menuDownloadImg.getATag("Detail ")   // 下段画像ダウンロードボタン
+                + menuDownloadCsv.getATag("Detail ")   // 下段グラフcsvダウンロードボタン
+                + menuDownloadLog.getATag("Detail ")   // 下段生データダウンロードボタン
+                + menuDownloadConc.getATag("Detail "); // 下段conc csvダウンロードボタン
         var chartDownload = document.getElementById("menu_Download");
         chartDownload.appendChild(chartDownloadUl);
 
@@ -172,7 +165,7 @@ export default function Menu(that) {
         // "Bottom detail graph" Menu
         accordion.innerHTML = ''
                 + '<li class="hjnMenuLv1">'
-                +   getAccordionTag(that, ++_id, "Bottom detail graph", true)
+                +   Util.Menu.getAccordionTag(that, ++_id, "Bottom detail graph", true)
                 +   '<ul class="hjnMenuLv2">'
                 +     '<ol><div id="detailTimeRange">'
                 +     Util.Config.DetailGraph.getHtml()     // 設定HMTL #76
@@ -182,91 +175,26 @@ export default function Menu(that) {
                 + '</li>';
 
         // Help Menu
-        var menuHelpUsage = { // getAlertTag #84
-                menuLabel : "Usage of TAT log diver",
-                menuId : divMenuId + "_HelpUsage",
-                strFuncName : "HJN.init.Usage()",
-                dialogId : "HJN.dialogUsage",
-                w : 50,
-                h : 40
-            };
-        var menuHelpAbout = { // getAlertTag
-                menuLabel : "about TAT log diver",
-                menuId : divMenuId + "_HelpAbout",
-                strFuncName : "HJN.init.Copyright()",
-                dialogId : "HJN.dialogAbout",
-                w : 30,
-                h : 50
-        };
+        var menuHelpUsage = (new Util.Menu( // DialogTag
+                divMenuId + "_HelpUsage", // #84
+                "Usage of TAT log diver",
+                "HJN.init.Usage"))
+            .makePopupable("HJN.dialogUsage", 70, 60);
+        var menuHelpAbout = (new Util.Menu( // DialogTag
+                divMenuId + "_HelpAbout",
+                "about TAT log diver",
+                "HJN.init.Copyright"))
+            .makePopupable("HJN.dialogAbout", 30, 50);
+
+        
         accordion.innerHTML += '<li class="hjnMenuLv1">'
-                + getAccordionTag(that, ++_id, "Help")
+                + Util.Menu.getAccordionTag(that, ++_id, "Help")
                 + '<ul class="hjnMenuLv2" style="width: 100%;">' //
-                + getAlertTag(menuHelpUsage) // #84
-                + getAlertTag(menuHelpAbout)
+                + menuHelpUsage.getSubWindowTag() // #84 #95
+                + menuHelpAbout.getDialogTag()
                 + '</ul>' + '</li>';
 
         // メニュー登録
         divMenu.appendChild(accordion);
-    }
-
-    // アコーディオンラベル用<input><label>タグ編集（内部関数宣言） #31
-    // idは、ユニークな英数字なら何でもよい（ラベル押下時のアコーディオン開閉ラジオボタン連動用の接尾語）
-    function getAccordionTag(that, id, labelText, isChecked) {
-        var isAccordion = true, // true:アコーディオン型 false:折りたたみ型 #21
-        typeStr = isAccordion ? ' type="checkbox" name="accordion" '
-                : ' type="radio" name="accordion" ', //
-        checkedStr = ' checked="checked" ';
-        return ''
-                + '<input id="ac-' + that.chartIdName + id + '"' + typeStr
-                + (isChecked ? checkedStr : '') + '">' + '<label for="ac-'
-                + that.chartIdName + id + '">' + labelText + '</label>';
-    }
-
-    // File Open用<input>タグ編集（内部関数宣言）
-    // '<ol><a><label>Child Menu<input type="file" id="xxx"
-    // multiple/></label></a></ol>
-    function getInputTag(arg) {
-        return ''
-                + '<ol><a><label class="hjnButton4Input">' + arg.menuLabel // #51
-                + '<input type="file" id="' + arg.menuId + '"  multiple />'
-                + '</label></a></ol>';
-    }
-
-    // ダウンロード用<A>タグ編集（内部関数宣言）
-    // '<li><a id="xxx" href="#">Child Menu</a><li/>'
-    function getATag(arg, preLabel) {
-        preLabel = preLabel || "";
-        return '' + '<li><a id="' + arg.menuId + '" '
-                + 'class="hjnButton4Input" href="#" ' // #51
-                + 'download="' + arg.fileName + '" ' //
-                + 'onclick="' + arg.funcName + '(' + "'" + arg.menuId + "', '"
-                + arg.fileName + "'" + ')" ' + '>' + preLabel + arg.menuLabel
-                + '</a></li>';
-    }
-
-    // グローバルメソッド呼出用<A>タグ編集（内部関数宣言） #34
-    // '<li><a id="xxx" href="#">Child Menu</a></li>'
-    function getFuncTag(arg, preLabel) {
-        preLabel = preLabel || "";
-        return ''
-                + '<li><a id="' + arg.menuId + ' "'
-                + 'class="hjnButton4Input" href="#" ' // #51
-                + 'onclick="' + arg.funcName + '()">' //
-                + preLabel + arg.menuLabel + '</a></li>';
-    }
-
-    // Alert用<A>タグ編集（内部関数宣言）
-    // '<a id="xxx" onclick=Alert("xxx")>Child Menu</a>'
-    function getAlertTag(arg) {
-        var w = arg.w || 40;
-        var h = arg.h || 40;
-        return ''
-                + '<ol><a id="' + arg.menuId + '"'
-                + 'class="hjnButton4Input" ' // #51
-                + ' onclick="HJN.init.ShowDialog(' + arg.strFuncName
-                    + ", '"+ arg.dialogId + "'" // #84
-                    + "," + w + "," + h
-                    +")" + '"' + '>' // #79
-                + '<label>' + arg.menuLabel + '</label></a></ol>';
     }
 };

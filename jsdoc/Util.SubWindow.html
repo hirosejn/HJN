@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Element</title>
+    <title>JSDoc: Class: SubWindow</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Element</h1>
+    <h1 class="page-title">Class: SubWindow</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2>Element</h2>
+        <h2>SubWindow</h2>
         
-            <div class="class-description">追加する挙動の操作要素は、後に記述した挙動の要素が上位になる 参考           <a href="https://q-az.net/elements-drag-and-drop/">https://q-az.net/elements-drag-and-drop/</a></div>
+            <div class="class-description">SubWindow サブウィンドウ           <p>           サブウィンドウを操作する</div>
         
     
 </header>
@@ -46,12 +46,12 @@
 
 	
     <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line3">line 3</a>
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line1">line 1</a>
     </dir>
     
 
-    <h4 class="name" id="Element">
-    <span class="type-signature"></span>new Element<span class="signature">(element)</span><span class="type-signature"></span>
+    <h4 class="name" id="SubWindow">
+    <span class="type-signature"></span>new SubWindow<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
@@ -73,23 +73,39 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>element</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">DOM</span>
+<span class="param-type">String</span>
 
 
             
             </span>
 
             
+                <span class="attributes">
+                
+                    &lt;optional>
+                
 
+                
+
+                
+                </span>
             
 
-            <div class="description last">ドラッグ機能を付与するDOM要素</div>
+            
+                <span class="default">
+                
+                    "HJN_subwindow"
+                
+                </span>
+            
+
+            <div class="description last">サブウィンドウの名前（ウィンドウをユニークに指定する名前）</div>
         </li></ul>
 
     
@@ -147,6 +163,11 @@
 </h6>
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// TopHogeBottom と表示するサブウィンドウを表示し、閉じる&lt;br>         var sub = new SubWindow("SUB_NAME");         sub.openHtml("hoge").appendHtml("Bottom").prependHtml("Top");         sub.close();</code></pre>
+
+
 
     
     </div>
@@ -162,65 +183,6 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".Element.SetStyles"><span class="type-signature">(static) </span>Element.SetStyles<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    DOM要素にスタイル設定
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -232,17 +194,17 @@
 
 	
     <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line67">line 67</a>
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line49">line 49</a>
     </dir>
     
 
-    <h4 class="name" id=".Element.createDialog">
-    <span class="type-signature">(static) </span>Element.createDialog<span class="signature">(iHtml<span class="signature-attributes">opt</span>, element<span class="signature-attributes">opt</span>, id<span class="signature-attributes">opt</span>, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>, style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id=".SubWindow.createSubWindow">
+    <span class="type-signature">(static) </span>SubWindow.createSubWindow<span class="signature">(iHtml<span class="signature-attributes">opt</span>, element<span class="signature-attributes">opt</span>, id<span class="signature-attributes">opt</span>, w<span class="signature-attributes">opt</span>, h<span class="signature-attributes">opt</span>, style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		ダイアログを生成し表示する
+		サブウィンドウを表示する(HTML指定）<br>Element.createDialog と同一引数
 	</div>
 	
     
@@ -295,7 +257,7 @@
                 </span>
             
 
-            <div class="description last">ダイアログのinnerHTMLに設定する文字列</div>
+            <div class="description last">サブウィンドウのbodyに設定する文字列</div>
         </li></ul>
 
     
@@ -329,12 +291,12 @@
             
                 <span class="default">
                 
-                    document.body
+                    window
                 
                 </span>
             
 
-            <div class="description last">ダイアログの位置とサイズを指定する際の基準となる要素</div>
+            <div class="description last">サブウィンドウの位置とサイズを指定する際の基準となるウィンドウ</div>
         </li></ul>
 
     
@@ -368,12 +330,12 @@
             
                 <span class="default">
                 
-                    "HJN.dialog"
+                    "HJN_subwindow"
                 
                 </span>
             
 
-            <div class="description last">ダイアログ要素のid名、同一名称のダイアログを閉じて作成する</div>
+            <div class="description last">サブウィンドウのid名、同一名称のダイアログを閉じて作成する</div>
         </li></ul>
 
     
@@ -412,7 +374,7 @@
                 </span>
             
 
-            <div class="description last">elementに対するダイアログの幅の比率％</div>
+            <div class="description last">ウィンドウに対するサブウィンドウの幅の比率％</div>
         </li></ul>
 
     
@@ -451,7 +413,7 @@
                 </span>
             
 
-            <div class="description last">elementに対するダイアログの高さの比率％</div>
+            <div class="description last">ウィンドウに対するサブウィンドウの高さの比率％</div>
         </li></ul>
 
     
@@ -485,7 +447,7 @@
             
                 <span class="default">
                 
-                    { width: w+"%", height: h+"%", left: 50-w/2+"%", top: 50-h/2+"%", position: "absolute", background: "rgba(255, 255, 255, 0.8)", border: "medium solid #aaa"}
+                    {bgColor: "rgba(255, 255, 255, 0.8)"}
                 
                 </span>
             
@@ -556,108 +518,17 @@
 
 	
     <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line38">line 38</a>
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line155">line 155</a>
     </dir>
     
 
-    <h4 class="name" id=".Element.enableDraggableClass">
-    <span class="type-signature">(static) </span>Element.enableDraggableClass<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id="append">
+    <span class="type-signature">(static) </span>SubWindow#append<span class="signature">(html<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
     </h4>
     
     
 	<div class="description">
-		CSSクラス名"hjnDraggableBox"が付いた要素をドラッグ＆ドロップで移動できるようにする
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-    <h5>Examples</h5>
-    
-    <pre class="prettyprint"><code>.hjnDraggableBox {} .hjnDraggableItem:hover {cursor: move;         background: rgba(128, 128, 128, 0.5); transition: all 0.2s; }</code></pre>
-
-    <pre class="prettyprint"><code>&lt;div class="hjnDraggableBox">&lt;/div></code></pre>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line200">line 200</a>
-    </dir>
-    
-
-    <h4 class="name" id="addHandleElement">
-    <span class="type-signature">(static) </span>Element#addHandleElement<span class="signature">(func, style<span class="signature-attributes">opt</span>, styleD<span class="signature-attributes">opt</span>, transform<span class="signature-attributes">opt</span>, className<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		マウスクリック用要素を追加
+		サブウィンドウのHTML body の末尾にHTMLを追記する
 	</div>
 	
     
@@ -678,432 +549,7 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>func</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                </span>
-            
-
-            <div class="description last">マウス押下時に発火する処理</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>style</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                </span>
-            
-
-            <div class="description last">elementに設定するスタイル</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>styleD</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    {top:"0", left:"0" width:"5px", height:"5px"}
-                
-                </span>
-            
-
-            <div class="description last">elementに設定するデフォルトスタイル（styleに同じ属性がある場合styleが優先される）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>transform</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    "over"
-                
-                </span>
-            
-
-            <div class="description last">paddingに対する要素の位置           "onFrame":線上、"inside":内側、その他：指定文字列をtransformスタイルに設定</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>className</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    "hjnDraggableItem"
-                
-                </span>
-            
-
-            <div class="description last">マウスイベントを取得するdivに設定するCSSクラス名</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line147">line 147</a>
-    </dir>
-    
-
-    <h4 class="name" id="makeMoveable">
-    <span class="type-signature">(static) </span>Element#makeMoveable<span class="signature">(style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		ドラッグによる移動機能を付与する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>style</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    {cursor: "move", top:"0", left:"50%", width:"100%", height:"20px"};
-                
-                </span>
-            
-
-            <div class="description last">ドラッグ移動機能要素のCSSスタイル</div>
-        </li></ul>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-	<ul class="params"><li>
-	    <span>
-	    	
-	    </span>
-		
-		<div class="param-desc">
-		    this
-		</div>
-		
-	</li></ul>
-
-    
-
-<h6>
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-</h6>
-
-
-
-        
-            
-
-    
-
-	
-    <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line113">line 113</a>
-    </dir>
-    
-
-    <h4 class="name" id="makeRemovable">
-    <span class="type-signature">(static) </span>Element#makeRemovable<span class="signature">(id<span class="signature-attributes">opt</span>, style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-    </h4>
-    
-    
-	<div class="description">
-		×ボタンによる要素削除機能を付与する
-	</div>
-	
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>html</code></td>
             
 
             <span class="type">
@@ -1135,46 +581,7 @@
                 </span>
             
 
-            <div class="description last">×ボタン要素のid名（重複すると先に作成された×ボタンのダイアログが閉じられる）</div>
-        </li></ul>
-
-    
-		
-        <ul class="params"><li>
-            
-                <td class="name"><code>style</code></td>
-            
-
-            <span class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </span>
-
-            
-                <span class="attributes">
-                
-                    &lt;optional>
-                
-
-                
-
-                
-                </span>
-            
-
-            
-                <span class="default">
-                
-                    {cursor: "move", top:"0", left:"50%", width:"100%",height:"20px"};
-                
-                </span>
-            
-
-            <div class="description last">×ボタン要素のCSSスタイル</div>
+            <div class="description last">追記するHTML文字列</div>
         </li></ul>
 
     
@@ -1201,10 +608,15 @@
 	<ul class="params"><li>
 	    <span>
 	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
 	    </span>
 		
 		<div class="param-desc">
-		    this
+		    this 自オブジェクト
 		</div>
 		
 	</li></ul>
@@ -1257,17 +669,101 @@
 
 	
     <dir class="tag-source">
-        <a href="src_util_util-Element.js.html">src/util/util-Element.js</a>, <a href="src_util_util-Element.js.html#line163">line 163</a>
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line142">line 142</a>
     </dir>
     
 
-    <h4 class="name" id="makeResizable">
-    <span class="type-signature">(static) </span>Element#makeResizable<span class="signature">(style<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+    <h4 class="name" id="close">
+    <span class="type-signature">(static) </span>SubWindow#close<span class="signature">()</span><span class="type-signature"></span>
     </h4>
     
     
 	<div class="description">
-		ドラッグによる リサイズ機能を付与する
+		サブウィンドウを閉じる
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line126">line 126</a>
+    </dir>
+    
+
+    <h4 class="name" id="openHtml">
+    <span class="type-signature">(static) </span>SubWindow#openHtml<span class="signature">(body<span class="signature-attributes">opt</span>, [opt="width=600, height=450 ,menubar=no, toolbar=no,           location=no, status=yes, resizable=yes, scrollbars=yes"])</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		サブウィンドウを表示する(HTML指定）
 	</div>
 	
     
@@ -1288,13 +784,13 @@
 		
         <ul class="params"><li>
             
-                <td class="name"><code>style</code></td>
+                <td class="name"><code>body</code></td>
             
 
             <span class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">String</span>
 
 
             
@@ -1313,8 +809,49 @@
             
 
             
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
 
-            <div class="description last">リサイズ機能要素のCSSスタイルを、デフォルトから変更する際に指定</div>
+            <div class="description last">サブウィンドウに表示するHTML</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>[opt="width=600, height=450 ,menubar=no, toolbar=no,           location=no, status=yes, resizable=yes, scrollbars=yes"]</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">サブウィンドウ生成時に指定するオプション</div>
         </li></ul>
 
     
@@ -1341,10 +878,352 @@
 	<ul class="params"><li>
 	    <span>
 	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
 	    </span>
 		
 		<div class="param-desc">
-		    this
+		    this 自オブジェクト
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line95">line 95</a>
+    </dir>
+    
+
+    <h4 class="name" id="openUri">
+    <span class="type-signature">(static) </span>SubWindow#openUri<span class="signature">(uri<span class="signature-attributes">opt</span>, [opt="width=600, height=450 ,menubar=no, toolbar=no,           location=no, status=yes, resizable=yes, scrollbars=yes"])</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		サブウィンドウを表示する(URI指定）
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>uri</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    "about:blank"
+                
+                </span>
+            
+
+            <div class="description last">サブウィンドウに表示するURI</div>
+        </li></ul>
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>[opt="width=600, height=450 ,menubar=no, toolbar=no,           location=no, status=yes, resizable=yes, scrollbars=yes"]</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                </span>
+            
+
+            <div class="description last">サブウィンドウ生成時に指定するオプション</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    Window サブウィンドウ
+		</div>
+		
+	</li></ul>
+
+    
+
+<h6>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+</h6>
+
+
+
+        
+            
+
+    
+
+	
+    <dir class="tag-source">
+        <a href="src_util_util-SubWindow.js.html">src/util/util-SubWindow.js</a>, <a href="src_util_util-SubWindow.js.html#line171">line 171</a>
+    </dir>
+    
+
+    <h4 class="name" id="prepend">
+    <span class="type-signature">(static) </span>SubWindow#prepend<span class="signature">(html<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span>
+    </h4>
+    
+    
+	<div class="description">
+		サブウィンドウのHTML body の先頭にHTMLを追記する
+	</div>
+	
+    
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+    
+		
+        <ul class="params"><li>
+            
+                <td class="name"><code>html</code></td>
+            
+
+            <span class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </span>
+
+            
+                <span class="attributes">
+                
+                    &lt;optional>
+                
+
+                
+
+                
+                </span>
+            
+
+            
+                <span class="default">
+                
+                    ""
+                
+                </span>
+            
+
+            <div class="description last">追記するHTML文字列</div>
+        </li></ul>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+	<ul class="params"><li>
+	    <span>
+	    	
+	        
+<span class="param-type">Object</span>
+
+
+			
+	    </span>
+		
+		<div class="param-desc">
+		    this 自オブジェクト
 		</div>
 		
 	</li></ul>

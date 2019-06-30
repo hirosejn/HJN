@@ -28,6 +28,8 @@ import MenuConfigDetailGraph from './tatLogDiver-MenuConfigDetailGraph.js';
  *          Bundle("chart"); // チャートを作成する }); </script> </body> </html>
  */
 export default function Init(chartName){ // #70
+    // グローバル登録
+    HJN.Util = Util; // #95
 	// 引数１ ：デフォルトHJN.chartName("chart")
 	HJN.chartName = chartName = chartName || HJN.chartName;
 	// タイトルを設定する #57
@@ -460,19 +462,6 @@ HJN.init.SetDetailDateTime=function(date) {
 			Math.floor(date / 1000) * 1000); // 秒単位に丸める #27
 };
 
-
-/**
- * ダイアログを表示する
- * 
- * @memberof HJN.init
- * @param {String}
- *            iHtml ダイアログのiHtmlに設定する文字列
- */
-HJN.init.ShowDialog = function(iHtml, id, w, h, style){
-	var element;
-	Util.Element.createDialog(iHtml, element, id, w, h, style);
-};
-
 /**
  * 使い方HTMLを取得する（Menuイベントから呼び出される） #84
  * 
@@ -482,6 +471,7 @@ HJN.init.ShowDialog = function(iHtml, id, w, h, style){
 HJN.init.Usage=function(){
     var UsageHtmlFile = "tatLogDiver-Usage.html";
     var UsageHtmlURL = "./tatLogDiver/" + UsageHtmlFile;
+    // requireメソッドの有無で、webpack環境下か判定する
     if (typeof require === "undefined") {
         // webpack でパッケージ化していないとき、ダイアログ内にhtmlへのパスを表示する
         var url = "https://github.com/hirosejn/HJN/wiki/Usage(JP)";

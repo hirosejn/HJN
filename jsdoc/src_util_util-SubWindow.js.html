@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/util/util-SubWindow.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/util/util-SubWindow.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @memberOf Util
+ * @class SubWindow
+ * @classdesc SubWindow サブウィンドウ
+ *            &lt;p>
+ *            サブウィンドウを操作する
+ * 
+ * @param {String}
+ *            [name="HJN_subwindow"] サブウィンドウの名前（ウィンドウをユニークに指定する名前）
+ * 
+ * @example // TopHogeBottom と表示するサブウィンドウを表示し、閉じる&lt;br>
+ *          var sub = new SubWindow("SUB_NAME");
+ *          sub.openHtml("hoge").appendHtml("Bottom").prependHtml("Top");
+ *          sub.close();
+ */
+export default (function() { // #95
+    /** @constructor */
+    function SubWindow(name){ 
+        if(!(this instanceof SubWindow)) return new SubWindow(name);
+
+        this._name = name || "HJN_subwindow";
+        SubWindow._map[name] = {};
+    }
+
+    // private
+    // クラス変数
+    SubWindow._map = {};
+    // メソッド
+    
+    // public
+    /**
+     * サブウィンドウを表示する(HTML指定）&lt;br>
+     * Element.createDialog と同一引数
+     * 
+     * @memberOf Util.SubWindow
+     * @param {String}
+     *            [iHtml="no message"] サブウィンドウのbodyに設定する文字列
+     * @param {DOM}
+     *            [element=window] サブウィンドウの位置とサイズを指定する際の基準となるウィンドウ
+     * @param {String}
+     *            [id="HJN_subwindow"] サブウィンドウのid名、同一名称のダイアログを閉じて作成する
+     * @param {Number}
+     *            [w=40] ウィンドウに対するサブウィンドウの幅の比率％
+     * @param {Number}
+     *            [h=40] ウィンドウに対するサブウィンドウの高さの比率％
+     * @param {Object}
+     *            [style={bgColor: "rgba(255, 255, 255, 0.8)"}] ダイアログ背景のCSSスタイル
+     */
+    SubWindow.createSubWindow = function(iHtml, win, id, w, h, style){
+        iHtml = iHtml || "no message";
+        win = win || window;
+        style = style || {};
+        id = id || "HJN_subwindow";
+        w = w || 40; // 幅40%
+        h = h || 40; // 高さ40%
+
+        // サブウィンドウ表示オプションを編集する
+        var width  = Math.round(win.innerWidth  * ( w / 100 ));
+        var height = Math.round(win.innerHeight * ( h / 100 ));
+        var top    = Math.round(win.screenTop  + (win.innerHeight / 2) - (height / 2));
+        var left   = Math.round(win.screenLeft + (win.innerWidth / 2) - (width  / 2));
+        var opt = "width=" + width + ", height=" + height 
+                + ", top=" + top + ", left=" + left
+                + ", menubar=no, toolbar=no, location=no"
+                + ", status=yes, resizable=yes, scrollbars=yes";
+
+        // サブウィンドウを作成する
+        var sub = new SubWindow(id);
+        // サブウィンドウにHTMLを表示する（別ウィンドウ処理なのでスケジュールが反転しないよう非同期）
+        HJN.Util.setZeroTimeout( function(){
+            // HTMLを表示する
+            sub.openHtml(iHtml, opt);
+
+            // デフォルトスタイルを設定する
+            var body = SubWindow._map[id].document.body;
+            var styleD = {bgColor: "rgba(255, 0, 255, 0.8)"};
+            for (var property in styleD) body.style[property] = styleD[property];
+            // 指定スタイルを設定する
+            for (var property in style) body.style[property] = style[property];
+        });
+    }
+    
+    /**
+     * サブウィンドウを表示する(URI指定）
+     * 
+     * @memberOf Util.SubWindow
+     * @param {String}
+     *            [uri="about:blank"] サブウィンドウに表示するURI
+     * @param {String}
+     *            [opt="width=600, height=450 ,menubar=no, toolbar=no,
+     *            location=no, status=yes, resizable=yes, scrollbars=yes"]
+     *            サブウィンドウ生成時に指定するオプション
+     * @return {Object} Window サブウィンドウ
+     */
+    SubWindow.prototype.openUri = function(uri, opt) {
+        uri = uri || "about:blank";
+        opt = opt || "width=600, height=450 "
+            + ",menubar=no, toolbar=no, location=no, status=yes, resizable=yes, scrollbars=yes";
+        // サブウィンドウが既に開いている時、閉じる
+        var sub = SubWindow._map[this._name]; // サブウィンドウへの参照
+        if (sub &amp;&amp; (typeof sub.close === "function") &amp;&amp; !sub.closed){
+                sub.close();
+        }
+        // サブウィンドウを開く
+        SubWindow._map[this._name] = sub = window.open(uri, this._name, opt);
+        // サブウィンドウを最前面にする
+        sub.blur();
+        window.focus();
+        window.blur();
+        sub.focus();
+        // サブウィンドウを返却する
+        return sub;
+    };
+    /**
+     * サブウィンドウを表示する(HTML指定）
+     * 
+     * @memberOf Util.SubWindow
+     * @param {String}
+     *            [body=""] サブウィンドウに表示するHTML
+     * @param {String}
+     *            [opt="width=600, height=450 ,menubar=no, toolbar=no,
+     *            location=no, status=yes, resizable=yes, scrollbars=yes"]
+     *            サブウィンドウ生成時に指定するオプション
+     * @return {Object} this 自オブジェクト
+     */
+    SubWindow.prototype.openHtml = function(body, opt) {
+        body = body || "";
+        opt = opt || "width=600, height=450 "
+            + ",menubar=no, toolbar=no, location=no, status=yes, resizable=yes, scrollbars=yes";
+        // サブウィンドウを開く
+        var sub = this.openUri("about:blank" ,opt);
+        // サブウィンドウのHTML bodyを設定する
+        sub.document.body.innerHTML = body;
+        // 自オブジェクトを返却する
+        return this;
+    };
+    /**
+     * サブウィンドウを閉じる
+     * 
+     * @memberOf Util.SubWindow
+     */
+    SubWindow.prototype.close = function() {
+        var sub = SubWindow._map[this._name]; // サブウィンドウへの参照
+        // サブウィンドウを閉じる
+        sub.close();
+    };
+    /**
+     * サブウィンドウのHTML body の末尾にHTMLを追記する
+     * 
+     * @memberOf Util.SubWindow
+     * @param {String}
+     *            [html=""] 追記するHTML文字列
+     * @return {Object} this 自オブジェクト
+     */
+    SubWindow.prototype.append = function(html) {
+        html = html || "";
+        var sub = SubWindow._map[this._name]; // サブウィンドウへの参照
+        // サブウィンドウのHTML bodyに追記する
+        sub.document.body.innerHTML += html;
+        // サブウィンドウを返却する
+        return win;
+    };
+    /**
+     * サブウィンドウのHTML body の先頭にHTMLを追記する
+     * 
+     * @memberOf Util.SubWindow
+     * @param {String}
+     *            [html=""] 追記するHTML文字列
+     * @return {Object} this 自オブジェクト
+     */
+    SubWindow.prototype.prepend = function(html) {
+        html = html || "";
+        var sub = SubWindow._map[this._name]; // サブウィンドウへの参照
+        // サブウィンドウのHTML bodyに追記する
+        sub.document.body.innerHTML = html + sub.document.body.innerHTML;
+        // サブウィンドウを返却する
+        return win;
+    };
+    
+    /* new */
+    return SubWindow;
+}());</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HJN.Init_.html">HJN.Init</a></li><li><a href="Simulator.MenuConfig.html">Simulator.MenuConfig</a></li><li><a href="Simulator.VirtualApp.html">Simulator.VirtualApp</a></li><li><a href="Simulator.VirtualResource.html">Simulator.VirtualResource</a></li><li><a href="Simulator.VirtualSystem.html">Simulator.VirtualSystem</a></li><li><a href="Simulator.virtualSystemByJson.html">Simulator.virtualSystemByJson</a></li><li><a href="tatLogDiver.Copyright.html">tatLogDiver.Copyright</a></li><li><a href="tatLogDiver.Graph.html">tatLogDiver.Graph</a></li><li><a href="tatLogDiver.Menu.html">tatLogDiver.Menu</a></li><li><a href="tatLogDiver.MenuConfigDetailGraph.html">tatLogDiver.MenuConfigDetailGraph</a></li><li><a href="tatLogDiver.Plot.html">tatLogDiver.Plot</a></li><li><a href="TimeSeries.Cash.html">TimeSeries.Cash</a></li><li><a href="TimeSeries.ETat.html">TimeSeries.ETat</a></li><li><a href="TimeSeries.FileParser.html">TimeSeries.FileParser</a></li><li><a href="TimeSeries.FileParser.Filter.html">TimeSeries.FileParser.Filter</a></li><li><a href="TimeSeries.FileParser.GetterOfLine.html">TimeSeries.FileParser.GetterOfLine</a></li><li><a href="TimeSeries.FileParser.GetterOfXY.html">TimeSeries.FileParser.GetterOfXY</a></li><li><a href="TimeSeries.MappedArray.html">TimeSeries.MappedArray</a></li><li><a href="TimeSeries.MappedETat.html">TimeSeries.MappedETat</a></li><li><a href="TimeSeries.MenuConfigFile.html">TimeSeries.MenuConfigFile</a></li><li><a href="TimeSeries.MenuConfigFilter.html">TimeSeries.MenuConfigFilter</a></li><li><a href="TimeSeries.Tat.html">TimeSeries.Tat</a></li><li><a href="Util.binarySearch.html">Util.binarySearch</a></li><li><a href="Util.Config.html">Util.Config</a></li><li><a href="Util.Element.html">Util.Element</a></li><li><a href="Util.Encoding.html">Util.Encoding</a></li><li><a href="Util.Heap.html">Util.Heap</a></li><li><a href="Util.Logger.html">Util.Logger</a></li><li><a href="Util.Menu.html">Util.Menu</a></li><li><a href="Util.html#.module.exports">Util.module.exports</a></li><li><a href="Util.Random.html">Util.Random</a></li><li><a href="Util.SubWindow.html">Util.SubWindow</a></li><li><a href="Util.TouchPanel.html">Util.TouchPanel</a></li></ul><h3>Namespaces</h3><ul><li><a href="HJN.html">HJN</a></li><li><a href="HJN.init.html">HJN.init</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tatLogDiver-Usage.html">tatLogDiver-Usage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#webpack">webpack</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+     
+    <br><a href="https://github.com/hirosejn/HJN" target=�h_hirosejnGit�h>&copy;2017-2019 Junichiroh Hirose</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
