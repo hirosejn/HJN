@@ -360,8 +360,12 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 			getterOfXY = HJN.chart.fileParser.createGetterOfXY(),
 			isDataType_TatStart = (Util.Config.File.getConfig("DATATYPE") == "DATATYPE_TATSTART"),
 			isDataType_StartEnd = (Util.Config.File.getConfig("DATATYPE") == "DATATYPE_START_END"), // #89
-			line = getterOfLine.next();	 // 先頭行の初期処理
+			line = getterOfLine.next(), // 先頭行の初期処理
+			lineNum = 0,
+			errorNum = 0,
+			charset = HJN.Config.File.getConfig("CHAR");
 		while (!line.isEoF) {				// 以降最終行まで処理する
+		    lineNum++;
 			try {
 				Util.Logger.ByInterval(i++, line); // 一定時刻毎に進捗を出力する
 				xy = getterOfXY.parse(line);
@@ -373,14 +377,45 @@ HJN.init.FileReader = Init.FileReader = function (files){  // #15
 						eTat.push( {x: xy.x, y: xy.y, fileIdx: idx, // #23
 							pos: line.pos, len: line.array.byteLength, sTatIdx: 0} );
 					}
+					// 先頭４行までパース結果をログ出力する
+					if (lineNum < 5){
+					    log(true, xy, line);
+					}
+				} else {
+				    log(false, xy, line);
 				}
-				line = getterOfLine.next(); // #24
 			} catch (e) {	/* 改行だけレコードをスキップ */
-				console.error("err: %o",e); // #93
+			    log(false, xy, line);
+	            if (e) console.log(e); // #93
 			}
+            line = getterOfLine.next(); // #24 #96
 		}
+		// エラーレコード数をログ出力する
+        if (!errorNum){
+            Util.Logger.ShowLogText(errorNum + " times failed to parse as CSV.", "msg");
+        }
 		Util.Logger.ShowLogText("[0:file readed & got eTat]---------------","calc");
 		return eTat;
+
+		// ログ出力する（内部関数）
+		function log(okng, xy, line){
+            if (okng){
+                // 正常ログの出力は、５行目まで
+                if (lineNum > 5) return;
+                else Util.Logger.ShowLogText("<br>OK:line " + lineNum + " <br>"
+                        + " [" +  window.HJN.Util.D2S(xy.x, "yyyy/MM/dd hh:mm:ss.000")
+                        + ", " + window.HJN.Util.N2S(xy.y) + "]<br>"
+                        + window.HJN.Util.Encoding.charset.convert(line.str, "Unicode", charset)
+                        , "msg");
+            } else {
+                errorNum++;
+                // エラーログの出力は、５回まで
+                if  (errorNum > 5) return;
+                else Util.Logger.ShowLogText("<br>NG:line " + lineNum + " <br>" 
+                        + window.HJN.Util.Encoding.charset.convert(line.str, "Unicode", charset)
+                        , "msg");
+            }
+		}
 	}
 };
 

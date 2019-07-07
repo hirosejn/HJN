@@ -63,7 +63,7 @@ export default function Menu(that) {
                 "load format (.json)",
                 g + ".menuLoadConfig"));
         accordion.innerHTML = '<li class="hjnMenuLv1">'
-                + Util.Menu.getAccordionTag(that, ++_id, "File")
+                + Util.Menu.getAccordionTag(that, ++_id, "File", true)
                 + '<ul class="hjnMenuLv2">'
                 + menuOpenCsv.getFileOpenTag()     // オープンボタン #24
                 + Util.Config.File.getHtml()       // 設定HTML #76

@@ -60,7 +60,7 @@ export default (function() { // #24
         }else if (t.type === "number") {    // numberのとき、idに、value(入力値)を数値として登録
             this.prototype.__config[t.id] = +t.value;
         } else if (t.type === "select-one") {    // selectのとき、idに、valueの設定値を登録
-            this.prototype.__config[t.id] = this.prototype.__config.__keyConfig[t.value].getConfig();
+            this.prototype.__config[t.id] = t.value.substr(t.value.indexOf(".") + 1); // #96
             funcId = t.value;
         } else {                            // textのとき、idに、value(入力値)を登録
             this.prototype.__config[t.id] = t.value;
@@ -74,8 +74,7 @@ export default (function() { // #24
      * Configリポジトリ管理インスタンスを取得する
      * 
      * @memberof Util.Config
-     * @example  
-     * Config.GetConfig("File") === Config("File"); // true 既に登録されているとき
+     * @example Config.GetConfig("File") === Config("File"); // true 既に登録されているとき
      */
     Config.GetConfig = function(prefix) { // #59
         return new Config(prefix);
@@ -116,7 +115,17 @@ export default (function() { // #24
      * @memberof Util.Config
      */
     Config.prototype.getValueByKey = function(key) { 
-        return Config.prototype.__config[this._pre + key];
+        var val = Config.prototype.__config[this._pre + key];
+        // selectorでon未実行時に、選択項目の値を取り込む #96
+        if (!val) {
+            var e = document.getElementById(this._pre + key);
+            if (e && typeof e.selectedIndex === "number") {
+                var t = e[e.selectedIndex].value;
+                val = t.substr(t.indexOf(".") + 1);
+                Config.prototype.__config[this._pre + key] = val;
+            }
+        }
+        return val;
     };
     /**
      * configにkey(prefix補填)に値を設定する
@@ -130,8 +139,8 @@ export default (function() { // #24
      * configの指定Idに登録されている関数を取得する<br>
      * 
      * @memberof Util.Config
-     * @example  //  Config.onでradioボタン選択時に関数を呼ぶ場合に使用
-     * var func = Config.GetConfig().getFunctionById(t.id);
+     * @example // Config.onでradioボタン選択時に関数を呼ぶ場合に使用 var func =
+     *          Config.GetConfig().getFunctionById(t.id);
      */
 
     Config.prototype.getFunctionById = function(id) { // #53
@@ -255,7 +264,8 @@ export default (function() { // #24
                         this._nameHtml +
                         'id="' + this._pre + key + '" '+ // idがユニークになるようkeyにprefixを付与
                         'onchange="' + this._globalName + '.Config.on(this);" ' + // #74
-                        (val ? "value='" + val + "' " : "") +   // val は、キー値のまま #92
+                        (val ? "value='" + val + "' " : "") +   // val は、キー値のまま
+                                                                // #92
                         (attribute || '') + 
                         (check ? ' checked="checked;"' : '') +
                     '>' +
@@ -314,7 +324,7 @@ export default (function() { // #24
                                 pLabel, sLabel, "", attribute, check, "hjnLabel4Input");
         // 関数登録指定時、attributeを関数名として、指定関数を登録する #51
         if (func) this.setFunction(key, func);
-        // 逆引きリストに追加する 
+        // 逆引きリストに追加する
         var reverseList = Config.prototype.__config.__keyConfig[this._pre + this._name] || {};
         var reverseVal = this._pre + key;
         var reverseKey = this.__config.__keyConfig[reverseVal].getConfig(); 
@@ -363,7 +373,8 @@ export default (function() { // #24
     };
     /**
      * 定義＆設定画面作成用機能： 固定値を取得するキーの宣言<br>
-     * __keyConfig["File.SEP_COMMA"] = {value: ",", getConfig: LF_ELSE.vから値を取得するfunction, onFunc: null}  
+     * __keyConfig["File.SEP_COMMA"] = {value: ",", getConfig:
+     * LF_ELSE.vから値を取得するfunction, onFunc: null}
      * 
      * @memberof Util.Config
      * @param {String}
@@ -382,7 +393,8 @@ export default (function() { // #24
     }
     /**
      * 定義＆設定画面作成用機能： 画面より値を取得するキーの宣言<br>
-     * __keyConfig["File.LF_ELSE"] = {value: "LF_ELSE", getConfig: LF_ELSE.vから値を取得するfunction}  
+     * __keyConfig["File.LF_ELSE"] = {value: "LF_ELSE", getConfig:
+     * LF_ELSE.vから値を取得するfunction}
      * 
      * @memberof Util.Config
      * @param {String}
@@ -394,8 +406,10 @@ export default (function() { // #24
         var _keyConf = Config.prototype.__config.__keyConfig[this._pre + key] = {};
         _keyConf.value = key;           // getValueByKeyの返却値（デフォルト：keyと同じ文字列）
         _keyConf.getConfig = function () {
-                return Util.Config(this._prefix).getValueByKey(fieldId || key + ".v");
-            };
+            _keyConf.getConfig = (function (_prefix, key, fieldId) {
+                return window.HJN.Config(_prefix).getValueByKey(fieldId || key + ".v");
+            }).bind(null, this._prefix, key, fieldId); // #96
+        };
         return key;
     };
 

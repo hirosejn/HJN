@@ -88,7 +88,7 @@ export default (function() { // #24
         }else if (t.type === "number") {    // numberのとき、idに、value(入力値)を数値として登録
             this.prototype.__config[t.id] = +t.value;
         } else if (t.type === "select-one") {    // selectのとき、idに、valueの設定値を登録
-            this.prototype.__config[t.id] = this.prototype.__config.__keyConfig[t.value].getConfig();
+            this.prototype.__config[t.id] = t.value.substr(t.value.indexOf(".") + 1); // #96
             funcId = t.value;
         } else {                            // textのとき、idに、value(入力値)を登録
             this.prototype.__config[t.id] = t.value;
@@ -144,7 +144,17 @@ export default (function() { // #24
      * @memberof Util.Config
      */
     Config.prototype.getValueByKey = function(key) { 
-        return Config.prototype.__config[this._pre + key];
+        var val = Config.prototype.__config[this._pre + key];
+        // selectorでon未実行時に、選択項目の値を取り込む #96
+        if (!val) {
+            var e = document.getElementById(this._pre + key);
+            if (typeof e.selectedIndex === "number") {
+                var t = e[e.selectedIndex].value;
+                val = t.substr(t.indexOf(".") + 1);
+                Config.prototype.__config[this._pre + key] = val;
+            }
+        }
+        return val;
     };
     /**
      * configにkey(prefix補填)に値を設定する

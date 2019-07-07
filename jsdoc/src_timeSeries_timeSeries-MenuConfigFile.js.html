@@ -44,8 +44,10 @@ MenuConfigFile.config = function () {
     var c = new  Util.Config(prefix);
     c // #53
         .name("NEWFILE").label(null,"Open file as ") // #23
-            .radio("NEWDATA", null, "newly", true)
-            .radio("ADDDATA", null, "append").n()
+        .startTag("select")
+            .option("NEWDATA", null, "newly", true)
+            .option("ADDDATA", null, "append")
+        .endTag().n()
         .label(null,"&lt;B>----- File format definition --------&lt;/B>").n()
         .name("CHAR").label(null, "&lt;B>[Charset]&lt;/B>").n() // #82
             .radio(c.def("CHAR_SJIS", "SJIS"), null, "Shift-JIS", true)
